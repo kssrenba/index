@@ -5192,7 +5192,7 @@
         __scrollLockCount++;
       }
 
-      function unlockBodyScroll() {
+      function unlockBodyScroll(skipRestore) {
         __scrollLockCount = Math.max(0, __scrollLockCount - 1);
         if (__scrollLockCount === 0) {
           document.body.style.position = '';
@@ -5200,7 +5200,15 @@
           document.body.style.left = '';
           document.body.style.right = '';
           document.body.style.width = '';
-          window.scrollTo(0, __scrollLockY);
+          // Quando quem chamou já sabe que vai rolar a página pra outro lugar
+          // em seguida (ex.: clique num resultado da busca que leva pra um
+          // card específico), pular esse scrollTo evita uma corrida no
+          // mobile: remover o position:fixed dispara um reflow que alguns
+          // navegadores mobile aplicam de forma meio assíncrona, então esse
+          // scrollTo "restaurando a posição antiga" às vezes só é efetivado
+          // DEPOIS do scroll intencional pro card, cancelando ele e jogando
+          // a página de volta pro topo da lista/categoria.
+          if (!skipRestore) window.scrollTo(0, __scrollLockY);
         }
       }
 
@@ -7832,7 +7840,7 @@
         saveDrawerStateNow();
       }
 
-      function closeDrawer() {
+      function closeDrawer(skipScrollRestore) {
         if (!drawer || !backdrop) return;
         if (drawerFrame) cancelAnimationFrame(drawerFrame);
         isDrawerOpen = false;
@@ -7840,7 +7848,7 @@
         backdrop.classList.remove('show');
         drawer.setAttribute('aria-hidden', 'true');
         updateHeaderTriggerButtons(null);
-        unlockBodyScroll();
+        unlockBodyScroll(skipScrollRestore);
         if (window.__cancelPendingSearchFocus) window.__cancelPendingSearchFocus();
         const input = document.getElementById('searchDrawerInput');
         if (input) input.blur();
@@ -7904,8 +7912,8 @@
           }
         });
 
-        closeBtn.addEventListener('click', closeDrawer);
-        backdrop.addEventListener('click', closeDrawer);
+        closeBtn.addEventListener('click', () => closeDrawer());
+        backdrop.addEventListener('click', () => closeDrawer());
 
         const creditsTriggerEl = document.getElementById('creditsTrigger');
         if (creditsTriggerEl) {
@@ -9307,8 +9315,8 @@
           openDrawer('search');
         }
 
-        function closeSearchDrawer() {
-          closeDrawer();
+        function closeSearchDrawer(skipScrollRestore) {
+          closeDrawer(skipScrollRestore);
         }
 
         function renderEntries(entries, query) {
@@ -9554,7 +9562,7 @@
           const targetId = entry.anime.id;
           const targetCategory = categoryForResult(entry);
 
-          closeSearchDrawer();
+          closeSearchDrawer(true);
           searchInput.value = '';
           searchBoxDrawer.classList.remove('has-value');
           resetToCarouselStage();
