@@ -337,7 +337,23 @@
       letter-spacing: -0.01em;
     }
 
-    .search-ghost-hint .ghost-typed { visibility: hidden; }
+    .search-box-drawer.slash-mode input {
+      color: transparent;
+      caret-color: var(--text);
+    }
+
+    .search-ghost-hint .ghost-typed {
+      color: var(--text);
+    }
+
+    /* Só a "/" ganha a cor do comando que está batendo com o que foi
+       digitado — o resto da palavra continua na cor normal do texto, e
+       essa cor vai mudando a cada letra digitada conforme o match muda
+       (ver ghostRandomPick em updateGhostHint). */
+    .search-ghost-hint .ghost-typed-slash {
+      color: var(--glow-accent);
+      transition: color 0.15s ease;
+    }
 
     .search-ghost-hint .ghost-suggestion {
       color: var(--muted);
@@ -356,21 +372,20 @@
     .search-drawer-input-wrap.dropdown-open .search-box-drawer {
       border-bottom-color: transparent;
       box-shadow: none;
-      background: rgba(15,15,15,0.97);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
     }
 
     .slash-command-list {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(15,15,15,0.97) 0%, #030303 45%, #000000 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.55) 100%);
       backdrop-filter: blur(40px) saturate(1.1);
       -webkit-backdrop-filter: blur(40px) saturate(1.1);
-      border: 1px solid rgba(255,255,255,0.09);
-      border-top-color: transparent;
+      border: none;
       border-radius: 0;
       z-index: 30;
       display: none;
-      box-shadow: 0 14px 28px rgba(0,0,0,0.45);
+      box-shadow: none;
       /* Fica dentro do .search-stage (mesmo pai de .search-drawer-results,
          que usa a mesma técnica de inset:0) — assim o fundo cinza sempre
          preenche até o rodapé real do drawer, sem depender de altura
@@ -446,7 +461,12 @@
       transition: color 0.18s ease;
     }
 
-    .slash-command-item .cmd-name::first-letter {
+    /* Parte do nome que já foi digitada (ex: "/inco" de "/incomplete")
+       ganha a cor do comando (--cmd-color) — o resto da palavra
+       ("mplete") continua na cor normal do texto. Isso é só dentro do
+       dropdown; não mexe na "/" da barra de pesquisa (.ghost-typed-slash),
+       que é um elemento totalmente separado. */
+    .slash-command-item .cmd-name-typed {
       color: var(--cmd-color, var(--glow-accent));
       font-weight: 900;
     }
@@ -459,60 +479,6 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    /* Linha "Ver mais / Ver menos" que revela as listas de categoria
-       (romance, isekai, sport, mecha, incomplete, announced, peakepisodes)
-       escondidas por padrão embaixo dos 4 comandos clássicos. */
-    .slash-command-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 9px 16px;
-      cursor: pointer;
-      user-select: none;
-      font-family: var(--font-title);
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      color: var(--muted);
-      border-top: 1px solid rgba(255,255,255,0.055);
-      transition: background 0.18s ease, color 0.18s ease;
-    }
-
-    .slash-command-toggle:hover {
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-    }
-
-    .slash-command-toggle .toggle-chevron {
-      transition: transform 0.18s ease;
-    }
-
-    /* "Ver menos" (dentro do grupo extra, no rodapé da lista) já nasce
-       apontando pra cima — inverso do "Ver mais". */
-    .slash-command-toggle--less .toggle-chevron {
-      transform: rotate(180deg);
-    }
-
-    /* "Ver mais" some assim que expande — quem passa a aparecer é o
-       "Ver menos" lá no final do grupo extra (ver .slash-command-extra
-       abaixo), então o botão de recolher fica sempre depois do último
-       item da lista, não onde o "Ver mais" estava. */
-    .slash-command-list.expanded .slash-command-toggle--more {
-      display: none;
-    }
-
-    /* Grupo extra (listas de categoria): some por padrão, sem ocupar
-       espaço, e só aparece quando o dropdown ganha a classe "expanded". */
-    .slash-command-extra {
-      display: none;
-    }
-
-    .slash-command-list.expanded .slash-command-extra {
-      display: block;
     }
 
     .search-clear-btn {
@@ -5047,9 +5013,6 @@
                  <a class="credits-name credits-name-logo" href="https://www.canva.com" target="_blank" rel="noopener noreferrer">
                   <img class="credits-logo-img credits-logo-img--wide credits-logo-img--canva" src="assets/credits-webp/canva.webp" alt="Canva" loading="lazy" decoding="async">
                 </a>                    
-                <a class="credits-name credits-name-logo" href="https://www.anime-planet.com" target="_blank" rel="noopener noreferrer">
-                  <img class="credits-logo-img credits-logo-img--wide credits-logo-img--anime-planet" src="assets/credits-webp/anime-planet.webp" alt="Anime-Planet" loading="lazy" decoding="async">
-                </a> 
                 <a class="credits-name credits-name-logo" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer">
                   <img class="credits-logo-img credits-logo-img--wide credits-logo-img--pinterest" src="assets/credits-webp/pinterest.webp" alt="Pinterest" loading="lazy" decoding="async">
                 </a>                       
@@ -5057,14 +5020,14 @@
             </div>
 
             <div class="credits-block">
-              <div class="credits-role">SUPPORT TOOLS</div>
+              <div class="credits-role">INFO TOOLS</div>
               <div class="credits-names credits-names--sources">
+                <a class="credits-name credits-name-logo" href="https://www.anime-planet.com" target="_blank" rel="noopener noreferrer">
+                  <img class="credits-logo-img credits-logo-img--wide credits-logo-img--anime-planet" src="assets/credits-webp/anime-planet.webp" alt="Anime-Planet" loading="lazy" decoding="async">
+                </a>                 
                 <a class="credits-name credits-name-logo" href="https://myanimelist.net" target="_blank" rel="noopener noreferrer">
                   <img class="credits-logo-img credits-logo-img--wide" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async">
                 </a>
-                <a class="credits-name credits-name-logo" href="https://picwish.com/pt/photo-enhancer" target="_blank" rel="noopener noreferrer">
-                  <img class="credits-logo-img credits-logo-img--wide credits-logo-img--picwish" src="assets/credits-webp/picwish.webp" alt="Picwish" loading="lazy" decoding="async">
-                </a>  
               </div>
             </div>
 
@@ -5264,14 +5227,24 @@
         let currentItem = null;
 
         // ── Som especial ao abrir o poster-lightbox do Re:ZERO ──
-        const rezeroSound = new Audio('assets/rdb-rezero.mp3');
+        const rezeroSound = new Audio('assets/sound-effects/rdb-rezero.mp3');
         rezeroSound.loop = true;
         const REZERO_IDS = ['re-zero', 're-zero-4'];
 
         // ── Som especial ao abrir o poster-lightbox do JJK (sem loop) ──
-        const jjkSound = new Audio('assets/yuta-jjk.mp3');
+        const jjkSound = new Audio('assets/sound-effects/yuta-jjk.mp3');
         jjkSound.loop = false;
         const JJK_IDS = ['jjk'];
+
+        // ── Som especial ao abrir o poster-lightbox do AOT (sem loop) ──
+        const aotSound = new Audio('assets/sound-effects/aot-roar.mp3');
+        aotSound.loop = false;
+        const AOT_IDS = ['aot', 'rw-aot'];
+
+        // ── Som especial ao abrir o poster-lightbox do One Piece (sem loop) ──
+        const onePieceSound = new Audio('assets/sound-effects/luffy-haki.mp3');
+        onePieceSound.loop = false;
+        const ONE_PIECE_IDS = ['one-piece'];
 
         // ── Sistema de notas (Story / Animation / Characters / Ending) ──
         const RATING_CATEGORIES = [
@@ -5995,6 +5968,30 @@
             } catch (e) {}
           }
 
+          const wasAot = currentItem && AOT_IDS.includes(currentItem.id);
+          const isAot = AOT_IDS.includes(item.id);
+          if (wasAot && currentItem !== item) {
+            aotSound.pause();
+          }
+          if (isAot && currentItem !== item) {
+            try {
+              aotSound.currentTime = 0;
+              aotSound.play().catch(() => {});
+            } catch (e) {}
+          }
+
+          const wasOnePiece = currentItem && ONE_PIECE_IDS.includes(currentItem.id);
+          const isOnePiece = ONE_PIECE_IDS.includes(item.id);
+          if (wasOnePiece && currentItem !== item) {
+            onePieceSound.pause();
+          }
+          if (isOnePiece && currentItem !== item) {
+            try {
+              onePieceSound.currentTime = 0;
+              onePieceSound.play().catch(() => {});
+            } catch (e) {}
+          }
+
           currentItem = item;
           lightboxImg.src = src;
           lightboxImg.alt = title;
@@ -6134,6 +6131,14 @@
           if (currentItem && JJK_IDS.includes(currentItem.id)) {
             jjkSound.pause();
             jjkSound.currentTime = 0;
+          }
+          if (currentItem && AOT_IDS.includes(currentItem.id)) {
+            aotSound.pause();
+            aotSound.currentTime = 0;
+          }
+          if (currentItem && ONE_PIECE_IDS.includes(currentItem.id)) {
+            onePieceSound.pause();
+            onePieceSound.currentTime = 0;
           }
           lightbox.classList.remove('open');
           lightbox.setAttribute('aria-hidden', 'true');
@@ -9626,19 +9631,35 @@
           if (!searchGhostHint) return;
           const val = searchInput.value;
           const remainder = getSlashCommandRemainder(val);
-          if (!remainder) {
-            searchGhostHint.innerHTML = '';
-            return;
-          }
-          const typedSpan = document.createElement('span');
-          typedSpan.className = 'ghost-typed';
-          typedSpan.textContent = val;
-          const suggestionSpan = document.createElement('span');
-          suggestionSpan.className = 'ghost-suggestion';
-          suggestionSpan.textContent = remainder;
+          const isSlash = val[0] === '/';
+          if (searchBoxDrawer) searchBoxDrawer.classList.toggle('slash-mode', isSlash);
+
           searchGhostHint.innerHTML = '';
-          searchGhostHint.appendChild(typedSpan);
-          searchGhostHint.appendChild(suggestionSpan);
+
+          if (isSlash) {
+            // Overlay que espelha o texto já digitado — o input de verdade
+            // fica com o texto transparente (ver .slash-mode no CSS) e é
+            // esse overlay que aparece por baixo, só que com a "/" pintada
+            // na cor do comando que está batendo (ghostRandomPick, setado
+            // dentro de getSlashCommandRemainder logo acima).
+            const typedSpan = document.createElement('span');
+            typedSpan.className = 'ghost-typed';
+            const slashSpan = document.createElement('span');
+            slashSpan.className = 'ghost-typed-slash';
+            slashSpan.textContent = '/';
+            const style = ghostRandomPick ? SLASH_COMMAND_STYLE[ghostRandomPick] : null;
+            if (style && style.color) slashSpan.style.color = style.color;
+            typedSpan.appendChild(slashSpan);
+            typedSpan.appendChild(document.createTextNode(val.slice(1)));
+            searchGhostHint.appendChild(typedSpan);
+          }
+
+          if (remainder) {
+            const suggestionSpan = document.createElement('span');
+            suggestionSpan.className = 'ghost-suggestion';
+            suggestionSpan.textContent = remainder;
+            searchGhostHint.appendChild(suggestionSpan);
+          }
         }
 
         // Dropdown com TODOS os comandos de barra que batem com o que já foi
@@ -9646,17 +9667,17 @@
         // comando), aqui o usuário vê e pode escolher entre /all, /ranking,
         // /watching, /planwatch etc.
         const SLASH_COMMAND_DESCRIPTIONS = {
-          '/all':         'Global Ranking + Watching + Plan to Watch',
-          '/ranking':     'Só o Global Ranking',
-          '/watching':    'Só o Watching Now',
-          '/planwatch':   'Só o Plan to Watch',
-          '/romance':     'Só a lista Romance Anime',
-          '/isekai':      'Só a lista Isekai & Reincarnation',
-          '/sport':       'Só a lista Sport Anime',
-          '/mecha':       'Só a lista Mecha/Cyberpunk',
-          '/incomplete':  'Só a lista Incomplete',
-          '/announced':   'Só a lista Announced Sequels',
-          '/episodes':        'Só a lista Peak Episodes'
+          '/all':         'everyone from the site here',
+          '/ranking':     'global ranking',
+          '/watching':    'watching now anime',
+          '/planwatch':   'plan to watch anime',
+          '/romance':     'romance anime',
+          '/isekai':      'isekai and reincarnation anime',
+          '/sport':       'sport anime',
+          '/mecha':       'mecha/cyberpunk anime',
+          '/incomplete':  'dropped animes',
+          '/announced':   'anime with annouced sequels',
+          '/episodes':    'best episodes watched'
         };
         // Cor e ícone próprios de cada comando, pra cada linha do dropdown
         // ter identidade visual em vez de tudo cinza igual. As cores das
@@ -9715,27 +9736,23 @@
           searchInput.focus();
         }
 
-        // Os 4 comandos "clássicos" (all/ranking/watching/planwatch) ficam
-        // sempre visíveis; o resto (listas de categoria) some atrás de um
-        // "Ver mais" — assim quem só digita "/" não toma um dropdown gigante
-        // com 11 linhas de cara.
-        const PRIMARY_SLASH_COMMANDS = ['/all', '/ranking', '/watching', '/planwatch'];
-
-        function renderSlashCommandItemHtml(c) {
+        function renderSlashCommandItemHtml(c, typed) {
           const style = SLASH_COMMAND_STYLE[c] || {};
+          // Divide o nome do comando em duas partes: o que o usuário já
+          // digitou (ex: "/inco") e o resto (ex: "mplete"). Só a parte já
+          // digitada ganha a cor do comando.
+          const typedLen = (typed || '').length;
+          const typedPart = c.slice(0, typedLen);
+          const restPart = c.slice(typedLen);
+          const nameHtml = `<span class="cmd-name-typed">${typedPart}</span>${restPart}`;
           return `
             <div class="slash-command-item" data-cmd="${c}" role="option" style="--cmd-color: ${style.color || ''}">
               <span class="cmd-text">
-                <span class="cmd-name">${c}</span>
+                <span class="cmd-name">${nameHtml}</span>
                 <span class="cmd-desc">${SLASH_COMMAND_DESCRIPTIONS[c] || ''}</span>
               </span>
             </div>`;
         }
-
-        // Quando true, o próximo blur do input não deve fechar/esconder o
-        // dropdown — usado pra sumir só com o teclado (mobile) ao clicar
-        // "ver mais"/"ver menos", mantendo a lista aberta.
-        let suppressBlurHide = false;
 
         function updateSlashCommandList(val) {
           if (!slashCommandListEl) return;
@@ -9752,33 +9769,10 @@
             return;
           }
 
-          const primaryMatches = matches.filter(c => PRIMARY_SLASH_COMMANDS.includes(c));
-          const secondaryMatches = matches.filter(c => !PRIMARY_SLASH_COMMANDS.includes(c));
-          // Só faz sentido esconder atrás do "Ver mais" quando os dois grupos
-          // aparecem juntos (ex: digitando só "/") — se o usuário já
-          // restringiu pra algo que só bate com as listas de categoria (ex:
-          // "/ro"), mostra direto sem toggle.
-          const hasCollapse = primaryMatches.length > 0 && secondaryMatches.length > 0;
-
-          let html = primaryMatches.map(renderSlashCommandItemHtml).join('');
-          if (hasCollapse) {
-            html += `
-              <div class="slash-command-toggle slash-command-toggle--more" data-role="toggle" role="button" tabindex="0" aria-expanded="false">
-                <span class="toggle-label">Ver mais</span>
-                <svg class="toggle-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
-              </div>
-              <div class="slash-command-extra">${secondaryMatches.map(renderSlashCommandItemHtml).join('')}
-                <div class="slash-command-toggle slash-command-toggle--less" data-role="toggle" role="button" tabindex="0" aria-expanded="true">
-                  <span class="toggle-label">Ver menos</span>
-                  <svg class="toggle-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
-                </div>
-              </div>`;
-          } else {
-            html += secondaryMatches.map(renderSlashCommandItemHtml).join('');
-          }
+          const html = matches.map(c => renderSlashCommandItemHtml(c, lower)).join('');
 
           slashCommandListEl.innerHTML = html;
-          slashCommandListEl.classList.remove('expanded');
+          slashCommandListEl.classList.add('expanded');
           slashCommandListEl.classList.add('visible');
           slashActiveIndex = -1;
           if (searchDrawerInputWrapEl) searchDrawerInputWrapEl.classList.add('dropdown-open');
@@ -9805,32 +9799,12 @@
             });
           });
 
-          // Dois toggles no HTML — "Ver mais" antes do grupo extra (some
-          // quando expande) e "Ver menos" depois dele, já lá no final da
-          // lista (só existe/aparece quando o grupo extra está visível) —
-          // os dois alternam o mesmo estado "expanded".
-          slashCommandListEl.querySelectorAll('[data-role="toggle"]').forEach(toggleEl => {
-            toggleEl.addEventListener('mousedown', (e) => {
-              // mousedown (não click) pra não perder o foco do input antes
-              // da hora — isso dispararia o blur e fecharia a lista inteira.
-              e.preventDefault();
-              const expanded = slashCommandListEl.classList.toggle('expanded');
-              slashCommandListEl.querySelectorAll('[data-role="toggle"]').forEach(t => t.setAttribute('aria-expanded', String(expanded)));
-              updateSlashCommandListHeight();
-              // No mobile, some só com o teclado (o dropdown continua aberto)
-              // — o teclado só volta quando o usuário tocar na barra de
-              // pesquisa de novo.
-              suppressBlurHide = true;
-              searchInput.blur();
-            });
-          });
         }
 
         let debounceId = null;
         let slashActiveIndex = -1;
 
-        // Só os itens realmente visíveis (offsetParent !== null exclui os que
-        // estão escondidos dentro do grupo "Ver mais" ainda fechado).
+        // Só os itens realmente visíveis (offsetParent !== null).
         function getVisibleSlashItems() {
           if (!slashCommandListEl) return [];
           return Array.from(slashCommandListEl.querySelectorAll('.slash-command-item'))
@@ -9870,12 +9844,6 @@
         });
 
         searchInput.addEventListener('blur', () => {
-          if (suppressBlurHide) {
-            // Blur "forçado" pelo toggle "ver mais/ver menos" — só tira o
-            // teclado, o dropdown continua aberto.
-            suppressBlurHide = false;
-            return;
-          }
           // pequeno delay pra permitir que o mousedown do item do dropdown
           // dispare antes da lista sumir
           setTimeout(hideSlashCommandList, 120);
