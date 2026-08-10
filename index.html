@@ -70,6 +70,7 @@
       -webkit-font-smoothing:antialiased;
       scroll-behavior: smooth;
       overflow-x: hidden;
+      overflow-anchor: none;
       position: relative;
     }
 
@@ -1256,6 +1257,30 @@
     .drawer-item.selected .chev {
       opacity: 1;
       color: #0b0b0b;
+    }
+
+    /* ── Item indisponível (em breve) ──
+       Sem highlight/deslocamento no hover (fica visualmente "parado"),
+       só o cursor muda pra "not-allowed" indicando que não é clicável. */
+    .drawer-item.disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .drawer-item.disabled:hover {
+      background: transparent;
+      color: #a9b0bb;
+      padding-left: 18px;
+      cursor: not-allowed;
+    }
+
+    .drawer-item.disabled .chev {
+      opacity: 0.35;
+    }
+
+    .drawer-item.disabled:hover .chev {
+      transform: none;
+      opacity: 0.35;
     }
 
     /* ── DRAWER: TABS ── */
@@ -4049,10 +4074,11 @@
       align-items: stretch;
       min-height: 300px;
       border-radius: 18px;
+      border: 1.5px solid transparent;
       overflow: hidden;
       background: rgba(255,255,255,0.02);
       position: relative;
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
       transform: translateZ(0);
       backface-visibility: hidden;
     }
@@ -4113,9 +4139,9 @@
     /* Hover colorido igual ao resto do site (usa --item-hover-color, azul por padrão nesta lista) */
     li.fav-ep-card[style*="--item-hover-color"]:hover {
       background: color-mix(in srgb, var(--item-hover-color) 8%, transparent);
+      border-color: var(--item-hover-color);
       box-shadow:
         0 12px 32px -8px rgba(0,0,0,0.7),
-        0 0 0 1px var(--item-hover-color),
         0 0 12px -3px var(--item-hover-color);
     }
 
@@ -4916,6 +4942,17 @@
               <span class="drawer-item-text">
                 <span class="label">Peak Episodes</span>
                 <span class="drawer-item-count" data-count-mode="favEpisodes"></span>
+              </span>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg>
+            </button>
+            <button class="drawer-item disabled" data-mode="trueCharacters" role="menuitem" aria-disabled="true" disabled style="--cat-color: #f472b6;">
+              <span class="drawer-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="8" r="5"></circle></svg>
+              </span>
+              <span class="drawer-item-text">
+                <span class="label">True Characters</span>
               </span>
               <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="m9 18 6-6-6-6"></path>
@@ -8532,23 +8569,7 @@
             const animeId = this.id;
 
             if (canNavAll) {
-              currentCategory = 'all';
-              render(); 
-
-              requestAnimationFrame(() => {
-                const targetEl = document.getElementById(animeId);
-                if (targetEl) {
-                  if (typeof window.triggerExpand === 'function') {
-                    window.triggerExpand().then(() => {
-                      setTimeout(() => {
-                        scrollToElement(targetEl);
-                      }, 60);
-                    });
-                  } else {
-                    scrollToElement(targetEl);
-                  }
-                }
-              });
+              navigateToAnimeInCategory(animeId, 'all');
             }
           });
         });
@@ -8824,7 +8845,46 @@
       }
 
       function scrollToElement(targetEl) {
+        // No mobile, o clique num resultado de busca costuma disparar várias
+        // mudanças de layout ao mesmo tempo (fecha o drawer = tira o
+        // position:fixed do body, às vezes troca de categoria = re-renderiza
+        // a lista inteira, imagens carregando...). Se o navegador decidir
+        // "corrigir" a posição de rolagem sozinho durante esse instante (ex.:
+        // scroll anchoring, ou o reflow de tirar o position:fixed), essa
+        // correção também herda o "scroll-behavior: smooth" global do CSS e
+        // acaba brigando, quadro a quadro, com o scrollIntoView que pedimos
+        // abaixo — o resultado, às vezes, é o clique simplesmente "não levar
+        // pro card". Travar o scroll-behavior em "auto" durante essa janela
+        // faz qualquer ajuste do navegador acontecer na hora (sem animação),
+        // sobrando só a nossa rolagem pra realmente animar.
+        const htmlEl = document.documentElement;
+        const bodyEl = document.body;
+        const prevHtmlBehavior = htmlEl.style.scrollBehavior;
+        const prevBodyBehavior = bodyEl.style.scrollBehavior;
+        htmlEl.style.scrollBehavior = 'auto';
+        bodyEl.style.scrollBehavior = 'auto';
+        const restoreScrollBehavior = () => {
+          htmlEl.style.scrollBehavior = prevHtmlBehavior;
+          bodyEl.style.scrollBehavior = prevBodyBehavior;
+        };
+
         targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Confere se o card realmente ficou visível: se algo atrapalhou a
+        // rolagem acima, tenta de novo (dessa vez instantâneo, sem chance de
+        // ser interrompido) em vez de deixar o usuário achando que o clique
+        // não fez nada.
+        setTimeout(() => {
+          const rect = targetEl.getBoundingClientRect();
+          const viewportH = window.innerHeight || document.documentElement.clientHeight;
+          const centerY = rect.top + rect.height / 2;
+          const landedOk = centerY > 0 && centerY < viewportH;
+          if (!landedOk) {
+            targetEl.scrollIntoView({ behavior: 'auto', block: 'center' });
+          }
+          restoreScrollBehavior();
+        }, 550);
+
         document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));        
         setTimeout(() => {
           targetEl.classList.add('highlight-active');
@@ -8844,18 +8904,30 @@
       function navigateToAnimeInCategory(targetId, targetCategory) {
         if (!targetId || !targetCategory) return;
 
+        // Tenta achar o card algumas vezes antes de desistir: no mobile,
+        // trocar de categoria (render() inteiro) e fechar o drawer podem
+        // competir pelo mesmo frame, e o card às vezes ainda não está no DOM
+        // no primeiro requestAnimationFrame — antes isso fazia a busca
+        // simplesmente não levar a lugar nenhum, sem nenhum aviso. Insistindo
+        // por um tempinho cobre esse caso sem atrasar o caminho normal (acha
+        // de primeira na grande maioria das vezes).
+        const findAndJump = (attemptsLeft) => {
+          const targetEl = document.getElementById(targetId);
+          if (!targetEl) {
+            if (attemptsLeft > 0) setTimeout(() => findAndJump(attemptsLeft - 1), 80);
+            return;
+          }
+          if (typeof window.triggerExpand === 'function') {
+            window.triggerExpand().then(() => {
+              setTimeout(() => scrollToElement(targetEl), 60);
+            });
+          } else {
+            scrollToElement(targetEl);
+          }
+        };
+
         const jumpTo = () => {
-          requestAnimationFrame(() => {
-            const targetEl = document.getElementById(targetId);
-            if (!targetEl) return;
-            if (typeof window.triggerExpand === 'function') {
-              window.triggerExpand().then(() => {
-                setTimeout(() => scrollToElement(targetEl), 60);
-              });
-            } else {
-              scrollToElement(targetEl);
-            }
-          });
+          requestAnimationFrame(() => findAndJump(6));
         };
 
         if (currentCategory !== targetCategory) {
