@@ -3788,10 +3788,11 @@
        deixar claro que é uma subdivisão, não uma temporada nova. */
     .watch-progress-cour-mark {
       position: absolute;
-      top: 20%;
-      bottom: 20%;
+      top: 25%;
+      bottom: 25%;
       width: 1.5px;
-      background: rgba(255,255,255,0.6);
+      background: rgba(3,3,3,0.55);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.4);
       border-radius: 1px;
       z-index: 2;
       pointer-events: none;
@@ -5956,20 +5957,27 @@
           const title = titleEl ? titleEl.textContent : (img.alt || '');
           const rankPos = getRankPosition(item);
 
-          // Modo simples: animes que NÃO usam myranks nem watchingnow (ex:
-          // forwatch-images, bestepisodes) mostram só a imagem ampliada, com
-          // a categoria acima e a posição/nome abaixo. Quando o card tem
-          // link pro Anime-Planet (plantowatch, announced-unwatched), mostra
-          // um botão pra ele logo abaixo da imagem. O watchingnow usa o
-          // painel completo (igual ao myranks), com esse mesmo botão no
-          // lugar do bloco do MyAnimeList (ver renderMalScores).
+          if (title) setPageTitle(`${DEFAULT_PAGE_TITLE} - ${title}`);
+
+          // Modo simples: animes que NÃO usam myranks nem watchingnow/plan-
+          // to-watch (ex: announced-unwatched, bestepisodes) mostram só a
+          // imagem ampliada, com a categoria acima e a posição/nome abaixo.
+          // Watching Now e Plan to Watch usam o painel completo (igual ao
+          // myranks), com os botões de Anime-Planet/Crunchyroll/MAL no
+          // lugar do bloco de notas do MyAnimeList (ver renderMalScores).
           const isWatchingNow = item.hasAttribute('data-watching-now');
-          const isMyRanks = /myranks\//.test(src) && !isWatchingNow;
+          // Plan to Watch usa o mesmo painel completo do Watching Now (em
+          // vez do modo simples, só com a imagem ampliada) — mostra os
+          // botões de Anime-Planet/Crunchyroll/MAL e os campos de meta,
+          // igual ao Watching Now (ver renderMeta/renderMalScores abaixo).
+          const isPlanToWatch = item.hasAttribute('data-plan-to-watch');
+          const isRichPanel = isWatchingNow || isPlanToWatch;
+          const isMyRanks = /myranks\//.test(src) && !isRichPanel;
           const animePlanetUrl = item.getAttribute('data-anime-planet-url')
             || item.getAttribute('data-watchnow-anime-planet-url');
           const crunchyrollUrl = item.getAttribute('data-crunchyroll-url');
           const watchNowMalUrl = item.getAttribute('data-watchnow-mal-url');
-          lightbox.classList.toggle('simple-mode', !(isMyRanks || isWatchingNow));
+          lightbox.classList.toggle('simple-mode', !(isMyRanks || isRichPanel));
 
           if (lightboxSimpleLink) {
             lightboxSimpleLink.innerHTML = '';
@@ -6139,8 +6147,8 @@
             }
           }
 
-          renderMeta(item.id, isWatchingNow);
-          renderMalScores(item.id, isWatchingNow, animePlanetUrl, crunchyrollUrl, watchNowMalUrl);
+          renderMeta(item.id, isRichPanel);
+          renderMalScores(item.id, isRichPanel, animePlanetUrl, crunchyrollUrl, watchNowMalUrl);
           // renderRatings(item.id); // sistema de notas desativado do site (ver comentário no HTML acima)
         }
 
@@ -6158,6 +6166,45 @@
           if (idx === -1) return;
           const nextIdx = (idx + step + items.length) % items.length;
           swapItem(items[nextIdx]);
+        }
+
+        const DEFAULT_PAGE_TITLE = document.title;
+
+        // ── Carrossel (marquee) no título da aba ──
+        // Quando o nome do anime + prefixo passa do tamanho definido, o
+        // título rola uma vez da esquerda pra direita (revelando o texto
+        // até o fim) e depois para, voltando a ficar parado no começo.
+        const TITLE_MARQUEE_MAX_LEN = 24;
+        const TITLE_MARQUEE_GAP = '        '; // espaço em branco no fim, antes de parar
+        const TITLE_MARQUEE_SPEED_MS = 350;
+        let titleMarqueeInterval = null;
+
+        function stopTitleMarquee() {
+          if (titleMarqueeInterval) {
+            clearInterval(titleMarqueeInterval);
+            titleMarqueeInterval = null;
+          }
+        }
+
+        function setPageTitle(fullTitle) {
+          stopTitleMarquee();
+          if (!fullTitle || fullTitle.length <= TITLE_MARQUEE_MAX_LEN) {
+            document.title = fullTitle || DEFAULT_PAGE_TITLE;
+            return;
+          }
+          const scrollText = fullTitle + TITLE_MARQUEE_GAP;
+          const maxPos = scrollText.length - TITLE_MARQUEE_MAX_LEN;
+          let pos = 0;
+          document.title = scrollText.slice(0, TITLE_MARQUEE_MAX_LEN);
+          titleMarqueeInterval = setInterval(() => {
+            pos++;
+            if (pos > maxPos) {
+              stopTitleMarquee();
+              document.title = fullTitle.slice(0, TITLE_MARQUEE_MAX_LEN);
+              return;
+            }
+            document.title = scrollText.slice(pos, pos + TITLE_MARQUEE_MAX_LEN);
+          }, TITLE_MARQUEE_SPEED_MS);
         }
 
         function openLightbox(item) {
@@ -6185,6 +6232,8 @@
             onePieceSound.pause();
             onePieceSound.currentTime = 0;
           }
+          stopTitleMarquee();
+          document.title = DEFAULT_PAGE_TITLE;
           lightbox.classList.remove('open');
           lightbox.setAttribute('aria-hidden', 'true');
           unlockBodyScroll();
@@ -6215,8 +6264,9 @@
           if (!item) return;
 
           const isAllAnimesCard = !item.hasAttribute('data-anime-planet-url') && !item.hasAttribute('data-nav-all');
+          const isPlanToWatchCard = item.hasAttribute('data-plan-to-watch');
 
-          const trigger = isAllAnimesCard ? item : e.target.closest('.poster-wrap');
+          const trigger = (isAllAnimesCard || isPlanToWatchCard) ? item : e.target.closest('.poster-wrap');
           if (!trigger || !item.contains(trigger)) return;
 
           e.preventDefault();
@@ -6601,7 +6651,7 @@
         { id: "hxh", img: "myranks-images/myranks/hxh.webp", title: "Hunter x Hunter (2011)", info: "1 temporada: 148 episódios" , studio: "MADHOUSE", airedSeason: "2011-2014", rewatch: "2 Times", mal: [ { label: "1 temporada", episodes: 148, note: 10 } ] },
         { id: "frieren", img: "myranks-images/myranks/frieren.webp", title: "Frieren: Beyond Journey's End", info: "2 temporadas: 38 episódios" , studio: "MADHOUSE", airedSeason: "2023-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 28, note: 10 }, { label: "2ª temporada", episodes: 10, note: 9 } ] },
         { id: "one-piece", img: "myranks-images/myranks/one-piece.webp", title: "One Piece", info: "Muitas temporadas: 1169 episódios" , studio: "Toei Animation", airedSeason: "1999-?", rewatch: "Impossible", mal: [ { label: "Muitas temporadas", episodes: 1169, note: 10 },{ label: "Film: Z", episodes: "1h47m", note: 7 },{ label: "Film: Gold", episodes: "2h0m", note: 7 },{ label: "Stampede", episodes: "1h41m", note: 7 },{ label: "Film: Red", episodes: "1h56m", note: 8 },{spacer: true},{ label: "Monsters: 103 Mercies Dragon Damnation", episodes: "ONA", note: 7 },{ label: "Fan Letter", episodes: "TV Special", note: 8 },{ label: "Heroines", episodes: "TV Special", note: 7 }, ] },
-        { id: "jjk", img: "myranks-images/myranks/jjk.webp", title: "Jujutsu Kaisen", info: "3 temporadas: 59 episódios <br>1 Filme: 1h45m" , studio: "MAPPA", airedSeason: "2020-?", rewatch: "3rd Season Not Yet", mal: [ { label: "1ª temporada", episodes: 24, note: 8 }, { label: "Movie: Jujutsu Kaisen 0", episodes: "1h44m", note: 8 }, { label: "2ª temporada", episodes: 23, note: 9 }, { label: "3ª temporada", episodes: 12, note: 9 }, ] },
+        { id: "jjk", img: "myranks-images/myranks/jjk.webp", title: "Jujutsu Kaisen", info: "3 temporadas: 59 episódios <br>1 Filme: 1h45m" , studio: "MAPPA", airedSeason: "2020-?", rewatch: "3rd Season Not Yet", mal: [ { label: "1ª temporada", episodes: 24, note: 8 }, { label: "Movie: Jujutsu Kaisen 0", episodes: "1h44m", note: 8 }, { label: "2ª temporada", episodes: 23, note: 9 }, { label: "3ª temporada", episodes: 12, note: 9 } ] },
         { id: "haikyuu", img: "myranks-images/myranks/haikyuu.webp", title: "Haikyu!!", info: "4 temporadas: 85 episódios <br>1 Filme: 1h24m" , studio: "Production I.G", airedSeason: "2014-?", rewatch: "2 Times", mal: [ { label: "1ª temporada", episodes: 25, note: 8 }, { label: "2ª temporada", episodes: 25, note: 8 }, { label: "3ª temporada", episodes: 10, note: 10 }, { label: "4ª temporada I", episodes: 13, note: 8 }, { label: "4ª temporada II", episodes: 12, note: 9 }, { label: "Movie 5: The Dumpster Battle", episodes: "1h24m", note: 8 } ] },
         { id: "oshi-no-ko", img: "myranks-images/myranks/oshi-no-ko.webp", title: "Oshi no Ko", info: "3 temporadas: 35 episódios" , studio: "Doga Kobo", airedSeason: "2023-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 11, note: 8 }, { label: "2ª temporada", episodes: 13, note: 7 }, { label: "3ª temporada", episodes: 11, note: 9 } ] },
         { id: "mushoku", img: "myranks-images/myranks/mushoku.webp", title: "Mushoku Tensei: Jobless Reincarnation", info: "2 temporadas: 47 episódios" , studio: "Studio Bind", airedSeason: "2021-?", rewatch: "First 2 Seasons", mal: [ { label: "1ª temporada I", episodes: 11, note: 8 }, { label: "1ª temporada II", episodes: 12, note: 8 }, { label: "2ª temporada I", episodes: 12, note: 7 }, { label: "2ª temporada II", episodes: 12, note: 8 } ] },
@@ -6626,11 +6676,11 @@
         { id: "your-lie-in-april", img: "myranks-images/myranks/your-lie-in-april.webp", title: "Your Lie in April", info: "22 episódios" , studio: "A-1 Pictures", airedSeason: "2014-2015", rewatch: "Impossible", mal: [ { label: "1 temporada", episodes: 22, note: 8 } ] },
         { id: "demon-slayer", img: "myranks-images/myranks/demon-slayer.webp", title: "Demon Slayer: Kimetsu no Yaiba", info: "5 temporadas: 63 episódios <br>1 Filme: 2h35m" , studio: "ufotable", airedSeason: "2019-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 26, note: 7 }, { label: "2ª temporada", episodes: 7, note: 7 }, { label: "3ª temporada", episodes: 11, note: 8 }, { label: "4ª temporada", episodes: 11, note: 7 }, { label: "5ª temporada", episodes: 8, note: 7 }, { label: "Movie: Infinity Castle Part 1", episodes: "2h35m", note: 8 } ] },
         { id: "shangri-la-frontier", img: "myranks-images/myranks/shangri-la-frontier.webp", title: "Shangri-La Frontier", info: "2 temporadas: 50 episódios" , studio: "C2C", airedSeason: "2023-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 25, note: 7 }, { label: "2ª temporada", episodes: 25, note: 7 } ] },
-        { id: "wistoria", img: "myranks-images/myranks/wistoria.webp", title: "Wistoria: Wand and Sword", info: "(~) 1 temporada: 12 episódios" , studio: "Bandai Filmworks / Actas", airedSeason: "2024-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
         { id: "akame-ga-kill", img: "myranks-images/myranks/akame-ga-kill.webp", title: "Akame ga Kill", info: "24 episódios" , studio: "White Fox", airedSeason: "2024", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 24, note: 8 } ] },
+        { id: "opposites", img: "myranks-images/myranks/opposites.webp", title: "You and I are Polar Opposites", info: "1 temporada: 12 episódios" , studio: "Lapin Track", airedSeason: "2026-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 8 } ] },
+        { id: "wistoria", img: "myranks-images/myranks/wistoria.webp", title: "Wistoria: Wand and Sword", info: "(~) 1 temporada: 12 episódios" , studio: "Bandai Filmworks / Actas", airedSeason: "2024-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
         { id: "roshidere", img: "myranks-images/myranks/roshidere.webp", title: "Alya Sometimes Hides Her Feelings in Russian", info: "1 temporada: 12 episódios" , studio: "Doga Kobo", airedSeason: "2024-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 12, note: 7 } ] },
         { id: "mashle", img: "myranks-images/myranks/mashle.webp", title: "Mashle: Magic and Muscles", info: "2 temporadas: 24 episódios" , studio: "A-1 Pictures", airedSeason: "2023-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, note: 7 } ] },
-        { id: "opposites", img: "myranks-images/myranks/opposites.webp", title: "You and I are Polar Opposites", info: "1 temporada: 12 episódios" , studio: "Lapin Track", airedSeason: "2026-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 8 } ] },
         { id: "blue-box", img: "myranks-images/myranks/blue-box.webp", title: "Blue Box", info: "1 temporada: 25 episódios" , studio: "Telecom / Animation Film", airedSeason: "2024-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 25, note: 8 } ] },
         { id: "cinderella-gray", img: "myranks-images/myranks/cinderella-gray.webp", title: "Uma Musume: Cinderella Gray", info: "23 episódios" , studio: "CygamesPictures", airedSeason: "2025", rewatch: "No", mal: [ { label: "1ª temporada I", episodes: 13, note: 8 }, { label: "1ª temporada II", episodes: 10, note: 7 } ] },
         { id: "bunny-girl-senpai", img: "myranks-images/myranks/bunny-girl-senpai.webp", title: "Rascal Does Not Dream of Bunny Girl Senpai", info: "(~~~) 1ª temporada: 13 episódios" , studio: "CloverWorks", airedSeason: "2018-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 13, note: 8 }, { label: "Movie 1: Rascal Does Not Dream of a Dreaming Girl", episodes: "1h30m", unwatched: true }, { label: "Movie 2: Rascal Does Not Dream of a Sister Venturing Out", episodes: "1h13m", unwatched: true }, { label: "Movie 3: Rascal Does Not Dream of a Knapsack Kid", episodes: "1h14m", unwatched: true }, , { label: "2ª temporada", episodes: 13, unwatched: true } ] },
@@ -6696,31 +6746,31 @@
         { id: "rw-aot", img: "watchingnow-images/watchingnow/aot.webp", title: "Attack on Titan", info: "4 temporadas: 94 episódios", season: null, studio: "MAPPA", airedSeason: "2022", seasons: [25, 12, 22, 35], cours: [null, null, [12, 10], [16, 12]], url: "https://www.anime-planet.com/anime/attack-on-titan-the-final-season-part-ii", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GR751KNZY/attack-on-titan", malUrl: "https://myanimelist.net/anime/48583/Shingeki_no_Kyojin__The_Final_Season_Part_2" },
 
         // Summer 2026
-        { id: "mushoku-3", img: "watchingnow-images/watchingnow/mushoku.webp", title: "Mushoku Tensei: Jobless Reincarnation", info: "3ª temporada: 14 episódios - Progress: 3/14", season: "summer-2026", studio: "Studio Bind", airedSeason: "2026", url: "https://www.anime-planet.com/anime/mushoku-tensei-jobless-reincarnation-3rd-season", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G24H1N3MP/mushoku-tensei-jobless-reincarnation", malUrl: "https://myanimelist.net/anime/59193/Mushoku_Tensei_III__Isekai_Ittara_Honki_Dasu" },
-        { id: "grand-blue-3", img: "watchingnow-images/watchingnow/grand-blue.webp", title: "Grand Blue", info: "3ª temporada: 12 episódios - Progress: 1/12", season: "summer-2026", studio: " Zero-G / Saber Works", airedSeason: "2026", url: "https://www.anime-planet.com/anime/grand-blue-season-3", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN94W/grand-blue-dreaming", malUrl: "https://myanimelist.net/anime/62542/Grand_Blue_Season_3" },
-        { id: "opposites-2", img: "watchingnow-images/watchingnow/opposites.webp", title: "You and I are Polar Opposites", info: "2ª temporada: 13 episódios - Progress: 1/13", season: "summer-2026", studio: "Lapin Track", airedSeason: "2026", url: "https://www.anime-planet.com/anime/you-and-i-are-polar-opposites-2nd-season", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00365624/you-and-i-are-polar-opposites", malUrl: "https://myanimelist.net/anime/63832/Seihantai_na_Kimi_to_Boku_2nd_Season" },
-        { id: "smoking", img: "watchingnow-images/watchingnow/smoking.webp", title: "Smoking Behind the Supermarket with You", info: "12 episódios - Progress: -/12", season: "summer-2026", studio: "Asahi Production", airedSeason: "2026", url: "https://www.anime-planet.com/anime/smoking-behind-the-supermarket-with-you", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378116/smoking-behind-the-supermarket-with-you", malUrl: "https://myanimelist.net/anime/62076/Super_no_Ura_de_Yani_Suu_Futari" },
-        { id: "love-unseen", img: "watchingnow-images/watchingnow/love-unseen.webp", title: "Love Unseen Beneath the Clear Night Sky", info: "12 episódios - Progress: -/12", season: "summer-2026", studio: "Makaria", airedSeason: "2026", url: "https://www.anime-planet.com/anime/love-unseen-beneath-the-clear-night-sky", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378087/love-unseen-beneath-the-clear-night-sky", malUrl: "https://myanimelist.net/anime/62936/Toumei_na_Yoru_ni_Kakeru_Kimi_to_Me_ni_Mienai_Koi_wo_Shita" },
-        { id: "exiled-heavy-knight", img: "watchingnow-images/watchingnow/exiled-heavy-knight.webp", title: "The Exiled Heavy Knight Knows How to Game the System", info: "26 episódios -Progress: -/26", season: "summer-2026", studio: "GoHands", airedSeason: "2026", url: "https://www.anime-planet.com/anime/the-exiled-heavy-knight-knows-how-to-game-the-system", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378018/the-exiled-heavy-knight-knows-how-to-game-the-system", malUrl: "https://myanimelist.net/anime/59741/Tsuihou_sareta_Tensei_Juukishi_wa_Game_Chishiki_de_Musou_suru" },
-        { id: "tomb-raider-king", img: "watchingnow-images/watchingnow/tomb-raider-king.webp", title: "Tomb Raider King", info: "12 episódios - Progress: -/12", season: "summer-2026", studio: "Studio Eek", airedSeason: "2026", url: "https://www.anime-planet.com/anime/tomb-raider-king", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378123/tomb-raider-king", malUrl: "https://myanimelist.net/anime/63316/Dogulwang" },
-        { id: "sparks-of-tomorrow", img: "watchingnow-images/watchingnow/sparks-of-tomorrow.webp", title: "Sparks of Tomorrow", info: "13 episódios - Progress: -/13", season: "summer-2026", studio: "Kyoto Animation", airedSeason: "2026", url: "https://www.anime-planet.com/anime/sparks-of-tomorrow", crunchyroll: "", malUrl: "https://myanimelist.net/anime/62856/Nijusseiki_Denki_Mokuroku__Eureka_Evrika" },
-        { id: "the-100-girlfriends-3", img: "watchingnow-images/watchingnow/the-100-girlfriends.webp", title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You", info: "3ª temporada: NaN episódios - Progress: -/-", season: "summer-2026", studio: "Bibury Animation Studios", airedSeason: "2026", url: "https://www.anime-planet.com/anime/the-100-girlfriends-who-really-really-really-really-really-love-you-season-3", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN933/the-100-girlfriends-who-really-really-really-really-really-love-you", malUrl: "https://myanimelist.net/anime/62811/Kimi_no_Koto_ga_Daidaidaidaidaisuki_na_100-nin_no_Kanojo_3rd_Season" },
+        { id: "mushoku-3", img: "watchingnow-images/watchingnow/mushoku.webp", title: "Mushoku Tensei: Jobless Reincarnation", info: "3ª temporada: 14 episódios", season: "summer-2026", studio: "Studio Bind", airedSeason: "2026", seasons: [23, 24, 14], cours: [[11, 12], [12, 12], null], url: "https://www.anime-planet.com/anime/mushoku-tensei-jobless-reincarnation-3rd-season", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G24H1N3MP/mushoku-tensei-jobless-reincarnation", malUrl: "https://myanimelist.net/anime/59193/Mushoku_Tensei_III__Isekai_Ittara_Honki_Dasu" },
+        { id: "grand-blue-3", img: "watchingnow-images/watchingnow/grand-blue.webp", title: "Grand Blue", info: "3ª temporada: 12 episódios", season: "summer-2026", studio: " Zero-G / Saber Works", airedSeason: "2026", seasons: [12, 12, 12], url: "https://www.anime-planet.com/anime/grand-blue-season-3", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN94W/grand-blue-dreaming", malUrl: "https://myanimelist.net/anime/62542/Grand_Blue_Season_3" },
+        { id: "opposites-2", img: "watchingnow-images/watchingnow/opposites.webp", title: "You and I are Polar Opposites", info: "2ª temporada: 13 episódios", season: "summer-2026", studio: "Lapin Track", airedSeason: "2026", seasons: [12, 12], url: "https://www.anime-planet.com/anime/you-and-i-are-polar-opposites-2nd-season", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00365624/you-and-i-are-polar-opposites", malUrl: "https://myanimelist.net/anime/63832/Seihantai_na_Kimi_to_Boku_2nd_Season" },
+        { id: "smoking", img: "watchingnow-images/watchingnow/smoking.webp", title: "Smoking Behind the Supermarket with You", info: "12 episódios", season: "summer-2026", studio: "Asahi Production", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/smoking-behind-the-supermarket-with-you", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378116/smoking-behind-the-supermarket-with-you", malUrl: "https://myanimelist.net/anime/62076/Super_no_Ura_de_Yani_Suu_Futari" },
+        { id: "love-unseen", img: "watchingnow-images/watchingnow/love-unseen.webp", title: "Love Unseen Beneath the Clear Night Sky", info: "12 episódios", season: "summer-2026", studio: "Makaria", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/love-unseen-beneath-the-clear-night-sky", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378087/love-unseen-beneath-the-clear-night-sky", malUrl: "https://myanimelist.net/anime/62936/Toumei_na_Yoru_ni_Kakeru_Kimi_to_Me_ni_Mienai_Koi_wo_Shita" },
+        { id: "exiled-heavy-knight", img: "watchingnow-images/watchingnow/exiled-heavy-knight.webp", title: "The Exiled Heavy Knight Knows How to Game the System", info: "26 episódios", season: "summer-2026", studio: "GoHands", airedSeason: "2026", seasons: [26], url: "https://www.anime-planet.com/anime/the-exiled-heavy-knight-knows-how-to-game-the-system", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378018/the-exiled-heavy-knight-knows-how-to-game-the-system", malUrl: "https://myanimelist.net/anime/59741/Tsuihou_sareta_Tensei_Juukishi_wa_Game_Chishiki_de_Musou_suru" },
+        { id: "tomb-raider-king", img: "watchingnow-images/watchingnow/tomb-raider-king.webp", title: "Tomb Raider King", info: "12 episódios", season: "summer-2026", studio: "Studio Eek", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/tomb-raider-king", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378123/tomb-raider-king", malUrl: "https://myanimelist.net/anime/63316/Dogulwang" },
+        { id: "sparks-of-tomorrow", img: "watchingnow-images/watchingnow/sparks-of-tomorrow.webp", title: "Sparks of Tomorrow", info: "13 episódios", season: "summer-2026", studio: "Kyoto Animation", airedSeason: "2026", seasons: [13], url: "https://www.anime-planet.com/anime/sparks-of-tomorrow", crunchyroll: "", malUrl: "https://myanimelist.net/anime/62856/Nijusseiki_Denki_Mokuroku__Eureka_Evrika" },
+        { id: "the-100-girlfriends-3", img: "watchingnow-images/watchingnow/the-100-girlfriends.webp", title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You", info: "3ª temporada: NaN episódios - Progress -/-", season: "summer-2026", studio: "Bibury Animation Studios", airedSeason: "2026", url: "https://www.anime-planet.com/anime/the-100-girlfriends-who-really-really-really-really-really-love-you-season-3", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN933/the-100-girlfriends-who-really-really-really-really-really-love-you", malUrl: "https://myanimelist.net/anime/62811/Kimi_no_Koto_ga_Daidaidaidaidaisuki_na_100-nin_no_Kanojo_3rd_Season" },
         { id: "ghost-in-the-shell", img: "watchingnow-images/watchingnow/ghost-in-the-shell.webp", title: "The Ghost in the Shell", info: "NaN episódios - Progress: -/-", season: "summer-2026", studio: "Science SARU", airedSeason: "2026", url: "https://www.anime-planet.com/anime/the-ghost-in-the-shell", crunchyroll: "", malUrl: "https://myanimelist.net/anime/58929/Koukaku_Kidoutai_TV" },
-        { id: "i-became-a-legend", img: "watchingnow-images/watchingnow/i-became-a-legend.webp", title: "I Became a Legend After My 10 Year-Long Last Stand", info: "12 episódios - Progress: -/12", season: "summer-2026", studio: "Gekkou", airedSeason: "2026", url: "https://www.anime-planet.com/anime/i-became-a-legend-after-my-10-year-long-last-stand", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371671/i-became-a-legend-after-my-10-year-long-last-stand", malUrl: "https://myanimelist.net/anime/62617/Koko_wa_Ore_ni_Makasete_Saki_ni_Ike_to_Itte_kara_10-nen_ga_Tattara_Densetsu_ni_Natteita" },
-        { id: "wrong-about-her", img: "watchingnow-images/watchingnow/wrong-about-her.webp", title: "Oh Boy, Was I Wrong About Her", info: "12 episódios - Progress: -/12", season: "summer-2026", studio: "Project No.9", airedSeason: "2026", url: "https://www.anime-planet.com/anime/oh-boy-was-i-wrong-about-her", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378120/oh-boy-was-i-wrong-about-her", malUrl: "https://myanimelist.net/anime/56735/Tenkou-saki_no_Seiso_Karen_na_Bishoujo_ga_Mukashi_Danshi_to_Omotte_Issho_ni_Asonda_Osananajimi_Datta_Ken" },
+        { id: "i-became-a-legend", img: "watchingnow-images/watchingnow/i-became-a-legend.webp", title: "I Became a Legend After My 10 Year-Long Last Stand", info: "12 episódios", season: "summer-2026", studio: "Gekkou", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/i-became-a-legend-after-my-10-year-long-last-stand", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371671/i-became-a-legend-after-my-10-year-long-last-stand", malUrl: "https://myanimelist.net/anime/62617/Koko_wa_Ore_ni_Makasete_Saki_ni_Ike_to_Itte_kara_10-nen_ga_Tattara_Densetsu_ni_Natteita" },
+        { id: "wrong-about-her", img: "watchingnow-images/watchingnow/wrong-about-her.webp", title: "Oh Boy, Was I Wrong About Her", info: "12 episódios", season: "summer-2026", studio: "Project No.9", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/oh-boy-was-i-wrong-about-her", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378120/oh-boy-was-i-wrong-about-her", malUrl: "https://myanimelist.net/anime/56735/Tenkou-saki_no_Seiso_Karen_na_Bishoujo_ga_Mukashi_Danshi_to_Omotte_Issho_ni_Asonda_Osananajimi_Datta_Ken" },
         { id: "chainsmoker-cat", img: "watchingnow-images/watchingnow/chainsmoker-cat.webp", title: "Chainsmoker Cat", info: "NaN episódios - Progress: -/-", season: "summer-2026", studio: "Bibury Animation Studios", airedSeason: "2026", url: "https://www.anime-planet.com/anime/chainsmoker-cat", crunchyroll: "", malUrl: "https://myanimelist.net/anime/63403/Yani_Neko" },
         { id: "overshadowed-to-overpowered", img: "watchingnow-images/watchingnow/overshadowed-to-overpowered.webp", title: "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage", info: "NaN episódios - Progress: -/-", season: "summer-2026", studio: "EMT Squared", airedSeason: "2026", url: "https://www.anime-planet.com/anime/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378115/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage", malUrl: "https://myanimelist.net/anime/63508/Rakudai_Kenja_no_Gakuin_Musou__Nidome_no_Tensei_S-Rank_Cheat_Majutsushi_Boukenroku" },
 
         // Spring 2026
-        { id: "tensei-shitara-slime-4", img: "watchingnow-images/watchingnow/tensei-shitara-slime.webp", title: "That Time I Got Reincarnated as a Slime", info: "4ª temporada: 24 episódios", season: "spring-2026", studio: "8-Bit", airedSeason: "2026", seasons: [24], url: "https://www.anime-planet.com/anime/that-time-i-got-reincarnated-as-a-slime-season-4", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYZJ43JMR/that-time-i-got-reincarnated-as-a-slime", malUrl: "https://myanimelist.net/anime/59970/Tensei_shitara_Slime_Datta_Ken_4th_Season" },
-        { id: "wistoria-2", img: "watchingnow-images/watchingnow/wistoria.webp", title: "Wistoria: Wand and Sword", info: "2ª temporada: 11 episódios - Progress: 11/12", season: "spring-2026", studio: "Actas / BN Pictures", airedSeason: "2026", url: "https://www.anime-planet.com/anime/wistoria-wand-and-sword-2nd-season", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GW4HM7WK9/wistoria-wand-and-sword", malUrl: "https://myanimelist.net/anime/59983/Tsue_to_Tsurugi_no_Wistoria_Season_2" },
-        { id: "imfwtspgimc", img: "watchingnow-images/watchingnow/imfwtspgimc.webp", title: "I Made Friends with the Second Prettiest Girl in My Class", info: "10 episódios - Progress: 10/12", season: "spring-2026", studio: "CONNECT", airedSeason: "2026", url: "https://www.anime-planet.com/anime/i-made-friends-with-the-second-prettiest-girl-in-my-class", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371673/i-made-friends-with-the-second-prettiest-girl-in-my-class", malUrl: "https://myanimelist.net/anime/56734/Class_de_2-banme_ni_Kawaii_Onnanoko_to_Tomodachi_ni_Natta" },
-        { id: "farming-life-2", img: "watchingnow-images/watchingnow/farming-life.webp", title: "Farming Life in Another World", info: "2ª temporada: 12 episódios - Progress: 7/12", season: "spring-2026", studio: "Zero-G", airedSeason: "2026", url: "https://www.anime-planet.com/anime/farming-life-in-another-world-2", crunchyroll: "", malUrl: "https://myanimelist.net/anime/62146/Isekai_Nonbiri_Nouka_2" },
-        { id: "otaku-gyaru", img: "watchingnow-images/watchingnow/otaku-gyaru.webp", title: "Gals Can't Be Kind to Otaku", info: "12 episódios - Progress: 7/12", season: "spring-2026", studio: "TMS Entertainment", airedSeason: "2026", url: "https://www.anime-planet.com/anime/gals-cant-be-kind-to-otaku", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371662/gals-cant-be-kind-to-otaku", malUrl: "https://myanimelist.net/anime/62604/Otaku_ni_Yasashii_Gal_wa_Inai" },
-        { id: "klutzy-class-monitor", img: "watchingnow-images/watchingnow/klutzy-class-monitor.webp", title: "The Klutzy Class Monitor and the Girl with the Short Skirt", info: "12 episódios - Progress: 9/12", season: "spring-2026", studio: "Zero-G", airedSeason: "2026", url: "https://www.anime-planet.com/anime/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371923/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt", malUrl: "https://myanimelist.net/anime/61425/Ponkotsu_Fuuki_Iin_to_Skirt-take_ga_Futekisetsu_na_JK_no_Hanashi" },
+        { id: "tensei-shitara-slime-4", img: "watchingnow-images/watchingnow/tensei-shitara-slime.webp", title: "That Time I Got Reincarnated as a Slime", info: "4ª temporada: 24 episódios", season: "spring-2026", studio: "8-Bit", airedSeason: "2026", seasons: [24, 24, 24, 24], cours: [null,[12, 12], null, null], url: "https://www.anime-planet.com/anime/that-time-i-got-reincarnated-as-a-slime-season-4", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYZJ43JMR/that-time-i-got-reincarnated-as-a-slime", malUrl: "https://myanimelist.net/anime/59970/Tensei_shitara_Slime_Datta_Ken_4th_Season" },
+        { id: "wistoria-2", img: "watchingnow-images/watchingnow/wistoria.webp", title: "Wistoria: Wand and Sword", info: "2ª temporada: 12 episódios", season: "spring-2026", studio: "Actas / BN Pictures", airedSeason: "2026", seasons: [12, 12], url: "https://www.anime-planet.com/anime/wistoria-wand-and-sword-2nd-season", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GW4HM7WK9/wistoria-wand-and-sword", malUrl: "https://myanimelist.net/anime/59983/Tsue_to_Tsurugi_no_Wistoria_Season_2" },
+        { id: "imfwtspgimc", img: "watchingnow-images/watchingnow/imfwtspgimc.webp", title: "I Made Friends with the Second Prettiest Girl in My Class", info: "12 episódios", season: "spring-2026", studio: "CONNECT", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/i-made-friends-with-the-second-prettiest-girl-in-my-class", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371673/i-made-friends-with-the-second-prettiest-girl-in-my-class", malUrl: "https://myanimelist.net/anime/56734/Class_de_2-banme_ni_Kawaii_Onnanoko_to_Tomodachi_ni_Natta" },
+        { id: "farming-life-2", img: "watchingnow-images/watchingnow/farming-life.webp", title: "Farming Life in Another World", info: "2ª temporada: 12 episódios", season: "spring-2026", studio: "Zero-G", airedSeason: "2026", seasons: [12, 12], url: "https://www.anime-planet.com/anime/farming-life-in-another-world-2", crunchyroll: "", malUrl: "https://myanimelist.net/anime/62146/Isekai_Nonbiri_Nouka_2" },
+        { id: "otaku-gyaru", img: "watchingnow-images/watchingnow/otaku-gyaru.webp", title: "Gals Can't Be Kind to Otaku", info: "12 episódios", season: "spring-2026", studio: "TMS Entertainment", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/gals-cant-be-kind-to-otaku", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371662/gals-cant-be-kind-to-otaku", malUrl: "https://myanimelist.net/anime/62604/Otaku_ni_Yasashii_Gal_wa_Inai" },
+        { id: "klutzy-class-monitor", img: "watchingnow-images/watchingnow/klutzy-class-monitor.webp", title: "The Klutzy Class Monitor and the Girl with the Short Skirt", info: "12 episódios", season: "spring-2026", studio: "Zero-G", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371923/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt", malUrl: "https://myanimelist.net/anime/61425/Ponkotsu_Fuuki_Iin_to_Skirt-take_ga_Futekisetsu_na_JK_no_Hanashi" },
 
         // Winter 2026
-        { id: "midnight-heart", img: "watchingnow-images/watchingnow/midnight-heart.webp", title: "Tune In to the Midnight Heart", info: "12 episódios - Progress: 8/12", season: "winter-2026", studio: "Gekkou", airedSeason: "2026", url: "https://www.anime-planet.com/anime/tune-in-to-the-midnight-heart", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00365772/tune-in-to-the-midnight-heart", malUrl: "https://myanimelist.net/anime/61211/Mayonaka_Heart_Tune" },
+        { id: "midnight-heart", img: "watchingnow-images/watchingnow/midnight-heart.webp", title: "Tune In to the Midnight Heart", info: "12 episódios", season: "winter-2026", studio: "Gekkou", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/tune-in-to-the-midnight-heart", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00365772/tune-in-to-the-midnight-heart", malUrl: "https://myanimelist.net/anime/61211/Mayonaka_Heart_Tune" },
 
         // On Hold
         { id: "aoashi", img: "watchingnow-images/watchingnow/aoashi.webp", title: "Aoashi", info: "24 episódios", season: "on-hold", studio: "Production I.G", airedSeason: "2022-?", seasons: [24], url: "https://www.anime-planet.com/anime/aoashi", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G4PH0WX5J/aoashi", malUrl: "https://myanimelist.net/anime/49052/Ao_Ashi" },
@@ -6903,6 +6953,7 @@
         },
       ]
       const rawPlanToWatchData = [
+        { id: "bleach", img: "plantowatch-images/plantowatch/bleach.webp", title: "Bleach", info: "16 temporadas: 366 episódios", url: "https://www.anime-planet.com/anime/bleach" },
         { id: "spy-x-family", img: "plantowatch-images/plantowatch/spy-x-family.webp", title: "Spy x Family", info: "3 temporadas: 50 episódios", url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero" },
         { id: "sentenced-hero", img: "plantowatch-images/plantowatch/sentenced-hero.webp", title: "Sentenced to be a Hero", info: "12 episódios", url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero" },
         { id: "wotakoi", img: "plantowatch-images/plantowatch/wotakoi.webp", title: "Wotakoi: Love is Hard for Otaku", info: "11 episódios", url: "https://www.anime-planet.com/anime/wotakoi-love-is-hard-for-otaku" },
@@ -6920,7 +6971,6 @@
         { id: "your-name", img: "plantowatch-images/plantowatch/your-name.webp", title: "your name", info: "Filme: 1h50m", url: "https://www.anime-planet.com/anime/your-name" },
         { id: "heavenly-delusion", img: "plantowatch-images/plantowatch/heavenly-delusion.webp", title: "Heavenly Delusion", info: "13 episódios", url: "https://www.anime-planet.com/anime/heavenly-delusion" },
         { id: "to-be-hero-x", img: "plantowatch-images/plantowatch/to-be-hero-x.webp", title: "To be Hero X", info: "24 episódios", url: "https://www.anime-planet.com/anime/to-be-hero-x" },
-        { id: "bleach", img: "plantowatch-images/plantowatch/bleach.webp", title: "Bleach", info: "16 temporadas: 366 episódios", url: "https://www.anime-planet.com/anime/bleach" },
         { id: "tokyo-ghoul", img: "plantowatch-images/plantowatch/tokyo-ghoul.webp", title: "Tokyo Ghoul", info: "2 temporadas: 24 episódios", url: "https://www.anime-planet.com/anime/tokyo-ghoul" },
         { id: "fate-stay-night", img: "plantowatch-images/plantowatch/fate-stay-night.webp", title: "Fate Stay Night: Unlimited Blade Works", info: "2 temporadas: 25 episódios", url: "https://www.anime-planet.com/anime/fate-stay-night-unlimited-blade-works" },
         { id: "the-tunnel-to-summer", img: "plantowatch-images/plantowatch/the-tunnel-to-summer.webp", title: "The Tunnel to Summer, the Exit of Goodbyes", info: "Filme: 1h23m", url: "https://www.anime-planet.com/anime/the-tunnel-to-summer-the-exit-of-goodbyes" },
@@ -7666,7 +7716,7 @@
         }
 
         return `
-          <li class="anime-item${subClass}${topRankClass}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${navAllAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}>
+          <li class="anime-item${subClass}${topRankClass}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${navAllAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}${mode === 'plan' ? ' data-plan-to-watch="1"' : ''}>
             <div class="anime-item-ambient" aria-hidden="true"></div>
             <div class="anime-item-ambient-shade" aria-hidden="true"></div>
             <div class="rank-wrap">
