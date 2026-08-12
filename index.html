@@ -2327,6 +2327,13 @@
       .rank-mal-content {
         flex: 0 1 auto;
       }
+
+      /* Quebra manual (\n nos dados) usada só pra apertar a caixa do título
+         no mobile (ver .rank-mal-linebreak lá embaixo) — no PC ela some,
+         então o texto volta a ficar numa linha só. */
+      .rank-mal-linebreak {
+        display: none;
+      }
     }
 
     /* ── Alinhamento de episódios entre temporadas consecutivas ──
@@ -2804,8 +2811,8 @@
         grid-template-areas:
           "media title"
           "media info"
-          "list   list"
           "meta   meta"
+          "list   list"
           "mal    mal";
         column-gap: 16px;
         row-gap: 12px;
@@ -2868,6 +2875,14 @@
         margin-top: 4px;
       }
 
+      .poster-lightbox:not(.simple-mode) .poster-lightbox-info-break {
+        display: block;
+      }
+
+      .poster-lightbox:not(.simple-mode) .poster-lightbox-info-break::before {
+        content: "";
+      }
+
       .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-title,
       .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-info {
         text-align: left;
@@ -2890,6 +2905,9 @@
         /* Sem isso, a última linha (temporada/filme/especial) fica colada
            no final da área de scroll do lightbox. */
         padding-bottom: 28px;
+        /* Um pouco mais de respiro entre as tags (#All Animes etc) e o
+           bloco do MyAnimeList logo abaixo. */
+        margin-top: 8px;
       }
 
       /* Notas por temporada/filme/especial: no mobile, mesmo layout de
@@ -2951,6 +2969,19 @@
            do One Piece — em vez de temporada e episódios virarem duas
            caixas flex separadas que quebram cada uma por conta própria. */
         display: block;
+      }
+
+      /* Quando o label já tem uma quebra manual (\n → <br
+         class="rank-mal-linebreak">), a largura da caixa não precisa mais
+         do teto fixo de 60% — isso deixava uma "sobra" de espaço vazio
+         entre o fim do texto (ex: "...The Final") e o pontilhado, porque
+         60% quase sempre é mais largo que a linha de verdade. Com quebra
+         manual, o texto já tem um ponto de corte definido, então a caixa
+         pode encolher só até a largura real das duas linhas (max-content),
+         deixando o pontilhado começar coladinho no texto. */
+      .poster-lightbox:not(.simple-mode) .rank-mal-row.rank-mal-row-break .rank-mal-content:has(.rank-mal-linebreak) {
+        max-width: max-content;
+        width: max-content;
       }
 
       .poster-lightbox:not(.simple-mode) .rank-mal-content {
@@ -3061,6 +3092,17 @@
     }
 
     .poster-lightbox-info:empty { display: none; }
+
+    /* Separador entre linhas de "poster-lightbox-info" (ex: temporadas/episódios
+       e Filme(s)): no PC fica inline, mantendo tudo na mesma linha; só no
+       lightbox mobile (regra específica mais abaixo) ele vira quebra de linha. */
+    .poster-lightbox-info-break {
+      display: inline;
+    }
+
+    .poster-lightbox-info-break::before {
+      content: " - ";
+    }
 
     .poster-lightbox-rank {
       display: inline-block;
@@ -4340,6 +4382,13 @@
       align-items: center;
       gap: 8px;
       width: fit-content;
+      transition: opacity 0.15s ease;
+    }
+
+    /* Mesmo efeito de hover do selo do IMDb (opacity), mas sem cursor:pointer,
+       já que o MNP não é um link clicável. */
+    .fav-ep-my-rating:hover {
+      opacity: 0.8;
     }
 
     .fav-ep-my-rating-source {
@@ -5501,7 +5550,7 @@
               // Labels podem ter um "\n" manual (ver dados do anime) pra
               // forçar a quebra de linha num ponto específico do nome, em
               // vez de deixar o navegador decidir onde quebrar.
-              .replace(/\n/g, '<br>');
+              .replace(/\n/g, '<br class="rank-mal-linebreak">');
             const isNumericEpisodes = typeof entry.episodes === 'number';
             // Só entra no grupo de alinhamento quando, além de numérico, o
             // label é "limpo" (sem ":" dentro dele). Labels com ":" no meio
@@ -6141,7 +6190,7 @@
                 .replace(/[-–:]?\s*Progress:\s*(?:\d+|-)\s*\/\s*(?:\d+|-)\s*/gi, '')
                 .trim();
               const infoLines = cleanedInfo.split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
-              lightboxInfo.innerHTML = infoLines.join('  -  ');
+              lightboxInfo.innerHTML = infoLines.join('<span class="poster-lightbox-info-break"></span>');
             } else {
               lightboxInfo.innerHTML = '';
             }
@@ -6661,7 +6710,7 @@
         { id: "dr-stone", img: "myranks-images/myranks/dr-stone.webp", title: "Dr. Stone", info: "4 temporadas: 95 episódios" , studio: "TMS Entertainment", airedSeason: "2019-2026", rewatch: "2 Times (Season 4 Not Yet)", mal: [ { label: "1ª temporada", episodes: 24, note: 8 }, { label: "2ª temporada", episodes: 11, note: 7 },{ label: "Ryusui", episodes: "TV Special", note: 8 }, { label: "3ª temporada I", episodes: 11, note: 7 }, { label: "3ª temporada II", episodes: 11, note: 8 }, { label: "4ª temporada I", episodes: 12, note: 8 }, { label: "4ª temporada II", episodes: 12, note: 9 }, { label: "4ª temporada III", episodes: 13, note: 8 } ] },
         { id: "cote", img: "myranks-images/myranks/cote.webp", title: "Classroom of the Elite", info: "4 temporadas: 54 episódios" , studio: "Lerche", airedSeason: "2017-?", rewatch: "First 3 Seasons", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 13, note: 8 }, { label: "3ª temporada", episodes: 13, note: 7 }, { label: "4ª temporada", episodes: 16, note: 8 } ] },
         { id: "re-zero", img: "myranks-images/myranks/re-zero.webp", title: "Re:ZERO - Starting Life in Another World", malSearch: "Re:Zero", info: "(~) 3 temporadas: 66 episódios" , studio: "White Fox", airedSeason: "2016-?", rewatch: "Only Season 1", mal: [ { label: "1ª temporada", episodes: 25, note: 9 }, { label: "2ª temporada I", episodes: 13, note: 8 } ,{ label: "2ª temporada II", episodes: 12, note: 8 } , { label: "3ª temporada", episodes: 16, note: 8 } , { label: "4ª temporada", episodes: 19, unwatched: true } ] },
-        { id: "mha", img: "myranks-images/myranks/my-hero-academia.webp", title: "My Hero Academia", info: "8 temporadas: 171 episódios <br> 3 Filmes: 5h10m" , studio: "Bones", airedSeason: "2016-2025", rewatch: "First 5 Seasons", mal: [ { label: "1ª temporada", episodes: 13, note: 7 }, { label: "2ª temporada", episodes: 25, note: 7 }, { label: "3ª temporada", episodes: 25, note: 6 },{ label: "Movie 1: Two Heroes ", episodes: "1h36m", note: 6 }, { label: "4ª temporada", episodes: 25, note: 6 }, { label: "Movie 2:  Heroes Rising", episodes: "1h44m", note: 6 }, { label: "5ª temporada", episodes: 25, note: 7 }, { label: "6ª temporada", episodes: 25, note: 7 }, { label: "7ª temporada", episodes: 21, note: 7 },{ label: "Movie 4: You're Next", episodes: "1h50m", note: 7 }, { label: "8ª temporada", episodes: 11, note: 8 }, { label: "Episode 171: More", episodes: "TV Special", note: 7 } ] },
+        { id: "mha", img: "myranks-images/myranks/my-hero-academia.webp", title: "My Hero Academia", info: "8 temporadas: 171 episódios <br> 3 Filmes: 5h10m" , studio: "Bones", airedSeason: "2016-2025", rewatch: "First 5 Seasons", mal: [ { label: "1ª temporada", episodes: 13, note: 7 }, { label: "2ª temporada", episodes: 25, note: 8 }, { label: "3ª temporada", episodes: 25, note: 6 },{ label: "Movie 1: Two Heroes ", episodes: "1h36m", note: 6 }, { label: "4ª temporada", episodes: 25, note: 6 }, { label: "Movie 2:  Heroes Rising", episodes: "1h44m", note: 6 }, { label: "5ª temporada", episodes: 25, note: 7 }, { label: "6ª temporada", episodes: 25, note: 8 }, { label: "7ª temporada", episodes: 21, note: 8 },{ label: "Movie 4: You're Next", episodes: "1h50m", note: 7 }, { label: "8ª temporada", episodes: 11, note: 9 }, { label: "Episode 171: More", episodes: "TV Special", note: 7 } ] },
         { id: "tensei-shitara-slime", img: "myranks-images/myranks/tensei-shitara-slime.webp", title: "That Time I Got Reincarnated as a Slime", info: "(~~~) 3 temporadas: 72 episódios" , studio: "8-Bit", airedSeason: "2018-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "2ª temporada I", episodes: 12, note: 7 }, { label: "2ª temporada II", episodes: 12, note: 7 }, { label: "3ª temporada", episodes: 24, note: 7 },  { label: "Movie 2: Tears of the Azure Sea", episodes: "1h44m", unwatched: true },  { label: "4ª temporada", episodes: 24, unwatched: true }  ] },
         { id: "opm", img: "myranks-images/myranks/opm.webp", title: "One-Punch Man", info: "3 temporadas: 36 episódios" , studio: "MADHOUSE / J.C. Staff", airedSeason: "2015-?", rewatch: "2 Times (Season 3 Never)", mal: [ { label: "1ª temporada", episodes: 12, note: 9 }, { label: "2ª temporada", episodes: 12, note: 6 },  { label: "3ª temporada I", episodes: 12, note: 2 } ] },
         { id: "dan-da-dan", img: "myranks-images/myranks/dan-da-dan.webp", title: "Dan da Dan", info: "2 temporadas: 24 episódios" , studio: "Science SARU", airedSeason: "2024-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 12, note: 9 } ] },
@@ -6672,12 +6721,12 @@
         { id: "hells-paradise", img: "myranks-images/myranks/hells-paradise.webp", title: "Hell's Paradise: Jigokuraku", info: "2 temporadas: 25 episódios" , studio: "MAPPA", airedSeason: "2023-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 13, note: 8 }, { label: "2ª temporada", episodes: 12, note: 8 } ] },
         { id: "fragrant-flowers", img: "myranks-images/myranks/fragrant-flowers.webp", title: "The Fragrant Flowers Blooms with Dignity", info: "13 episódios" , studio: "CloverWorks", airedSeason: "2025-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 13, note: 8 } ] },
         { id: "horimiya", img: "myranks-images/myranks/horimiya.webp", title: "Horimiya", info: "2 temporadas: 26 episódios" , studio: "CloverWorks", airedSeason: "2021-2023", rewatch: "2 Times (1st Season)", mal: [ { label: "1ª temporada", episodes: 13, note: 8 }, { label: "2ª temporada", episodes: 13, note: 7 } ] },
+        { id: "opposites", img: "myranks-images/myranks/opposites.webp", title: "You and I are Polar Opposites", info: "1 temporada: 12 episódios" , studio: "Lapin Track", airedSeason: "2026-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 8 } ] },
         { id: "vinland-saga", img: "myranks-images/myranks/vinland-saga.webp", title: "Vinland Saga", info: "2 temporadas: 48 episódios" , studio: "Wit Studio / MAPPA", airedSeason: "2019-2023", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 24, note: 8 }, { label: "2ª temporada", episodes: 24, note: 7 } ] },
-        { id: "your-lie-in-april", img: "myranks-images/myranks/your-lie-in-april.webp", title: "Your Lie in April", info: "22 episódios" , studio: "A-1 Pictures", airedSeason: "2014-2015", rewatch: "Impossible", mal: [ { label: "1 temporada", episodes: 22, note: 8 } ] },
         { id: "demon-slayer", img: "myranks-images/myranks/demon-slayer.webp", title: "Demon Slayer: Kimetsu no Yaiba", info: "5 temporadas: 63 episódios <br>1 Filme: 2h35m" , studio: "ufotable", airedSeason: "2019-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 26, note: 7 }, { label: "2ª temporada", episodes: 7, note: 7 }, { label: "3ª temporada", episodes: 11, note: 8 }, { label: "4ª temporada", episodes: 11, note: 7 }, { label: "5ª temporada", episodes: 8, note: 7 }, { label: "Movie: Infinity Castle Part 1", episodes: "2h35m", note: 8 } ] },
         { id: "shangri-la-frontier", img: "myranks-images/myranks/shangri-la-frontier.webp", title: "Shangri-La Frontier", info: "2 temporadas: 50 episódios" , studio: "C2C", airedSeason: "2023-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 25, note: 7 }, { label: "2ª temporada", episodes: 25, note: 7 } ] },
         { id: "akame-ga-kill", img: "myranks-images/myranks/akame-ga-kill.webp", title: "Akame ga Kill", info: "24 episódios" , studio: "White Fox", airedSeason: "2024", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 24, note: 8 } ] },
-        { id: "opposites", img: "myranks-images/myranks/opposites.webp", title: "You and I are Polar Opposites", info: "1 temporada: 12 episódios" , studio: "Lapin Track", airedSeason: "2026-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 8 } ] },
+        { id: "your-lie-in-april", img: "myranks-images/myranks/your-lie-in-april.webp", title: "Your Lie in April", info: "22 episódios" , studio: "A-1 Pictures", airedSeason: "2014-2015", rewatch: "Impossible", mal: [ { label: "1 temporada", episodes: 22, note: 8 } ] },
         { id: "wistoria", img: "myranks-images/myranks/wistoria.webp", title: "Wistoria: Wand and Sword", info: "(~) 1 temporada: 12 episódios" , studio: "Bandai Filmworks / Actas", airedSeason: "2024-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
         { id: "roshidere", img: "myranks-images/myranks/roshidere.webp", title: "Alya Sometimes Hides Her Feelings in Russian", info: "1 temporada: 12 episódios" , studio: "Doga Kobo", airedSeason: "2024-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 12, note: 7 } ] },
         { id: "mashle", img: "myranks-images/myranks/mashle.webp", title: "Mashle: Magic and Muscles", info: "2 temporadas: 24 episódios" , studio: "A-1 Pictures", airedSeason: "2023-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, note: 7 } ] },
@@ -6737,7 +6786,7 @@
 
       const rawWatchingData = [
         // Non-Seasonal Anime
-        { id: "re-zero-4", img: "watchingnow-images/watchingnow/re-zero.webp", title: "Re:ZERO - Starting Life in Another World", malSearch: "Re:ZERO", info: "4 temporadas: 85 episódios", season: null, studio: "White Fox", airedSeason: "2016-?", seasons: [25, 25, 16, 19], cours: [null, [13, 12], null, null], rewatch: "Only Season 1", url: "https://www.anime-planet.com/anime/rezero-starting-life-in-another-world-season-4", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRGG9798R/rezero--starting-life-in-another-world-", malUrl: "https://myanimelist.net/anime/61316/Re_Zero_kara_Hajimeru_Isekai_Seikatsu_4th_Season"},
+        { id: "re-zero-4", img: "watchingnow-images/watchingnow/re-zero.webp", title: "Re:ZERO - Starting Life in Another World", malSearch: "Re:ZERO", info: "4 temporadas: 85 episódios", season: null, studio: "White Fox", airedSeason: "2016-?", seasons: [25, 25, 16, 19], cours: [null, [13, 12], null, null], rewatch: "Only Season 1", potential: "9.0", url: "https://www.anime-planet.com/anime/rezero-starting-life-in-another-world-season-4", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRGG9798R/rezero--starting-life-in-another-world-", malUrl: "https://myanimelist.net/anime/61316/Re_Zero_kara_Hajimeru_Isekai_Seikatsu_4th_Season"},
         { id: "rw-demon-slayer", img: "watchingnow-images/watchingnow/demon-slayer.webp", title: "Demon Slayer: Kimetsu no Yaiba", info: "5 temporadas: 63 episódios <br>1 Filme: 2h35m", season: null, studio: "ufotable", airedSeason: "2019-?", seasons: [26, 7, 11, 11, 8, 1], movieSeasons: [5], movieDurations: {5: "2h35m"}, cours: [null, null, null, null, null], rewatch: "Season 1", url: "https://www.anime-planet.com/anime/demon-slayer-kimetsu-no-yaiba", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GY5P48XEY/demon-slayer-kimetsu-no-yaiba", malUrl: "https://myanimelist.net/anime/38000/Kimetsu_no_Yaiba" },   
         { id: "my-teen-romantic-comedy", img: "watchingnow-images/watchingnow/my-teen-romantic-comedy.webp", title: "My Teen Romantic Comedy SNAFU", info: "3 temporadas: 39 episódios", season: null, studio: "Brain's Base / feel", airedSeason: "2013-2020", seasons: [13, 13, 13], url: "https://www.anime-planet.com/anime/my-teen-romantic-comedy-snafu", crunchyroll: "", malUrl: "https://myanimelist.net/anime/23847/Yahari_Ore_no_Seishun_Love_Comedy_wa_Machigatteiru_Zoku" },
         { id: "haikyuu-dumpster", img: "watchingnow-images/watchingnow/haikyuu.webp", title: "Haikyu!! The Dumpster Battle", info: "Filme: 1h25m", season: null, studio: "Production I.G", airedSeason: "2024", seasons: [1], url: "https://www.anime-planet.com/anime/haikyuu-movie-5-the-dumpster-battle", crunchyroll: "https://www.crunchyroll.com/pt-br/watch/GD9UE9XZ7/haikyu-the-dumpster-battle", malUrl: "https://myanimelist.net/anime/52742/Haikyuu_Movie__Gomisuteba_no_Kessen?q=dumpster" },
@@ -6810,7 +6859,6 @@
           crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/GG1U2DD2M/final-turn---re",
           myRating: 10,
           note: "",
-          url: "https://seriesgraph.com/show/31724-code-geass-lelouch-of-the-rebellion"
         },
         {
           id: "jjk",
@@ -6832,7 +6880,6 @@
           crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/GE00367579JAJP/sendai-colony",
           myRating: 10,
           note: "",
-          url: "https://seriesgraph.com/show/95479-jujutsu-kaisen"
         },
         {
           id: "one-piece",
@@ -6846,14 +6893,12 @@
             "other-images/peakepisodes/one-piece-4.webp",
             "other-images/peakepisodes/one-piece-5.webp",
             "other-images/peakepisodes/one-piece-6.webp",
-            "other-images/peakepisodes/one-piece-7.webp",
           ],
           rating: 9.8,
           imdbUrl: "https://www.imdb.com/pt/title/tt37560958/",
           crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/GG1UXVDJ7/kumas-life",
           myRating: 9.9,
           note: "",
-          url: "https://seriesgraph.com/show/37854-one-piece"
         },
         {
           id: "frieren",
@@ -6873,7 +6918,24 @@
           crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G0DUMNPJ1/a-magnificent-end",
           myRating: 9.7,
           note: "",
-          url: "https://seriesgraph.com/show/46298-hunter-x-hunter"
+        },
+        {
+          id: "mha",
+          anime: "My Hero Academia",
+          episodeLabel: "T4.E13 — Infinite 100%",
+          img: "other-images/peakepisodes/mha-1.webp",
+          images: [
+            "other-images/peakepisodes/mha-1.webp",
+            "other-images/peakepisodes/mha-3.webp",
+            "other-images/peakepisodes/mha-4.webp",
+            "other-images/peakepisodes/mha-6.webp",
+            "other-images/peakepisodes/mha-7.webp",
+          ],
+          rating: 9.6,
+          imdbUrl: "https://www.imdb.com/pt/title/tt11488600/",
+          crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G6ZJEE9GY/infinite-100",
+          myRating: 9.7,
+          note: "",
         },
         {
           id: "solo-leveling",
@@ -6886,14 +6948,12 @@
             "other-images/peakepisodes/solo-leveling-3.webp",
             "other-images/peakepisodes/solo-leveling-4.webp",
             "other-images/peakepisodes/solo-leveling-5.webp",
-            "other-images/peakepisodes/solo-leveling-6.webp",
           ],
           rating: 9.6,
           imdbUrl: "https://www.imdb.com/pt/title/tt36170608/",
           crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/GG1UX5XMW/are-you-the-king-of-humans",
           myRating: 9.7,
           note: "",
-          url: "https://seriesgraph.com/show/127532-solo-leveling"
         },
         {
           id: "hxh",
@@ -6912,7 +6972,6 @@
           crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G6Q4WZX9R/anger-x-and-x-light",
           myRating: 9.5,
           note: "",
-          url: "https://seriesgraph.com/show/46298-hunter-x-hunter"
         },
         {
           id: "cote",
@@ -6930,7 +6989,6 @@
           crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G8WUN8PE8/force-without-wisdom-falls-of-its-own-weight",
           myRating: 9.5,
           note: "",
-          url: "https://seriesgraph.com/show/72517-classroom-of-the-elite"
         },
         {
           id: "re-zero",
@@ -6940,8 +6998,8 @@
           images: [
             "other-images/peakepisodes/re-zero-2.webp",
             "other-images/peakepisodes/re-zero-3.webp",
-            "other-images/peakepisodes/re-zero-4.webp",
             "other-images/peakepisodes/re-zero-1.webp",
+            "other-images/peakepisodes/re-zero-4.webp",
             "other-images/peakepisodes/re-zero-5.webp",
           ],
           rating: 9.8,
@@ -6949,7 +7007,6 @@
           crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G63KQMPD6/the-sickness-called-despair--the-outside-of-madness",
           myRating: 9.2,
           note: "",
-          url: "https://seriesgraph.com/show/65942-rezero-starting-life-in-another-world"
         },
       ]
       const rawPlanToWatchData = [
@@ -7546,6 +7603,12 @@
           if (globalRank != null) {
             secondaryRankHtml = `<span class="rank-secondary">#${globalRank}</span>`;
           }
+        } else if ((mode === 'watching' || mode === 'plan') && anime.potential != null) {
+          // Número "potencial" adicionado manualmente no objeto do anime
+          // (campo "potential", igual studio/seasons/info) — mostra uma
+          // posição menor embaixo do número principal do card, indicando
+          // onde ele provavelmente entraria no ranking geral.
+          secondaryRankHtml = `<span class="rank-secondary">${anime.potential}</span>`;
         }
         const ns = nextSeasonMap[anime.id];
         const nsLines = ns ? String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean) : [];
