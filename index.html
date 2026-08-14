@@ -1937,6 +1937,52 @@
       line-height: 0;
     }
 
+    /* ── Zoom da imagem (só mobile): ao tocar no pôster pequeno do layout
+       lado-a-lado, ele aparece ampliado e centralizado por cima de tudo,
+       num overlay próprio (ver JS: initPosterLightboxZoom). No desktop
+       essa camada nunca é ativada, então fica sempre display:none. ── */
+    .poster-lightbox-zoom {
+      position: fixed;
+      inset: 0;
+      z-index: 10100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      background: rgba(0,0,0,0.78);
+      opacity: 0;
+      transition: opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: zoom-out;
+    }
+
+    .poster-lightbox-zoom.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    .poster-lightbox-zoom img {
+      width: min(88vw, 440px);
+      height: auto;
+      aspect-ratio: 2 / 3;
+      max-height: 82vh;
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+      display: block;
+      transform: scale(0.94);
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .poster-lightbox-zoom.open img {
+      transform: scale(1);
+    }
+
+    @media (max-width: 760px) {
+      .poster-lightbox-image-wrap {
+        cursor: zoom-in;
+      }
+    }
+
     /* ── Troca de item ultra fluida ──
        O conteúdo (src/texto) é atualizado no MESMO frame do clique/seta —
        zero delay, zero espera de transition. Só toca em opacity/transform
@@ -3734,23 +3780,50 @@
       .search-result-title { font-size: 12px; }
     }
 
-    /* ── "True Characters" — foto de perfil quadrada ── */
+        /* ── "True Characters" — cards de personagem em estilo "profile card" ──
+       Avatar circular com anel de destaque, badge de rank flutuante
+       sobreposto ao avatar, e card com fundo/borda próprios (em vez da
+       linha poster+texto usada nos outros modos). */
     ol.ranking.mode-true-characters {
-      --true-character-size: 140px;
-      column-gap: 12px;
-      row-gap: 8px;
+      --true-character-size: 152px;
+      --true-character-pad: 18px;
+      column-gap: 16px;
+      row-gap: 16px;
     }
 
     ol.ranking.mode-true-characters li.anime-item {
-      grid-template-columns: 64px var(--true-character-size) 1fr;
-      min-height: var(--true-character-size);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      grid-template-columns: none;
+      min-height: 0;
+      padding: var(--true-character-pad) 22px var(--true-character-pad) var(--true-character-pad);
+      background: linear-gradient(155deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 22px;
     }
 
+    ol.ranking.mode-true-characters li.anime-item:hover {
+      transform: translateY(-4px) translateZ(0);
+      border-color: rgba(244,114,182,0.35);
+      box-shadow: 0 16px 34px -12px rgba(244,114,182,0.28), 0 12px 30px -10px rgba(0,0,0,0.6);
+    }
+
+    /* Garante que a especificidade maior deste bloco não quebre a
+       ocultação de itens filtrados/pesquisados. */
+    ol.ranking.mode-true-characters li.anime-item.hidden-item {
+      display: none;
+    }
+
+    /* ── Avatar circular ── */
     ol.ranking.mode-true-characters .poster-wrap {
       width: var(--true-character-size);
       height: var(--true-character-size);
       aspect-ratio: 1 / 1;
-      border-radius: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.08), 0 6px 16px -4px rgba(0,0,0,0.55);
+      transition: box-shadow 0.3s ease;
     }
 
     ol.ranking.mode-true-characters .thumb {
@@ -3760,48 +3833,120 @@
       aspect-ratio: 1 / 1;
     }
 
+    ol.ranking.mode-true-characters li.anime-item:hover .poster-wrap {
+      box-shadow: 0 0 0 3px rgba(244,114,182,0.55), 0 0 22px -2px rgba(244,114,182,0.4), 0 6px 18px -4px rgba(0,0,0,0.6);
+    }
+
+    /* ── Rank como texto "#N" colado antes do nome do personagem ── */
+    ol.ranking.mode-true-characters .rank-wrap {
+      display: none;
+    }
+
+    ol.ranking.mode-true-characters .title-anime::before {
+      content: "#" counter(item) " ";
+      color: #f9a8d4;
+      font-weight: 900;
+      opacity: 0.9;
+    }
+
+    ol.ranking.mode-true-characters li.anime-item.rank-gold .title-anime::before { color: #d4af37; }
+    ol.ranking.mode-true-characters li.anime-item.rank-silver .title-anime::before { color: #b8bcc2; }
+    ol.ranking.mode-true-characters li.anime-item.rank-bronze .title-anime::before { color: #b0703f; }
+
+    ol.ranking.mode-true-characters li.anime-item.rank-gold .poster-wrap {
+      box-shadow: 0 0 0 3px rgba(212,175,55,0.55), 0 6px 16px -4px rgba(0,0,0,0.55);
+    }
+    ol.ranking.mode-true-characters li.anime-item.rank-silver .poster-wrap {
+      box-shadow: 0 0 0 3px rgba(184,188,194,0.5), 0 6px 16px -4px rgba(0,0,0,0.55);
+    }
+    ol.ranking.mode-true-characters li.anime-item.rank-bronze .poster-wrap {
+      box-shadow: 0 0 0 3px rgba(176,112,63,0.5), 0 6px 16px -4px rgba(0,0,0,0.55);
+    }
+
+    /* ── Texto ── */
+    ol.ranking.mode-true-characters .meta {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 7px;
+      padding: 0;
+    }
+
+    ol.ranking.mode-true-characters .title-anime {
+      font-size: 18.5px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    ol.ranking.mode-true-characters .info-row .info {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      max-width: 100%;
+      color: #f9a8d4;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.15px;
+      background: rgba(244,114,182,0.09);
+      border: 1px solid rgba(244,114,182,0.2);
+      padding: 5px 11px;
+      border-radius: 999px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     @media (max-width: 1100px) {
       ol.ranking.mode-true-characters {
-        --true-character-size: 128px;
-      }
-      ol.ranking.mode-true-characters li.anime-item {
-        grid-template-columns: 56px var(--true-character-size) 1fr;
+        --true-character-size: 136px;
       }
     }
 
     @media (max-width: 900px) {
       ol.ranking.mode-true-characters {
-        --true-character-size: 116px;
+        --true-character-size: 120px;
+        --true-character-pad: 16px;
       }
       ol.ranking.mode-true-characters li.anime-item {
-        grid-template-columns: 44px var(--true-character-size) 1fr;
-        min-height: var(--true-character-size);
+        gap: 16px;
+      }
+      ol.ranking.mode-true-characters .title-anime {
+        font-size: 16.5px;
       }
     }
 
     @media (max-width: 600px) {
       ol.ranking.mode-true-characters {
-        --true-character-size: 100px;
+        --true-character-size: 104px;
+        --true-character-pad: 12px;
+        row-gap: 12px;
       }
       ol.ranking.mode-true-characters li.anime-item {
-        grid-template-columns: 24px var(--true-character-size) 1fr;
-        min-height: var(--true-character-size);
+        border-radius: 18px;
+        gap: 14px;
+        align-items: center;
       }
-      ol.ranking.mode-true-characters .poster-wrap {
-        border-radius: 12px;
+      ol.ranking.mode-true-characters .title-anime {
+        font-size: 15.5px;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
       }
     }
 
     @media (max-width: 380px) {
       ol.ranking.mode-true-characters {
-        --true-character-size: 88px;
+        --true-character-size: 92px;
+        --true-character-pad: 10px;
       }
       ol.ranking.mode-true-characters li.anime-item {
-        grid-template-columns: 20px var(--true-character-size) 1fr;
+        gap: 12px;
       }
     }
 
-    /* ── "Watching Now" list — vertical/portrait cover art ── */
+/* ── "Watching Now" list — vertical/portrait cover art ── */
     ol.ranking.mode-watching {
       gap: 8px;
     }
@@ -5282,6 +5427,13 @@
     </figure>
   </div>
 
+  <!-- ── Zoom mobile do poster-lightbox: ao tocar na imagem pequena (layout
+       lado a lado do mobile), ela aparece ampliada e centralizada por cima
+       de tudo. Só é ativado via JS quando a media query de mobile bate. ── -->
+  <div class="poster-lightbox-zoom" id="posterLightboxZoom" aria-hidden="true">
+    <img id="posterLightboxZoomImg" src="" alt="">
+  </div>
+
   <!-- ── Fav Ep Lightbox: modal ao clicar na imagem de um card de
        "Favorite Episodes". Ver comentário no CSS (.fav-ep-lightbox). ── -->
   <div class="fav-ep-lightbox" id="favEpLightbox" aria-hidden="true" role="dialog" aria-modal="true">
@@ -5385,6 +5537,38 @@
         const lightboxSimpleLink = document.getElementById('posterLightboxSimpleLink');
         const closeBtn = document.getElementById('posterLightboxClose');
         if (!lightbox || !lightboxImg || !closeBtn) return;
+
+        // ── Zoom da imagem no mobile: toca no pôster pequeno e ele aparece
+        // ampliado, centralizado, por cima de tudo. Só liga no mobile
+        // (ver check da media query dentro do listener de click). ──
+        const lightboxImageWrap = lightbox.querySelector('.poster-lightbox-image-wrap');
+        const lightboxZoom = document.getElementById('posterLightboxZoom');
+        const lightboxZoomImg = document.getElementById('posterLightboxZoomImg');
+        const MOBILE_QUERY = '(max-width: 760px)';
+
+        function closeImageZoom() {
+          if (!lightboxZoom) return;
+          lightboxZoom.classList.remove('open');
+          lightboxZoom.setAttribute('aria-hidden', 'true');
+        }
+
+        if (lightboxImageWrap && lightboxZoom && lightboxZoomImg) {
+          lightboxImageWrap.addEventListener('click', function(e) {
+            if (!window.matchMedia(MOBILE_QUERY).matches) return;
+            if (!lightboxImg.src) return;
+            e.preventDefault();
+            e.stopPropagation();
+            lightboxZoomImg.src = lightboxImg.src;
+            lightboxZoomImg.alt = lightboxImg.alt;
+            lightboxZoom.classList.add('open');
+            lightboxZoom.setAttribute('aria-hidden', 'false');
+          });
+
+          lightboxZoom.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeImageZoom();
+          });
+        }
 
         let lastFocused = null;
         let currentItem = null;
@@ -6352,6 +6536,7 @@
         // O conteúdo muda no mesmo frame do input, sem nenhuma
         // animação/fade por cima. Zero delay.
         function swapItem(nextItem) {
+          closeImageZoom();
           showItem(nextItem);
         }
 
@@ -6430,6 +6615,7 @@
           }
           stopTitleMarquee();
           document.title = DEFAULT_PAGE_TITLE;
+          closeImageZoom();
           lightbox.classList.remove('open');
           lightbox.setAttribute('aria-hidden', 'true');
           unlockBodyScroll();
@@ -6469,6 +6655,12 @@
 
           const trigger = (isAllAnimesCard || isPlanToWatchCard) ? item : e.target.closest('.poster-wrap');
           if (!trigger || !item.contains(trigger)) return;
+
+          // Se o usuário estava selecionando texto do card (pra copiar o
+          // título, por exemplo), não abre o lightbox — só abre em um
+          // clique "seco", sem seleção ativa.
+          const selection = window.getSelection();
+          if (selection && selection.toString().length > 0 && item.contains(selection.anchorNode)) return;
 
           e.preventDefault();
           e.stopPropagation();
@@ -6517,7 +6709,11 @@
           if (!lightbox.classList.contains('open')) return;
 
           if (e.key === 'Escape') {
-            closeLightbox();
+            if (lightboxZoom && lightboxZoom.classList.contains('open')) {
+              closeImageZoom();
+            } else {
+              closeLightbox();
+            }
           } else if (e.key === 'ArrowRight') {
             e.preventDefault();
             e.stopPropagation();
@@ -6877,7 +7073,7 @@
         { id: "vinland-saga", img: "myranks-images/myranks/vinland-saga.webp", title: "Vinland Saga", info: "2 temporadas: 48 episódios" , studio: "Wit Studio / MAPPA", airedSeason: "2019-2023", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 24, note: 8 }, { label: "2ª temporada", episodes: 24, note: 7 } ] },
         { id: "demon-slayer", img: "myranks-images/myranks/demon-slayer.webp", title: "Demon Slayer: Kimetsu no Yaiba", info: "5 temporadas: 63 episódios <br>1 Filme: 2h35m" , studio: "ufotable", airedSeason: "2019-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 26, note: 7 }, { label: "2ª temporada", episodes: 7, note: 7 }, { label: "3ª temporada", episodes: 11, note: 8 }, { label: "4ª temporada", episodes: 11, note: 7 }, { label: "5ª temporada", episodes: 8, note: 7 }, { label: "Movie: Infinity Castle Part 1", episodes: "2h35m", note: 8 } ] },
         { id: "shangri-la-frontier", img: "myranks-images/myranks/shangri-la-frontier.webp", title: "Shangri-La Frontier", info: "2 temporadas: 50 episódios" , studio: "C2C", airedSeason: "2023-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 25, note: 7 }, { label: "2ª temporada", episodes: 25, note: 7 } ] },
-        { id: "akame-ga-kill", img: "myranks-images/myranks/akame-ga-kill.webp", title: "Akame ga Kill", info: "24 episódios" , studio: "White Fox", airedSeason: "2024", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 24, note: 8 } ] },
+        { id: "akame-ga-kill", img: "myranks-images/myranks/akame-ga-kill.webp", title: "Akame ga Kill", info: "24 episódios" , studio: "White Fox", airedSeason: "2014", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 24, note: 8 } ] },
         { id: "your-lie-in-april", img: "myranks-images/myranks/your-lie-in-april.webp", title: "Your Lie in April", info: "22 episódios" , studio: "A-1 Pictures", airedSeason: "2014-2015", rewatch: "Impossible", mal: [ { label: "1 temporada", episodes: 22, note: 8 } ] },
         { id: "wistoria", img: "myranks-images/myranks/wistoria.webp", title: "Wistoria: Wand and Sword", info: "(~) 1 temporada: 12 episódios" , studio: "Bandai Filmworks / Actas", airedSeason: "2024-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
         { id: "roshidere", img: "myranks-images/myranks/roshidere.webp", title: "Alya Sometimes Hides Her Feelings in Russian", info: "1 temporada: 12 episódios" , studio: "Doga Kobo", airedSeason: "2024-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 12, note: 7 } ] },
@@ -6896,7 +7092,7 @@
         { id: "tsukimichi", img: "myranks-images/myranks/tsukumichi.webp", title: "Tsukimichi -Moonlit Fantasy-", malSearch: "Tsukimichi", info: "2 temporadas: 37 episódios" , studio: "C2C / J.C. Staff", airedSeason: "2021-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 25, note: 7 } ] },
         { id: "danmachi", img: "myranks-images/myranks/danmachi.webp", title: "Danmachi: Is It Wrong to Try to Pick Up Girls in a Dungeon", malSearch: "Is It Wrong to Try to Pick Up Girls in a Dungeon", info: "(~) 4 temporadas: 59 episódios" , studio: "J.C. Staff", airedSeason: "2015-?", rewatch: "3 First Seasons", mal: [ { label: "1ª temporada", episodes: 13, note: 7 }, { label: "2ª temporada", episodes: 12, note: 5 }, { label: "3ª temporada", episodes: 12, note: 5 }, { label: "4ª temporada I", episodes: 11, note: 7 }, { label: "4ª temporada II", episodes: 11, note: 8 },{ label: "5ª temporada", episodes: 15, unwatched: true } ] },
         { id: "chitose", img: "myranks-images/myranks/chitose.webp", title: "Chitose is in Ramune Bottle", info: "1 temporada: 13 episódios" , studio: "Feel", airedSeason: "2025-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 13, note: 7 } ] },
-        { id: "the-apothecary-diaries", img: "myranks-images/myranks/the-apothecary-diaries.webp", title: "The Apothecary Diaries", info: "(~) 1ª temporada: 24 episódios" , studio: "OLM / TOHO animation studio", airedSeason: "2023-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "2ª temporada", episodes: 24, unwatched: true } ] },
+        { id: "the-apothecary-diaries", img: "myranks-images/myranks/the-apothecary-diaries.webp", title: "The Apothecary Diaries", info: "(~) 1ª temporada: 24 episódios" , studio: "OLM / TOHO Animation Studio", airedSeason: "2023-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "2ª temporada", episodes: 24, unwatched: true } ] },
         { id: "gurren-lagann", img: "myranks-images/myranks/gurren-lagann.webp", title: "Gurren Lagann", info: "(~~) 1 temporada: 27 episódios" , studio: "Gainax", airedSeason: "2007", rewatch: "Never", mal: [ { label: "1 temporada", episodes: 27, note: 7 }, { label: "Movie 1: Childhood's End", episodes: "1h52m", unwatched: true }, { label: "Movie 2: The Lights in the Sky are Stars", episodes: "2h05m", unwatched: true } ] },
         { id: "welcome-to-the-ballroom", img: "myranks-images/myranks/welcome-to-the-ballroom.webp", title: "Welcome to the Ballroom", info: "24 episódios" , studio: "Production I.G", airedSeason: "2017", rewatch: "No", mal: [ { label: "1 temporada", episodes: 24, note: 7 } ] },
         { id: "nanatsu-no-taizai", img: "myranks-images/myranks/nanatsu-no-taizai.webp", title: "The Seven Deadly Sins: Nanatsu no Taizai", info: "4 temporadas: 100 episódios <br>3 Filmes: 3h50m" , studio: "A-1 Pictures / Studio Deen", airedSeason: "2014-2021", rewatch: "2 First Seasons", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "1ª temporada II", episodes: 4, note: 7 }, { label: "2ª temporada", episodes: 24, note: 7 }, { label: "Movie 1: Prisoners of the Sky", episodes: "1h39m", note: 6 },{ label: "3ª temporada", episodes: 24, note: 6 }, { label: "4ª temporada", episodes: 24, note: 5 },  { label: "Movie 2: Cursed By Light", episodes: "1h19m", note: 5 }, { label: "ONA: Grudge of Edinburgh", episodes: "52m", note: 3 } ] },
