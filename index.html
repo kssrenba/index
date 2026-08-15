@@ -2020,6 +2020,38 @@
 
     .poster-lightbox-media-category:empty { display: none; }
 
+    /* Bloco do Anime-Planet/Crunchyroll/MyAnimeList embaixo da imagem, só
+       no desktop (ver JS: renderMalScores manda uma cópia pra cá e outra
+       pra dentro do painel — CSS decide qual aparece em cada tamanho de
+       tela). */
+    .poster-lightbox-media-watchnow {
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+      padding: 14px 20px;
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .poster-lightbox-media-watchnow:empty { display: none; }
+
+    .poster-lightbox.simple-mode .poster-lightbox-media-watchnow {
+      display: none !important;
+    }
+
+    @media (max-width: 760px) {
+      .poster-lightbox-media-watchnow {
+        display: none !important;
+      }
+    }
+
+    @media (min-width: 761px) {
+      .rank-mal .watch-now-links {
+        display: none;
+      }
+    }
+
     .poster-lightbox-media-category .simple-category-division {
       font-weight: 800;
     }
@@ -2041,6 +2073,13 @@
       padding-right: 8px;
       padding-top: 4px;
       text-align: left;
+    }
+
+    /* Enquanto a seta do "watch now" está animando, trava a rolagem vertical
+       do painel pra barra de rolagem não "piscar" no meio da animação (ver
+       JS: listener do ".watch-now-toggle" em "lightboxMal"). */
+    .poster-lightbox-panel.watch-now-animating {
+      overflow-y: hidden;
     }
 
     .poster-lightbox-panel::-webkit-scrollbar { width: 6px; }
@@ -2197,18 +2236,135 @@
     /* Botão "Watch Now" (Crunchyroll): visível em qualquer tamanho de tela,
        ao lado do botão do Anime-Planet. No mobile, se o app do Crunchyroll
        estiver instalado, o universal link abre ele direto; sem o app (ou
-       no PC), cai no site normalmente. */
+       no PC), cai no site normalmente. Sempre numa linha só (sem quebrar),
+       mesmo no mobile — se não couber tudo, rola na horizontal em vez de
+       quebrar linha. */
     .watch-now-links {
       display: flex;
       align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 6px 16px;
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      gap: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
-    @media (min-width: 761px) {
-      .watch-now-links {
-        justify-content: flex-start;
+    .watch-now-links::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Espaço fixo depois do botão sempre visível (agora pode ser qualquer
+       um dos três, já que a ordem roda a cada abertura do lightbox — ver
+       "watchNowOrderIndex" no JS). Usa ":first-child" em vez de mirar
+       especificamente o Anime-Planet. O espaço entre ".watch-now-extra" e
+       a seta é controlado pela própria ".watch-now-extra" (margin-right),
+       que anima junto com o max-width — ver abaixo. */
+    .watch-now-links > .rank-mal-label:first-child {
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+
+    /* Seta que revela Crunchyroll/MyAnimeList: fica logo depois do
+       Anime-Planet (que é sempre visível) quando fechada e, ao ser clicada,
+       expande ".watch-now-extra" (que fica entre o Anime-Planet e a seta no
+       DOM) — como a seta some depois desse conteúdo, ela "anda" junto com a
+       animação de largura e termina ao lado do MyAnimeList. Um novo clique
+       fecha tudo e ela volta pra perto do Anime-Planet (ver JS: listener em
+       "lightboxMal"). */
+    .watch-now-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: none;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.15s ease, transform 0.35s ease;
+    }
+
+    .watch-now-toggle svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .watch-now-toggle:hover,
+    .watch-now-toggle:focus-visible {
+      color: var(--text);
+    }
+
+    .watch-now-links.open .watch-now-toggle {
+      color: var(--text);
+      transform: rotate(180deg);
+    }
+
+    /* Crunchyroll/MyAnimeList começam escondidos (largura 0, invisíveis) e
+       só se revelam com uma animação de expansão + fade quando a seta é
+       clicada (classe "open" entra no ".watch-now-links" pai). O
+       "margin-right" some junto com o "max-width" pra seta ficar coladinha
+       no Anime-Planet enquanto fechada, sem espaço reservado à toa. */
+    .watch-now-extra {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+      gap: 16px;
+      max-width: 0;
+      margin-right: 0;
+      opacity: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      transform: translateX(-8px);
+      transition: max-width 0.35s ease, margin-right 0.35s ease, opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .watch-now-links.open .watch-now-extra {
+      max-width: 320px;
+      margin-right: 16px;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* No mobile, tudo precisa caber numa linha só sem cortar nada — reduz
+       levemente logos/gaps/fonte pra abrir espaço (ver JS: a rolagem
+       horizontal de ".watch-now-links" continua como rede de segurança
+       pra telas bem estreitas, mas o normal é já caber tudo aqui). */
+    @media (max-width: 760px) {
+      .watch-now-links > .rank-mal-label:first-child {
+        margin-right: 10px;
+      }
+
+      .watch-now-extra {
+        gap: 10px;
+      }
+
+      .watch-now-links.open .watch-now-extra {
+        margin-right: 10px;
+      }
+
+      .watch-now-links .rank-mal-label {
+        font-size: 10px;
+        gap: 4px;
+      }
+
+      .watch-now-links .rank-mal-label--crunchyroll .crunchyroll-btn-logo,
+      .watch-now-links .rank-mal-label--anime-planet .anime-planet-btn-logo,
+      .watch-now-links .rank-mal-label--mal .mal-btn-logo {
+        height: 14px;
+      }
+
+      .watch-now-toggle {
+        width: 18px;
+        height: 18px;
+      }
+
+      .watch-now-toggle svg {
+        width: 12px;
+        height: 12px;
       }
     }
 
@@ -2236,6 +2392,14 @@
       transition: transform 0.15s ease, filter 0.15s ease;
     }
 
+    /* Nessa cópia (embaixo do pôster) o logo do Anime-Planet fica sobre um
+       fundo mais escuro/variado que no painel, então puxa um pouco de
+       brilho/saturação pra compensar e ficar com a mesma cor viva das
+       outras cópias. */
+    .poster-lightbox-media-watchnow .rank-mal-label--anime-planet .anime-planet-btn-logo {
+      filter: brightness(1.08) saturate(1.6) contrast(1.1);
+    }
+
     .rank-mal-label--mal .mal-btn-logo {
       display: block;
       width: auto;
@@ -2255,6 +2419,11 @@
     a.rank-mal-label--mal:hover .mal-btn-logo,
     a.rank-mal-label--mal:focus-visible .mal-btn-logo {
       filter: brightness(1.15);
+    }
+
+    .poster-lightbox-media-watchnow a.rank-mal-label--anime-planet:hover .anime-planet-btn-logo,
+    .poster-lightbox-media-watchnow a.rank-mal-label--anime-planet:focus-visible .anime-planet-btn-logo {
+      filter: brightness(1.5) saturate(2.2) contrast(1.3);
     }
 
     a.rank-mal-label--anime-planet svg,
@@ -3266,8 +3435,8 @@
       height: 1px;
       background-image: linear-gradient(
         90deg,
-        var(--tag-color, var(--glow-accent)) 0%,
-        var(--tag-color-2, var(--glow-accent)) 100%
+        var(--tag-color-2, var(--glow-accent)) 0%,
+        var(--tag-color, var(--glow-accent)) 100%
       );
       opacity: 0;
       transition: opacity 0.2s ease;
@@ -5409,6 +5578,7 @@
           <div id="posterLightboxAnnounce" class="poster-lightbox-announce"></div>
         </div>
         <div id="posterLightboxMediaCategory" class="poster-lightbox-media-category"></div>
+        <div id="posterLightboxMediaWatchNow" class="poster-lightbox-media-watchnow"></div>
       </div>
       <div id="posterLightboxSimpleCategory" class="poster-lightbox-simple-category"></div>
       <div id="posterLightboxSimpleLink" class="poster-lightbox-simple-link"></div>
@@ -5530,6 +5700,7 @@
         const lightboxRatings = document.getElementById('posterLightboxRatings');
         const lightboxMeta = document.getElementById('posterLightboxMeta');
         const lightboxMal = document.getElementById('posterLightboxMal');
+        const lightboxMediaWatchNow = document.getElementById('posterLightboxMediaWatchNow');
         const lightboxInfo = document.getElementById('posterLightboxInfo');
         const lightboxSimpleCategory = document.getElementById('posterLightboxSimpleCategory');
         const lightboxMediaCategory = document.getElementById('posterLightboxMediaCategory');
@@ -5572,6 +5743,12 @@
 
         let lastFocused = null;
         let currentItem = null;
+        // Ordem rotativa dos botões Anime-Planet/Crunchyroll/MyAnimeList:
+        // a cada vez que o poster lightbox é ABERTO (não a cada troca de
+        // item dentro dele já aberto), avança um passo nessa rotação, pra
+        // o botão sempre visível (o primeiro da lista) ir alternando entre
+        // os três em loop.
+        let watchNowOrderIndex = 0;
 
         // ── Som especial ao abrir o poster-lightbox do Re:ZERO ──
         const rezeroSound = new Audio('assets/sound-effects/rdb-rezero.mp3');
@@ -5700,6 +5877,10 @@
         // reaproveitado nos botões do Anime-Planet e Crunchyroll.
         const EXTERNAL_LINK_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path></svg>`;
 
+        // Ícone (•••) do botão que revela Crunchyroll/MyAnimeList escondidos
+        // atrás do Anime-Planet — ver ".watch-now-toggle"/".watch-now-extra".
+        const WATCH_NOW_TOGGLE_ICON_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+
         // Link para a sua lista pessoal no MyAnimeList. Usado no logo do MAL
         // dentro do lightbox do "All Animes" — só é clicável no PC (ver CSS
         // ".rank-mal > .rank-mal-label--mal", regra @media min-width:761px);
@@ -5816,13 +5997,57 @@
         function renderMalScores(animeId, isWatchingNow, animePlanetUrl, crunchyrollUrl, watchNowMalUrl) {
           if (!lightboxMal) return;
 
+          // Limpa a cópia embaixo da imagem a cada render; quem preenche
+          // de novo (quando houver) é o final desta função — ver
+          // "lightboxMediaWatchNow" mais abaixo.
+          if (lightboxMediaWatchNow) lightboxMediaWatchNow.innerHTML = '';
+
           // Botões do Anime-Planet, Crunchyroll e MyAnimeList (sempre que
           // houver link) e, só em telas mobile (via CSS), também um botão
           // "Watch Now" que tenta abrir o anime direto no app do
           // Crunchyroll, quando existir link. Só aparecem nos cards do
           // "Watching Now".
-          const watchNowButtonsHtml = `${buildAnimePlanetButtonHtml(animePlanetUrl)}${buildCrunchyrollButtonHtml(crunchyrollUrl)}${buildWatchNowMalButtonHtml(watchNowMalUrl)}`;
+          // Só o botão do Anime-Planet fica visível de cara; Crunchyroll e
+          // MyAnimeList (quando existirem) ficam escondidos atrás da seta
+          // e só aparecem com uma animação de expansão ao lado quando ela é
+          // clicada — ver CSS ".watch-now-toggle"/".watch-now-extra" e o
+          // listener delegado em "lightboxMal" (mais abaixo no JS).
+          // Importante: no HTML, ".watch-now-extra" fica ANTES da seta (e
+          // não depois). Como ela nasce com largura 0, a seta some coladinha
+          // no Anime-Planet; quando abre, o crescimento da largura empurra a
+          // seta pra direita até ela ficar do lado do MyAnimeList.
+          const allWatchNowBtnsHtml = [
+            buildAnimePlanetButtonHtml(animePlanetUrl),
+            buildCrunchyrollButtonHtml(crunchyrollUrl),
+            buildWatchNowMalButtonHtml(watchNowMalUrl),
+          ].filter(Boolean);
+          // Gira o array de acordo com "watchNowOrderIndex" (avança 1 a
+          // cada abertura do lightbox), fazendo o botão que fica visível
+          // de cara alternar em loop entre Anime-Planet/Crunchyroll/MAL.
+          // O "% length" garante que a rotação sempre exista, mesmo se
+          // algum dos três links não existir pra esse anime (array menor).
+          if (allWatchNowBtnsHtml.length > 1) {
+            const rotateBy = watchNowOrderIndex % allWatchNowBtnsHtml.length;
+            allWatchNowBtnsHtml.push(...allWatchNowBtnsHtml.splice(0, rotateBy));
+          }
+          let watchNowButtonsHtml = '';
+          if (allWatchNowBtnsHtml.length) {
+            const [firstWatchNowBtnHtml, ...restWatchNowBtnsHtml] = allWatchNowBtnsHtml;
+            const watchNowToggleHtml = restWatchNowBtnsHtml.length
+              ? `<button type="button" class="watch-now-toggle" aria-label="Mostrar mais opções" aria-expanded="false">${WATCH_NOW_TOGGLE_ICON_SVG}</button>`
+              : '';
+            const watchNowExtraHtml = restWatchNowBtnsHtml.length
+              ? `<span class="watch-now-extra">${restWatchNowBtnsHtml.join('')}</span>`
+              : '';
+            watchNowButtonsHtml = `${firstWatchNowBtnHtml}${watchNowExtraHtml}${watchNowToggleHtml}`;
+          }
           const watchNowLinksHtml = watchNowButtonsHtml ? `<div class="watch-now-links">${watchNowButtonsHtml}</div>` : '';
+
+          // Cópia dos mesmos botões pra ficar embaixo da imagem — só
+          // aparece no desktop (CSS esconde essa cópia no mobile e esconde
+          // a de dentro do painel no desktop; ver ".poster-lightbox-media-
+          // watchnow" e ".rank-mal .watch-now-links").
+          if (lightboxMediaWatchNow) lightboxMediaWatchNow.innerHTML = watchNowLinksHtml;
 
           // No "Watching Now", as notas por temporada (bloco abaixo) só
           // aparecem quando esse mesmo anime também tiver uma entrada na
@@ -6258,7 +6483,7 @@
           // pertence às listas "Incomplete" e "Announced Sequels" — usa o
           // próprio getFilteredData pra achar a posição, então basta ver se
           // o id aparece na lista de cada uma.
-          ['incomplete', 'announced', 'watching'].forEach(key => {
+          ['incomplete', 'announced', 'watching', 'plan'].forEach(key => {
             const list = (typeof getFilteredData === 'function') ? getFilteredData(key) : [];
             if (list.some(a => a.id === animeId)) {
               const label = String(CATEGORY_LABEL[key] || '').replace(/:\s*$/, '');
@@ -6360,7 +6585,12 @@
           // botões de Anime-Planet/Crunchyroll/MAL e os campos de meta,
           // igual ao Watching Now (ver renderMeta/renderMalScores abaixo).
           const isPlanToWatch = item.hasAttribute('data-plan-to-watch');
-          const isRichPanel = isWatchingNow || isPlanToWatch;
+          // "Unwatched or in Progress" (dentro de Announced Sequels) também
+          // usa o painel completo (Studio/Lançamento + notas do MAL por
+          // temporada), em vez do modo simples antigo (só pôster + tag de
+          // anúncio) — ver atributo "data-rich-panel" no createAnimeCard.
+          const isAnnouncedRichPanel = item.hasAttribute('data-rich-panel');
+          const isRichPanel = isWatchingNow || isPlanToWatch || isAnnouncedRichPanel;
           const isMyRanks = /myranks\//.test(src) && !isRichPanel;
           const animePlanetUrl = item.getAttribute('data-anime-planet-url')
             || item.getAttribute('data-watchnow-anime-planet-url');
@@ -6504,7 +6734,7 @@
               ? mergedWatchingTagHtml + (restTagsHtml ? '<span class="list-sep"></span>' + restTagsHtml : '')
               : restTagsHtml;
 
-            const divisionHtml = (division && !hideDivision && !watchingEntry && !mergedWatchingTagHtml)
+            const divisionHtml = (division && !hideDivision && !isUnwatchedDivision && !watchingEntry && !mergedWatchingTagHtml)
               ? `<span class="list-sep"></span><span class="list-division">${escapeHtml(division.text)}</span>`
               : '';
 
@@ -6598,6 +6828,7 @@
         }
 
         function openLightbox(item) {
+          watchNowOrderIndex++;
           showItem(item);
           lightbox.classList.add('open');
           lightbox.setAttribute('aria-hidden', 'false');
@@ -6661,8 +6892,13 @@
 
           const isAllAnimesCard = !item.hasAttribute('data-anime-planet-url') && !item.hasAttribute('data-nav-all');
           const isPlanToWatchCard = item.hasAttribute('data-plan-to-watch');
+          // Cards de "Unwatched or in Progress" (dentro de Announced
+          // Sequels) usam o mesmo painel completo do Watching Now/Plan to
+          // Watch — clicar em qualquer parte do card deve abrir o poster
+          // lightbox, igual aos outros dois.
+          const isRichPanelCard = item.hasAttribute('data-rich-panel');
 
-          const trigger = (isAllAnimesCard || isPlanToWatchCard) ? item : e.target.closest('.poster-wrap');
+          const trigger = (isAllAnimesCard || isPlanToWatchCard || isRichPanelCard) ? item : e.target.closest('.poster-wrap');
           if (!trigger || !item.contains(trigger)) return;
 
           // Se o usuário estava selecionando texto do card (pra copiar o
@@ -6703,15 +6939,68 @@
 
         // ── Botão "MyAnimeList" dentro do lightbox: no mobile ele é só um
         // selo visual (sem navegar pra lugar nenhum); no desktop continua
-        // funcionando normalmente como link pro MyAnimeList. ──
-        if (lightboxMal) {
-          lightboxMal.addEventListener('click', function(e) {
-            const btn = e.target.closest('a.rank-mal-label:not(.rank-mal-label--anime-planet):not(.rank-mal-label--crunchyroll):not(.rank-mal-label--mal)');
-            if (!btn) return;
-            if (window.matchMedia('(max-width: 760px)').matches) {
-              e.preventDefault();
+        // funcionando normalmente como link pro MyAnimeList. Esse mesmo
+        // handler cuida das DUAS cópias do bloco Anime-Planet/Crunchyroll/
+        // MyAnimeList — a de dentro do painel (mobile) e a de baixo da
+        // imagem (desktop) — ver "lightboxMal"/"lightboxMediaWatchNow". ──
+        function handleWatchNowAreaClick(e) {
+          // Seta: revela/esconde Crunchyroll e MyAnimeList ao lado do
+          // Anime-Planet, e ela mesma "anda" até ficar do lado do
+          // MyAnimeList (ver CSS ".watch-now-toggle"/".watch-now-extra").
+          const toggleBtn = e.target.closest('.watch-now-toggle');
+          if (toggleBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const container = toggleBtn.closest('.watch-now-links');
+            if (container) {
+              const isOpen = container.classList.toggle('open');
+              toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+              // Trava a rolagem do painel durante a animação de largura
+              // pra barra de rolagem não "piscar" no meio do caminho, e
+              // destrava quando ela termina.
+              const panel = toggleBtn.closest('.poster-lightbox-panel');
+              if (panel) {
+                panel.classList.add('watch-now-animating');
+                window.clearTimeout(panel._watchNowAnimTimeout);
+                panel._watchNowAnimTimeout = window.setTimeout(function() {
+                  panel.classList.remove('watch-now-animating');
+                }, 380);
+              }
+              // Nas telas realmente estreitas, onde mesmo reduzido não
+              // cabe tudo numa linha só, ".watch-now-links" rola na
+              // horizontal (ver CSS). Só entra em ação quando sobra
+              // conteúdo de verdade — do contrário, com tudo cabendo,
+              // não faz nada (evita cortar o Anime-Planet à toa).
+              window.cancelAnimationFrame(container._watchNowScrollRaf);
+              if (isOpen) {
+                const scrollStart = performance.now();
+                const scrollStep = function(now) {
+                  if (container.scrollWidth > container.clientWidth + 1) {
+                    container.scrollLeft = container.scrollWidth;
+                  }
+                  if (now - scrollStart < 400) {
+                    container._watchNowScrollRaf = window.requestAnimationFrame(scrollStep);
+                  }
+                };
+                container._watchNowScrollRaf = window.requestAnimationFrame(scrollStep);
+              } else {
+                container.scrollTo({ left: 0, behavior: 'smooth' });
+              }
             }
-          });
+            return;
+          }
+          const btn = e.target.closest('a.rank-mal-label:not(.rank-mal-label--anime-planet):not(.rank-mal-label--crunchyroll):not(.rank-mal-label--mal)');
+          if (!btn) return;
+          if (window.matchMedia('(max-width: 760px)').matches) {
+            e.preventDefault();
+          }
+        }
+
+        if (lightboxMal) {
+          lightboxMal.addEventListener('click', handleWatchNowAreaClick);
+        }
+        if (lightboxMediaWatchNow) {
+          lightboxMediaWatchNow.addEventListener('click', handleWatchNowAreaClick);
         }
 
         document.addEventListener('keydown', function(e) {
@@ -8155,7 +8444,7 @@
         }
 
         return `
-          <li class="anime-item${subClass}${topRankClass}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${navAllAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}${mode === 'plan' ? ' data-plan-to-watch="1"' : ''}>
+          <li class="anime-item${subClass}${topRankClass}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${navAllAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}${mode === 'plan' ? ' data-plan-to-watch="1"' : ''}${mode === 'announced-unwatched' ? ' data-rich-panel="1"' : ''}>
             <div class="anime-item-ambient" aria-hidden="true"></div>
             <div class="anime-item-ambient-shade" aria-hidden="true"></div>
             <div class="rank-wrap">
