@@ -2255,13 +2255,10 @@
       display: none;
     }
 
-    /* Espaço fixo depois do botão sempre visível (agora pode ser qualquer
-       um dos três, já que a ordem roda a cada abertura do lightbox — ver
-       "watchNowOrderIndex" no JS). Usa ":first-child" em vez de mirar
-       especificamente o Anime-Planet. O espaço entre ".watch-now-extra" e
-       a seta é controlado pela própria ".watch-now-extra" (margin-right),
-       que anima junto com o max-width — ver abaixo. */
-    .watch-now-links > .rank-mal-label:first-child {
+    /* Espaço fixo depois do Anime-Planet (sempre visível). O espaço entre
+       ".watch-now-extra" e a seta é controlado pela própria ".watch-now-extra"
+       (margin-right), que anima junto com o max-width — ver abaixo. */
+    .watch-now-links .rank-mal-label--anime-planet {
       margin-right: 16px;
       flex-shrink: 0;
     }
@@ -2334,7 +2331,7 @@
        horizontal de ".watch-now-links" continua como rede de segurança
        pra telas bem estreitas, mas o normal é já caber tudo aqui). */
     @media (max-width: 760px) {
-      .watch-now-links > .rank-mal-label:first-child {
+      .watch-now-links .rank-mal-label--anime-planet {
         margin-right: 10px;
       }
 
@@ -5743,12 +5740,6 @@
 
         let lastFocused = null;
         let currentItem = null;
-        // Ordem rotativa dos botões Anime-Planet/Crunchyroll/MyAnimeList:
-        // a cada vez que o poster lightbox é ABERTO (não a cada troca de
-        // item dentro dele já aberto), avança um passo nessa rotação, pra
-        // o botão sempre visível (o primeiro da lista) ir alternando entre
-        // os três em loop.
-        let watchNowOrderIndex = 0;
 
         // ── Som especial ao abrir o poster-lightbox do Re:ZERO ──
         const rezeroSound = new Audio('assets/sound-effects/rdb-rezero.mp3');
@@ -6021,15 +6012,6 @@
             buildCrunchyrollButtonHtml(crunchyrollUrl),
             buildWatchNowMalButtonHtml(watchNowMalUrl),
           ].filter(Boolean);
-          // Gira o array de acordo com "watchNowOrderIndex" (avança 1 a
-          // cada abertura do lightbox), fazendo o botão que fica visível
-          // de cara alternar em loop entre Anime-Planet/Crunchyroll/MAL.
-          // O "% length" garante que a rotação sempre exista, mesmo se
-          // algum dos três links não existir pra esse anime (array menor).
-          if (allWatchNowBtnsHtml.length > 1) {
-            const rotateBy = watchNowOrderIndex % allWatchNowBtnsHtml.length;
-            allWatchNowBtnsHtml.push(...allWatchNowBtnsHtml.splice(0, rotateBy));
-          }
           let watchNowButtonsHtml = '';
           if (allWatchNowBtnsHtml.length) {
             const [firstWatchNowBtnHtml, ...restWatchNowBtnsHtml] = allWatchNowBtnsHtml;
@@ -6828,7 +6810,6 @@
         }
 
         function openLightbox(item) {
-          watchNowOrderIndex++;
           showItem(item);
           lightbox.classList.add('open');
           lightbox.setAttribute('aria-hidden', 'false');
