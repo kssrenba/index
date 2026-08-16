@@ -1359,174 +1359,230 @@
       }
 
       /* ── DRAWER: CREDITS ──
-        Grade de cartões por categoria (sem hierarquia de "tiers"):
-        cada serviço vira um cartão com o logo numa "moldura" própria
-        + o nome embaixo, agrupados por função (Ferramentas de IA,
-        Onde Assistir, Design & Imagens, Referência). O card ganha um
-        brilho/realce na cor da própria marca ao passar o mouse
-        (--brand, setado inline em cada card). */
+        Lista estática de créditos, com pegada de créditos de filme
+        (cargo em caixa alta + nome), mas em fluxo normal dentro do
+        drawer-content, sobre o fundo padrão do drawer (sem tela preta,
+        sem rolagem automática). */
       :root {
         --credits-gold: var(--glow-accent);
         --credits-gold-bright: color-mix(in srgb, var(--glow-accent) 55%, #ffffff);
       }
 
       .credits-crawl {
-        padding: 6px 20px 28px;
+        padding: 4px 22px 24px;
+      }
+
+      .credits-crawl-logo {
         display: flex;
         flex-direction: column;
-        gap: 30px;
-      }
-
-      /* ── "Criado por": sem cartão/fundo, só o ícone + texto soltos,
-        com um respiro maior até a primeira categoria abaixo ── */
-      .credits-hero {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 0;
-        margin-bottom: 12px;
-        background: none;
-        border: none;
-      }
-
-      .credits-hero-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 42px;
-        height: 42px;
-        flex: 0 0 auto;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.06);
-        color: #f2f0ea;
-      }
-
-      .credits-hero-icon svg { width: 22px; height: 22px; }
-
-      .credits-hero-text {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        min-width: 0;
-      }
-
-      .credits-hero-label {
-        font-size: 10.5px;
-        font-weight: 800;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .credits-hero-name {
-        font-family: var(--font-title);
-        font-weight: 600;
-        font-size: 18px;
-        color: #f2f0ea;
-        text-decoration: none;
-        display: inline-flex;
         align-items: center;
         gap: 8px;
-        transition: color 0.2s ease;
-        width: fit-content;
+        text-align: center;
+        padding: 18px 0 28px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(203,213,225,0.16);
       }
 
-      .credits-hero-name:hover,
-      .credits-hero-name:focus-visible {
-        color: var(--credits-gold-bright);
+      .credits-crawl-logo-eyebrow {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #7a7f8a;
       }
 
-      .credits-hero-name svg { flex-shrink: 0; }
-
-      /* ── Cada categoria: título discreto (sem "role" de tier) + linha
-        pontilhada, seguindo o mesmo idioma visual dos season-headers/
-        search-section-header já usados no resto do site ── */
-      .credits-group-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 14px;
+      .credits-crawl-logo-title {
         font-family: var(--font-title);
         font-weight: 800;
-        font-size: 11.5px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        color: var(--muted);
+        font-size: clamp(24px, 7vw, 30px);
+        letter-spacing: 0.02em;
+        color: var(--credits-gold-bright);
+        text-shadow: 0 0 18px rgba(203,213,225,0.3), 0 1px 0 rgba(0,0,0,0.6);
       }
 
-      .credits-group-title .credits-group-line {
-        flex: 1;
-        height: 1px;
-        background-image: repeating-linear-gradient(
-          to right,
-          currentColor 0,
-          currentColor 4px,
-          transparent 4px,
-          transparent 9px
-        );
-        opacity: 0.45;
-      }
-
-      .credits-grid {
+      .credits-block {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: center;
         gap: 12px;
+        text-align: center;
+        padding: 22px 12px;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
       }
 
-      /* ── Cartão de serviço: chip retangular com largura livre (segue
-        o tamanho natural do logo, não força quadrado) e altura fixa —
-        assim cada linha continua alinhada em altura, mas sem parecer
-        uma grade rígida de ícones. O fundo já nasce com um tom sutil
-        da cor da marca (--brand, setado inline em cada card), em vez
-        de preto liso; no hover o tom intensifica e o card "acende".
-        Sem legenda embaixo — o alt da imagem já cobre o nome pra
-        acessibilidade. */
-      .credits-card {
+      .credits-block + .credits-block {
+        border-top: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .credits-role {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--credits-gold);
+        opacity: 0.85;
+      }
+
+      .credits-names {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 9px;
+      }
+
+      .credits-name {
+        font-family: var(--font-title);
+        font-weight: 700;
+        font-size: clamp(17px, 4.5vw, 21px);
+        letter-spacing: 0.01em;
+        color: #f2f0ea;
+        text-decoration: none;
+        transition: color 0.2s ease, text-shadow 0.2s ease;
+      }
+
+      .credits-name:hover,
+      .credits-name:focus-visible {
+        color: var(--credits-gold-bright);
+        text-shadow: 0 0 14px rgba(203,213,225,0.35);
+      }
+
+      .credits-crawl-divider {
+        color: var(--credits-gold);
+        opacity: 0.55;
+        font-size: 15px;
+        margin: 14px 0 6px;
+        text-align: center;
+      }
+
+      .credits-crawl-dedication {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        text-align: center;
+        padding: 26px 20px 4px;
+        margin: 8px auto 0;
+        border-top: 1px solid rgba(203,213,225,0.16);
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .credits-crawl-dedication-text {
+        font-family: var(--font-title);
+        font-style: italic;
+        font-weight: 600;
+        font-size: 15px;
+        color: #d7d9de;
+        line-height: 1.5;
+      }
+
+      .credits-crawl-copy {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #565b66;
+      }
+
+      /* ── Créditos com o logo do serviço em vez de texto ──
+        Cada entrada vira um link que mostra a imagem do logo
+        (assets/credits-webp/*.webp), com uma altura fixa e largura
+        livre para caber logos de proporções diferentes (ícone quadrado
+        vs. wordmark alongado, como o da Canva). */
+      .credits-name.credits-name-logo {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        height: 68px;
-        flex: 0 0 auto;
-        padding: 0 26px;
-        border-radius: 16px;
-        background:
-          radial-gradient(130% 160% at 20% 0%, color-mix(in srgb, var(--brand, var(--glow-accent)) 20%, transparent), transparent 65%),
-          linear-gradient(155deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
-        border: 1px solid color-mix(in srgb, var(--brand, var(--glow-accent)) 22%, rgba(255,255,255,0.08));
-        text-decoration: none;
-        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-      }
-
-      .credits-card:hover,
-      .credits-card:focus-visible {
-        transform: translateY(-3px);
-        border-color: color-mix(in srgb, var(--brand, var(--glow-accent)) 65%, transparent);
-        background:
-          radial-gradient(130% 160% at 20% 0%, color-mix(in srgb, var(--brand, var(--glow-accent)) 38%, transparent), transparent 70%),
-          linear-gradient(155deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
-        box-shadow: 0 12px 26px -8px rgba(0,0,0,0.6), 0 0 22px -4px color-mix(in srgb, var(--brand, var(--glow-accent)) 60%, transparent);
-      }
-
-      .credits-card-logo {
-        display: block;
-        height: 26px;
-        width: auto;
-        max-width: 140px;
-        object-fit: contain;
-        filter: saturate(1.05);
+        line-height: 0;
         transition: filter 0.2s ease, transform 0.2s ease;
       }
 
-      .credits-card:hover .credits-card-logo,
-      .credits-card:focus-visible .credits-card-logo {
-        filter: saturate(1.3) brightness(1.1);
-        transform: scale(1.05);
+      .credits-name.credits-name-logo:hover,
+      .credits-name.credits-name-logo:focus-visible {
+        filter: brightness(1.2);
+        transform: translateY(-1px);
+        text-shadow: none;
       }
 
-      /* Ajustes finos de altura por logo específico (proporções variam
-        bastante entre ícone quadrado e wordmark alongado) */
-      .credits-card-logo--wide { height: 20px; }
-      .credits-card-logo--tall { height: 34px; }
+      .credits-logo-img {
+        display: block;
+        height: 24px;
+        width: auto;
+        max-width: 160px;
+        object-fit: contain;
+      }
+
+      /* Alguns wordmarks (ex: Canva) tendem a ser mais largos/baixos —
+        um pouco menor de altura fica proporcionalmente mais parecido
+        com o restante da lista. */
+      .credits-logo-img--wide {
+        height: 20px;
+      }
+
+      .credits-logo-img--canva {
+        height: 26px;
+      }
+      
+      /* Link com ícone do GitHub + nome de usuário */
+      .credits-name-github {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .credits-github-icon {
+        flex-shrink: 0;
+      }
+
+      /* Ajustes finos de tamanho por logo específico (pedidos pelo usuário) */
+      .credits-logo-img--prime {
+        height: 30px;
+      }
+
+      .credits-logo-img--anime-planet {
+        height: 40px;
+      }
+
+      .credits-logo-img--pinterest {
+        height: 26px;
+      }
+
+      /* Gemini um pouco maior no bloco Fontes & Referências */
+      .credits-logo-img--gemini-source {
+        height: 20px;
+      }
+
+      /* Gemini um pouco maior no bloco Fontes & Referências */
+      .credits-logo-img--pinterest-source {
+        height: 30px;
+      }
+
+      /* ChatGPT um pouco maior no bloco Fontes & Referências */
+      .credits-logo-img--chatgpt-source {
+        height: 30px;
+      }
+
+      /* Voicemod Tuna um pouco maior */
+      .credits-logo-img--voicemod-tuna {
+        height: 25px;
+      }
+
+      /* Bloco Fontes & Referências em grade de 2 colunas (2 logos por linha) */
+      .credits-names--sources {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        align-items: center;
+        justify-items: center;
+        column-gap: 22px;
+        row-gap: 18px;
+      }
+
+      /* Se sobrar um item ímpar (ex: 5º logo), ele ocupa a linha toda e fica centralizado */
+      .credits-names--sources > .credits-name-logo:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+      }
 
       .drawer-reset-btn {
         background: transparent;
@@ -2139,6 +2195,28 @@
         color: var(--low-priority);
         font-weight: 400;
         font-style: italic;
+      }
+
+      /* Nota ao vivo do MyAnimeList (ver updateLiveMalScore/renderMeta):
+        cor de destaque pra diferenciar dos outros campos (Studio/Lançamento/
+        Rewatch), que são só texto informativo estático. */
+      .rank-meta-value--score {
+        color: #7fb2ff;
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.15s ease, opacity 0.15s ease;
+      }
+
+      .rank-meta-value--score:hover,
+      .rank-meta-value--score:focus-visible {
+        color: #a7c9ff;
+        opacity: 0.9;
+      }
+
+      .rank-meta-value--score.empty {
+        color: var(--low-priority);
+        cursor: default;
+        pointer-events: none;
       }
 
       .rank-meta-value[contenteditable="true"] {
@@ -4431,6 +4509,15 @@
         white-space: nowrap;
       }
 
+      /* Estado "concluído": em vez do "12/12", mostra "COMPLETED" com a cor
+        de destaque do próprio card, pra ficar bem visível de cara. */
+      .watch-progress-label--completed {
+        color: var(--item-hover-color, #2dd4bf);
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        font-size: 10px;
+      }
+
       /* Total geral (soma de todas as temporadas), mostrado bem menor e mais
         apagado ao lado do progresso da temporada atual, entre parênteses. */
       .watch-progress-label-total {
@@ -5651,71 +5738,68 @@
           <div class="credits-crawl" id="creditsCrawl">
             <div class="credits-crawl-track" id="creditsCrawlTrack">
 
-              <div class="credits-hero">
-                <span class="credits-hero-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18l6-6-6-6"></path><path d="M8 6l-6 6 6 6"></path></svg>
-                </span>
-                <span class="credits-hero-text">
-                  <span class="credits-hero-label">Criado por</span>
-                  <a class="credits-hero-name" href="https://github.com/abnerssk" target="_blank" rel="noopener noreferrer">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <div class="credits-block">
+                <div class="credits-role">CREATED BY</div>
+                <div class="credits-names">
+                  <a class="credits-name credits-name-github" href="https://github.com/abnerssk" target="_blank" rel="noopener noreferrer">
+                    <svg class="credits-github-icon" viewBox="0 0 16 16" width="20" height="20" fill="currentColor" aria-hidden="true">
                       <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
                     </svg>
-                    abnerssk
-                  </a>
-                </span>
-              </div>
-
-              <div class="credits-group">
-                <div class="credits-group-title"><span>Ferramentas de IA</span><span class="credits-group-line"></span></div>
-                <div class="credits-grid">
-                  <a class="credits-card" href="https://claude.ai" target="_blank" rel="noopener noreferrer" style="--brand:#d97757;" aria-label="Claude">
-                    <img class="credits-card-logo" src="assets/credits-webp/claude.webp" alt="Claude" loading="lazy" decoding="async">
-                  </a>
-                  <a class="credits-card" href="https://chatgpt.com" target="_blank" rel="noopener noreferrer" style="--brand:#10a37f;" aria-label="ChatGPT">
-                    <img class="credits-card-logo" src="assets/credits-webp/chatgpt.webp" alt="ChatGPT" loading="lazy" decoding="async">
-                  </a>
-                  <a class="credits-card" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" style="--brand:#8e75ea;" aria-label="Gemini">
-                    <img class="credits-card-logo" src="assets/credits-webp/gemini.webp" alt="Gemini" loading="lazy" decoding="async">
+                    <span>abnerssk</span>
                   </a>
                 </div>
               </div>
 
-              <div class="credits-group">
-                <div class="credits-group-title"><span>Onde Assistir</span><span class="credits-group-line"></span></div>
-                <div class="credits-grid">
-                  <a class="credits-card" href="https://www.crunchyroll.com" target="_blank" rel="noopener noreferrer" style="--brand:#ff640a;" aria-label="Crunchyroll">
-                    <img class="credits-card-logo" src="assets/credits-webp/crunchyroll.webp" alt="Crunchyroll" loading="lazy" decoding="async">
-                  </a>
-                  <a class="credits-card" href="https://www.primevideo.com" target="_blank" rel="noopener noreferrer" style="--brand:#00a8e1;" aria-label="Prime Video">
-                    <img class="credits-card-logo credits-card-logo--wide" src="assets/credits-webp/prime-video.webp" alt="Prime Video" loading="lazy" decoding="async">
-                  </a>
-                  <a class="credits-card" href="https://www.netflix.com" target="_blank" rel="noopener noreferrer" style="--brand:#e50914;" aria-label="Netflix">
-                    <img class="credits-card-logo credits-card-logo--wide" src="assets/credits-webp/netflix.webp" alt="Netflix" loading="lazy" decoding="async">
+              <div class="credits-block">
+                <div class="credits-role">THE GOAT</div>
+                <div class="credits-names">
+                  <a class="credits-name credits-name-logo" href="https://claude.ai" href="https://media.tenor.com/d7z3jSKznEgAAAAe/goat-sullivan.png" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img" src="assets/credits-webp/claude.webp" alt="Claude" loading="lazy" decoding="async">
                   </a>
                 </div>
               </div>
 
-              <div class="credits-group">
-                <div class="credits-group-title"><span>Design &amp; Imagens</span><span class="credits-group-line"></span></div>
-                <div class="credits-grid">
-                  <a class="credits-card" href="https://www.canva.com" target="_blank" rel="noopener noreferrer" style="--brand:#8b3dff;" aria-label="Canva">
-                    <img class="credits-card-logo credits-card-logo--wide" src="assets/credits-webp/canva.webp" alt="Canva" loading="lazy" decoding="async">
+              <div class="credits-block">
+                <div class="credits-role">HIGH TIER HELPERS</div>
+                <div class="credits-names credits-names--sources">
+                  <a class="credits-name credits-name-logo" href="https://www.crunchyroll.com" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img" src="assets/credits-webp/crunchyroll.webp" alt="Crunchyroll" loading="lazy" decoding="async">
                   </a>
-                  <a class="credits-card" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" style="--brand:#e60023;" aria-label="Pinterest">
-                    <img class="credits-card-logo credits-card-logo--wide" src="assets/credits-webp/pinterest.webp" alt="Pinterest" loading="lazy" decoding="async">
+                  <a class="credits-name credits-name-logo" href="https://www.primevideo.com" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--prime" src="assets/credits-webp/prime-video.webp" alt="Prime Video" loading="lazy" decoding="async">
+                  </a>
+                  <a class="credits-name credits-name-logo" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img credits-logo-img--gemini-source" src="assets/credits-webp/gemini.webp" alt="Gemini" loading="lazy" decoding="async">
                   </a>
                 </div>
               </div>
 
-              <div class="credits-group">
-                <div class="credits-group-title"><span>Referência</span><span class="credits-group-line"></span></div>
-                <div class="credits-grid">
-                  <a class="credits-card" href="https://www.anime-planet.com" target="_blank" rel="noopener noreferrer" style="--brand:#f4c463;" aria-label="Anime-Planet">
-                    <img class="credits-card-logo credits-card-logo--wide" src="assets/credits-webp/anime-planet.webp" alt="Anime-Planet" loading="lazy" decoding="async">
+              <div class="credits-block">
+                <div class="credits-role">GOOD TIER HELPERS</div>
+                <div class="credits-names credits-names--sources">
+                  <a class="credits-name credits-name-logo" href="https://chatgpt.com" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img credits-logo-img--chatgpt-source" src="assets/credits-webp/chatgpt.webp" alt="ChatGPT" loading="lazy" decoding="async">
+                  </a>  
+                  <a class="credits-name credits-name-logo" href="https://www.canva.com" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--canva" src="assets/credits-webp/canva.webp" alt="Canva" loading="lazy" decoding="async">
+                  </a>                    
+                  <a class="credits-name credits-name-logo" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--pinterest" src="assets/credits-webp/pinterest.webp" alt="Pinterest" loading="lazy" decoding="async">
+                  </a>                       
+                  <a class="credits-name credits-name-logo" href="https://www.netflix.com" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--netflix" src="assets/credits-webp/netflix.webp" alt="Netflix" loading="lazy" decoding="async">
                   </a>
-                  <a class="credits-card" href="https://myanimelist.net" target="_blank" rel="noopener noreferrer" style="--brand:#2e51a2;" aria-label="MyAnimeList">
-                    <img class="credits-card-logo credits-card-logo--wide" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async">
+                </div>
+              </div>
+
+              <div class="credits-block">
+                <div class="credits-role">INFO TOOLS</div>
+                <div class="credits-names credits-names--sources">
+                  <a class="credits-name credits-name-logo" href="https://www.anime-planet.com" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--anime-planet" src="assets/credits-webp/anime-planet.webp" alt="Anime-Planet" loading="lazy" decoding="async">
+                  </a>                 
+                  <a class="credits-name credits-name-logo" href="https://myanimelist.net" target="_blank" rel="noopener noreferrer">
+                    <img class="credits-logo-img credits-logo-img--wide" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async">
                   </a>
                 </div>
               </div>
@@ -6044,6 +6128,108 @@
             { key: 'rewatch', label: 'Rewatch',   placeholder: 'Maybe' }
           ];
 
+          // ── SCORE ao vivo do MyAnimeList ──
+          // Campo extra que aparece à esquerda do Studio, só quando o anime
+          // tem um "malUrl" cadastrado (Watching Now / Plan to Watch — ver
+          // showItem/renderMeta). O número vem direto da API pública do
+          // Jikan (api.jikan.moe, espelho não-oficial do MyAnimeList), então
+          // se a nota mudar lá no MAL, ela muda sozinha aqui também — sem
+          // precisar editar nada no site. O valor fica em cache (localStorage)
+          // por algumas horas pra não bater na API toda hora à toa.
+          const SCORE_FIELD = { key: 'score', label: 'MAL Score', placeholder: '–' };
+          const MAL_SCORE_CACHE_KEY = 'myanimerank_mal_score_cache';
+          const MAL_SCORE_CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 horas (nota já existe)
+          // Quando o anime ainda não estreou (ou a nota do MAL ainda não
+          // existe), o cache dura bem menos — assim, assim que ele ganhar
+          // nota lá no MAL, o site pega isso rápido, sem ficar preso num
+          // "sem nota" antigo por 6h.
+          const MAL_SCORE_NULL_TTL_MS = 30 * 60 * 1000; // 30 minutos
+
+          function extractMalId(malUrl) {
+            if (!malUrl) return null;
+            const m = String(malUrl).match(/myanimelist\.net\/anime\/(\d+)/i);
+            return m ? m[1] : null;
+          }
+
+          function loadMalScoreCache() {
+            try {
+              return JSON.parse(localStorage.getItem(MAL_SCORE_CACHE_KEY) || '{}');
+            } catch (e) {
+              return {};
+            }
+          }
+
+          function saveMalScoreCache(cache) {
+            try {
+              localStorage.setItem(MAL_SCORE_CACHE_KEY, JSON.stringify(cache));
+            } catch (e) {}
+          }
+
+          function getCachedMalScore(malId) {
+            if (!malId) return null;
+            const cache = loadMalScoreCache();
+            return cache[malId] || null;
+          }
+
+          function setCachedMalScore(malId, score) {
+            if (!malId) return;
+            const cache = loadMalScoreCache();
+            cache[malId] = { score: score, ts: Date.now() };
+            saveMalScoreCache(cache);
+          }
+
+          function formatMalScoreText(score) {
+            return (typeof score === 'number' && !isNaN(score)) ? score.toFixed(2) : '–';
+          }
+
+          // Fila simples: espaça as chamadas à API do Jikan (limite público
+          // de ~3 por segundo) pra não tomar erro 429 quando o usuário
+          // navega rápido entre vários pôsteres do lightbox.
+          let malFetchQueueTail = Promise.resolve();
+          function queueMalFetch(task) {
+            const run = () => task().catch(() => null);
+            const result = malFetchQueueTail.then(run);
+            malFetchQueueTail = result.then(() => new Promise(resolve => setTimeout(resolve, 400)));
+            return result;
+          }
+
+          function fetchMalScoreFromApi(malId) {
+            return fetch(`https://api.jikan.moe/v4/anime/${malId}`)
+              .then(res => {
+                if (!res.ok) throw new Error('jikan http ' + res.status);
+                return res.json();
+              })
+              .then(json => {
+                const score = json && json.data ? json.data.score : null;
+                return (typeof score === 'number') ? score : null;
+              });
+          }
+
+          // Busca (com cache) a nota atual do MAL e atualiza o campo na tela
+          // — só se o lightbox ainda estiver mostrando esse mesmo anime
+          // quando a resposta chegar (evita atualizar o card errado depois
+          // que o usuário já trocou de pôster).
+          function updateLiveMalScore(animeId, malId, valueEl) {
+            if (!malId || !valueEl) return;
+            const cached = getCachedMalScore(malId);
+            if (cached) {
+              valueEl.textContent = formatMalScoreText(cached.score);
+              valueEl.classList.toggle('empty', cached.score == null);
+            }
+            const ttl = (cached && cached.score == null) ? MAL_SCORE_NULL_TTL_MS : MAL_SCORE_CACHE_TTL_MS;
+            const isFresh = cached && (Date.now() - cached.ts) < ttl;
+            if (isFresh) return;
+            queueMalFetch(() => fetchMalScoreFromApi(malId)).then(score => {
+              setCachedMalScore(malId, score);
+              if (!currentItem || currentItem.id !== animeId) return;
+              const liveEl = lightboxMeta && lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
+              if (liveEl) {
+                liveEl.textContent = formatMalScoreText(score);
+                liveEl.classList.toggle('empty', score == null);
+              }
+            });
+          }
+
           function loadAllMeta() {
             try {
               return JSON.parse(localStorage.getItem(META_STORAGE_KEY) || '{}');
@@ -6077,7 +6263,7 @@
             saveAllMeta(all);
           }
 
-          function renderMeta(animeId, isWatchingNow) {
+          function renderMeta(animeId, isWatchingNow, malUrl, allowLiveScore) {
             if (!lightboxMeta) return;
             // Somente leitura: os valores vêm direto do rawAnimeData (studio, airedSeason, rewatch).
             // Para alterar, edite o objeto correspondente no rawAnimeData pelo VSCode.
@@ -6085,13 +6271,30 @@
 
             // No "Watching Now", o campo "Rewatch" não aparece em nenhum
             // Posterlight Box. Nos demais cards, continua sendo exibido normalmente.
-            const fields = isWatchingNow
+            let fields = isWatchingNow
               ? META_FIELDS.filter(field => field.key !== 'rewatch')
               : META_FIELDS;
+
+            // SCORE (nota ao vivo do MAL): só entra na frente do Studio
+            // quando o card permite (Watching Now / Plan to Watch) e o
+            // anime tem um "malUrl" cadastrado — ver showItem.
+            const malId = allowLiveScore ? extractMalId(malUrl) : null;
+            if (malId) {
+              fields = [SCORE_FIELD, ...fields];
+            }
 
             lightboxMeta.style.gridTemplateColumns = `repeat(${fields.length}, 1fr)`;
 
             const fieldsHtml = fields.map(field => {
+              if (field.key === 'score') {
+                const cached = getCachedMalScore(malId);
+                const initialText = cached ? formatMalScoreText(cached.score) : '…';
+                return `
+                <div class="rank-meta-item">
+                  <span class="rank-meta-label">${field.label}</span>
+                  <a class="rank-meta-value rank-meta-value--score" data-field="score" href="${escapeHtml(malUrl)}" target="_blank" rel="noopener">${initialText}</a>
+                </div>`;
+              }
               let rawValue = metaObj[field.key] || '';
               const isEmpty = !rawValue;
               // O "!" no final de "season" é só um marcador interno e não deve
@@ -6125,6 +6328,11 @@
             }).join('');
 
             lightboxMeta.innerHTML = fieldsHtml;
+
+            if (malId) {
+              const scoreEl = lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
+              updateLiveMalScore(animeId, malId, scoreEl);
+            }
           }
 
           // ── Notas do MyAnimeList (por temporada) ──
@@ -6171,7 +6379,7 @@
             if (!url) return '';
             return `
               <a class="rank-mal-label rank-mal-label--anime-planet" href="${url}" target="_blank" rel="noopener">
-                <span class="watch-now-more-info-text">LINKS ABOUT</span>
+                <span class="watch-now-more-info-text">RESOURCES ABOUT</span>
                 <img class="anime-planet-btn-logo" src="assets/credits-webp/anime-planet.webp" alt="Anime-Planet" loading="lazy" decoding="async">
                 ${EXTERNAL_LINK_ICON_SVG}
               </a>`;
@@ -6261,6 +6469,38 @@
               }
             });
             return entries;
+          }
+
+          // Monta, na MESMA ordem/granularidade usada acima (temporada por
+          // temporada, respeitando "cours" e filmes intercalados), o total
+          // ACUMULADO de episódios até o fim de cada linha. Isso permite
+          // comparar com o progresso atual (barra +/- do Watching Now) e
+          // decidir se aquela linha já foi "alcançada" pelo progresso —
+          // usado logo abaixo pra tirar o "unwatched" dinamicamente conforme
+          // o usuário avança na barra.
+          function computeWatchingEntryBoundaries(watchItem) {
+            if (!watchItem || !Array.isArray(watchItem.seasons) || !watchItem.seasons.length) return null;
+            const movieIdxSet = new Set(Array.isArray(watchItem.movieSeasons) ? watchItem.movieSeasons : []);
+            const boundaries = [];
+            let acc = 0;
+            watchItem.seasons.forEach((epCount, idx) => {
+              if (movieIdxSet.has(idx)) {
+                acc += epCount;
+                boundaries.push(acc);
+                return;
+              }
+              const courSplit = Array.isArray(watchItem.cours) ? watchItem.cours[idx] : null;
+              if (Array.isArray(courSplit) && courSplit.length > 1) {
+                courSplit.forEach(courEpCount => {
+                  acc += courEpCount;
+                  boundaries.push(acc);
+                });
+              } else {
+                acc += epCount;
+                boundaries.push(acc);
+              }
+            });
+            return boundaries;
           }
 
           // Guarda se a seta do "watch now" (Crunchyroll/MyAnimeList) está
@@ -6368,6 +6608,54 @@
             if (!entries || !entries.length) {
               lightboxMal.innerHTML = '';
               return;
+            }
+
+            // ── Sincroniza o "unwatched" com o progresso atual ──
+            // No Watching Now, cada linha ("1ª temporada", "2ª temporada I"
+            // etc.) corresponde a um trecho de episódios dentro do total
+            // acumulado (mesma lógica da barra +/- do card). O progresso
+            // atual (base + override, igual usado na própria barra) manda:
+            // uma linha só aparece com nota/"assistida" quando o progresso
+            // já alcançou o FIM daquele trecho. Enquanto não alcança, a
+            // linha vira "unwatched" — mesmo que já tenha uma nota salva de
+            // antes (ex: um rewatch que ainda começou do episódio 0 não deve
+            // mostrar as notas antigas como se já tivesse revisto tudo de
+            // novo). Assim que o progresso passa daquele trecho, a nota
+            // antiga volta a aparecer normalmente (ou "-/-" se nunca teve
+            // nota).
+            if (isWatchingNow && typeof watchingData !== 'undefined') {
+              const watchItem = watchingData.find(a => a.id === animeId);
+              if (watchItem) {
+                const baseProgress = parseWatchProgress(watchItem);
+                const baseCur = baseProgress ? baseProgress.cur : 0;
+                const override = getWatchProgressOverride(animeId);
+                const cur = override !== null ? override : baseCur;
+                const boundaries = computeWatchingEntryBoundaries(watchItem);
+                const nonSpacerCount = entries.filter(entry => !entry.spacer).length;
+                if (boundaries && boundaries.length === nonSpacerCount && Number.isFinite(cur)) {
+                  let bIdx = 0;
+                  entries = entries.map(entry => {
+                    if (entry.spacer) return entry;
+                    const boundary = boundaries[bIdx++];
+                    const reached = cur >= boundary;
+                    if (!reached) {
+                      // Progresso ainda não chegou até aqui: força
+                      // "unwatched", escondendo qualquer nota antiga.
+                      const { note, noRating, ...rest } = entry;
+                      return { ...rest, unwatched: true };
+                    }
+                    if (entry.unwatched) {
+                      // Progresso já passou desse trecho, mas nunca teve
+                      // nota: vira "sem nota ainda" (-/-, sem risco) em vez
+                      // de "unwatched" (nome/nota riscados, vermelho).
+                      const { unwatched, ...rest } = entry;
+                      return { ...rest, noRating: true };
+                    }
+
+                    return entry;
+                  });
+                }
+              }
             }
 
             const rowEntries = entries.map(entry => {
@@ -6907,7 +7195,11 @@
             const wasRezero = currentItem && REZERO_IDS.includes(currentItem.id);
             const isRezero = REZERO_IDS.includes(item.id);
             if (wasRezero && currentItem !== item) {
-              stopAudioInstantly(rezeroSound);
+              // Trocando pra outro item com o mesmo som (ex: re-zero -> re-zero-4):
+              // reinicia na hora, igual sempre foi. Trocando pra um item SEM
+              // esse som: fade-out suave, igual ao que já acontecia ao fechar
+              // o lightbox.
+              isRezero ? stopAudioInstantly(rezeroSound) : fadeOutAudio(rezeroSound);
             }
             if (isRezero && currentItem !== item) {
               try {
@@ -6918,7 +7210,7 @@
             const wasJjk = currentItem && JJK_IDS.includes(currentItem.id);
             const isJjk = JJK_IDS.includes(item.id);
             if (wasJjk && currentItem !== item) {
-              stopAudioInstantly(jjkSound);
+              isJjk ? stopAudioInstantly(jjkSound) : fadeOutAudio(jjkSound);
             }
             if (isJjk && currentItem !== item) {
               try {
@@ -6930,7 +7222,7 @@
             const wasAot = currentItem && AOT_IDS.includes(currentItem.id);
             const isAot = AOT_IDS.includes(item.id);
             if (wasAot && currentItem !== item) {
-              stopAudioInstantly(aotSound);
+              isAot ? stopAudioInstantly(aotSound) : fadeOutAudio(aotSound);
             }
             if (isAot && currentItem !== item) {
               try {
@@ -6942,7 +7234,7 @@
             const wasOnePiece = currentItem && ONE_PIECE_IDS.includes(currentItem.id);
             const isOnePiece = ONE_PIECE_IDS.includes(item.id);
             if (wasOnePiece && currentItem !== item) {
-              stopAudioInstantly(onePieceSound);
+              isOnePiece ? stopAudioInstantly(onePieceSound) : fadeOutAudio(onePieceSound);
             }
             if (isOnePiece && currentItem !== item) {
               try {
@@ -7053,7 +7345,7 @@
               }
             }
 
-            renderMeta(item.id, isRichPanel);
+            renderMeta(item.id, isRichPanel, watchNowMalUrl, isWatchingNow || isPlanToWatch);
             renderMalScores(item.id, isRichPanel, animePlanetUrl, crunchyrollUrl, watchNowMalUrl, netflixUrl);
             // renderRatings(item.id); // sistema de notas desativado do site (ver comentário no HTML acima)
           }
@@ -7277,28 +7569,26 @@
               openWatchNowExtra(toggleBtn.closest('.watch-now-links'), toggleBtn);
               return;
             }
-            // "MORE INFO"/"ABOUT": enquanto a seta está fechada, clicar no
-            // texto abre ela (em vez de navegar direto pro Anime-Planet, que
-            // é o que o próprio link faria por padrão) — mas só quando
-            // existe de fato um "extra" pra revelar (Crunchyroll e/ou
-            // MyAnimeList escondidos). A seta em si agora aparece sempre
-            // (mesmo sem nada escondido, só por consistência visual — ver
-            // renderMalScores), então a checagem não pode mais se basear na
-            // existência da seta: itens que só têm o link do Anime-Planet
-            // (comum no Plan to Watch) têm seta, mas não têm ".watch-now-
-            // extra" nenhum, e devem continuar navegando direto pro
-            // Anime-Planet ao clicar no "ABOUT", sem o preventDefault.
+            // "RESOURCES ABOUT": enquanto a seta está fechada, clicar no
+            // texto sempre abre ela (nunca navega direto pro Anime-Planet,
+            // mesmo quando não há Crunchyroll/MyAnimeList escondido pra
+            // revelar — ver CSS ".watch-now-links:not(.open) .rank-mal-
+            // label--anime-planet .anime-planet-btn-logo"/"svg", que
+            // escondem o logo e o ícone de link externo enquanto fechada,
+            // deixando só o texto visível). Só depois de aberta, com o
+            // logo do Anime-Planet visível, é que clicar nele navega de
+            // fato — isso já acontece sozinho: o "moreInfoText" não bate
+            // mais (container já está "open"), então o clique cai no
+            // comportamento padrão do link <a>.
             const moreInfoText = e.target.closest('.watch-now-more-info-text');
             if (moreInfoText) {
-              // Sempre se comporta igual à seta (abre/fecha), nunca navega
-              // direto pro Anime-Planet — mesmo quando não há Crunchyroll/
-              // MyAnimeList escondidos pra revelar (caso comum no Plan to
-              // Watch, onde só existe o link do Anime-Planet).
-              e.preventDefault();
-              e.stopPropagation();
               const container = moreInfoText.closest('.watch-now-links');
-              openWatchNowExtra(container, null);
-              return;
+              if (container && !container.classList.contains('open')) {
+                e.preventDefault();
+                e.stopPropagation();
+                openWatchNowExtra(container, null);
+                return;
+              }
             }
             const btn = e.target.closest('a.rank-mal-label:not(.rank-mal-label--anime-planet):not(.rank-mal-label--crunchyroll):not(.rank-mal-label--netflix):not(.rank-mal-label--mal)');
             if (!btn) return;
@@ -7996,8 +8286,10 @@
         ]
         const rawPlanToWatchData = [
           { id: "bleach", img: "plantowatch-images/plantowatch/bleach.webp", title: "Bleach", info: "16 temporadas: 366 episódios", url: "https://www.anime-planet.com/anime/bleach" },
-          { id: "my-teen-romantic-comedy", img: "watchingnow-images/watchingnow/my-teen-romantic-comedy.webp", title: "My Teen Romantic Comedy SNAFU", info: "3 temporadas: 39 episódios", season: null, studio: "Brain's Base / feel", airedSeason: "2013-2020", seasons: [13, 13, 13], url: "https://www.anime-planet.com/anime/my-teen-romantic-comedy-snafu", crunchyroll: "", malUrl: "https://myanimelist.net/anime/23847/Yahari_Ore_no_Seishun_Love_Comedy_wa_Machigatteiru_Zoku" },
-          { id: "konosuba", img: "watchingnow-images/watchingnow/konosuba.webp", title: "Konosuba - God's Blessing on this Wonderful World", info: "3 temporadas: 31 episódios <br>1 Filme: 1h30m", season: null, studio: "Studio Deen / J.C. Staff", airedSeason: "2016", seasons: [10, 10, 1, 11], movieSeasons: [2], movieDurations: {2: "1h30"}, movieLabels: {2: "Movie: Legend of Crimson"}, url: "https://www.anime-planet.com/anime/konosuba-gods-blessing-on-this-wonderful-world", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYE5K3GQR/konosuba--gods-blessing-on-this-wonderful-world", malUrl: "https://myanimelist.net/anime/30831/Kono_Subarashii_Sekai_ni_Shukufuku_wo" },
+          { id: "my-teen-romantic-comedy", img: "plantowatch-images/plantowatch/my-teen-romantic-comedy.webp", title: "My Teen Romantic Comedy SNAFU", info: "3 temporadas: 39 episódios", studio: "Brain's Base / feel", airedSeason: "2013-2020", url: "https://www.anime-planet.com/anime/my-teen-romantic-comedy-snafu", crunchyroll: "", malUrl: "https://myanimelist.net/anime/23847/Yahari_Ore_no_Seishun_Love_Comedy_wa_Machigatteiru_Zoku" },
+          { id: "terror-in-resonance", img: "plantowatch-images/plantowatch/terror-in-resonance.webp", title: "Terror in Resonance", info: "11 episódios", studio: "MAPPA", airedSeason: "2014", url: "https://www.anime-planet.com/anime/terror-in-resonance", crunchyroll: "", malUrl: "https://myanimelist.net/anime/23283/Zankyou_no_Terror" },
+          { id: "konosuba", img: "plantowatch-images/plantowatch/konosuba.webp", title: "Konosuba - God's Blessing on this Wonderful World", info: "3 temporadas: 31 episódios <br>1 Filme: 1h30m", studio: "Studio Deen / J.C. Staff", airedSeason: "2016", url: "https://www.anime-planet.com/anime/konosuba-gods-blessing-on-this-wonderful-world", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYE5K3GQR/konosuba--gods-blessing-on-this-wonderful-world", malUrl: "https://myanimelist.net/anime/30831/Kono_Subarashii_Sekai_ni_Shukufuku_wo" },
+          { id: "fruit-of-grisaia", img: "plantowatch-images/plantowatch/fruit-of-grisaia.webp", title: "The Fruit of Grisaia", info: "1ª temporada: 13 episódios", studio: "8-Bit", airedSeason: "2014", url: "https://www.anime-planet.com/anime/the-fruit-of-grisaia", malUrl: "https://myanimelist.net/anime/17729/Grisaia_no_Kajitsu" },
           { id: "sentenced-hero", img: "plantowatch-images/plantowatch/sentenced-hero.webp", title: "Sentenced to be a Hero", info: "12 episódios", url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero" },
           { id: "wotakoi", img: "plantowatch-images/plantowatch/wotakoi.webp", title: "Wotakoi: Love is Hard for Otaku", info: "11 episódios", url: "https://www.anime-planet.com/anime/wotakoi-love-is-hard-for-otaku" },
           { id: "spy-x-family", img: "plantowatch-images/plantowatch/spy-x-family.webp", title: "Spy x Family", info: "3 temporadas: 50 episódios", url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero" },
@@ -8087,7 +8379,7 @@
           { id: "subaru", img: "other-images/truecharacters/subaru.webp", title: "Subaru Natsuki", info: "Re:ZERO - Starting Life in Another World" },
           { id: "stark", img: "other-images/truecharacters/stark.webp", title: "Stark", info: "Frieren: Beyond Journey's End" },
           { id: "shizuku", img: "other-images/truecharacters/shizuku.webp", title: "Shizuku Murasaki", info: "Hunter x Hunter" },
-          { id: "shadow", img: "other-images/truecharacters/shadow.webp", title: "Cid Kagenou", info: "The Eminence in Shadow" },
+          { id: "cid", img: "other-images/truecharacters/shadow.webp", title: "Cid Kagenou", info: "The Eminence in Shadow" },
           { id: "bakugo", img: "other-images/truecharacters/bakugo.webp", title: "Katsuki Bakugou", info: "My Hero Academia" },
           { id: "chrollo", img: "other-images/truecharacters/chrollo.webp", title: "Chrollo Lucilfer", info: "Hunter x Hunter" },
           { id: "tsukishima", img: "other-images/truecharacters/tsukishima.webp", title: "Kei Tsukishima", info: "Haikyu!!" },
@@ -8095,11 +8387,12 @@
 
         // Metadados (Studio / temporada) definidos direto no HTML/JS acima,
         // usados como valor padrão no modal de detalhes de cada anime.
-        // Inclui tanto o "All Animes" (animeData) quanto o "Watching Now"
-        // (watchingData) — basta adicionar "studio" e "airedSeason" no
-        // objeto do anime dentro de rawWatchingData que já aparece aqui.
+        // Inclui "All Animes" (animeData), "Watching Now" (watchingData) e
+        // "Plan to Watch" (planToWatchData) — basta adicionar "studio" e
+        // "airedSeason" no objeto do anime dentro de qualquer uma dessas
+        // listas que já aparece aqui.
         const ANIME_STATIC_META = {};
-        [...animeData, ...watchingData].forEach(a => {
+        [...animeData, ...watchingData, ...planToWatchData].forEach(a => {
           const meta = {};
           if (a.studio) meta.studio = a.studio;
           if (a.airedSeason) meta.season = a.airedSeason;
@@ -8113,7 +8406,7 @@
         // listas, ex: "demon-slayer" vs "rw-demon-slayer", "re-zero" vs
         // "re-zero-4").
         const ANIME_TITLE_BY_ID = {};
-        [...animeData, ...watchingData].forEach(a => {
+        [...animeData, ...watchingData, ...planToWatchData].forEach(a => {
           ANIME_TITLE_BY_ID[a.id] = a.title;
         });
 
@@ -8762,9 +9055,11 @@
                   }
                 }
                 const seasonRel = getSeasonRelativeProgress(anime, progress.cur);
-                const labelHtml = seasonRel
-                  ? `${seasonRel.withinCur}/${seasonRel.seasonTot}<span class="watch-progress-label-total">${progress.cur}/${progress.tot}</span>`
-                  : `${progress.curLabel}/${progress.tot}`;
+                const labelHtml = atMax
+                  ? 'COMPLETED'
+                  : (seasonRel
+                    ? `${seasonRel.withinCur}/${seasonRel.seasonTot}<span class="watch-progress-label-total">${progress.cur}/${progress.tot}</span>`
+                    : `${progress.curLabel}/${progress.tot}`);
                 progressHtml = `
                   <div class="watch-progress" style="--item-hover-color: ${hoverColor || '#2dd4bf'};">
                     <button type="button" class="watch-progress-dec" data-anime-id="${anime.id}" data-tot="${progress.tot}" aria-label="Voltar um episódio assistido"${atMin ? ' disabled' : ''}>-</button>
@@ -8774,7 +9069,7 @@
                       ${courMarksHtml}
                       ${seasonMarksHtml}
                     </div>
-                    <span class="watch-progress-label">${labelHtml}</span>
+                    <span class="watch-progress-label${atMax ? ' watch-progress-label--completed' : ''}">${labelHtml}</span>
                     <button type="button" class="watch-progress-inc" data-anime-id="${anime.id}" data-tot="${progress.tot}" aria-label="Marcar mais um episódio assistido"${atMax ? ' disabled' : ''}>+</button>
                   </div>`;
               }
@@ -10348,15 +10643,18 @@
               progress.curLabel = String(progress.cur);
             }
             const seasonRel = getSeasonRelativeProgress(anime, progress.cur);
-            const labelHtml = seasonRel
-              ? `${seasonRel.withinCur}/${seasonRel.seasonTot}<span class="watch-progress-label-total">${progress.cur}/${progress.tot}</span>`
-              : `${progress.curLabel}/${progress.tot}`;
+            const atMaxSearch = progress.cur >= progress.tot;
+            const labelHtml = atMaxSearch
+              ? 'COMPLETED'
+              : (seasonRel
+                ? `${seasonRel.withinCur}/${seasonRel.seasonTot}<span class="watch-progress-label-total">${progress.cur}/${progress.tot}</span>`
+                : `${progress.curLabel}/${progress.tot}`);
             return `
               <div class="watch-progress search-result-progress"${colorStyle}>
                 <div class="watch-progress-track">
                   <div class="watch-progress-fill" style="width:${progress.pct}%;"></div>
                 </div>
-                <span class="watch-progress-label">${labelHtml}</span>
+                <span class="watch-progress-label${atMaxSearch ? ' watch-progress-label--completed' : ''}">${labelHtml}</span>
               </div>`;
           }
 
@@ -11271,13 +11569,19 @@
               const fill = card.querySelector('.watch-progress-fill');
               const pct = Math.max(0, Math.min(100, (next / tot) * 100));
               if (fill) fill.style.width = pct + '%';
+              const isCompleted = next >= tot;
               if (label) {
-                const seasonRel = anime ? getSeasonRelativeProgress(anime, next) : null;
-                label.innerHTML = seasonRel
-                  ? `${seasonRel.withinCur}/${seasonRel.seasonTot}<span class="watch-progress-label-total">${next}/${tot}</span>`
-                  : `${next}/${tot}`;
+                if (isCompleted) {
+                  label.textContent = 'COMPLETED';
+                } else {
+                  const seasonRel = anime ? getSeasonRelativeProgress(anime, next) : null;
+                  label.innerHTML = seasonRel
+                    ? `${seasonRel.withinCur}/${seasonRel.seasonTot}<span class="watch-progress-label-total">${next}/${tot}</span>`
+                    : `${next}/${tot}`;
+                }
+                label.classList.toggle('watch-progress-label--completed', isCompleted);
               }
-              if (next >= tot) btn.disabled = true;
+              if (isCompleted) btn.disabled = true;
             }
             if (decBtn) decBtn.disabled = next <= 0;
           }
@@ -11317,13 +11621,19 @@
               const fill = card.querySelector('.watch-progress-fill');
               const pct = Math.max(0, Math.min(100, (next / tot) * 100));
               if (fill) fill.style.width = pct + '%';
+              const isCompleted = next >= tot;
               if (label) {
-                const seasonRel = anime ? getSeasonRelativeProgress(anime, next) : null;
-                label.innerHTML = seasonRel
-                  ? `${seasonRel.withinCur}/${seasonRel.seasonTot}<span class="watch-progress-label-total">${next}/${tot}</span>`
-                  : `${next}/${tot}`;
+                if (isCompleted) {
+                  label.textContent = 'COMPLETED';
+                } else {
+                  const seasonRel = anime ? getSeasonRelativeProgress(anime, next) : null;
+                  label.innerHTML = seasonRel
+                    ? `${seasonRel.withinCur}/${seasonRel.seasonTot}<span class="watch-progress-label-total">${next}/${tot}</span>`
+                    : `${next}/${tot}`;
+                }
+                label.classList.toggle('watch-progress-label--completed', isCompleted);
               }
-              if (incBtn) incBtn.disabled = next >= tot;
+              if (incBtn) incBtn.disabled = isCompleted;
             }
             if (next <= 0) btn.disabled = true;
           }
