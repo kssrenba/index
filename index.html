@@ -2197,6 +2197,17 @@
         font-style: italic;
       }
 
+      /* Quando há muitos estúdios (ex: 3+), o texto some sendo cortado
+        em 3 linhas com reticências, em vez de empurrar o card pra baixo
+        com uma lista inteira de nomes. */
+      .rank-meta-value--clamp {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       /* Nota ao vivo do MyAnimeList (ver updateLiveMalScore/renderMeta):
         cor de destaque pra diferenciar dos outros campos (Studio/Lançamento/
         Rewatch), que são só texto informativo estático. */
@@ -4625,6 +4636,20 @@
         gap: 6px;
       }
 
+      /* Quando o cabeçalho da temporada aponta pro MAL, mantém a cor e a
+        tipografia herdadas do .season-header (nada de azul/sublinhado
+        padrão de link), só com um hover sutil indicando que é clicável. */
+      a.season-text.season-text-link {
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+        transition: opacity 0.15s ease;
+      }
+      a.season-text.season-text-link:hover,
+      a.season-text.season-text-link:focus-visible {
+        opacity: 0.75;
+      }
+
       /* Colchetes desenhados em CSS puro (sem depender de glifo de fonte) —
         mesmo problema do .search-section-header: a fonte de fallback usada
         pra renderizar 「」 reserva uma caixa full-width bem maior que o
@@ -6312,17 +6337,23 @@
               // aparece (2 colunas, mais espaço), deixa tudo numa linha só e
               // só quebra naturalmente se não couber.
               const isMultiStudio = field.key === 'studio' && rawValue.includes('/');
-              // Exceção: no card "Cannon Busters" o nome do estúdio não deve
-              // quebrar linha (sem <br>), mesmo com 3 colunas.
-              const studioSeparator = (fields.length >= 3 && animeId !== 'cannon-busters') ? '<br>and ' : ' and ';
+              // Exceção: nos cards "Cannon Busters" e "Neon Genesis Evangelion"
+              // o nome do estúdio não deve quebrar linha (sem <br>), mesmo com
+              // 3 colunas — em ambos há 3 estúdios e o <br> forçado ficava feio.
+              const noBreakStudio = animeId === 'cannon-busters' || animeId === 'evangelion';
+              const studioSeparator = animeId === 'grand-blue-3'
+                ? ' and<br>'
+                : noBreakStudio ? ', '
+                : (fields.length >= 3) ? '<br>and ' : ' and ';
               const displayValueHtml = isMultiStudio
                 ? rawValue.split('/').map(s => escapeHtml(s.trim())).filter(Boolean).join(studioSeparator)
                 : escapeHtml(rawValue);
               const labelText = isMultiStudio ? field.label + 's' : field.label;
+              const clampClass = (isMultiStudio && noBreakStudio) ? ' rank-meta-value--clamp' : '';
               return `
                 <div class="rank-meta-item">
                   <span class="rank-meta-label">${labelText}</span>
-                  <span class="rank-meta-value${isEmpty ? ' empty' : ''}"
+                  <span class="rank-meta-value${isEmpty ? ' empty' : ''}${clampClass}"
                         data-field="${field.key}">${isEmpty ? escapeHtml(field.placeholder) : displayValueHtml}</span>
                 </div>`;
             }).join('');
@@ -7985,7 +8016,7 @@
           { id: "mushoku", img: "myranks-images/myranks/mushoku.webp", title: "Mushoku Tensei: Jobless Reincarnation", info: "2 temporadas: 47 episódios" , studio: "Studio Bind", airedSeason: "2021-?", rewatch: "First 2 Seasons", mal: [ { label: "1ª temporada I", episodes: 11, note: 8 }, { label: "1ª temporada II", episodes: 12, note: 8 }, { label: "2ª temporada I", episodes: 12, note: 7 }, { label: "2ª temporada II", episodes: 12, note: 8 }, { label: "3ª temporada", episodes: 14, unwatched: true } ] },
           { id: "cyberpunk", img: "myranks-images/myranks/cyberpunk.webp", title: "Cyberpunk: Edgerunners", info: "10 episódios" , studio: "Trigger", airedSeason: "2022", rewatch: "Only Season 1", mal: [ { label: "1ª temporada", episodes: 10, note: 9 } ] },
           { id: "solo-leveling", img: "myranks-images/myranks/solo-leveling.webp", title: "Solo Leveling", info: "2 temporadas: 25 episódios" , studio: "A-1 Pictures", airedSeason: "2024-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 13, note: 9 } ] },
-          { id: "aot", img: "myranks-images/myranks/aot.webp", title: "Attack on Titan", info: "4 temporadas: 89 episódios" , studio: "Wit Studio/MAPPA", airedSeason: "2013-2022", rewatch: "First 3 Seasons", mal: [ { label: "1ª temporada", episodes: 25, note: 9 }, { label: "2ª temporada", episodes: 12, note: 8 }, { label: "3ª temporada I", episodes: 12, note: 7 }, { label: "3ª temporada II", episodes: 10, note: 8 }, { label: "4ª temporada I", episodes: 16, note: 8 },{ label: "4ª temporada II", episodes: 12, note: 9 },{ label: "4ª temporada III: The Final\nChapters", episodes: 2, note: 9 },] },
+          { id: "aot", img: "myranks-images/myranks/aot.webp", title: "Attack on Titan", info: "4 temporadas: 89 episódios" , studio: "Wit Studio/MAPPA", airedSeason: "2013-2022", rewatch: "First 3 Seasons", mal: [ { label: "1ª temporada", episodes: 25, note: 9 }, { label: "2ª temporada", episodes: 12, note: 8 }, { label: "3ª temporada I", episodes: 12, note: 7 }, { label: "3ª temporada II", episodes: 10, note: 8 }, { label: "4ª temporada I", episodes: 16, note: 8 },{ label: "4ª temporada II", episodes: 12, note: 9 },{ label: "4ª temporada III: The Final \nChapters", episodes: 2, note: 9 },] },
           { id: "dr-stone", img: "myranks-images/myranks/dr-stone.webp", title: "Dr. Stone", info: "4 temporadas: 95 episódios" , studio: "TMS Entertainment", airedSeason: "2019-2026", rewatch: "2 Times (Season 4 Not Yet)", mal: [ { label: "1ª temporada", episodes: 24, note: 8 }, { label: "2ª temporada", episodes: 11, note: 7 },{ label: "Ryusui", episodes: "TV Special", note: 8 }, { label: "3ª temporada I", episodes: 11, note: 7 }, { label: "3ª temporada II", episodes: 11, note: 8 }, { label: "4ª temporada I", episodes: 12, note: 8 }, { label: "4ª temporada II", episodes: 12, note: 9 }, { label: "4ª temporada III", episodes: 13, note: 8 } ] },
           { id: "cote", img: "myranks-images/myranks/cote.webp", title: "Classroom of the Elite", info: "4 temporadas: 54 episódios" , studio: "Lerche", airedSeason: "2017-?", rewatch: "First 3 Seasons", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 13, note: 8 }, { label: "3ª temporada", episodes: 13, note: 7 }, { label: "4ª temporada", episodes: 16, note: 8 } ] },
           { id: "re-zero", img: "myranks-images/myranks/re-zero.webp", title: "Re:ZERO - Starting Life in Another World", malSearch: "Re:Zero", info: "(~) 3 temporadas: 66 episódios" , studio: "White Fox", airedSeason: "2016-?", rewatch: "Only Season 1", mal: [ { label: "1ª temporada", episodes: 25, note: 9 }, { label: "2ª temporada I", episodes: 13, note: 8 } ,{ label: "2ª temporada II", episodes: 12, note: 8 } , { label: "3ª temporada", episodes: 16, note: 8 } , { label: "4ª temporada", episodes: 19, unwatched: true } ] },
@@ -8105,9 +8136,9 @@
         const WATCHING_NO_SEASON_LABEL = { text: "Non-Seasonal Anime", color: "#7dd3fc" };
         const WATCHING_SEASON_ORDER = ["summer-2026", "spring-2026", "winter-2026", "on-hold",];
         const WATCHING_SEASON_LABELS = {
-          "summer-2026": { text: "Summer Season 2026", color: "#fbbf24" }, // Âmbar / Laranja Lighter
-          "spring-2026": { text: "Spring Season 2026", color: "#f472b6" }, // Rosa Lighter
-          "winter-2026": { text: "Winter Season 2026", color: "#FFFAFA" }, // Azul Claro Lighter
+          "summer-2026": { text: "Summer Season 2026", color: "#fbbf24", url: "https://myanimelist.net/anime/season/2026/summer" }, // Âmbar / Laranja Lighter
+          "spring-2026": { text: "Spring Season 2026", color: "#f472b6", url: "https://myanimelist.net/anime/season/2026/spring" }, // Rosa Lighter
+          "winter-2026": { text: "Winter Season 2026", color: "#FFFAFA", url: "https://myanimelist.net/anime/season/2026/winter" }, // Azul Claro Lighter
           "on-hold": { text: "On Hold", color: "#fb923c" }, // Laranja
         };
 
@@ -8285,63 +8316,63 @@
           },
         ]
         const rawPlanToWatchData = [
-          { id: "bleach", img: "plantowatch-images/plantowatch/bleach.webp", title: "Bleach", info: "16 temporadas: 366 episódios", url: "https://www.anime-planet.com/anime/bleach" },
-          { id: "my-teen-romantic-comedy", img: "plantowatch-images/plantowatch/my-teen-romantic-comedy.webp", title: "My Teen Romantic Comedy SNAFU", info: "3 temporadas: 39 episódios", studio: "Brain's Base / feel", airedSeason: "2013-2020", url: "https://www.anime-planet.com/anime/my-teen-romantic-comedy-snafu", crunchyroll: "", malUrl: "https://myanimelist.net/anime/23847/Yahari_Ore_no_Seishun_Love_Comedy_wa_Machigatteiru_Zoku" },
+          { id: "bleach", img: "plantowatch-images/plantowatch/bleach.webp", title: "Bleach", info: "5 temporadas: 416 episódios", studio: "Studio Pierrot / Pierrrot Films", airedSeason: "2004-2026", url: "https://www.anime-planet.com/anime/bleach", crunchyroll: "", malUrl: "https://myanimelist.net/anime/269/Bleach" },
+          { id: "my-teen-romantic-comedy", img: "plantowatch-images/plantowatch/my-teen-romantic-comedy.webp", title: "My Teen Romantic Comedy SNAFU", info: "3 temporadas: 39 episódios", studio: "Brain's Base / feel", airedSeason: "2013-2020", url: "https://www.anime-planet.com/anime/my-teen-romantic-comedy-snafu", crunchyroll: "", malUrl: "https://myanimelist.net/anime/39547/Yahari_Ore_no_Seishun_Love_Comedy_wa_Machigatteiru_Kan" },
           { id: "terror-in-resonance", img: "plantowatch-images/plantowatch/terror-in-resonance.webp", title: "Terror in Resonance", info: "11 episódios", studio: "MAPPA", airedSeason: "2014", url: "https://www.anime-planet.com/anime/terror-in-resonance", crunchyroll: "", malUrl: "https://myanimelist.net/anime/23283/Zankyou_no_Terror" },
           { id: "konosuba", img: "plantowatch-images/plantowatch/konosuba.webp", title: "Konosuba - God's Blessing on this Wonderful World", info: "3 temporadas: 31 episódios <br>1 Filme: 1h30m", studio: "Studio Deen / J.C. Staff", airedSeason: "2016", url: "https://www.anime-planet.com/anime/konosuba-gods-blessing-on-this-wonderful-world", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYE5K3GQR/konosuba--gods-blessing-on-this-wonderful-world", malUrl: "https://myanimelist.net/anime/30831/Kono_Subarashii_Sekai_ni_Shukufuku_wo" },
-          { id: "fruit-of-grisaia", img: "plantowatch-images/plantowatch/fruit-of-grisaia.webp", title: "The Fruit of Grisaia", info: "1ª temporada: 13 episódios", studio: "8-Bit", airedSeason: "2014", url: "https://www.anime-planet.com/anime/the-fruit-of-grisaia", malUrl: "https://myanimelist.net/anime/17729/Grisaia_no_Kajitsu" },
-          { id: "sentenced-hero", img: "plantowatch-images/plantowatch/sentenced-hero.webp", title: "Sentenced to be a Hero", info: "12 episódios", url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero" },
-          { id: "wotakoi", img: "plantowatch-images/plantowatch/wotakoi.webp", title: "Wotakoi: Love is Hard for Otaku", info: "11 episódios", url: "https://www.anime-planet.com/anime/wotakoi-love-is-hard-for-otaku" },
-          { id: "spy-x-family", img: "plantowatch-images/plantowatch/spy-x-family.webp", title: "Spy x Family", info: "3 temporadas: 50 episódios", url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero" },
-          { id: "kurokos-basketball", img: "plantowatch-images/plantowatch/kurokos-basketball.webp", title: "Kuroko's Basketball", info: "3 temporadas: 75 episódios <br> 1 Filme: 1h30m", url: "https://www.anime-planet.com/anime/kurokos-basketball" },
-          { id: "blue-lock", img: "plantowatch-images/plantowatch/blue-lock.webp", title: "Blue Lock", info: "2 temporadas: 38 episódios <br> 1 Filme: 1h31m", url: "https://www.anime-planet.com/anime/blue-lock" },
-          { id: "evangelion", img: "plantowatch-images/plantowatch/evangelion.webp", title: "Neon Genesis Evangelion", info: "1 temporada: 26 episódios <br>1 Filme: 1h27m", url: "https://www.anime-planet.com/anime/neon-genesis-evangelion" },
-          { id: "black-clover", img: "plantowatch-images/plantowatch/black-clover.webp", title: "Black Clover", info: "4 temporadas: 170 episódios", url: "https://www.anime-planet.com/anime/black-clover" },
-          { id: "fullmetal", img: "plantowatch-images/plantowatch/fullmetal.webp", title: "Fullmetal Alchemist: Brotherhood", info: "64 episódios", url: "https://www.anime-planet.com/anime/fullmetal-alchemist-brotherhood" },
-          { id: "death-note", img: "plantowatch-images/plantowatch/death-note.webp", title: "Death Note", info: "37 episódios", url: "https://www.anime-planet.com/anime/death-note" },
-          { id: "i-want-to-eat-your-pancreas", img: "plantowatch-images/plantowatch/i-want-to-eat-your-pancreas.webp", title: "I Want to Eat Your Pancreas", info: "Filme: 1h48m", url: "https://www.anime-planet.com/anime/i-want-to-eat-your-pancreas" },
-          { id: "fate-zero", img: "plantowatch-images/plantowatch/fate-zero.webp", title: "Fate Zero", info: "2 temporadas: 25 episódios", url: "https://www.anime-planet.com/anime/fate-zero" },
-          { id: "fate-heavens-feel", img: "plantowatch-images/plantowatch/fate-heavens-feel.webp", title: "Fate Stay Night: Heaven's Feel", info: "3 Filmes: 5h57m", url: "" },
-          { id: "chainsaw-man", img: "plantowatch-images/plantowatch/chainsaw-man.webp", title: "Chainsaw Man", info: "1 temporada: 13 episódios <br>1 Filme: 1h40m", url: "https://www.anime-planet.com/anime/chainsaw-man" },
-          { id: "cowboy-bebop", img: "plantowatch-images/plantowatch/cowboy-bebop.webp", title: "Cowboy Bebop", info: "1 temporada: 26 episódios <br>1 Filme: 1h55m", url: "https://www.anime-planet.com/anime/cowboy-bebop" },
-          { id: "your-name", img: "plantowatch-images/plantowatch/your-name.webp", title: "your name", info: "Filme: 1h50m", url: "https://www.anime-planet.com/anime/your-name" },
-          { id: "heavenly-delusion", img: "plantowatch-images/plantowatch/heavenly-delusion.webp", title: "Heavenly Delusion", info: "13 episódios", url: "https://www.anime-planet.com/anime/heavenly-delusion" },
-          { id: "to-be-hero-x", img: "plantowatch-images/plantowatch/to-be-hero-x.webp", title: "To be Hero X", info: "24 episódios", url: "https://www.anime-planet.com/anime/to-be-hero-x" },
-          { id: "tokyo-ghoul", img: "plantowatch-images/plantowatch/tokyo-ghoul.webp", title: "Tokyo Ghoul", info: "2 temporadas: 24 episódios", url: "https://www.anime-planet.com/anime/tokyo-ghoul" },
-          { id: "fate-stay-night", img: "plantowatch-images/plantowatch/fate-stay-night.webp", title: "Fate Stay Night: Unlimited Blade Works", info: "2 temporadas: 25 episódios", url: "https://www.anime-planet.com/anime/fate-stay-night-unlimited-blade-works" },
-          { id: "the-tunnel-to-summer", img: "plantowatch-images/plantowatch/the-tunnel-to-summer.webp", title: "The Tunnel to Summer, the Exit of Goodbyes", info: "Filme: 1h23m", url: "https://www.anime-planet.com/anime/the-tunnel-to-summer-the-exit-of-goodbyes" },
-          { id: "gintama", img: "plantowatch-images/plantowatch/gintama.webp", title: "Gintama", info: "11 temporadas: 367 episódios", url: "https://www.anime-planet.com/anime/gintama" },
-          { id: "dororo", img: "plantowatch-images/plantowatch/dororo.webp", title: "Dororo (2019)", info: "24 episódios", url: "https://www.anime-planet.com/anime/dororo-2019" },
-          { id: "link-click", img: "plantowatch-images/plantowatch/link-click.webp", title: "Link Click", info: "3 temporadas: 30 episódios", url: "https://www.anime-planet.com/anime/link-click" },
-          { id: "jojo", img: "plantowatch-images/plantowatch/jojo.webp", title: "JoJo's Bizarre Adventure (2012)", info: "5 Partes: 193 episódios", url: "https://www.anime-planet.com/anime/jojos-bizarre-adventure" },
-          { id: "ranking-of-kings", img: "plantowatch-images/plantowatch/ranking-of-kings.webp", title: "Ranking of Kings", info: "2 temporadas: 33 episódios", url: "https://www.anime-planet.com/anime/ranking-of-kings" },
-          { id: "lom", img: "plantowatch-images/plantowatch/lom.webp", title: "Lord of Mysteries", info: "1 temporada: 13 episódios", url: "https://www.anime-planet.com/anime/lord-of-mysteries" },
-          { id: "takopi", img: "plantowatch-images/plantowatch/takopi.webp", title: "Takopi's Original Sin", info: "6 episódios", url: "https://www.anime-planet.com/anime/takopis-original-sin" },
-          { id: "monster", img: "plantowatch-images/plantowatch/monster.webp", title: "Monster", info: "74 episódios", url: "https://www.anime-planet.com/anime/monster" },
-          { id: "quintessential-quintuplets", img: "plantowatch-images/plantowatch/quintessential-quintuplets.webp", title: "The Quintessential Quintuplets", info: "2 temporadas: 24 episódios <br>1 Filme: 2h16m", url: "https://www.anime-planet.com/anime/the-quintessential-quintuplets" },
-          { id: "saiki", img: "plantowatch-images/plantowatch/saiki.webp", title: "The Disastrous Life of Saiki K.", info: "2 temporadas: 144 episódios", url: "https://www.anime-planet.com/anime/the-disastrous-life-of-saiki-k" },
-          { id: "astra-space", img: "plantowatch-images/plantowatch/astra-space.webp", title: "Astra Lost in Space", info: "12 episódios", url: "https://www.anime-planet.com/anime/astra-lost-in-space" },
-          { id: "fate-strange-fake", img: "plantowatch-images/plantowatch/fate-strange-fake.webp", title: "Fate Strange Fake", info: "13 episódios", url: "https://www.anime-planet.com/anime/fate-strange-fake" },
-          { id: "call-of-the-night", img: "plantowatch-images/plantowatch/call-of-the-night.webp", title: "Call of the Night", info: "2 temporadas: 25 episódios", url: "https://www.anime-planet.com/anime/call-of-the-night" },
-          { id: "100-meters", img: "plantowatch-images/plantowatch/100-meters.webp", title: "100 Meters", info: "Filme: 1h47m", url: "https://www.anime-planet.com/anime/100-meters" },
-          { id: "hellsing", img: "plantowatch-images/plantowatch/hellsing.webp", title: "Hellsing", info: "13 episódios", url: "https://www.anime-planet.com/anime/hellsing" },
-          { id: "pretty-derby", img: "plantowatch-images/plantowatch/pretty-derby.webp", title: "Uma Musume: Pretty Derby", info: "3 temporadas: 39 episódios <br>2 Filmes: 3h26m", url: "https://www.anime-planet.com/anime/uma-musume-pretty-derby" },
-          { id: "spice-and-wolf", img: "plantowatch-images/plantowatch/spice-and-wolf.webp", title: "Spice and Wolf: Merchant Meets the Wise Wolf", info: "1 temporada: 25 episódios", url: "https://www.anime-planet.com/anime/spice-and-wolf-merchant-meets-the-wise-wolf" },
-          { id: "no-game-no-life", img: "plantowatch-images/plantowatch/no-game-no-life.webp", title: "No Game No Life ", info: "12 episódios", url: "https://www.anime-planet.com/anime/no-game-no-life" },
-          { id: "noragami", img: "plantowatch-images/plantowatch/noragami.webp", title: "Noragami", info: "2 temporadas: 25 episódios", url: "https://www.anime-planet.com/anime/noragami" },
-          { id: "barakamon", img: "plantowatch-images/plantowatch/barakamon.webp", title: "Barakamon", info: "12 episódios", url: "https://www.anime-planet.com/anime/barakamon" },
-          { id: "greatest-demon-lord", img: "plantowatch-images/plantowatch/greatest-demon-lord.webp", title: "The Greatest Demon Lord Is Reborn as a Typical Nobody", info: "12 episódios", url: "https://www.anime-planet.com/anime/the-greatest-demon-lord-is-reborn-as-a-typical-nobody" },
-          { id: "radiant", img: "plantowatch-images/plantowatch/radiant.webp", title: "Radiant", info: "2 temporadas: 42 episódios", url: "https://www.anime-planet.com/anime/radiant" },
-          { id: "ramparts-of-ice", img: "plantowatch-images/plantowatch/ramparts-of-ice.webp", title: "The Ramparts of Ice", info: "14 episódios", url: "https://www.anime-planet.com/anime/the-ramparts-of-ice" },
-          { id: "yamada-witches", img: "plantowatch-images/plantowatch/yamada-witches.webp", title: "Yamada-kun and the Seven Witches", info: "12 episódios", url: "https://www.anime-planet.com/anime/yamada-kun-and-the-seven-witches" },
-          { id: "sign-of-affection", img: "plantowatch-images/plantowatch/sign-of-affection.webp", title: "A Sign of Affection", info: "12 episódios", url: "https://www.anime-planet.com/anime/a-sign-of-affection" },
-          { id: "clevatess", img: "plantowatch-images/plantowatch/clevatess.webp", title: "Clevatess", info: "1 temporada: 12 episódios", url: "https://www.anime-planet.com/anime/clevatess" },
-          { id: "secrets-of-the-silent-witch", img: "plantowatch-images/plantowatch/secrets-of-the-silent-witch.webp", title: "Secrets of the Silent Witch", info: "13 episódios", url: "https://www.anime-planet.com/anime/secrets-of-the-silent-witch" },
-          { id: "darling-in-the-franxx", img: "plantowatch-images/plantowatch/darling-in-the-franxx.webp", title: "DARLING in the FRANXX", info: "24 episódios", url: "https://www.anime-planet.com/anime/darling-in-the-franxx" },
-          { id: "king-avatar", img: "plantowatch-images/plantowatch/king-avatar.webp", title: "The King's Avatar", info: "3 temporadas: 41 episódios <br>1 Filme: 1h38m", url: "https://www.anime-planet.com/anime/the-kings-avatar" },
-          { id: "cute-girl-in-the-heros-party", img: "plantowatch-images/plantowatch/cute-girl-in-the-heros-party.webp", title: "There was a Cute Girl in the Hero’s Party, so I Tried Confessing to Her", info: "13 episódios", url: "https://www.anime-planet.com/anime/there-was-a-cute-girl-in-the-heros-party-so-i-tried-confessing-to-her" },
-          { id: "spare-me", img: "plantowatch-images/plantowatch/spare-me.webp", title: "Spare Me, Great Lord", info: "2 temporadas: 24 episódios", url: "https://www.anime-planet.com/anime/dawang-raoming" },
-          { id: "aura-last-war", img: "plantowatch-images/plantowatch/aura-last-war.webp", title: "Aura: Koga Maryuin's Last War", info: "Filme: 1h22m", url: "https://www.anime-planet.com/anime/aura-koga-maryuins-last-war" },
+          { id: "fruit-of-grisaia", img: "plantowatch-images/plantowatch/fruit-of-grisaia.webp", title: "The Fruit of Grisaia", info: "1ª temporada: 13 episódios", studio: "8-Bit", airedSeason: "2014", url: "https://www.anime-planet.com/anime/the-fruit-of-grisaia", crunchyroll: "", malUrl: "https://myanimelist.net/anime/17729/Grisaia_no_Kajitsu" },
+          { id: "sentenced-hero", img: "plantowatch-images/plantowatch/sentenced-hero.webp", title: "Sentenced to be a Hero", info: "12 episódios", studio: "Studio KAI", airedSeason: "2026", url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00356809/sentenced-to-be-a-hero", malUrl: "https://myanimelist.net/anime/56009/Yuusha-kei_ni_Shosu__Choubatsu_Yuusha_9004-tai_Keimu_Kiroku" },
+          { id: "wotakoi", img: "plantowatch-images/plantowatch/wotakoi.webp", title: "Wotakoi: Love is Hard for Otaku", info: "11 episódios", studio: "A-1 Pictures", airedSeason: "2018", url: "https://www.anime-planet.com/anime/wotakoi-love-is-hard-for-otaku", crunchyroll: "", malUrl: "https://myanimelist.net/anime/35968/Wotaku_ni_Koi_wa_Muzukashii" },
+          { id: "spy-x-family", img: "plantowatch-images/plantowatch/spy-x-family.webp", title: "Spy x Family", info: "3 temporadas: 50 episódios", studio: "Wit Studio / CloverWorks", airedSeason: "2022", url: "https://www.anime-planet.com/anime/spy-x-family", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G4PH0WXVJ/spy-x-family", malUrl: "https://myanimelist.net/anime/50265/Spy_x_Family" },
+          { id: "kurokos-basketball", img: "plantowatch-images/plantowatch/kurokos-basketball.webp", title: "Kuroko's Basketball", info: "3 temporadas: 75 episódios <br> 1 Filme: 1h30m", studio: "Production I.G", airedSeason: "2012-2017", url: "https://www.anime-planet.com/anime/kurokos-basketball", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G62P48X56/kurokos-basketball", malUrl: "https://myanimelist.net/anime/11771/Kuroko_no_Basket" },
+          { id: "blue-lock", img: "plantowatch-images/plantowatch/blue-lock.webp", title: "Blue Lock", info: "2 temporadas: 38 episódios", studio: "8-Bit", airedSeason: "2022", url: "https://www.anime-planet.com/anime/blue-lock", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G4PH0WEKE/blue-lock", malUrl: "https://myanimelist.net/anime/49596/Blue_Lock" },
+          { id: "evangelion", img: "plantowatch-images/plantowatch/evangelion.webp", title: "Neon Genesis Evangelion", info: "1 temporada: 26 episódios <br>1 Filme: 1h27m", studio: "Gainax / Tatsunoko Production / Production I.G", airedSeason: "1995-1997", url: "https://www.anime-planet.com/anime/neon-genesis-evangelion", netflix: "https://www.netflix.com/title/81033445", malUrl: "https://myanimelist.net/anime/30/Shinseiki_Evangelion" },
+          { id: "black-clover", img: "plantowatch-images/plantowatch/black-clover.webp", title: "Black Clover", info: "4 temporadas: 170 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/black-clover", crunchyroll: "", malUrl: "" },
+          { id: "fullmetal", img: "plantowatch-images/plantowatch/fullmetal.webp", title: "Fullmetal Alchemist: Brotherhood", info: "64 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/fullmetal-alchemist-brotherhood", crunchyroll: "", malUrl: "" },
+          { id: "death-note", img: "plantowatch-images/plantowatch/death-note.webp", title: "Death Note", info: "37 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/death-note", crunchyroll: "", malUrl: "" },
+          { id: "i-want-to-eat-your-pancreas", img: "plantowatch-images/plantowatch/i-want-to-eat-your-pancreas.webp", title: "I Want to Eat Your Pancreas", info: "Filme: 1h48m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/i-want-to-eat-your-pancreas", crunchyroll: "", malUrl: "" },
+          { id: "fate-zero", img: "plantowatch-images/plantowatch/fate-zero.webp", title: "Fate Zero", info: "2 temporadas: 25 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/fate-zero", crunchyroll: "", malUrl: "" },
+          { id: "fate-heavens-feel", img: "plantowatch-images/plantowatch/fate-heavens-feel.webp", title: "Fate Stay Night: Heaven's Feel", info: "3 Filmes: 5h57m", studio: "", airedSeason: "", url: "", crunchyroll: "", malUrl: "" },
+          { id: "chainsaw-man", img: "plantowatch-images/plantowatch/chainsaw-man.webp", title: "Chainsaw Man", info: "1 temporada: 13 episódios <br>1 Filme: 1h40m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/chainsaw-man", crunchyroll: "", malUrl: "" },
+          { id: "cowboy-bebop", img: "plantowatch-images/plantowatch/cowboy-bebop.webp", title: "Cowboy Bebop", info: "1 temporada: 26 episódios <br>1 Filme: 1h55m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/cowboy-bebop", crunchyroll: "", malUrl: "" },
+          { id: "your-name", img: "plantowatch-images/plantowatch/your-name.webp", title: "your name", info: "Filme: 1h50m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/your-name", crunchyroll: "", malUrl: "" },
+          { id: "heavenly-delusion", img: "plantowatch-images/plantowatch/heavenly-delusion.webp", title: "Heavenly Delusion", info: "13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/heavenly-delusion", crunchyroll: "", malUrl: "" },
+          { id: "to-be-hero-x", img: "plantowatch-images/plantowatch/to-be-hero-x.webp", title: "To be Hero X", info: "24 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/to-be-hero-x", crunchyroll: "", malUrl: "" },
+          { id: "tokyo-ghoul", img: "plantowatch-images/plantowatch/tokyo-ghoul.webp", title: "Tokyo Ghoul", info: "2 temporadas: 24 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/tokyo-ghoul", crunchyroll: "", malUrl: "" },
+          { id: "fate-stay-night", img: "plantowatch-images/plantowatch/fate-stay-night.webp", title: "Fate Stay Night: Unlimited Blade Works", info: "2 temporadas: 25 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/fate-stay-night-unlimited-blade-works", crunchyroll: "", malUrl: "" },
+          { id: "the-tunnel-to-summer", img: "plantowatch-images/plantowatch/the-tunnel-to-summer.webp", title: "The Tunnel to Summer, the Exit of Goodbyes", info: "Filme: 1h23m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-tunnel-to-summer-the-exit-of-goodbyes", crunchyroll: "", malUrl: "" },
+          { id: "gintama", img: "plantowatch-images/plantowatch/gintama.webp", title: "Gintama", info: "11 temporadas: 367 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/gintama", crunchyroll: "", malUrl: "" },
+          { id: "dororo", img: "plantowatch-images/plantowatch/dororo.webp", title: "Dororo (2019)", info: "24 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/dororo-2019", crunchyroll: "", malUrl: "" },
+          { id: "link-click", img: "plantowatch-images/plantowatch/link-click.webp", title: "Link Click", info: "3 temporadas: 30 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/link-click", crunchyroll: "", malUrl: "" },
+          { id: "jojo", img: "plantowatch-images/plantowatch/jojo.webp", title: "JoJo's Bizarre Adventure (2012)", info: "5 Partes: 193 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/jojos-bizarre-adventure", crunchyroll: "", malUrl: "" },
+          { id: "ranking-of-kings", img: "plantowatch-images/plantowatch/ranking-of-kings.webp", title: "Ranking of Kings", info: "2 temporadas: 33 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/ranking-of-kings", crunchyroll: "", malUrl: "" },
+          { id: "lom", img: "plantowatch-images/plantowatch/lom.webp", title: "Lord of Mysteries", info: "1 temporada: 13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/lord-of-mysteries", crunchyroll: "", malUrl: "" },
+          { id: "takopi", img: "plantowatch-images/plantowatch/takopi.webp", title: "Takopi's Original Sin", info: "6 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/takopis-original-sin", crunchyroll: "", malUrl: "" },
+          { id: "monster", img: "plantowatch-images/plantowatch/monster.webp", title: "Monster", info: "74 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/monster", crunchyroll: "", malUrl: "" },
+          { id: "quintessential-quintuplets", img: "plantowatch-images/plantowatch/quintessential-quintuplets.webp", title: "The Quintessential Quintuplets", info: "2 temporadas: 24 episódios <br>1 Filme: 2h16m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-quintessential-quintuplets", crunchyroll: "", malUrl: "" },
+          { id: "saiki", img: "plantowatch-images/plantowatch/saiki.webp", title: "The Disastrous Life of Saiki K.", info: "2 temporadas: 144 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-disastrous-life-of-saiki-k", crunchyroll: "", malUrl: "" },
+          { id: "astra-space", img: "plantowatch-images/plantowatch/astra-space.webp", title: "Astra Lost in Space", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/astra-lost-in-space", crunchyroll: "", malUrl: "" },
+          { id: "fate-strange-fake", img: "plantowatch-images/plantowatch/fate-strange-fake.webp", title: "Fate Strange Fake", info: "13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/fate-strange-fake", crunchyroll: "", malUrl: "" },
+          { id: "call-of-the-night", img: "plantowatch-images/plantowatch/call-of-the-night.webp", title: "Call of the Night", info: "2 temporadas: 25 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/call-of-the-night", crunchyroll: "", malUrl: "" },
+          { id: "100-meters", img: "plantowatch-images/plantowatch/100-meters.webp", title: "100 Meters", info: "Filme: 1h47m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/100-meters", crunchyroll: "", malUrl: "" },
+          { id: "hellsing", img: "plantowatch-images/plantowatch/hellsing.webp", title: "Hellsing", info: "13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/hellsing", crunchyroll: "", malUrl: "" },
+          { id: "pretty-derby", img: "plantowatch-images/plantowatch/pretty-derby.webp", title: "Uma Musume: Pretty Derby", info: "3 temporadas: 39 episódios <br>2 Filmes: 3h26m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/uma-musume-pretty-derby", crunchyroll: "", malUrl: "" },
+          { id: "spice-and-wolf", img: "plantowatch-images/plantowatch/spice-and-wolf.webp", title: "Spice and Wolf: Merchant Meets the Wise Wolf", info: "1 temporada: 25 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/spice-and-wolf-merchant-meets-the-wise-wolf", crunchyroll: "", malUrl: "" },
+          { id: "no-game-no-life", img: "plantowatch-images/plantowatch/no-game-no-life.webp", title: "No Game No Life ", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/no-game-no-life", crunchyroll: "", malUrl: "" },
+          { id: "noragami", img: "plantowatch-images/plantowatch/noragami.webp", title: "Noragami", info: "2 temporadas: 25 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/noragami", crunchyroll: "", malUrl: "" },
+          { id: "barakamon", img: "plantowatch-images/plantowatch/barakamon.webp", title: "Barakamon", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/barakamon", crunchyroll: "", malUrl: "" },
+          { id: "greatest-demon-lord", img: "plantowatch-images/plantowatch/greatest-demon-lord.webp", title: "The Greatest Demon Lord Is Reborn as a Typical Nobody", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-greatest-demon-lord-is-reborn-as-a-typical-nobody", crunchyroll: "", malUrl: "" },
+          { id: "radiant", img: "plantowatch-images/plantowatch/radiant.webp", title: "Radiant", info: "2 temporadas: 42 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/radiant", crunchyroll: "", malUrl: "" },
+          { id: "ramparts-of-ice", img: "plantowatch-images/plantowatch/ramparts-of-ice.webp", title: "The Ramparts of Ice", info: "14 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-ramparts-of-ice", crunchyroll: "", malUrl: "" },
+          { id: "yamada-witches", img: "plantowatch-images/plantowatch/yamada-witches.webp", title: "Yamada-kun and the Seven Witches", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/yamada-kun-and-the-seven-witches", crunchyroll: "", malUrl: "" },
+          { id: "sign-of-affection", img: "plantowatch-images/plantowatch/sign-of-affection.webp", title: "A Sign of Affection", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/a-sign-of-affection", crunchyroll: "", malUrl: "" },
+          { id: "clevatess", img: "plantowatch-images/plantowatch/clevatess.webp", title: "Clevatess", info: "1 temporada: 12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/clevatess", crunchyroll: "", malUrl: "" },
+          { id: "secrets-of-the-silent-witch", img: "plantowatch-images/plantowatch/secrets-of-the-silent-witch.webp", title: "Secrets of the Silent Witch", info: "13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/secrets-of-the-silent-witch", crunchyroll: "", malUrl: "" },
+          { id: "darling-in-the-franxx", img: "plantowatch-images/plantowatch/darling-in-the-franxx.webp", title: "DARLING in the FRANXX", info: "24 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/darling-in-the-franxx", crunchyroll: "", malUrl: "" },
+          { id: "king-avatar", img: "plantowatch-images/plantowatch/king-avatar.webp", title: "The King's Avatar", info: "3 temporadas: 41 episódios <br>1 Filme: 1h38m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-kings-avatar", crunchyroll: "", malUrl: "" },
+          { id: "cute-girl-in-the-heros-party", img: "plantowatch-images/plantowatch/cute-girl-in-the-heros-party.webp", title: "There was a Cute Girl in the Hero’s Party, so I Tried Confessing to Her", info: "13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/there-was-a-cute-girl-in-the-heros-party-so-i-tried-confessing-to-her", crunchyroll: "", malUrl: "" },
+          { id: "spare-me", img: "plantowatch-images/plantowatch/spare-me.webp", title: "Spare Me, Great Lord", info: "2 temporadas: 24 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/dawang-raoming", crunchyroll: "", malUrl: "" },
+          { id: "aura-last-war", img: "plantowatch-images/plantowatch/aura-last-war.webp", title: "Aura: Koga Maryuin's Last War", info: "Filme: 1h22m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/aura-koga-maryuins-last-war", crunchyroll: "", malUrl: "" },
         ];
 
         const animeData = rawAnimeData.map(item => ({
@@ -9555,8 +9586,19 @@
 
           seasonKeys.forEach(key => {
             const seasonObj = WATCHING_SEASON_LABELS[key] || { text: key, color: "var(--muted)" };
+            // Nota: não dá pra usar escapeHtml() aqui — é local a outro
+            // escopo do arquivo e não existe dentro de renderWatchingList
+            // (mesmo bug documentado no escapeHtml duplicado da busca).
+            const escSeason = str => String(str)
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;');
+            const seasonTextHtml = seasonObj.url
+              ? `<a class="season-text season-text-link" href="${escSeason(seasonObj.url)}" target="_blank" rel="noopener">${escSeason(seasonObj.text)}</a>`
+              : `<span class="season-text">${escSeason(seasonObj.text)}</span>`;
             html += `<li class="season-header" style="--season-color: ${seasonObj.color};">
-                      <span class="season-text">${seasonObj.text}</span>
+                      ${seasonTextHtml}
                       <div class="season-line"></div>
                     </li>`;
             html += groups[key].map(anime => createAnimeCard(anime, 'watching', seasonObj.color)).join('');
@@ -11014,7 +11056,7 @@
           }
           const SLASH_COMMANDS = {
             '/all':         { filter: () => true,                         rotateWatching: true  },
-            '/ranking':     { filter: entry => entry.tag !== 'watching' && entry.tag !== 'plan' && entry.tag !== 'favep', rotateWatching: false },
+            '/ranking':     { filter: entry => entry.tag !== 'watching' && entry.tag !== 'plan' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters', rotateWatching: false },
             '/watching':    { filter: entry => entry.tag === 'watching',  rotateWatching: true  },
             '/planwatch':   { filter: entry => entry.tag === 'plan',      rotateWatching: false },
             '/romance':     { filter: entry => isSubCategoryEntry(entry, 'romance'), rotateWatching: false },
