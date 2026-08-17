@@ -673,6 +673,10 @@
         vertical-align: middle;
       }
 
+      .search-result-rank.rank-gold { color: #d4af37; }
+      .search-result-rank.rank-silver { color: #b8bcc2; }
+      .search-result-rank.rank-bronze { color: #b0703f; }
+
       .search-result-title mark {
         background: transparent;
         color: var(--acc, currentColor);
@@ -4103,6 +4107,7 @@
         flex-shrink: 0;
         box-shadow: 0 0 0 3px rgba(255,255,255,0.08), 0 6px 16px -4px rgba(0,0,0,0.55);
         transition: box-shadow 0.3s ease;
+        cursor: default;
       }
 
       ol.ranking.mode-true-characters .thumb {
@@ -5230,6 +5235,10 @@
         letter-spacing: -0.01em;
         vertical-align: middle;
       }
+
+      .fav-ep-lightbox-rank.rank-gold { color: #d4af37; }
+      .fav-ep-lightbox-rank.rank-silver { color: #b8bcc2; }
+      .fav-ep-lightbox-rank.rank-bronze { color: #b0703f; }
 
       .fav-ep-lightbox-subtitle {
         margin: 10px 0 0;
@@ -7655,7 +7664,8 @@
             updateImage();
 
             if (titleEl) {
-              const rankHtml = rank != null ? `<span class="fav-ep-lightbox-rank">#${rank}</span>` : '';
+              const rankBadgeClass = rank === 1 ? ' rank-gold' : rank === 2 ? ' rank-silver' : rank === 3 ? ' rank-bronze' : '';
+              const rankHtml = rank != null ? `<span class="fav-ep-lightbox-rank${rankBadgeClass}">#${rank}</span>` : '';
               titleEl.innerHTML = `${rankHtml}${ep.anime || ''}`;
             }
             if (subtitleEl) subtitleEl.textContent = ep.episodeLabel || '';
@@ -7848,15 +7858,15 @@
           { id: "prism-rondo", img: "myranks-images/myranks/prism-rondo.webp", title: "Love Through a Prism", info: "20 episódios", studio: "Wit Studio", airedSeason: "2026", rewatch: "No", mal: [ { label: "1 temporada", episodes: 20, note: 7 } ] },
           { id: "angel-next-door", img: "myranks-images/myranks/angel-next-door.webp", title: "The Angel Next Door Spoils Me Rotten", info: "(~) 1 temporada: 12 episódios" , studio: "Project No.9", airedSeason: "2023-?", rewatch: "1st Season", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
           { id: "farming-life", img: "myranks-images/myranks/farming-life.webp", title: "Farming Life in Another World", info: "(~) 1 temporada: 12 episódios" , studio: "Okuruto Noboru", airedSeason: "2022-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 6 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "more-than-a-married-couple", img: "myranks-images/myranks/more-than-married-couple.webp", title: "More than a Married Couple, but Not Lovers", info: "12 episódios" , studio: "Project No.9", airedSeason: "2022", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 12, note: 7 } ] },
           { id: "the-girl-i-like-forgot-her-glasses", img: "myranks-images/myranks/the-girl-i-like-forgot-her-glasses.webp", title: "The Girl I Like Forgot Her Glasses", info: "13 episódios" , studio: "Project No.9", airedSeason: "2023", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 7 } ] },
+          { id: "toradora", img: "myranks-images/myranks/toradora.webp", title: "Toradora!", info: "25 episódios" , studio: "J.C. Staff", airedSeason: "2008-2009", rewatch: "No", mal: [ { label: "1 temporada", episodes: 25, note: 7 } ] },
+          { id: "more-than-a-married-couple", img: "myranks-images/myranks/more-than-married-couple.webp", title: "More than a Married Couple, but Not Lovers", info: "12 episódios" , studio: "Project No.9", airedSeason: "2022", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 12, note: 7 } ] },
           { id: "yamada-kun-lv999", img: "myranks-images/myranks/yamada-kun-lv999.webp", title: "My Love Story with Yamada-kun at LV999", info: "13 episódios" , studio: "Project No.9", airedSeason: "2023", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 6 } ] },
           { id: "lookism", img: "myranks-images/myranks/lookism.webp", title: "Lookism", info: "8 episódios" , studio: "Studio Mir", airedSeason: "2024", rewatch: "No", mal: [ { label: "1 temporada", episodes: 8, note: 6 } ] },
           { id: "tower-of-god", img: "myranks-images/myranks/tower-of-god.webp", title: "Tower of God", info: "(~) 1ª temporada: 13 episódios" , studio: "Telecom Animation Film", airedSeason: "2020-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 13, note: 7 }, { label: "2ª temporada I", episodes: 13, unwatched: true }, { label: "2ª temporada II", episodes: 13, unwatched: true } ] },
           { id: "the-god-of-high-school", img: "myranks-images/myranks/the-god-of-high-school.webp", title: "The God of High School", info: "13 episódios" , studio: "MAPPA", airedSeason: "2020", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 7 } ] },
           { id: "highschool-of-the-dead", img: "myranks-images/myranks/highschool-of-the-dead.webp", title: "Highschool of the Dead", info: "12 episódios" , studio: "MADHOUSE", airedSeason: "2010-2011", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 6 }, { label: "Drifters of the Dead", episodes: "OVA", note: 5 } ] },
           { id: "healing-magic", img: "myranks-images/myranks/healing-magic.webp", title: "The Wrong Way to Use Healing Magic", info: "1 temporada: 13 episódios" , studio: "Studio Blanc", airedSeason: "2022-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 13, note: 7 } ] },
-          { id: "toradora", img: "myranks-images/myranks/toradora.webp", title: "Toradora!", info: "25 episódios" , studio: "J.C. Staff", airedSeason: "2008-2009", rewatch: "No", mal: [ { label: "1 temporada", episodes: 25, note: 6 } ] },
           { id: "bottom-tier", img: "myranks-images/myranks/bottom-tier.webp", title: "Bottom-Tier Character Tomozaki", info: "(~) 1ª temporada: 12 episódios" , studio: "Project No.9", airedSeason: "2021-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 5 }, { label: "2ª temporada", episodes: 13, unwatched: true } ] },
           { id: "blue-period", img: "myranks-images/myranks/blue-period.webp", title: "Blue Period", info: "12 episódios" , studio: "Seven Arcs", airedSeason: "2021", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 5 } ] },
           { id: "masamune-kuns-revenge", img: "myranks-images/myranks/masamune-kuns-revenge.webp", title: "Masamune-kun's Revenge", info: "(~) 1ª temporada: 12 episódios" , studio: "Silver Link / Studio Blanc", airedSeason: "2017-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 5 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
@@ -8394,10 +8404,16 @@
             wrap.classList.remove('has-fallback');
             img.style.display = 'block';
             img.classList.add('loaded');
-            if (ambient && src) {
-              // Mesma URL do thumb, já em cache — usa como wallpaper borrado do card.
-              ambient.style.backgroundImage = `url("${src}")`;
-              ambient.classList.add('ready');
+            if (ambient) {
+              // Usa a imagem atualmente carregada (img.src), não a "src" original
+              // capturada no primeiro load — senão, quando o carrossel troca a
+              // imagem principal, esse listener dispara de novo (o <img> recarrega)
+              // e reseta o fundo de volta pra capa antiga.
+              const currentSrc = img.currentSrc || img.src;
+              if (currentSrc) {
+                ambient.style.backgroundImage = `url("${currentSrc}")`;
+                ambient.classList.add('ready');
+              }
             }
           });
 
@@ -10518,6 +10534,14 @@
             return `${baseFolder}/${folder}/${filename}`;
           }
 
+          // Mesma lógica de ouro/prata/bronze usada no True Characters e nos
+          // cards de rank (rank-gold/silver/bronze) — só que aplicada ao
+          // selo "#N" dos resultados da busca.
+          function searchRankBadgeClass(rank) {
+            const n = Number(rank);
+            return n === 1 ? ' rank-gold' : n === 2 ? ' rank-silver' : n === 3 ? ' rank-bronze' : '';
+          }
+
           function highlightTitle(title, query) {
             if (!query) return title;
             const idxFull = title.toLowerCase().indexOf(query.toLowerCase());
@@ -10728,10 +10752,10 @@
                       </div>
                       <div class="search-result-info">
                         <span class="search-result-title">${entry.tag === 'favep'
-                          ? `<span class="search-result-rank">#${entry.anime.peakRank}</span>`
+                          ? `<span class="search-result-rank${searchRankBadgeClass(entry.anime.peakRank)}">#${entry.anime.peakRank}</span>`
                           : entry.tag === 'trueCharacters'
-                            ? (trueCharRankById.has(entry.anime.id) ? `<span class="search-result-rank">#${trueCharRankById.get(entry.anime.id)}</span>` : '')
-                            : (entry.tag !== 'watching' && entry.tag !== 'plan' && globalRankById.has(entry.anime.id) ? `<span class="search-result-rank">#${globalRankById.get(entry.anime.id)}</span>` : '')
+                            ? (trueCharRankById.has(entry.anime.id) ? `<span class="search-result-rank${searchRankBadgeClass(trueCharRankById.get(entry.anime.id))}">#${trueCharRankById.get(entry.anime.id)}</span>` : '')
+                            : (entry.tag !== 'watching' && entry.tag !== 'plan' && globalRankById.has(entry.anime.id) ? `<span class="search-result-rank${searchRankBadgeClass(globalRankById.get(entry.anime.id))}">#${globalRankById.get(entry.anime.id)}</span>` : '')
                         }${highlightTitle(entry.anime.title, query)}</span>
                         ${(() => {
                           if (entry.tag === 'favep') {
