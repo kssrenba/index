@@ -175,32 +175,6 @@
       /* ── Busca ── */
       .search-wrapper { position: relative; }
 
-      .search-trigger-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 42px;
-        height: 42px;
-        background: transparent;
-        border: none;
-        border-radius: 14px;
-        color: var(--muted);
-        cursor: pointer;
-        transition: color 0.15s ease, background 0.15s ease;
-      }
-
-      .search-trigger-btn:hover { color: var(--text); }
-
-      .search-trigger-btn.active {
-        color: var(--glow-accent);
-      }
-
-      .search-trigger-btn svg {
-        width: 16px;
-        height: 16px;
-        stroke-width: 2;
-      }
-
       /* ── Drawer de busca (agora vive como aba dentro do drawer único) ── */
       .search-drawer-input-wrap {
         padding: 10px 0 16px;
@@ -795,24 +769,6 @@
         -webkit-backdrop-filter: blur(2px);
       }
 
-      .search-empty-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.05);
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
-        color: var(--muted);
-      }
-
-      .search-empty-icon svg {
-        width: 24px;
-        height: 24px;
-        stroke-width: 1.6;
-      }
-
       .search-empty-title {
         font-family: var(--font-title);
         font-weight: 800;
@@ -953,26 +909,6 @@
           width: 311px;
           height: 175px;
         }
-      }
-
-      .search-empty.search-offline {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        padding: 48px 12px;
-      }
-
-      .search-offline-icon {
-        font-size: 26px;
-        line-height: 1;
-        margin-bottom: 4px;
-        filter: grayscale(0.15);
-      }
-
-      .search-offline-sub {
-        color: var(--low-priority);
-        font-size: 12px;
       }
 
       .filter-btn {
@@ -1372,34 +1308,6 @@
         padding: 4px 22px 24px;
       }
 
-      .credits-crawl-logo {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        text-align: center;
-        padding: 18px 0 28px;
-        margin-bottom: 12px;
-        border-bottom: 1px solid rgba(203,213,225,0.16);
-      }
-
-      .credits-crawl-logo-eyebrow {
-        font-size: 10.5px;
-        font-weight: 700;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        color: #7a7f8a;
-      }
-
-      .credits-crawl-logo-title {
-        font-family: var(--font-title);
-        font-weight: 800;
-        font-size: clamp(24px, 7vw, 30px);
-        letter-spacing: 0.02em;
-        color: var(--credits-gold-bright);
-        text-shadow: 0 0 18px rgba(203,213,225,0.3), 0 1px 0 rgba(0,0,0,0.6);
-      }
-
       .credits-block {
         display: flex;
         flex-direction: column;
@@ -1446,44 +1354,6 @@
       .credits-name:focus-visible {
         color: var(--credits-gold-bright);
         text-shadow: 0 0 14px rgba(203,213,225,0.35);
-      }
-
-      .credits-crawl-divider {
-        color: var(--credits-gold);
-        opacity: 0.55;
-        font-size: 15px;
-        margin: 14px 0 6px;
-        text-align: center;
-      }
-
-      .credits-crawl-dedication {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        text-align: center;
-        padding: 26px 20px 4px;
-        margin: 8px auto 0;
-        border-top: 1px solid rgba(203,213,225,0.16);
-        width: 100%;
-        max-width: 300px;
-      }
-
-      .credits-crawl-dedication-text {
-        font-family: var(--font-title);
-        font-style: italic;
-        font-weight: 600;
-        font-size: 15px;
-        color: #d7d9de;
-        line-height: 1.5;
-      }
-
-      .credits-crawl-copy {
-        font-size: 10.5px;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        color: #565b66;
       }
 
       /* ── Créditos com o logo do serviço em vez de texto ──
@@ -1554,19 +1424,9 @@
         height: 20px;
       }
 
-      /* Gemini um pouco maior no bloco Fontes & Referências */
-      .credits-logo-img--pinterest-source {
-        height: 30px;
-      }
-
       /* ChatGPT um pouco maior no bloco Fontes & Referências */
       .credits-logo-img--chatgpt-source {
         height: 30px;
-      }
-
-      /* Voicemod Tuna um pouco maior */
-      .credits-logo-img--voicemod-tuna {
-        height: 25px;
       }
 
       /* Bloco Fontes & Referências em grade de 2 colunas (2 logos por linha) */
@@ -1582,38 +1442,6 @@
       /* Se sobrar um item ímpar (ex: 5º logo), ele ocupa a linha toda e fica centralizado */
       .credits-names--sources > .credits-name-logo:last-child:nth-child(odd) {
         grid-column: 1 / -1;
-      }
-
-      .drawer-reset-btn {
-        background: transparent;
-        border: none;
-        color: var(--muted);
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        padding: 0;
-        border-radius: 8px;
-        flex: 0 0 auto;
-        transition: color 0.15s ease, background 0.15s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .drawer-reset-btn svg {
-        width: 15px;
-        height: 15px;
-        stroke-width: 2.4;
-        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .drawer-reset-btn:hover {
-        color: #fff;
-        background: rgba(255,255,255,0.06);
-      }
-
-      .drawer-reset-btn:active svg {
-        transform: rotate(-90deg);
       }
 
       .drawer-panel {
@@ -1803,7 +1631,7 @@
       }
 
       .rank::before { content: counter(item); }
-      /* Best Episodes calcula a posição em JS (considerando empate de MNP),
+      /* Peak Episodes calcula a posição em JS (considerando empate de MNP),
         então aqui o número já vem no HTML — não usa o contador automático. */
       .rank.rank-fixed::before { content: none; }
 
@@ -3192,15 +3020,6 @@
         width: 100%;
       }
 
-      .rank-average-label {
-        font-family: var(--font-title);
-        font-weight: 600;
-        font-size: 13px;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
       .rank-average-value {
         font-family: var(--font-title);
         font-weight: 900;
@@ -3374,16 +3193,35 @@
 
         .poster-lightbox:not(.simple-mode) .rank-meta {
           grid-area: meta;
+          /* Sem cantos arredondados embaixo: esse bloco agora fica "colado"
+            no card do RESOURCES ABOUT logo abaixo, formando um único
+            cartão contínuo (ver ".poster-lightbox-more-info" abaixo). */
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
         }
 
         .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info {
           grid-area: moreinfo;
           display: flex;
           justify-content: center;
+          /* Cancela o row-gap do grid (18px) só aqui, pra esse bloco colar
+            direto embaixo do ".rank-meta" (mal/studio/lançamento), formando
+            um cartão único em vez de dois cartões separados por espaço. */
+          margin-top: -18px;
         }
 
         .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info:empty {
           display: none;
+        }
+
+        /* Como o card fica colado no ".rank-meta" acima, tira o canto
+          arredondado de cima e a borda superior daqui (quem faz a linha
+          divisória entre os dois agora é só a borda debaixo do ".rank-meta") —
+          assim não fica com um traço duplo/grosso na emenda. */
+        .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info .watch-now-links {
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+          border-top: none;
         }
 
         .poster-lightbox:not(.simple-mode) .rank-mal {
@@ -3630,15 +3468,6 @@
 
       .poster-lightbox-list:empty { display: none; }
 
-      .poster-lightbox-list .list-category {
-        font-family: var(--font-title);
-        font-weight: 600;
-        font-size: 11px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
       .poster-lightbox-list .list-division {
         display: inline-flex;
         align-items: center;
@@ -3651,14 +3480,6 @@
         transition: color 0.15s ease;
         padding: 2px 0 5px;
         border-bottom: 1px solid transparent;
-      }
-
-      /* Sem divisão: o nome da categoria assume o destaque sozinho */
-      .poster-lightbox-list.no-division .list-category {
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        color: var(--list-color, var(--glow-accent));
       }
 
       /* Tags de todas as divisões/categorias às quais o anime pertence
@@ -4741,7 +4562,7 @@
         opacity: 0.55;
       }
 
-      /* Os cards de Favorite Episodes têm o border-radius maior (18px) —
+      /* Os cards de Peak Episodes têm o border-radius maior (18px) —
         a faixa precisa acompanhar a curvatura do canto do próprio card. */
       li.fav-ep-card.rank-gold::before,
       li.fav-ep-card.rank-silver::before,
@@ -5126,30 +4947,6 @@
         margin-left: 1px;
       }
 
-      .fav-ep-rating-sep {
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 600;
-        line-height: 1;
-      }
-
-      .fav-ep-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-family: var(--font-title);
-        font-weight: 800;
-        font-size: 13px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        color: var(--muted);
-        text-decoration: none;
-        transition: color 0.15s ease;
-      }
-
-      .fav-ep-link:hover { color: #fff; }
-      .fav-ep-link svg { width: 12px; height: 12px; flex: 0 0 12px; }
-
       .fav-ep-note {
         margin: 0;
         font-size: 14px;
@@ -5198,7 +4995,7 @@
 
       /* ══════════════════════════════════════════════════════════════════
         Fav Ep Lightbox — modal em tela cheia ao clicar na imagem de um
-        card de "Favorite Episodes". Baseado no layout de referência feito
+        card de "Peak Episodes". Baseado no layout de referência feito
         no Canva: imagem grande com contador, setas nas laterais, título +
         episódio centralizados e os selos MNP/IMDb embaixo (IMDb linkando
         pra ep.imdbUrl). Componente próprio, separado do .poster-lightbox
@@ -5634,7 +5431,7 @@
 
         <div class="drawer-panel" data-panel="lists">
           <div class="drawer-section">
-            <div class="drawer-section-title">My Princiapl Anime Lists</div>
+            <div class="drawer-section-title">My Principal Anime Lists</div>
             <div class="drawer-grid">
               <button class="drawer-item" data-mode="watching" role="menuitem" style="--cat-color: #2dd4bf;">
                 <span class="drawer-item-icon">
@@ -5778,7 +5575,7 @@
               <div class="credits-block">
                 <div class="credits-role">THE GOAT</div>
                 <div class="credits-names">
-                  <a class="credits-name credits-name-logo" href="https://claude.ai" href="https://media.tenor.com/d7z3jSKznEgAAAAe/goat-sullivan.png" target="_blank" rel="noopener noreferrer">
+                  <a class="credits-name credits-name-logo" href="https://claude.ai" target="_blank" rel="noopener noreferrer">
                     <img class="credits-logo-img" src="assets/credits-webp/claude.webp" alt="Claude" loading="lazy" decoding="async">
                   </a>
                 </div>
@@ -5935,7 +5732,7 @@
     </div>
 
     <!-- ── Fav Ep Lightbox: modal ao clicar na imagem de um card de
-        "Favorite Episodes". Ver comentário no CSS (.fav-ep-lightbox). ── -->
+        "Peak Episodes". Ver comentário no CSS (.fav-ep-lightbox). ── -->
     <div class="fav-ep-lightbox" id="favEpLightbox" aria-hidden="true" role="dialog" aria-modal="true">
       <div class="fav-ep-lightbox-ambient" id="favEpLightboxAmbient">
         <img id="favEpLightboxAmbientImg" src="" alt="" aria-hidden="true">
@@ -6148,9 +5945,9 @@
           const EXCLUDED_STORAGE_KEY = 'myanimerank_excluded_categories';
           const META_STORAGE_KEY = 'myanimerank_meta';
           const META_FIELDS = [
-            { key: 'studio',  label: 'Studio',    placeholder: 'Creator' },
-            { key: 'season',  label: 'Lançamento', placeholder: 'Year' },
-            { key: 'rewatch', label: 'Rewatch',   placeholder: 'Maybe' }
+            { key: 'studio',  label: 'Studio',    placeholder: 'br' },
+            { key: 'season',  label: 'Year', placeholder: 'br' },
+            { key: 'rewatch', label: 'Rewatch',   placeholder: 'patapim' }
           ];
 
           // ── SCORE ao vivo do MyAnimeList ──
@@ -6275,19 +6072,6 @@
             return { ...staticMeta, ...(all[animeId] || {}) };
           }
 
-          function setMetaFor(animeId, fieldKey, value) {
-            const all = loadAllMeta();
-            if (!all[animeId]) all[animeId] = {};
-            const trimmed = String(value || '').trim();
-            if (trimmed) {
-              all[animeId][fieldKey] = trimmed;
-            } else {
-              delete all[animeId][fieldKey];
-            }
-            if (Object.keys(all[animeId]).length === 0) delete all[animeId];
-            saveAllMeta(all);
-          }
-
           function renderMeta(animeId, isWatchingNow, malUrl, allowLiveScore) {
             if (!lightboxMeta) return;
             // Somente leitura: os valores vêm direto do rawAnimeData (studio, airedSeason, rewatch).
@@ -6342,9 +6126,11 @@
                 ? rawValue.split(/[\/,]/).map(s => s.trim()).filter(Boolean)
                 : [];
               const isMultiStudio = field.key === 'studio' && studioParts.length > 1;
-              const studioSeparator = studioParts.length >= 3 ? ', ' : ' and ';
+              const studioSeparator = studioParts.length >= 3 ? ', ' : ' and\u00A0';
               const displayValueHtml = isMultiStudio
-                ? studioParts.map(s => escapeHtml(s)).join(studioSeparator)
+                ? (studioParts.length >= 3
+                    ? studioParts.slice(0, -1).map(s => escapeHtml(s)).join(studioSeparator) + ' ' + escapeHtml(studioParts[studioParts.length - 1])
+                    : studioParts.map(s => escapeHtml(s)).join(studioSeparator))
                 : escapeHtml(rawValue);
               const labelText = isMultiStudio ? field.label + 's' : field.label;
               const clampClass = field.key === 'studio' ? ' rank-meta-value--clamp' : '';
@@ -7107,9 +6893,9 @@
               const idx = list.findIndex(a => a.id === animeId);
               t.position = idx === -1 ? null : idx + 1;
             });
-            // Se o anime tiver um episódio na lista "Best Episodes"
+            // Se o anime tiver um episódio na lista "Peak Episodes"
             // (favoriteEpisodesData), adiciona a tag ao final, com a posição
-            // dele dentro dessa lista (ex: "#1 Best Episodes").
+            // dele dentro dessa lista (ex: "#1 Peak Episodes").
             if (typeof favoriteEpisodesData !== 'undefined') {
               const favIdx = favoriteEpisodesData.findIndex(e => e.id === animeId);
               if (favIdx !== -1) {
@@ -7736,7 +7522,7 @@
         })();
 
         // ── Fav Ep Lightbox: abre ao clicar na imagem grande de um card de
-        // "Favorite Episodes". Módulo próprio e enxuto — não usa o
+        // "Peak Episodes". Módulo próprio e enxuto — não usa o
         // posterLightbox (esse é mais robusto, com estúdio/notas/MAL, feito
         // pro "All Animes"/"Watching Now"). ──
         (function initFavEpLightbox() {
@@ -7895,7 +7681,7 @@
             if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
           }
 
-          // Clique em qualquer lugar do card de Favorite Episodes abre o
+          // Clique em qualquer lugar do card de Peak Episodes abre o
           // lightbox, já na imagem que estava selecionada/hover no card
           // naquele momento. Selos (MNP/IMDb) e o mini-carrossel de
           // thumbnails ficam de fora (o do IMDb precisa abrir o link normal,
@@ -8042,27 +7828,28 @@
           { id: "cinderella-gray", img: "myranks-images/myranks/cinderella-gray.webp", title: "Uma Musume: Cinderella Gray", info: "23 episódios" , studio: "CygamesPictures", airedSeason: "2025", rewatch: "No", mal: [ { label: "1ª temporada I", episodes: 13, note: 8 }, { label: "1ª temporada II", episodes: 10, note: 7 } ] },
           { id: "bunny-girl-senpai", img: "myranks-images/myranks/bunny-girl-senpai.webp", title: "Rascal Does Not Dream of Bunny Girl Senpai", info: "(~~~) 1ª temporada: 13 episódios" , studio: "CloverWorks", airedSeason: "2018-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 13, note: 8 }, { label: "Movie 1: Rascal Does Not Dream of a Dreaming Girl", episodes: "1h30m", unwatched: true }, { label: "Movie 2: Rascal Does Not Dream of a Sister Venturing Out", episodes: "1h13m", unwatched: true }, { label: "Movie 3: Rascal Does Not Dream of a Knapsack Kid", episodes: "1h14m", unwatched: true }, , { label: "2ª temporada", episodes: 13, unwatched: true } ] },
           { id: "makeine", img: "myranks-images/myranks/makeine.webp", title: "Makeine: Too Many Losing Heroines!", info: "1 temporada: 12 episódios" , studio: "A-1 Pictures", airedSeason: "2024-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 12, note: 7 } ] },
+          { id: "the-100-girlfriends", img: "myranks-images/myranks/the-100-girlfriends.webp", title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You", info: "2 temporadas: 24 episódios" , studio: "SynergySP", airedSeason: "2024-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
           { id: "silent-voice", img: "myranks-images/myranks/silent-voice.webp", title: "A Silent Voice", info: "Filme: 2h10m" , studio: "Kyoto Animation", airedSeason: "2016", rewatch: "No", mal: [ { label: "Filme", episodes: "2h10m", note: 7 } ] },
-          { id: "my-dress-up-darling", img: "myranks-images/myranks/my-dress-up-darling.webp", title: "My Dress-Up Darling", info: "(~) 1ª temporada: 12 episódios" , studio: "CloverWorks", airedSeason: "2022-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, , { label: "2ª temporada", episodes: 12, unwatched: true } ] },
           { id: "zom-100", img: "myranks-images/myranks/zom-100.webp", title: "Zom 100: Bucket List of the Dead", info: "12 episódios" , studio: "Bug Films", airedSeason: "2023", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 12, note: 7 } ] },
           { id: "eighty-six", img: "myranks-images/myranks/eighty-six.webp", title: "86 Eighty-Six", info: "2 temporadas: 23 episódios" , studio: "A-1 Pictures", airedSeason: "2021", rewatch: "No", mal: [ { label: "1ª temporada I", episodes: 11, note: 7 }, { label: "1ª temporada II", episodes: 12, note: 7 } ] },
           { id: "sword-art-online", img: "myranks-images/myranks/sword-art-online.webp", title: "Sword Art Online", info: "(~~~) 1ª temporada: 25 episódios" , studio: "A-1 Pictures", airedSeason: "2012-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 25, note: 7 } ] },
           { id: "food-wars", img: "myranks-images/myranks/food-wars.webp", title: "Food Wars! Shokugeki no Soma", info: "5 temporadas: 86 episódios" , studio: "J.C. Staff", airedSeason: "2015-2020", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "2ª temporada", episodes: 13, note: 7 }, { label: "3ª temporada I", episodes: 12, note: 7 }, { label: "3ª temporada II", episodes: 12, note: 6 }, { label: "4ª temporada", episodes: 12, note: 5 }, { label: "5ª temporada", episodes: 13, note: 4 } ] },
-          { id: "the-100-girlfriends", img: "myranks-images/myranks/the-100-girlfriends.webp", title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You", info: "2 temporadas: 24 episódios" , studio: "SynergySP", airedSeason: "2024-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
           { id: "tsukimichi", img: "myranks-images/myranks/tsukumichi.webp", title: "Tsukimichi -Moonlit Fantasy-", malSearch: "Tsukimichi", info: "2 temporadas: 37 episódios" , studio: "C2C / J.C. Staff", airedSeason: "2021-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 25, note: 7 } ] },
+          { id: "my-dress-up-darling", img: "myranks-images/myranks/my-dress-up-darling.webp", title: "My Dress-Up Darling", info: "(~) 1ª temporada: 12 episódios" , studio: "CloverWorks", airedSeason: "2022-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, , { label: "2ª temporada", episodes: 12, unwatched: true } ] },
           { id: "danmachi", img: "myranks-images/myranks/danmachi.webp", title: "Danmachi: Is It Wrong to Try to Pick Up Girls in a Dungeon", malSearch: "Is It Wrong to Try to Pick Up Girls in a Dungeon", info: "(~) 4 temporadas: 59 episódios" , studio: "J.C. Staff", airedSeason: "2015-?", rewatch: "3 First Seasons", mal: [ { label: "1ª temporada", episodes: 13, note: 7 }, { label: "2ª temporada", episodes: 12, note: 5 }, { label: "3ª temporada", episodes: 12, note: 5 }, { label: "4ª temporada I", episodes: 11, note: 7 }, { label: "4ª temporada II", episodes: 11, note: 8 },{ label: "5ª temporada", episodes: 15, unwatched: true } ] },
           { id: "chitose", img: "myranks-images/myranks/chitose.webp", title: "Chitose is in Ramune Bottle", info: "1 temporada: 13 episódios" , studio: "Feel", airedSeason: "2025-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 13, note: 7 } ] },
-          { id: "the-apothecary-diaries", img: "myranks-images/myranks/the-apothecary-diaries.webp", title: "The Apothecary Diaries", info: "(~) 1ª temporada: 24 episódios" , studio: "OLM / TOHO Animation Studio", airedSeason: "2023-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "2ª temporada", episodes: 24, unwatched: true } ] },
-          { id: "gurren-lagann", img: "myranks-images/myranks/gurren-lagann.webp", title: "Gurren Lagann", info: "(~~) 1 temporada: 27 episódios" , studio: "Gainax", airedSeason: "2007", rewatch: "Never", mal: [ { label: "1 temporada", episodes: 27, note: 7 }, { label: "Movie 1: Childhood's End", episodes: "1h52m", unwatched: true }, { label: "Movie 2: The Lights in the Sky are Stars", episodes: "2h05m", unwatched: true } ] },
           { id: "welcome-to-the-ballroom", img: "myranks-images/myranks/welcome-to-the-ballroom.webp", title: "Welcome to the Ballroom", info: "24 episódios" , studio: "Production I.G", airedSeason: "2017", rewatch: "No", mal: [ { label: "1 temporada", episodes: 24, note: 7 } ] },
           { id: "nanatsu-no-taizai", img: "myranks-images/myranks/nanatsu-no-taizai.webp", title: "The Seven Deadly Sins: Nanatsu no Taizai", info: "4 temporadas: 100 episódios <br>3 Filmes: 3h50m" , studio: "A-1 Pictures / Studio Deen", airedSeason: "2014-2021", rewatch: "2 First Seasons", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "1ª temporada II", episodes: 4, note: 7 }, { label: "2ª temporada", episodes: 24, note: 7 }, { label: "Movie 1: Prisoners of the Sky", episodes: "1h39m", note: 6 },{ label: "3ª temporada", episodes: 24, note: 6 }, { label: "4ª temporada", episodes: 24, note: 5 },  { label: "Movie 2: Cursed By Light", episodes: "1h19m", note: 5 }, { label: "ONA: Grudge of Edinburgh", episodes: "52m", note: 3 } ] },
+          { id: "gurren-lagann", img: "myranks-images/myranks/gurren-lagann.webp", title: "Gurren Lagann", info: "(~~) 1 temporada: 27 episódios" , studio: "Gainax", airedSeason: "2007", rewatch: "Never", mal: [ { label: "1 temporada", episodes: 27, note: 7 }, { label: "Movie 1: Childhood's End", episodes: "1h52m", unwatched: true }, { label: "Movie 2: The Lights in the Sky are Stars", episodes: "2h05m", unwatched: true } ] },
+          { id: "the-apothecary-diaries", img: "myranks-images/myranks/the-apothecary-diaries.webp", title: "The Apothecary Diaries", info: "(~) 1ª temporada: 24 episódios" , studio: "OLM / TOHO Animation Studio", airedSeason: "2023-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "2ª temporada", episodes: 24, unwatched: true } ] },
           { id: "shield-hero", img: "myranks-images/myranks/shield-hero.webp", title: "The Rising of the Shield Hero", info: "(~) 1ª temporada: 25 episódios" , studio: "Kinema Citrus", airedSeason: "2019-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 25, note: 7 }, { label: "2ª temporada", episodes: 13, unwatched: true }, { label: "3ª temporada", episodes: 12, unwatched: true }, { label: "4ª temporada", episodes: 12, unwatched: true } ] },
+          { id: "otaku-gyaru", img: "myranks-images/myranks/otaku-gyaru.webp", title: "Gals Can't Be Kind to Otaku", info: "12 episódios", studio: "TMS Entertainment", airedSeason: "2026", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 7 } ]},
           { id: "nisekoi", img: "myranks-images/myranks/nisekoi.webp", title: "Nisekoi: False Love", info: "2 temporadas: 32 episódios" , studio: "Shaft", airedSeason: "2014-2015", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 20, note: 7 }, { label: "2ª temporada", episodes: 12, note: 6 } ] },
           { id: "prism-rondo", img: "myranks-images/myranks/prism-rondo.webp", title: "Love Through a Prism", info: "20 episódios", studio: "Wit Studio", airedSeason: "2026", rewatch: "No", mal: [ { label: "1 temporada", episodes: 20, note: 7 } ] },
           { id: "angel-next-door", img: "myranks-images/myranks/angel-next-door.webp", title: "The Angel Next Door Spoils Me Rotten", info: "(~) 1 temporada: 12 episódios" , studio: "Project No.9", airedSeason: "2023-?", rewatch: "1st Season", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "the-girl-i-like-forgot-her-glasses", img: "myranks-images/myranks/the-girl-i-like-forgot-her-glasses.webp", title: "The Girl I Like Forgot Her Glasses", info: "13 episódios" , studio: "Project No.9", airedSeason: "2023", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 7 } ] },
           { id: "farming-life", img: "myranks-images/myranks/farming-life.webp", title: "Farming Life in Another World", info: "(~) 1 temporada: 12 episódios" , studio: "Okuruto Noboru", airedSeason: "2022-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 6 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
           { id: "more-than-a-married-couple", img: "myranks-images/myranks/more-than-married-couple.webp", title: "More than a Married Couple, but Not Lovers", info: "12 episódios" , studio: "Project No.9", airedSeason: "2022", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 12, note: 7 } ] },
+          { id: "the-girl-i-like-forgot-her-glasses", img: "myranks-images/myranks/the-girl-i-like-forgot-her-glasses.webp", title: "The Girl I Like Forgot Her Glasses", info: "13 episódios" , studio: "Project No.9", airedSeason: "2023", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 7 } ] },
           { id: "yamada-kun-lv999", img: "myranks-images/myranks/yamada-kun-lv999.webp", title: "My Love Story with Yamada-kun at LV999", info: "13 episódios" , studio: "Project No.9", airedSeason: "2023", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 6 } ] },
           { id: "lookism", img: "myranks-images/myranks/lookism.webp", title: "Lookism", info: "8 episódios" , studio: "Studio Mir", airedSeason: "2024", rewatch: "No", mal: [ { label: "1 temporada", episodes: 8, note: 6 } ] },
           { id: "tower-of-god", img: "myranks-images/myranks/tower-of-god.webp", title: "Tower of God", info: "(~) 1ª temporada: 13 episódios" , studio: "Telecom Animation Film", airedSeason: "2020-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 13, note: 7 }, { label: "2ª temporada I", episodes: 13, unwatched: true }, { label: "2ª temporada II", episodes: 13, unwatched: true } ] },
@@ -8119,7 +7906,6 @@
           { id: "tensei-shitara-slime-4", img: "watchingnow-images/watchingnow/tensei-shitara-slime.webp", title: "That Time I Got Reincarnated as a Slime", info: "4ª temporada: 24 episódios", season: "spring-2026", studio: "8-Bit", airedSeason: "2026", seasons: [24, 24, 24, 24], cours: [null,[12, 12], null, null], url: "https://www.anime-planet.com/anime/that-time-i-got-reincarnated-as-a-slime-season-4", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYZJ43JMR/that-time-i-got-reincarnated-as-a-slime", malUrl: "https://myanimelist.net/anime/59970/Tensei_shitara_Slime_Datta_Ken_4th_Season" },
           { id: "imfwtspgimc", img: "watchingnow-images/watchingnow/imfwtspgimc.webp", title: "I Made Friends with the Second Prettiest Girl in My Class", info: "12 episódios", season: "spring-2026", studio: "CONNECT", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/i-made-friends-with-the-second-prettiest-girl-in-my-class", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371673/i-made-friends-with-the-second-prettiest-girl-in-my-class", malUrl: "https://myanimelist.net/anime/56734/Class_de_2-banme_ni_Kawaii_Onnanoko_to_Tomodachi_ni_Natta" },
           { id: "farming-life-2", img: "watchingnow-images/watchingnow/farming-life.webp", title: "Farming Life in Another World", info: "2ª temporada: 12 episódios", season: "spring-2026", studio: "Zero-G", airedSeason: "2026", seasons: [12, 12], url: "https://www.anime-planet.com/anime/farming-life-in-another-world-2", crunchyroll: "", malUrl: "https://myanimelist.net/anime/62146/Isekai_Nonbiri_Nouka_2" },
-          { id: "otaku-gyaru", img: "watchingnow-images/watchingnow/otaku-gyaru.webp", title: "Gals Can't Be Kind to Otaku", info: "12 episódios", season: "spring-2026", studio: "TMS Entertainment", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/gals-cant-be-kind-to-otaku", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371662/gals-cant-be-kind-to-otaku", malUrl: "https://myanimelist.net/anime/62604/Otaku_ni_Yasashii_Gal_wa_Inai" },
           { id: "klutzy-class-monitor", img: "watchingnow-images/watchingnow/klutzy-class-monitor.webp", title: "The Klutzy Class Monitor and the Girl with the Short Skirt", info: "12 episódios", season: "spring-2026", studio: "Zero-G", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371923/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt", malUrl: "https://myanimelist.net/anime/61425/Ponkotsu_Fuuki_Iin_to_Skirt-take_ga_Futekisetsu_na_JK_no_Hanashi" },
 
           // Winter 2026
@@ -9641,16 +9427,7 @@
           return html;
         }
 
-        // ── Formata "AAAA-MM" (campo watchedOn) em algo tipo "Jan/2026" ──
-        function formatWatchedOn(value) {
-          const m = /^(\d{4})-(\d{2})$/.exec(String(value || '').trim());
-          if (!m) return value || '';
-          const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-          const idx = parseInt(m[2], 10) - 1;
-          return (months[idx] || m[2]) + '/' + m[1];
-        }
-
-        // ── Card diferenciado da lista "Favorite Episodes" ──
+        // ── Card diferenciado da lista "Peak Episodes" ──
         // "rank" aqui já vem calculado com empate considerado (ex: 1, 1, 3 —
         // ver renderFavoriteEpisodesList), não é mais o índice puro do array.
         function createFavoriteEpisodeCard(ep, rank = null) {
@@ -10872,12 +10649,6 @@
             return isDrawerOpen && !!document.querySelector('.drawer-tab[data-tab="search"].active');
           }
 
-          // A busca agora é só mais uma aba do drawer único "You Decided That".
-          // Abrir/fechar significa abrir/fechar esse drawer na aba "search".
-          function openSearchDrawer() {
-            openDrawer('search');
-          }
-
           function closeSearchDrawer(skipScrollRestore) {
             closeDrawer(skipScrollRestore);
           }
@@ -11087,10 +10858,6 @@
             return SLASH_COMMANDS[norm] ? norm : null;
           }
 
-          function isAllCommand(query) {
-            return normalize(query) === '/all';
-          }
-
           function renderResults(query) {
             const cmd = getSlashCommand(query);
             if (cmd) {
@@ -11196,10 +10963,6 @@
 
             if (!ghostRandomPick || ghostRandomPick.length <= val.length) return '';
             return ghostRandomPick.slice(val.length);
-          }
-
-          function getAllCommandRemainder(val) {
-            return getSlashCommandRemainder(val);
           }
 
           function updateGhostHint() {
