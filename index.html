@@ -1945,8 +1945,26 @@
         overflow-y: hidden;
       }
 
+      /* Firefox não lê as regras "::-webkit-scrollbar*" abaixo, então sem
+        isso ele cai pra barra clássica do sistema (com as setinhas) em vez
+        da fininha/discreta usada no resto do site. */
+      .poster-lightbox-panel {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.14) transparent;
+      }
+
       .poster-lightbox-panel::-webkit-scrollbar { width: 6px; }
-      .poster-lightbox-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 10px; }
+      .poster-lightbox-panel::-webkit-scrollbar-track { background: transparent; }
+      .poster-lightbox-panel::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.14);
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background-clip: padding-box;
+      }
+      .poster-lightbox-panel::-webkit-scrollbar-thumb:hover {
+        background: rgba(255,255,255,0.26);
+        background-clip: padding-box;
+      }
 
       .poster-lightbox-panel .poster-lightbox-list {
         justify-content: flex-start;
@@ -2409,6 +2427,10 @@
           height: 15px;
         }
 
+        .watch-now-links .rank-mal-label--crunchyroll .crunchyroll-btn-logo--youtube {
+          height: 17px;
+        }
+
         /* Ícone de "link externo" ao lado de cada nome some no mobile — ele
           não é essencial (as setas já indicam que dá pra clicar/expandir) e
           cada um custa ~16px de largura; sem eles sobra espaço suficiente
@@ -2443,6 +2465,13 @@
         box-shadow: none;
         transform-origin: left center;
         transition: transform 0.15s ease, filter 0.15s ease;
+      }
+
+      /* Logo do YouTube (usada no lugar da Crunchyroll quando o link é do
+        YouTube, ex.: Golden Boy) fica visualmente um pouco menor que as
+        outras nesse mesmo tamanho de altura, então aumenta só ela. */
+      .rank-mal-label--crunchyroll .crunchyroll-btn-logo--youtube {
+        height: 19px;
       }
 
       .rank-mal-label--netflix .netflix-btn-logo {
@@ -2565,7 +2594,7 @@
         hover); no mobile continua sendo apenas o logo, sem ação — por isso
         o pointer-events é desativado por padrão (mobile-first) e só
         reativado a partir de 761px (ver regra @media logo abaixo). */
-      .rank-mal > a.rank-mal-label--mal {
+      .rank-mal-mal-row > a.rank-mal-label--mal {
         display: inline-flex;
         align-items: center;
         justify-content: flex-start;
@@ -2575,15 +2604,55 @@
       }
 
       @media (min-width: 761px) {
-        .rank-mal > a.rank-mal-label--mal {
+        .rank-mal-mal-row > a.rank-mal-label--mal {
           cursor: pointer;
           pointer-events: auto;
         }
 
-        .rank-mal > a.rank-mal-label--mal:hover,
-        .rank-mal > a.rank-mal-label--mal:focus-visible {
+        .rank-mal-mal-row > a.rank-mal-label--mal:hover,
+        .rank-mal-mal-row > a.rank-mal-label--mal:focus-visible {
           color: var(--mal-blue);
         }
+      }
+
+      /* Linha que agrupa o link/logo do MyAnimeList com a setinha de
+        "abrir/fechar todos" (".rank-mal-toggle-all") lado a lado — sem
+        esse wrapper, os dois cairiam em linhas separadas, já que ".rank-
+        mal" é flex-column. */
+      .rank-mal-mal-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Setinha ao lado do logo do MyAnimeList: abre/fecha de uma vez só
+        todas as linhas de nome real das temporadas (ver
+        "toggleAllMalRealnameRows" no JS). Reaproveita o mesmo visual da
+        setinha individual de cada temporada. */
+      .rank-mal-toggle-all {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: 2px;
+        font: inherit;
+      }
+
+      .rank-mal-toggle-all .rank-mal-name-arrow {
+        width: 9px;
+        height: 9px;
+        stroke: var(--muted);
+        transition: transform 0.2s ease, stroke 0.18s ease;
+      }
+
+      .rank-mal-toggle-all:hover .rank-mal-name-arrow,
+      .rank-mal-toggle-all:focus-visible .rank-mal-name-arrow {
+        stroke: var(--text);
+      }
+
+      .rank-mal-toggle-all.open .rank-mal-name-arrow {
+        transform: rotate(180deg);
       }
 
       .rank-mal-rows {
@@ -2704,7 +2773,7 @@
         .rank-mal-align-group .rank-mal-row.rank-mal-row-break {
           display: flex;
           grid-column: 1 / -1;
-          justify-content: center;
+          justify-content: flex-start;
         }
 
         a.rank-mal-label:not(.rank-mal-label--anime-planet):not(.rank-mal-label--crunchyroll):not(.rank-mal-label--netflix):not(.rank-mal-label--mal) {
@@ -2735,6 +2804,78 @@
         color: var(--muted);
         white-space: nowrap;
         text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+      }
+
+      /* ── Setinha "▾" à esquerda do nome da temporada (ex: "1ª temporada") ──
+        Só aparece quando aquela linha tem um "malName" definido nos dados
+        (o nome real/oficial da temporada no MyAnimeList). Clicar nela (ou
+        no nome da temporada) expande/colapsa a linha logo abaixo com esse
+        nome — ver ".rank-mal-realname-row" mais abaixo e o listener
+        delegado em "lightboxMal" (handleWatchNowAreaClick, no JS). Por
+        enquanto só é usada no Global Ranking (ver "isWatchingNow" no JS). */
+      .rank-mal-season--toggleable {
+        display: inline-flex;
+        /* "baseline" (não "center"): a fonte do algarismo romano (Times New
+          Roman, em ".rank-mal-roman") tem métricas verticais diferentes da
+          Inter usada no resto do texto, então centralizar pela altura da
+          caixa deixa o "I"/"II"/"III" desalinhado da linha de base do
+          "temporada". Baseline alinha os dois pelo mesmo "chão" do texto. */
+        align-items: baseline;
+        /* Sem isso, o espaço entre o texto ("3ª temporada ") e o span do
+          algarismo romano (".rank-mal-roman") é colapsado pelo flexbox —
+          cada um vira um flex item separado e o navegador engole o espaço
+          que sobra na borda do item de texto, colando "temporada" no "I"/
+          "II"/"III". O gap reconstrói esse respiro entre os itens. */
+        gap: 0.25em;
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: 0;
+        font: inherit;
+      }
+
+      .rank-mal-name-arrow {
+        width: 9px;
+        height: 9px;
+        flex: 0 0 auto;
+        stroke: var(--muted);
+        transition: transform 0.2s ease, stroke 0.18s ease;
+      }
+
+      /* Linha extra (colapsada por padrão) com o nome real da temporada no
+        MyAnimeList. Especificidade alta de propósito, pra vencer a regra
+        ".rank-mal-align-group .rank-mal-row.rank-mal-row-break" (display:
+        flex) enquanto ainda não tiver a classe ".open". */
+      .rank-mal-row.rank-mal-row-break.rank-mal-realname-row:not(.open) {
+        display: none;
+      }
+
+      .rank-mal-realname-row {
+        justify-content: flex-start;
+        padding-top: 0;
+        margin-top: -10px;
+      }
+
+      .rank-mal-realname {
+        display: block;
+        min-width: 0;
+        max-width: 100%;
+        font-family: "Inter", sans-serif;
+        font-size: 10.5px;
+        font-style: normal;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+        opacity: 0.65;
+        text-align: left;
+        text-transform: uppercase;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+        /* Quando o nome real da temporada é grande demais pra caber numa
+          linha só, corta com reticências (...) em vez de estourar a
+          largura do card ou quebrar em várias linhas. */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       /* ── Pontilhado entre o texto (temporada/episódios) e a nota ──
@@ -3247,12 +3388,13 @@
         }
 
         /* Nos cards do "All Animes" (não Watching Now), o primeiro filho de
-          ".rank-mal" é o link/logo do MyAnimeList, não a linha do
-          Anime-Planet — esse caso não deve herdar o gap de 16px acima
-          (pensado pra separar temporadas da linha de botões), senão o logo
-          fica longe demais das temporadas logo abaixo dele. Cancela parte do
-          gap com margem negativa, voltando pros ~8px de antes só aqui. */
-        .poster-lightbox:not(.simple-mode) .rank-mal > a.rank-mal-label--mal {
+          ".rank-mal" é a linha com o link/logo do MyAnimeList (".rank-mal-
+          mal-row"), não a linha do Anime-Planet — esse caso não deve
+          herdar o gap de 16px acima (pensado pra separar temporadas da
+          linha de botões), senão o logo fica longe demais das temporadas
+          logo abaixo dele. Cancela parte do gap com margem negativa,
+          voltando pros ~8px de antes só aqui. */
+        .poster-lightbox:not(.simple-mode) .rank-mal-mal-row {
           margin-bottom: -8px;
         }
 
@@ -3268,6 +3410,30 @@
           flex-direction: column;
           row-gap: 16px;
           width: 100%;
+        }
+
+        /* No lightbox mobile, o row-gap de 16px acima (pensado pra separar
+          temporadas diferentes) deixa a linha do nome real (aberta via
+          setinha) longe demais da temporada que ela pertence. Puxa mais
+          perto com uma margem negativa maior que a padrão (-4px), mas sem
+          exagerar (senão gruda demais no texto da temporada acima). */
+        .poster-lightbox:not(.simple-mode) .rank-mal-realname-row {
+          margin-top: -7px;
+        }
+
+        /* Quando o card só tem UMA linha alinhável (ex: One Piece, que só
+          tem "1 temporada" + filmes/especiais com ":"), o ".rank-mal-align-
+          group" nem chega a se formar (precisa de 2+ linhas alinháveis —
+          ver "alignableCount" no JS). Sem o grupo, a linha de nome real
+          cai direto dentro de ".rank-mal-rows" e herda o row-gap de 16px
+          dele (pensado pra separar temporadas/filmes diferentes), em vez
+          do row-gap de 6px do grid — e a margem negativa de -7px acima,
+          calibrada pro gap de 6px, não é suficiente pra puxar a linha pra
+          perto. Aqui, mirando especificamente nesse caso (filho direto de
+          ".rank-mal-rows", sem grupo), usa uma margem bem maior pra
+          compensar o gap de 16px e manter a mesma proximidade visual. */
+        .poster-lightbox:not(.simple-mode) .rank-mal-rows > .rank-mal-realname-row {
+          margin-top: -17px;
         }
 
         .poster-lightbox:not(.simple-mode) .rank-mal-align-group {
@@ -3287,6 +3453,17 @@
           display: flex;
           align-items: center;
           grid-column: 1 / -1;
+        }
+
+        /* A regra acima (display: flex) tem a mesma especificidade da regra
+          ".rank-mal-row-break.rank-mal-realname-row:not(.open)" (display:
+          none) e, por vir depois no CSS, vencia o empate — fazendo o nome
+          real da temporada aparecer já aberto ao entrar no lightbox mobile,
+          sem precisar clicar na setinha. Repete o "display: none" aqui,
+          agora por último, pra restaurar o comportamento fechado por
+          padrão. */
+        .poster-lightbox:not(.simple-mode) .rank-mal-row.rank-mal-row-break.rank-mal-realname-row:not(.open) {
+          display: none;
         }
 
         /* Título das linhas irregulares (filmes, especiais, títulos com ":")
@@ -3332,16 +3509,16 @@
 
         .poster-lightbox:not(.simple-mode) .rank-mal-content {
           min-width: 0;
-          white-space: normal;
-          overflow: visible;
-          text-overflow: clip;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
           text-align: left;
         }
 
         .poster-lightbox:not(.simple-mode) .rank-mal-season,
         .poster-lightbox:not(.simple-mode) .rank-mal-eps {
           align-self: center;
-          white-space: normal;
+          white-space: nowrap;
         }
 
         .poster-lightbox:not(.simple-mode) .rank-mal-dots {
@@ -5318,7 +5495,7 @@
     <aside class="category-drawer" id="categoryDrawer" aria-hidden="true">
       <div class="drawer-top">
         <div class="drawer-top-text">
-          <span class="drawer-eyebrow"> ©2026 myhtml - <a href="#" class="drawer-eyebrow-credits" id="creditsTrigger">Credits Tiers</a></span>
+          <span class="drawer-eyebrow"> ©2025-2026 myhtml - <a href="https://github.com/abnerssk" class="drawer-eyebrow-credits" id="creditsTrigger" target="_blank" rel="noopener noreferrer">abnerssk</a></span>
           <h2 class="drawer-title" id="drawerTitleEl">You Decided That:</h2>
 
         </div>
@@ -5535,7 +5712,7 @@
               </svg>
               <div class="search-input-ghost-wrap">
                 <span class="search-ghost-hint" id="searchGhostHint" aria-hidden="true"></span>
-                <input type="text" id="searchDrawerInput" placeholder="type '/' to see a specific search" autocomplete="off" autocapitalize="off" spellcheck="false">
+                <input type="text" id="searchDrawerInput" placeholder="Use '/' for Specific Search" autocomplete="off" autocapitalize="off" spellcheck="false">
               </div>
               <button class="search-clear-btn" id="searchDrawerClearBtn" type="button" aria-label="Limpar busca">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -5562,80 +5739,6 @@
             <div class="search-drawer-results" id="searchDrawerResults"></div>
 
             <div class="slash-command-list" id="slashCommandList" role="listbox" aria-hidden="true"></div>
-          </div>
-        </div>
-
-        <div class="drawer-panel" data-panel="credits">
-          <div class="credits-crawl" id="creditsCrawl">
-            <div class="credits-crawl-track" id="creditsCrawlTrack">
-
-              <div class="credits-block">
-                <div class="credits-role">CREATED BY</div>
-                <div class="credits-names">
-                  <a class="credits-name credits-name-github" href="https://github.com/abnerssk" target="_blank" rel="noopener noreferrer">
-                    <svg class="credits-github-icon" viewBox="0 0 16 16" width="20" height="20" fill="currentColor" aria-hidden="true">
-                      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
-                    </svg>
-                    <span>abnerssk</span>
-                  </a>
-                </div>
-              </div>
-
-              <div class="credits-block">
-                <div class="credits-role">THE GOAT</div>
-                <div class="credits-names">
-                  <a class="credits-name credits-name-logo" href="https://claude.ai" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img" src="assets/credits-webp/claude.webp" alt="Claude" loading="lazy" decoding="async">
-                  </a>
-                </div>
-              </div>
-
-              <div class="credits-block">
-                <div class="credits-role">HIGH TIER HELPERS</div>
-                <div class="credits-names credits-names--sources">
-                  <a class="credits-name credits-name-logo" href="https://www.crunchyroll.com" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img" src="assets/credits-webp/crunchyroll.webp" alt="Crunchyroll" loading="lazy" decoding="async">
-                  </a>
-                  <a class="credits-name credits-name-logo" href="https://www.primevideo.com" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--prime" src="assets/credits-webp/prime-video.webp" alt="Prime Video" loading="lazy" decoding="async">
-                  </a>
-                  <a class="credits-name credits-name-logo" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img credits-logo-img--gemini-source" src="assets/credits-webp/gemini.webp" alt="Gemini" loading="lazy" decoding="async">
-                  </a>
-                </div>
-              </div>
-
-              <div class="credits-block">
-                <div class="credits-role">GOOD TIER HELPERS</div>
-                <div class="credits-names credits-names--sources">
-                  <a class="credits-name credits-name-logo" href="https://chatgpt.com" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img credits-logo-img--chatgpt-source" src="assets/credits-webp/chatgpt.webp" alt="ChatGPT" loading="lazy" decoding="async">
-                  </a>  
-                  <a class="credits-name credits-name-logo" href="https://www.canva.com" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--canva" src="assets/credits-webp/canva.webp" alt="Canva" loading="lazy" decoding="async">
-                  </a>                    
-                  <a class="credits-name credits-name-logo" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--pinterest" src="assets/credits-webp/pinterest.webp" alt="Pinterest" loading="lazy" decoding="async">
-                  </a>                       
-                  <a class="credits-name credits-name-logo" href="https://www.netflix.com" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--netflix" src="assets/credits-webp/netflix.webp" alt="Netflix" loading="lazy" decoding="async">
-                  </a>
-                </div>
-              </div>
-
-              <div class="credits-block">
-                <div class="credits-role">INFO TOOLS</div>
-                <div class="credits-names credits-names--sources">
-                  <a class="credits-name credits-name-logo" href="https://www.anime-planet.com" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img credits-logo-img--wide credits-logo-img--anime-planet" src="assets/credits-webp/anime-planet.webp" alt="Anime-Planet" loading="lazy" decoding="async">
-                  </a>                 
-                  <a class="credits-name credits-name-logo" href="https://myanimelist.net" target="_blank" rel="noopener noreferrer">
-                    <img class="credits-logo-img credits-logo-img--wide" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async">
-                  </a>
-                </div>
-              </div>
-
-            </div>
           </div>
         </div>
 
@@ -5778,6 +5881,7 @@
       </div>
     </div>
 
+    <script src="info.js"></script>
     <script>
       if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
@@ -6203,7 +6307,7 @@
             if (!url) return '';
             return `
               <a class="rank-mal-label rank-mal-label--anime-planet" href="${url}" target="_blank" rel="noopener">
-                <span class="watch-now-more-info-text">RESOURCES ABOUT</span>
+                <span class="watch-now-more-info-text">MORE ABOUT</span>
                 <img class="anime-planet-btn-logo" src="assets/credits-webp/anime-planet.webp" alt="Anime-Planet" loading="lazy" decoding="async">
                 ${EXTERNAL_LINK_ICON_SVG}
               </a>`;
@@ -6214,9 +6318,15 @@
             // Link normal do Crunchyroll: se o app estiver instalado no
             // celular, o próprio sistema (universal link / app link) abre
             // ele direto no app; sem o app, cai no site normalmente.
+            // Quando o link é do YouTube (ex.: Golden Boy, que não tem no
+            // Crunchyroll), troca a logo pra do YouTube.
+            const isYoutube = /youtube\.com|youtu\.be/i.test(url);
+            const logoSrc = isYoutube ? 'assets/credits-webp/youtube.webp' : 'assets/credits-webp/crunchyroll.webp';
+            const logoAlt = isYoutube ? 'YouTube' : 'Crunchyroll';
+            const logoClass = isYoutube ? 'crunchyroll-btn-logo crunchyroll-btn-logo--youtube' : 'crunchyroll-btn-logo';
             return `
               <a class="rank-mal-label rank-mal-label--crunchyroll" href="${url}" target="_blank" rel="noopener">
-                <img class="crunchyroll-btn-logo" src="assets/credits-webp/crunchyroll.webp" alt="Crunchyroll" loading="lazy" decoding="async">
+                <img class="${logoClass}" src="${logoSrc}" alt="${logoAlt}" loading="lazy" decoding="async">
                 ${EXTERNAL_LINK_ICON_SVG}
               </a>`;
           }
@@ -6482,6 +6592,8 @@
               }
             }
 
+            const MAL_NAME_ARROW_SVG = `<svg class="rank-mal-name-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>`;
+
             const rowEntries = entries.map(entry => {
               if (entry.spacer) {
                 return {
@@ -6492,12 +6604,30 @@
                 </div>`
                 };
               }
-              const seasonLabel = escapeHtml(entry.label || '')
+              const seasonLabelInner = escapeHtml(entry.label || '')
                 .replace(/\b([IVXLCDM]+)\b/g, '<span class="rank-mal-roman">$1</span>')
                 // Labels podem ter um "\n" manual (ver dados do anime) pra
                 // forçar a quebra de linha num ponto específico do nome, em
                 // vez de deixar o navegador decidir onde quebrar.
                 .replace(/\n/g, '<br class="rank-mal-linebreak">');
+              // "malName" (opcional, por temporada): nome real/oficial dessa
+              // temporada no MyAnimeList (ex: "Code Geass: Lelouch of the
+              // Rebellion R2"), diferente do label curto ("2ª temporada")
+              // usado no card. Quando presente, uma setinha aparece do lado
+              // do label e, ao clicar, revela esse nome numa linha abaixo
+              // (ver ".rank-mal-realname-row"/handleWatchNowAreaClick).
+              // Por enquanto, só no Global Ranking (não no Watching Now).
+              const malName = typeof entry.malName === 'string' ? entry.malName.trim() : '';
+              const hasMalName = !!malName && !isWatchingNow;
+              const seasonLabel = hasMalName
+                ? `<span class="rank-mal-season--toggleable" role="button" tabindex="0" aria-expanded="false" aria-label="Mostrar nome real da temporada no MyAnimeList">${seasonLabelInner}</span>`
+                : seasonLabelInner;
+              const realnameRowHtml = hasMalName
+                ? `
+                <div class="rank-mal-row rank-mal-row-break rank-mal-realname-row">
+                  <span class="rank-mal-realname">${escapeHtml(malName)}</span>
+                </div>`
+                : '';
               const isNumericEpisodes = typeof entry.episodes === 'number';
               // Só entra no grupo de alinhamento quando, além de numérico, o
               // label é "limpo" (sem ":" dentro dele). Labels com ":" no meio
@@ -6542,7 +6672,7 @@
                     <span class="rank-mal-dots" aria-hidden="true"></span>
                     <span class="rank-mal-note${noteClass}">${noteText}</span>
                   </span>
-                </div>`
+                </div>${realnameRowHtml}`
               };
             });
 
@@ -6554,9 +6684,19 @@
             // não-alinháveis recebem a classe "rank-mal-row-break", que as
             // faz ocupar a largura inteira do grid (grid-column: 1 / -1) em
             // vez de participar do alinhamento de colunas.
+            //
+            // O limiar é ">= 1" (não ">= 2"): mesmo com só UMA linha
+            // alinhável (ex: One Piece, que só tem "1 temporada" — o resto
+            // é filme/especial com ":" no nome, que não conta), o card
+            // ainda entra no grupo. Sem isso, o card inteiro cai fora do
+            // grid e usa o row-gap de 16px do ".rank-mal-rows" (pensado só
+            // pra separar visualmente itens de tipos diferentes) em vez do
+            // row-gap de 6px do grid, deixando TODAS as linhas do card
+            // (não só a do nome real) visivelmente mais espaçadas que em
+            // cards com 2+ temporadas.
             const alignableCount = rowEntries.filter(r => r.alignable).length;
             let rowsHtml;
-            if (alignableCount >= 2) {
+            if (alignableCount >= 1) {
               rowsHtml = `<div class="rank-mal-align-group">${rowEntries.map(r => r.html).join('')}</div>`;
             } else {
               rowsHtml = rowEntries.map(r => r.html).join('');
@@ -6573,10 +6713,21 @@
 
             const malProfileSearchUrl = buildMalProfileSearchUrl(item);
 
+            // Setinha ao lado do logo do MyAnimeList: abre/fecha TODAS as
+            // linhas de nome real de uma vez (ver "toggleAllMalRealnameRows"
+            // no JS), em vez de precisar clicar temporada por temporada. Só
+            // aparece quando existe pelo menos uma temporada com "malName".
+            const hasAnyMalName = entries.some(entry => typeof entry.malName === 'string' && entry.malName.trim());
+            const toggleAllHtml = hasAnyMalName
+              ? `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar nomes reais de todas as temporadas no MyAnimeList">${MAL_NAME_ARROW_SVG}</button>`
+              : '';
+
             lightboxMal.innerHTML = `
-              <a class="rank-mal-label rank-mal-label--mal" href="${malProfileSearchUrl}" target="_blank" rel="noopener">
-                <img class="mal-btn-logo" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async">
-              </a>
+              <div class="rank-mal-mal-row">
+                <a class="rank-mal-label rank-mal-label--mal" href="${malProfileSearchUrl}" target="_blank" rel="noopener">
+                  <img class="mal-btn-logo" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async">
+                </a>${toggleAllHtml}
+              </div>
               <div class="rank-mal-rows">${rowsHtml}</div>`;
           }
 
@@ -7382,7 +7533,63 @@
             }
           }
 
+          // Abre/fecha a linha com o nome real da temporada no MyAnimeList
+          // (ver "malName" nos dados e ".rank-mal-season--toggleable" no
+          // CSS) — a linha extra é sempre o PRÓXIMO elemento irmão da linha
+          // clicada, já que são geradas juntas, uma logo após a outra (ver
+          // "realnameRowHtml" em renderMalScores).
+          function toggleMalRealnameRow(toggleEl) {
+            const row = toggleEl.closest('.rank-mal-row');
+            const nameRow = row && row.nextElementSibling;
+            if (!nameRow || !nameRow.classList.contains('rank-mal-realname-row')) return;
+            const isOpen = nameRow.classList.toggle('open');
+            toggleEl.classList.toggle('open', isOpen);
+            toggleEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          }
+
+          // Setinha ao lado do logo do MyAnimeList: abre/fecha de uma vez só
+          // TODAS as linhas de nome real das temporadas dentro do mesmo
+          // ".rank-mal" — útil pra não precisar clicar temporada por
+          // temporada quando há várias. O estado (aberto/fechado) do botão
+          // decide a ação: se está fechado, abre tudo; se está aberto,
+          // fecha tudo — mesmo que alguma temporada tenha sido aberta/
+          // fechada individualmente nesse meio tempo.
+          function toggleAllMalRealnameRows(btn) {
+            const container = btn.closest('.rank-mal');
+            if (!container) return;
+            const isOpen = !btn.classList.contains('open');
+            btn.classList.toggle('open', isOpen);
+            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            container.querySelectorAll('.rank-mal-season--toggleable').forEach(toggleEl => {
+              const row = toggleEl.closest('.rank-mal-row');
+              const nameRow = row && row.nextElementSibling;
+              if (!nameRow || !nameRow.classList.contains('rank-mal-realname-row')) return;
+              nameRow.classList.toggle('open', isOpen);
+              toggleEl.classList.toggle('open', isOpen);
+              toggleEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+          }
+
           function handleWatchNowAreaClick(e) {
+            // Setinha ao lado do logo do MyAnimeList: abre/fecha todas as
+            // linhas de nome real de uma vez (ver "toggleAllMalRealnameRows").
+            const toggleAllBtn = e.target.closest('.rank-mal-toggle-all');
+            if (toggleAllBtn) {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleAllMalRealnameRows(toggleAllBtn);
+              return;
+            }
+            // Setinha ao lado do nome da temporada (ex: "1ª temporada"):
+            // revela/esconde o nome real dessa temporada no MyAnimeList,
+            // numa linha logo abaixo — ver "malName" nos dados.
+            const nameToggle = e.target.closest('.rank-mal-season--toggleable');
+            if (nameToggle) {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleMalRealnameRow(nameToggle);
+              return;
+            }
             // Seta: revela/esconde Crunchyroll e MyAnimeList ao lado do
             // Anime-Planet, e ela mesma "anda" até ficar do lado do
             // MyAnimeList (ver CSS ".watch-now-toggle"/".watch-now-extra").
@@ -7444,8 +7651,19 @@
             if (container) container.classList.remove('toggle-hover');
           }
 
+          // Enter/Espaço na setinha (role="button", tabindex="0") também
+          // abre/fecha o nome real da temporada, igual ao clique.
+          function handleMalRealnameKeydown(e) {
+            if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+            const nameToggle = e.target.closest('.rank-mal-season--toggleable');
+            if (!nameToggle) return;
+            e.preventDefault();
+            toggleMalRealnameRow(nameToggle);
+          }
+
           if (lightboxMal) {
             lightboxMal.addEventListener('click', handleWatchNowAreaClick);
+            lightboxMal.addEventListener('keydown', handleMalRealnameKeydown);
             lightboxMal.addEventListener('mouseover', handleWatchNowAreaMouseOver);
             lightboxMal.addEventListener('mouseout', handleWatchNowAreaMouseOut);
           }
@@ -7799,133 +8017,6 @@
         //     { label: "2ª temporada", episodes: 25, note: 8.91 }
         //   ]
         // Itens sem "mal" simplesmente não mostram essa seção no modal.
-        const rawAnimeData = [
-          { id: "code-geass", img: "myranks-images/myranks/code-geass.webp", title: "Code Geass: Lelouch of the Rebellion", info: "2 temporadas: 50 episódios", studio: "Sunrise", airedSeason: "2006-2008", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 25, note: 9 }, { label: "2ª temporada", episodes: 25, note: 10 } ] },
-          { id: "hxh", img: "myranks-images/myranks/hxh.webp", title: "Hunter x Hunter (2011)", info: "1 temporada: 148 episódios" , studio: "MADHOUSE", airedSeason: "2011-2014", rewatch: "2 Times", mal: [ { label: "1 temporada", episodes: 148, note: 10 } ] },
-          { id: "frieren", img: "myranks-images/myranks/frieren.webp", title: "Frieren: Beyond Journey's End", info: "2 temporadas: 38 episódios" , studio: "MADHOUSE", airedSeason: "2023-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 28, note: 10 }, { label: "2ª temporada", episodes: 10, note: 9 } ] },
-          { id: "one-piece", img: "myranks-images/myranks/one-piece.webp", title: "One Piece", info: "1 temporada: 1172 episódios" , studio: "Toei Animation", airedSeason: "1999-?", rewatch: "Impossible", mal: [ { label: "1 temporada", episodes: 1169, note: 10 },{ label: "Film: Z", episodes: "1h47m", note: 7 },{ label: "Film: Gold", episodes: "2h0m", note: 7 },{ label: "Stampede", episodes: "1h41m", note: 7 },{ label: "Film: Red", episodes: "1h56m", note: 8 },{spacer: true},{ label: "Monsters: 103 Mercies Dragon Damnation", episodes: "ONA", note: 7 },{ label: "Fan Letter", episodes: "TV Special", note: 8 },{ label: "Heroines", episodes: "TV Special", note: 7 }, ] },
-          { id: "jjk", img: "myranks-images/myranks/jjk.webp", title: "Jujutsu Kaisen", info: "3 temporadas: 59 episódios <br>1 Filme: 1h45m" , studio: "MAPPA", airedSeason: "2020-?", rewatch: "3rd Season Not Yet", mal: [ { label: "1ª temporada", episodes: 24, note: 8 }, { label: "Movie: Jujutsu Kaisen 0", episodes: "1h44m", note: 8 }, { label: "2ª temporada", episodes: 23, note: 9 }, { label: "3ª temporada I", episodes: 12, note: 9 } ] },
-          { id: "haikyuu", img: "myranks-images/myranks/haikyuu.webp", title: "Haikyu!!", info: "4 temporadas: 85 episódios <br>1 Filme: 1h24m" , studio: "Production I.G", airedSeason: "2014-?", rewatch: "2 Times", mal: [ { label: "1ª temporada", episodes: 25, note: 8 }, { label: "2ª temporada", episodes: 25, note: 8 }, { label: "3ª temporada", episodes: 10, note: 10 }, { label: "4ª temporada I", episodes: 13, note: 8 }, { label: "4ª temporada II", episodes: 12, note: 9 }, { label: "Movie 5: The Dumpster Battle", episodes: "1h24m", note: 8 } ] },
-          { id: "oshi-no-ko", img: "myranks-images/myranks/oshi-no-ko.webp", title: "Oshi no Ko", info: "3 temporadas: 35 episódios" , studio: "Doga Kobo", airedSeason: "2023-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 11, note: 8 }, { label: "2ª temporada", episodes: 13, note: 7 }, { label: "3ª temporada", episodes: 11, note: 9 } ] },
-          { id: "mushoku", img: "myranks-images/myranks/mushoku.webp", title: "Mushoku Tensei: Jobless Reincarnation", info: "2 temporadas: 47 episódios" , studio: "Studio Bind", airedSeason: "2021-?", rewatch: "First 2 Seasons", mal: [ { label: "1ª temporada I", episodes: 11, note: 8 }, { label: "1ª temporada II", episodes: 12, note: 8 }, { label: "2ª temporada I", episodes: 12, note: 7 }, { label: "2ª temporada II", episodes: 12, note: 8 }, { label: "3ª temporada", episodes: 14, unwatched: true } ] },
-          { id: "cyberpunk", img: "myranks-images/myranks/cyberpunk.webp", title: "Cyberpunk: Edgerunners", info: "10 episódios" , studio: "Trigger", airedSeason: "2022", rewatch: "Only Season 1", mal: [ { label: "1ª temporada", episodes: 10, note: 9 } ] },
-          { id: "solo-leveling", img: "myranks-images/myranks/solo-leveling.webp", title: "Solo Leveling", info: "2 temporadas: 25 episódios" , studio: "A-1 Pictures", airedSeason: "2024-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 13, note: 9 } ] },
-          { id: "aot", img: "myranks-images/myranks/aot.webp", title: "Attack on Titan", info: "4 temporadas: 89 episódios" , studio: "Wit Studio/MAPPA", airedSeason: "2013-2022", rewatch: "First 3 Seasons", mal: [ { label: "1ª temporada", episodes: 25, note: 9 }, { label: "2ª temporada", episodes: 12, note: 8 }, { label: "3ª temporada I", episodes: 12, note: 7 }, { label: "3ª temporada II", episodes: 10, note: 8 }, { label: "4ª temporada I", episodes: 16, note: 8 },{ label: "4ª temporada II", episodes: 12, note: 9 },{ label: "4ª temporada III: The Final \nChapters", episodes: 2, note: 9 },] },
-          { id: "dr-stone", img: "myranks-images/myranks/dr-stone.webp", title: "Dr. Stone", info: "4 temporadas: 95 episódios" , studio: "TMS Entertainment", airedSeason: "2019-2026", rewatch: "2 Times (Season 4 Not Yet)", mal: [ { label: "1ª temporada", episodes: 24, note: 8 }, { label: "2ª temporada", episodes: 11, note: 7 },{ label: "Ryusui", episodes: "TV Special", note: 8 }, { label: "3ª temporada I", episodes: 11, note: 7 }, { label: "3ª temporada II", episodes: 11, note: 8 }, { label: "4ª temporada I", episodes: 12, note: 8 }, { label: "4ª temporada II", episodes: 12, note: 9 }, { label: "4ª temporada III", episodes: 13, note: 8 } ] },
-          { id: "cote", img: "myranks-images/myranks/cote.webp", title: "Classroom of the Elite", info: "4 temporadas: 54 episódios" , studio: "Lerche", airedSeason: "2017-?", rewatch: "First 3 Seasons", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 13, note: 8 }, { label: "3ª temporada", episodes: 13, note: 7 }, { label: "4ª temporada", episodes: 16, note: 8 } ] },
-          { id: "re-zero", img: "myranks-images/myranks/re-zero.webp", title: "Re:ZERO - Starting Life in Another World", malSearch: "Re:Zero", info: "(~) 3 temporadas: 66 episódios" , studio: "White Fox", airedSeason: "2016-?", rewatch: "Only Season 1", mal: [ { label: "1ª temporada", episodes: 25, note: 9 }, { label: "2ª temporada I", episodes: 13, note: 8 } ,{ label: "2ª temporada II", episodes: 12, note: 8 } , { label: "3ª temporada", episodes: 16, note: 8 } , { label: "4ª temporada", episodes: 19, unwatched: true } ] },
-          { id: "mha", img: "myranks-images/myranks/my-hero-academia.webp", title: "My Hero Academia", info: "8 temporadas: 171 episódios <br> 3 Filmes: 5h10m" , studio: "Bones", airedSeason: "2016-2025", rewatch: "First 5 Seasons", mal: [ { label: "1ª temporada", episodes: 13, note: 7 }, { label: "2ª temporada", episodes: 25, note: 8 }, { label: "3ª temporada", episodes: 25, note: 6 },{ label: "Movie 1: Two Heroes ", episodes: "1h36m", note: 6 }, { label: "4ª temporada", episodes: 25, note: 6 }, { label: "Movie 2:  Heroes Rising", episodes: "1h44m", note: 6 }, { label: "5ª temporada", episodes: 25, note: 7 }, { label: "6ª temporada", episodes: 25, note: 8 }, { label: "7ª temporada", episodes: 21, note: 8 },{ label: "Movie 4: You're Next", episodes: "1h50m", note: 7 }, { label: "8ª temporada", episodes: 11, note: 9 }, { label: "Episode 171: More", episodes: "TV Special", note: 7 } ] },
-          { id: "tensei-shitara-slime", img: "myranks-images/myranks/tensei-shitara-slime.webp", title: "That Time I Got Reincarnated as a Slime", info: "(~~~) 3 temporadas: 72 episódios" , studio: "8-Bit", airedSeason: "2018-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "2ª temporada I", episodes: 12, note: 7 }, { label: "2ª temporada II", episodes: 12, note: 7 }, { label: "3ª temporada", episodes: 24, note: 7 },  { label: "Movie 2: Tears of the Azure Sea", episodes: "1h44m", unwatched: true },  { label: "4ª temporada", episodes: 24, unwatched: true }  ] },
-          { id: "opm", img: "myranks-images/myranks/opm.webp", title: "One-Punch Man", info: "3 temporadas: 36 episódios" , studio: "MADHOUSE / J.C. Staff", airedSeason: "2015-?", rewatch: "2 Times (Season 3 Never)", mal: [ { label: "1ª temporada", episodes: 12, note: 9 }, { label: "2ª temporada", episodes: 12, note: 6 },  { label: "3ª temporada I", episodes: 12, note: 2 } ] },
-          { id: "dan-da-dan", img: "myranks-images/myranks/dan-da-dan.webp", title: "Dan da Dan", info: "2 temporadas: 24 episódios" , studio: "Science SARU", airedSeason: "2024-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 12, note: 9 } ] },
-          { id: "shadow", img: "myranks-images/myranks/shadow.webp", title: "The Eminence in Shadow", info: "2 temporadas: 32 episódios" , studio: "Nexus", airedSeason: "2022-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 20, note: 8 }, { label: "2ª temporada", episodes: 12, note: 8 } ] },
-          { id: "grand-blue", img: "myranks-images/myranks/grand-blue.webp", title: "Grand Blue Dreaming", info: "2 temporadas: 24 episódios" , studio: "Zero-G", airedSeason: "2018-?", rewatch: "First 2 Seasons", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, { label: "2ª temporada", episodes: 12, note: 8 }, { label: "3ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "hajime-no-ippo", img: "myranks-images/myranks/hajime-no-ippo.webp", title: "Hajime no Ippo: The Fighting", info: "(~) 3 temporadas: 126 episódios" , studio: "MADHOUSE", airedSeason: "2000-2014!", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 75, note: 9 }, { label: "2ª temporada", episodes: 26, note: 7 }, { label: "3ª temporada", episodes: 25, unwatched: true } ] },
-          { id: "gachiakuta", img: "myranks-images/myranks/gachiakuta.webp", title: "Gachiakuta", info: "1 temporada: 24 episódios" , studio: "Bones", airedSeason: "2025-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 24, note: 8 } ] },
-          { id: "hells-paradise", img: "myranks-images/myranks/hells-paradise.webp", title: "Hell's Paradise: Jigokuraku", info: "2 temporadas: 25 episódios" , studio: "MAPPA", airedSeason: "2023-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 13, note: 8 }, { label: "2ª temporada", episodes: 12, note: 8 } ] },
-          { id: "fragrant-flowers", img: "myranks-images/myranks/fragrant-flowers.webp", title: "The Fragrant Flowers Bloom with Dignity", info: "13 episódios" , studio: "CloverWorks", airedSeason: "2025-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 13, note: 8 } ] },
-          { id: "horimiya", img: "myranks-images/myranks/horimiya.webp", title: "Horimiya", info: "2 temporadas: 26 episódios" , studio: "CloverWorks", airedSeason: "2021-2023", rewatch: "2 Times (1st Season)", mal: [ { label: "1ª temporada", episodes: 13, note: 8 }, { label: "2ª temporada", episodes: 13, note: 7 } ] },
-          { id: "opposites", img: "myranks-images/myranks/opposites.webp", title: "You and I are Polar Opposites", info: "1 temporada: 12 episódios" , studio: "Lapin Track", airedSeason: "2026-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 8 }, {label: "2ª temporada", episodes: 12, unwatched: true} ] },
-          { id: "vinland-saga", img: "myranks-images/myranks/vinland-saga.webp", title: "Vinland Saga", info: "2 temporadas: 48 episódios" , studio: "Wit Studio / MAPPA", airedSeason: "2019-2023", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 24, note: 8 }, { label: "2ª temporada", episodes: 24, note: 7 } ] },
-          { id: "demon-slayer", img: "myranks-images/myranks/demon-slayer.webp", title: "Demon Slayer: Kimetsu no Yaiba", info: "5 temporadas: 63 episódios <br>1 Filme: 2h35m" , studio: "ufotable", airedSeason: "2019-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 26, note: 7 }, { label: "2ª temporada", episodes: 7, note: 7 }, { label: "3ª temporada", episodes: 11, note: 8 }, { label: "4ª temporada", episodes: 11, note: 7 }, { label: "5ª temporada", episodes: 8, note: 7 }, { label: "Movie: Infinity Castle Part 1", episodes: "2h35m", note: 8 } ] },
-          { id: "shangri-la-frontier", img: "myranks-images/myranks/shangri-la-frontier.webp", title: "Shangri-La Frontier", info: "2 temporadas: 50 episódios" , studio: "C2C", airedSeason: "2023-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 25, note: 7 }, { label: "2ª temporada", episodes: 25, note: 7 } ] },
-          { id: "akame-ga-kill", img: "myranks-images/myranks/akame-ga-kill.webp", title: "Akame ga Kill", info: "24 episódios" , studio: "White Fox", airedSeason: "2014-2014", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 24, note: 8 } ] },
-          { id: "your-lie-in-april", img: "myranks-images/myranks/your-lie-in-april.webp", title: "Your Lie in April", info: "22 episódios" , studio: "A-1 Pictures", airedSeason: "2014-2015", rewatch: "Impossible", mal: [ { label: "1 temporada", episodes: 22, note: 8 } ] },
-          { id: "wistoria", img: "myranks-images/myranks/wistoria.webp", title: "Wistoria: Wand and Sword", info: "2 temporadas: 24 episódios" , studio: "Bandai Filmworks / Actas", airedSeason: "2024-?", rewatch: "Season 1", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, note: 8 } ] },
-          { id: "roshidere", img: "myranks-images/myranks/roshidere.webp", title: "Alya Sometimes Hides Her Feelings in Russian", info: "1 temporada: 12 episódios" , studio: "Doga Kobo", airedSeason: "2024-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 12, note: 7 } ] },
-          { id: "mashle", img: "myranks-images/myranks/mashle.webp", title: "Mashle: Magic and Muscles", info: "2 temporadas: 24 episódios" , studio: "A-1 Pictures", airedSeason: "2023-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, note: 7 } ] },
-          { id: "blue-box", img: "myranks-images/myranks/blue-box.webp", title: "Blue Box", info: "1 temporada: 25 episódios" , studio: "Telecom / Animation Film", airedSeason: "2024-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 25, note: 8 } ] },
-          { id: "cinderella-gray", img: "myranks-images/myranks/cinderella-gray.webp", title: "Uma Musume: Cinderella Gray", info: "23 episódios" , studio: "CygamesPictures", airedSeason: "2025", rewatch: "No", mal: [ { label: "1ª temporada I", episodes: 13, note: 8 }, { label: "1ª temporada II", episodes: 10, note: 7 } ] },
-          { id: "bunny-girl-senpai", img: "myranks-images/myranks/bunny-girl-senpai.webp", title: "Rascal Does Not Dream of Bunny Girl Senpai", info: "(~~~) 1ª temporada: 13 episódios" , studio: "CloverWorks", airedSeason: "2018-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 13, note: 8 }, { label: "Movie 1: Rascal Does Not Dream of a Dreaming Girl", episodes: "1h30m", unwatched: true }, { label: "Movie 2: Rascal Does Not Dream of a Sister Venturing Out", episodes: "1h13m", unwatched: true }, { label: "Movie 3: Rascal Does Not Dream of a Knapsack Kid", episodes: "1h14m", unwatched: true }, , { label: "2ª temporada", episodes: 13, unwatched: true } ] },
-          { id: "makeine", img: "myranks-images/myranks/makeine.webp", title: "Makeine: Too Many Losing Heroines!", info: "1 temporada: 12 episódios" , studio: "A-1 Pictures", airedSeason: "2024-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 12, note: 7 } ] },
-          { id: "the-100-girlfriends", img: "myranks-images/myranks/the-100-girlfriends.webp", title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You", info: "2 temporadas: 24 episódios" , studio: "SynergySP", airedSeason: "2024-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "silent-voice", img: "myranks-images/myranks/silent-voice.webp", title: "A Silent Voice", info: "Filme: 2h10m" , studio: "Kyoto Animation", airedSeason: "2016", rewatch: "No", mal: [ { label: "Filme", episodes: "2h10m", note: 7 } ] },
-          { id: "zom-100", img: "myranks-images/myranks/zom-100.webp", title: "Zom 100: Bucket List of the Dead", info: "12 episódios" , studio: "Bug Films", airedSeason: "2023", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 12, note: 7 } ] },
-          { id: "eighty-six", img: "myranks-images/myranks/eighty-six.webp", title: "86 Eighty-Six", info: "2 temporadas: 23 episódios" , studio: "A-1 Pictures", airedSeason: "2021", rewatch: "No", mal: [ { label: "1ª temporada I", episodes: 11, note: 7 }, { label: "1ª temporada II", episodes: 12, note: 7 } ] },
-          { id: "sword-art-online", img: "myranks-images/myranks/sword-art-online.webp", title: "Sword Art Online", info: "(~~~) 1ª temporada: 25 episódios" , studio: "A-1 Pictures", airedSeason: "2012-?", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 25, note: 7 } ] },
-          { id: "food-wars", img: "myranks-images/myranks/food-wars.webp", title: "Food Wars! Shokugeki no Soma", info: "5 temporadas: 86 episódios" , studio: "J.C. Staff", airedSeason: "2015-2020", rewatch: "Yes", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "2ª temporada", episodes: 13, note: 7 }, { label: "3ª temporada I", episodes: 12, note: 7 }, { label: "3ª temporada II", episodes: 12, note: 6 }, { label: "4ª temporada", episodes: 12, note: 5 }, { label: "5ª temporada", episodes: 13, note: 4 } ] },
-          { id: "tsukimichi", img: "myranks-images/myranks/tsukumichi.webp", title: "Tsukimichi -Moonlit Fantasy-", malSearch: "Tsukimichi", info: "2 temporadas: 37 episódios" , studio: "C2C / J.C. Staff", airedSeason: "2021-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 25, note: 7 } ] },
-          { id: "my-dress-up-darling", img: "myranks-images/myranks/my-dress-up-darling.webp", title: "My Dress-Up Darling", info: "(~) 1ª temporada: 12 episódios" , studio: "CloverWorks", airedSeason: "2022-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, , { label: "2ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "danmachi", img: "myranks-images/myranks/danmachi.webp", title: "Danmachi: Is It Wrong to Try to Pick Up Girls in a Dungeon", malSearch: "Is It Wrong to Try to Pick Up Girls in a Dungeon", info: "(~) 4 temporadas: 59 episódios" , studio: "J.C. Staff", airedSeason: "2015-?", rewatch: "3 First Seasons", mal: [ { label: "1ª temporada", episodes: 13, note: 7 }, { label: "2ª temporada", episodes: 12, note: 5 }, { label: "3ª temporada", episodes: 12, note: 5 }, { label: "4ª temporada I", episodes: 11, note: 7 }, { label: "4ª temporada II", episodes: 11, note: 8 },{ label: "5ª temporada", episodes: 15, unwatched: true } ] },
-          { id: "chitose", img: "myranks-images/myranks/chitose.webp", title: "Chitose is in Ramune Bottle", info: "1 temporada: 13 episódios" , studio: "Feel", airedSeason: "2025-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 13, note: 7 } ] },
-          { id: "welcome-to-the-ballroom", img: "myranks-images/myranks/welcome-to-the-ballroom.webp", title: "Welcome to the Ballroom", info: "24 episódios" , studio: "Production I.G", airedSeason: "2017", rewatch: "No", mal: [ { label: "1 temporada", episodes: 24, note: 7 } ] },
-          { id: "nanatsu-no-taizai", img: "myranks-images/myranks/nanatsu-no-taizai.webp", title: "The Seven Deadly Sins: Nanatsu no Taizai", info: "4 temporadas: 100 episódios <br>3 Filmes: 3h50m" , studio: "A-1 Pictures / Studio Deen", airedSeason: "2014-2021", rewatch: "2 First Seasons", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "1ª temporada II", episodes: 4, note: 7 }, { label: "2ª temporada", episodes: 24, note: 7 }, { label: "Movie 1: Prisoners of the Sky", episodes: "1h39m", note: 6 },{ label: "3ª temporada", episodes: 24, note: 6 }, { label: "4ª temporada", episodes: 24, note: 5 },  { label: "Movie 2: Cursed By Light", episodes: "1h19m", note: 5 }, { label: "ONA: Grudge of Edinburgh", episodes: "52m", note: 3 } ] },
-          { id: "gurren-lagann", img: "myranks-images/myranks/gurren-lagann.webp", title: "Gurren Lagann", info: "(~~) 1 temporada: 27 episódios" , studio: "Gainax", airedSeason: "2007", rewatch: "Never", mal: [ { label: "1 temporada", episodes: 27, note: 7 }, { label: "Movie 1: Childhood's End", episodes: "1h52m", unwatched: true }, { label: "Movie 2: The Lights in the Sky are Stars", episodes: "2h05m", unwatched: true } ] },
-          { id: "the-apothecary-diaries", img: "myranks-images/myranks/the-apothecary-diaries.webp", title: "The Apothecary Diaries", info: "(~) 1ª temporada: 24 episódios" , studio: "OLM / TOHO Animation Studio", airedSeason: "2023-?", rewatch: "Not Yet", mal: [ { label: "1ª temporada", episodes: 24, note: 7 }, { label: "2ª temporada", episodes: 24, unwatched: true } ] },
-          { id: "shield-hero", img: "myranks-images/myranks/shield-hero.webp", title: "The Rising of the Shield Hero", info: "(~) 1ª temporada: 25 episódios" , studio: "Kinema Citrus", airedSeason: "2019-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 25, note: 7 }, { label: "2ª temporada", episodes: 13, unwatched: true }, { label: "3ª temporada", episodes: 12, unwatched: true }, { label: "4ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "otaku-gyaru", img: "myranks-images/myranks/otaku-gyaru.webp", title: "Gals Can't Be Kind to Otaku", info: "12 episódios", studio: "TMS Entertainment", airedSeason: "2026", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 7 } ]},
-          { id: "nisekoi", img: "myranks-images/myranks/nisekoi.webp", title: "Nisekoi: False Love", info: "2 temporadas: 32 episódios" , studio: "Shaft", airedSeason: "2014-2015", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 20, note: 7 }, { label: "2ª temporada", episodes: 12, note: 6 } ] },
-          { id: "prism-rondo", img: "myranks-images/myranks/prism-rondo.webp", title: "Love Through a Prism", info: "20 episódios", studio: "Wit Studio", airedSeason: "2026", rewatch: "No", mal: [ { label: "1 temporada", episodes: 20, note: 7 } ] },
-          { id: "angel-next-door", img: "myranks-images/myranks/angel-next-door.webp", title: "The Angel Next Door Spoils Me Rotten", info: "(~) 1 temporada: 12 episódios" , studio: "Project No.9", airedSeason: "2023-?", rewatch: "1st Season", mal: [ { label: "1ª temporada", episodes: 12, note: 7 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "farming-life", img: "myranks-images/myranks/farming-life.webp", title: "Farming Life in Another World", info: "(~) 1 temporada: 12 episódios" , studio: "Okuruto Noboru", airedSeason: "2022-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 6 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "the-girl-i-like-forgot-her-glasses", img: "myranks-images/myranks/the-girl-i-like-forgot-her-glasses.webp", title: "The Girl I Like Forgot Her Glasses", info: "13 episódios" , studio: "Project No.9", airedSeason: "2023", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 7 } ] },
-          { id: "toradora", img: "myranks-images/myranks/toradora.webp", title: "Toradora!", info: "25 episódios" , studio: "J.C. Staff", airedSeason: "2008-2009", rewatch: "No", mal: [ { label: "1 temporada", episodes: 25, note: 7 } ] },
-          { id: "more-than-a-married-couple", img: "myranks-images/myranks/more-than-married-couple.webp", title: "More than a Married Couple, but Not Lovers", info: "12 episódios" , studio: "Project No.9", airedSeason: "2022", rewatch: "Yes", mal: [ { label: "1 temporada", episodes: 12, note: 7 } ] },
-          { id: "yamada-kun-lv999", img: "myranks-images/myranks/yamada-kun-lv999.webp", title: "My Love Story with Yamada-kun at LV999", info: "13 episódios" , studio: "Project No.9", airedSeason: "2023", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 6 } ] },
-          { id: "lookism", img: "myranks-images/myranks/lookism.webp", title: "Lookism", info: "8 episódios" , studio: "Studio Mir", airedSeason: "2024", rewatch: "No", mal: [ { label: "1 temporada", episodes: 8, note: 6 } ] },
-          { id: "tower-of-god", img: "myranks-images/myranks/tower-of-god.webp", title: "Tower of God", info: "(~) 1ª temporada: 13 episódios" , studio: "Telecom Animation Film", airedSeason: "2020-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 13, note: 7 }, { label: "2ª temporada I", episodes: 13, unwatched: true }, { label: "2ª temporada II", episodes: 13, unwatched: true } ] },
-          { id: "the-god-of-high-school", img: "myranks-images/myranks/the-god-of-high-school.webp", title: "The God of High School", info: "13 episódios" , studio: "MAPPA", airedSeason: "2020", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 7 } ] },
-          { id: "highschool-of-the-dead", img: "myranks-images/myranks/highschool-of-the-dead.webp", title: "Highschool of the Dead", info: "12 episódios" , studio: "MADHOUSE", airedSeason: "2010-2011", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 6 }, { label: "Drifters of the Dead", episodes: "OVA", note: 5 } ] },
-          { id: "healing-magic", img: "myranks-images/myranks/healing-magic.webp", title: "The Wrong Way to Use Healing Magic", info: "1 temporada: 13 episódios" , studio: "Studio Blanc", airedSeason: "2022-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 13, note: 7 } ] },
-          { id: "bottom-tier", img: "myranks-images/myranks/bottom-tier.webp", title: "Bottom-Tier Character Tomozaki", info: "(~) 1ª temporada: 12 episódios" , studio: "Project No.9", airedSeason: "2021-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 5 }, { label: "2ª temporada", episodes: 13, unwatched: true } ] },
-          { id: "blue-period", img: "myranks-images/myranks/blue-period.webp", title: "Blue Period", info: "12 episódios" , studio: "Seven Arcs", airedSeason: "2021", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 5 } ] },
-          { id: "masamune-kuns-revenge", img: "myranks-images/myranks/masamune-kuns-revenge.webp", title: "Masamune-kun's Revenge", info: "(~) 1ª temporada: 12 episódios" , studio: "Silver Link / Studio Blanc", airedSeason: "2017-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 5 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "immortal-king", img: "myranks-images/myranks/immortal-king.webp", title: "The Daily Life of the Immortal King", info: "(~) 1ª temporada: 15 episódios" , studio: "Foch Films", airedSeason: "2020-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 15, note: 6 }, { label: "2ª temporada", episodes: 12, unwatched: true }, { label: "3ª temporada", episodes: 12, unwatched: true }, { label: "4ª temporada", episodes: 12, unwatched: true }, { label: "5ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "my-little-monster", img: "myranks-images/myranks/my-little-monster.webp", title: "My Little Monster", info: "13 episódios" , studio: "Brain's Base", airedSeason: "2012-2012", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 6 } ] },
-          { id: "4-cut", img: "myranks-images/myranks/4-cut.webp", title: "4 Cut Hero", info: "10 episódios" , studio: "Marvy Jack", airedSeason: "2024", rewatch: "No", mal: [ { label: "1 temporada", episodes: 10, note: 4 } ] },
-          { id: "the-water-magician", img: "myranks-images/myranks/the-water-magician.webp", title: "The Water Magician", info: "12 episódios" , studio: "Arvo Animation", airedSeason: "2025", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 6 } ] },
-          { id: "i-got-a-cheat-skill", img: "myranks-images/myranks/i-got-a-cheat-skill.webp", title: "I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too", info: "13 episódios" , studio: "Marvy Jack", airedSeason: "2022-?", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 5 } ] },
-          { id: "bubble", img: "myranks-images/myranks/bubble.webp", title: "Bubble", info: "Filme: 1h40m" , studio: "Wit Studio", airedSeason: "2022", rewatch: "No", mal: [ { label: "Filme", episodes: "1h40m", note: 6 } ] },
-          { id: "no-game-no-life-zero", img: "myranks-images/myranks/no-game-no-life-zero.webp", title: "No Game No Life: Zero", info: "Filme: 1h47m" , studio: "MADHOUSE", airedSeason: "2017", rewatch: "No", mal: [ { label: "Filme", episodes: "1h47m", note: 6 } ] },
-          { id: "campfire-cooking", img: "myranks-images/myranks/campfire-cooking.webp", title: "Campfire Cooking in Another World with My Absurd Skill", info: "(~) 1ª temporada: 12 episódios" , studio: "MAPPA", airedSeason: "2023-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 5 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
-          { id: "magi-sinbad", img: "myranks-images/myranks/magi-adventure-of-sinbad.webp", title: "Magi: Adventure of Sinbad", info: "13 episódios" , studio: "A-1 Pictures / Sanzigen", airedSeason: "2016", rewatch: "No", mal: [ { label: "1 temporada", episodes: 13, note: 6 } ] },
-          { id: "failure-frame", img: "myranks-images/myranks/failure-frame.webp", title: "Failure Frame: I Became the Strongest and Annihilated Everything With Low-Level Spells", info: "12 episódios" , studio: "Arvo Animation", airedSeason: "2023", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 5 } ] },
-          { id: "the-worlds-finest-assassin", img: "myranks-images/myranks/the-worlds-finest-assassin.webp", title: "The World's Finest Assassin Gets Reincarnated in Another World as an Aristocrat", info: "1 temporada: 12 episódios" , studio: "Satelight", airedSeason: "2021-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 5 } ] },
-          { id: "black-summoner", img: "myranks-images/myranks/black-summoner.webp", title: "Black Summoner", info: "12 episódios" , studio: "C2C", airedSeason: "2022", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 5 } ] },
-          { id: "akashic-records", img: "myranks-images/myranks/akashic-records.webp", title: "Akashic Records of Bastard Magic Instructor", info: "12 episódios" , studio: "Liden Films", airedSeason: "2017", rewatch: "No", mal: [ { label: "1 temporada", episodes: 12, note: 4 } ] },
-          { id: "trapped-in-a-dating-sim", img: "myranks-images/myranks/trapped-in-a-dating-sim.webp", title: "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs", info: "1 temporada: 12 episódios" , studio: "Project No.9", airedSeason: "2021-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 12, note: 4 } ] },
-          { id: "haibara-teenage", img: "myranks-images/myranks/haibara-teenage.webp", title: "Haibara's Teenage New Game", info: "12 episódios", studio: "Studio Comet", airedSeason: "2026", rewatch: "Never", mal: [ { label: "1 temporada", episodes: 12, note: 3 } ] },
-          { id: "cannon-busters", img: "myranks-images/myranks/cannon-busters.webp", title: "Cannon Busters", info: "12 episódios" , studio: "Satelight / Yumeta Company", airedSeason: "2019", rewatch: "Never", mal: [ { label: "1 temporada", episodes: 12, note: 3 } ] },
-          { id: "wind-breaker", img: "myranks-images/myranks/wind-breaker.webp", title: "Wind Breaker", info: "(~) 1ª temporada: 13 episódios" , studio: "CloverWorks", airedSeason: "2024-?", rewatch: "No", mal: [ { label: "1ª temporada", episodes: 13, note: 3 }, { label: "2ª temporada", episodes: 12, unwatched: true } ] },
-        ];
-
-        const rawWatchingData = [
-          // Non-Seasonal Anime
-          { id: "re-zero-4", img: "watchingnow-images/watchingnow/re-zero.webp", title: "Re:ZERO - Starting Life in Another World", malSearch: "Re:ZERO", info: "4 temporadas: 85 episódios", season: null, studio: "White Fox", airedSeason: "2016-?", seasons: [25, 25, 16, 19], cours: [null, [13, 12], null, null], potential: "9.0", url: "https://www.anime-planet.com/anime/rezero-starting-life-in-another-world-season-4", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRGG9798R/rezero--starting-life-in-another-world-", malUrl: "https://myanimelist.net/anime/61316/Re_Zero_kara_Hajimeru_Isekai_Seikatsu_4th_Season"},
-          { id: "rw-demon-slayer", img: "watchingnow-images/watchingnow/demon-slayer.webp", title: "Demon Slayer: Kimetsu no Yaiba", info: "5 temporadas: 63 episódios <br>1 Filme: 2h35m", season: null, studio: "ufotable", airedSeason: "2019-?", seasons: [26, 7, 11, 11, 8, 1], movieSeasons: [5], movieDurations: {5: "2h35m"}, cours: [null, null, null, null, null], url: "https://www.anime-planet.com/anime/demon-slayer-kimetsu-no-yaiba", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GY5P48XEY/demon-slayer-kimetsu-no-yaiba", malUrl: "https://myanimelist.net/anime/38000/Kimetsu_no_Yaiba" },   
-          { id: "mob", img: "watchingnow-images/watchingnow/mob.webp", title: "Mob Psycho 100", info: "3 temporadas: 37 episódios", season: null, studio: "Bones", airedSeason: "2016-2022", seasons: [12, 13, 12], allUnwatched: true, url: "https://www.anime-planet.com/anime/mob-psycho-100", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GY190DKQR/mob-psycho-100", malUrl: "https://myanimelist.net/anime/32182/Mob_Psycho_100?q=mob%20ps" },
-          { id: "rw-aot", img: "watchingnow-images/watchingnow/aot.webp", title: "Attack on Titan", info: "4 temporadas: 94 episódios", season: null, studio: "MAPPA", airedSeason: "2022", seasons: [25, 12, 22, 35], cours: [null, null, [12, 10], [16, 12]], url: "https://www.anime-planet.com/anime/attack-on-titan-the-final-season-part-ii", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GR751KNZY/attack-on-titan", malUrl: "https://myanimelist.net/anime/48583/Shingeki_no_Kyojin__The_Final_Season_Part_2" },
-
-          // Summer 2026
-          { id: "mushoku-3", img: "watchingnow-images/watchingnow/mushoku.webp", title: "Mushoku Tensei: Jobless Reincarnation", info: "3ª temporada: 14 episódios", season: "summer-2026", studio: "Studio Bind", airedSeason: "2026", seasons: [23, 24, 14], cours: [[11, 12], [12, 12], null], url: "https://www.anime-planet.com/anime/mushoku-tensei-jobless-reincarnation-3rd-season", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G24H1N3MP/mushoku-tensei-jobless-reincarnation", malUrl: "https://myanimelist.net/anime/59193/Mushoku_Tensei_III__Isekai_Ittara_Honki_Dasu" },
-          { id: "grand-blue-3", img: "watchingnow-images/watchingnow/grand-blue.webp", title: "Grand Blue Dreaming", info: "3ª temporada: 12 episódios", season: "summer-2026", studio: " Zero-G / Saber Works", airedSeason: "2026", seasons: [12, 12, 12], url: "https://www.anime-planet.com/anime/grand-blue-season-3", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN94W/grand-blue-dreaming", malUrl: "https://myanimelist.net/anime/62542/Grand_Blue_Season_3" },
-          { id: "opposites-2", img: "watchingnow-images/watchingnow/opposites.webp", title: "You and I are Polar Opposites", info: "2ª temporada: 13 episódios", season: "summer-2026", studio: "Lapin Track", airedSeason: "2026", seasons: [12, 12], url: "https://www.anime-planet.com/anime/you-and-i-are-polar-opposites-2nd-season", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00365624/you-and-i-are-polar-opposites", malUrl: "https://myanimelist.net/anime/63832/Seihantai_na_Kimi_to_Boku_2nd_Season" },
-          { id: "smoking", img: "watchingnow-images/watchingnow/smoking.webp", title: "Smoking Behind the Supermarket with You", info: "12 episódios", season: "summer-2026", studio: "Asahi Production", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/smoking-behind-the-supermarket-with-you", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378116/smoking-behind-the-supermarket-with-you", malUrl: "https://myanimelist.net/anime/62076/Super_no_Ura_de_Yani_Suu_Futari" },
-          { id: "love-unseen", img: "watchingnow-images/watchingnow/love-unseen.webp", title: "Love Unseen Beneath the Clear Night Sky", info: "12 episódios", season: "summer-2026", studio: "Makaria", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/love-unseen-beneath-the-clear-night-sky", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378087/love-unseen-beneath-the-clear-night-sky", malUrl: "https://myanimelist.net/anime/62936/Toumei_na_Yoru_ni_Kakeru_Kimi_to_Me_ni_Mienai_Koi_wo_Shita" },
-          { id: "exiled-heavy-knight", img: "watchingnow-images/watchingnow/exiled-heavy-knight.webp", title: "The Exiled Heavy Knight Knows How to Game the System", info: "26 episódios", season: "summer-2026", studio: "GoHands", airedSeason: "2026", seasons: [26], url: "https://www.anime-planet.com/anime/the-exiled-heavy-knight-knows-how-to-game-the-system", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378018/the-exiled-heavy-knight-knows-how-to-game-the-system", malUrl: "https://myanimelist.net/anime/59741/Tsuihou_sareta_Tensei_Juukishi_wa_Game_Chishiki_de_Musou_suru" },
-          { id: "tomb-raider-king", img: "watchingnow-images/watchingnow/tomb-raider-king.webp", title: "Tomb Raider King", info: "12 episódios", season: "summer-2026", studio: "Studio Eek", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/tomb-raider-king", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378123/tomb-raider-king", malUrl: "https://myanimelist.net/anime/63316/Dogulwang" },
-          { id: "sparks-of-tomorrow", img: "watchingnow-images/watchingnow/sparks-of-tomorrow.webp", title: "Sparks of Tomorrow", info: "13 episódios", season: "summer-2026", studio: "Kyoto Animation", airedSeason: "2026", seasons: [13], url: "https://www.anime-planet.com/anime/sparks-of-tomorrow", netflix: "https://www.netflix.com/title/81698957", malUrl: "https://myanimelist.net/anime/62856/Nijusseiki_Denki_Mokuroku__Eureka_Evrika" },
-          { id: "the-100-girlfriends-3", img: "watchingnow-images/watchingnow/the-100-girlfriends.webp", title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You", info: "3ª temporada: 12 episódios", season: "summer-2026", studio: "Bibury Animation Studios", airedSeason: "2026", seasons: [12 , 12 ,12], url: "https://www.anime-planet.com/anime/the-100-girlfriends-who-really-really-really-really-really-love-you-season-3", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN933/the-100-girlfriends-who-really-really-really-really-really-love-you", malUrl: "https://myanimelist.net/anime/62811/Kimi_no_Koto_ga_Daidaidaidaidaisuki_na_100-nin_no_Kanojo_3rd_Season" },
-          { id: "ghost-in-the-shell", img: "watchingnow-images/watchingnow/ghost-in-the-shell.webp", title: "The Ghost in the Shell", info: "NaN episódios - Progress: -/-", season: "summer-2026", studio: "Science SARU", airedSeason: "2026", url: "https://www.anime-planet.com/anime/the-ghost-in-the-shell", crunchyroll: "", malUrl: "https://myanimelist.net/anime/58929/Koukaku_Kidoutai_TV" },
-          { id: "i-became-a-legend", img: "watchingnow-images/watchingnow/i-became-a-legend.webp", title: "I Became a Legend After My 10 Year-Long Last Stand", info: "12 episódios", season: "summer-2026", studio: "Gekkou", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/i-became-a-legend-after-my-10-year-long-last-stand", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371671/i-became-a-legend-after-my-10-year-long-last-stand", malUrl: "https://myanimelist.net/anime/62617/Koko_wa_Ore_ni_Makasete_Saki_ni_Ike_to_Itte_kara_10-nen_ga_Tattara_Densetsu_ni_Natteita" },
-          { id: "wrong-about-her", img: "watchingnow-images/watchingnow/wrong-about-her.webp", title: "Oh Boy, Was I Wrong About Her", info: "12 episódios", season: "summer-2026", studio: "Project No.9", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/oh-boy-was-i-wrong-about-her", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378120/oh-boy-was-i-wrong-about-her", malUrl: "https://myanimelist.net/anime/56735/Tenkou-saki_no_Seiso_Karen_na_Bishoujo_ga_Mukashi_Danshi_to_Omotte_Issho_ni_Asonda_Osananajimi_Datta_Ken" },
-          { id: "chainsmoker-cat", img: "watchingnow-images/watchingnow/chainsmoker-cat.webp", title: "Chainsmoker Cat", info: "NaN episódios - Progress: -/-", season: "summer-2026", studio: "Bibury Animation Studios", airedSeason: "2026", url: "https://www.anime-planet.com/anime/chainsmoker-cat", netflix: "https://www.netflix.com/title/82760630", malUrl: "https://myanimelist.net/anime/63403/Yani_Neko" },
-          { id: "overshadowed-to-overpowered", img: "watchingnow-images/watchingnow/overshadowed-to-overpowered.webp", title: "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage", info: "NaN episódios - Progress: -/-", season: "summer-2026", studio: "EMT Squared", airedSeason: "2026", url: "https://www.anime-planet.com/anime/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378115/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage", malUrl: "https://myanimelist.net/anime/63508/Rakudai_Kenja_no_Gakuin_Musou__Nidome_no_Tensei_S-Rank_Cheat_Majutsushi_Boukenroku" },
-
-          // Spring 2026
-          { id: "tensei-shitara-slime-4", img: "watchingnow-images/watchingnow/tensei-shitara-slime.webp", title: "That Time I Got Reincarnated as a Slime", info: "4ª temporada: 24 episódios", season: "spring-2026", studio: "8-Bit", airedSeason: "2026", seasons: [24, 24, 24, 24], cours: [null,[12, 12], null, null], url: "https://www.anime-planet.com/anime/that-time-i-got-reincarnated-as-a-slime-season-4", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYZJ43JMR/that-time-i-got-reincarnated-as-a-slime", malUrl: "https://myanimelist.net/anime/59970/Tensei_shitara_Slime_Datta_Ken_4th_Season" },
-          { id: "imfwtspgimc", img: "watchingnow-images/watchingnow/imfwtspgimc.webp", title: "I Made Friends with the Second Prettiest Girl in My Class", info: "12 episódios", season: "spring-2026", studio: "CONNECT", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/i-made-friends-with-the-second-prettiest-girl-in-my-class", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371673/i-made-friends-with-the-second-prettiest-girl-in-my-class", malUrl: "https://myanimelist.net/anime/56734/Class_de_2-banme_ni_Kawaii_Onnanoko_to_Tomodachi_ni_Natta" },
-          { id: "farming-life-2", img: "watchingnow-images/watchingnow/farming-life.webp", title: "Farming Life in Another World", info: "2ª temporada: 12 episódios", season: "spring-2026", studio: "Zero-G", airedSeason: "2026", seasons: [12, 12], url: "https://www.anime-planet.com/anime/farming-life-in-another-world-2", crunchyroll: "", malUrl: "https://myanimelist.net/anime/62146/Isekai_Nonbiri_Nouka_2" },
-          { id: "klutzy-class-monitor", img: "watchingnow-images/watchingnow/klutzy-class-monitor.webp", title: "The Klutzy Class Monitor and the Girl with the Short Skirt", info: "12 episódios", season: "spring-2026", studio: "Zero-G", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371923/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt", malUrl: "https://myanimelist.net/anime/61425/Ponkotsu_Fuuki_Iin_to_Skirt-take_ga_Futekisetsu_na_JK_no_Hanashi" },
-
-          // Winter 2026
-          { id: "midnight-heart", img: "watchingnow-images/watchingnow/midnight-heart.webp", title: "Tune In to the Midnight Heart", info: "12 episódios", season: "winter-2026", studio: "Gekkou", airedSeason: "2026", seasons: [12], url: "https://www.anime-planet.com/anime/tune-in-to-the-midnight-heart", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00365772/tune-in-to-the-midnight-heart", malUrl: "https://myanimelist.net/anime/61211/Mayonaka_Heart_Tune" },
-
-          // On Hold
-          { id: "aoashi", img: "watchingnow-images/watchingnow/aoashi.webp", title: "Aoashi", info: "24 episódios", season: "on-hold", studio: "Production I.G", airedSeason: "2022-?", seasons: [24], url: "https://www.anime-planet.com/anime/aoashi", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G4PH0WX5J/aoashi", malUrl: "https://myanimelist.net/anime/49052/Ao_Ashi" },
-          { id: "danmachi-5", img: "watchingnow-images/watchingnow/danmachi.webp", title: "Danmachi: Is It Wrong to Try to Pick Up Girls in a Dungeon", malSearch: "Is It Wrong to Try to Pick Up Girls in a Dungeon", info: "5ª temporada: 15 episódios", season: "on-hold", studio: "J.C. Staff", airedSeason: "2024 and 2025", rewatch: "3 First Seasons", seasons: [15], url: "https://www.anime-planet.com/anime/is-it-wrong-to-try-to-pick-up-girls-in-a-dungeon-v", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G6DQN9KGR/is-it-wrong-to-try-to-pick-up-girls-in-a-dungeon", malUrl: "https://myanimelist.net/anime/57066/Dungeon_ni_Deai_wo_Motomeru_no_wa_Machigatteiru_Darou_ka_V__Houjou_no_Megami-hen?q=danmachi&cat=anime" },
-          { id: "bocchi-the-rock", img: "watchingnow-images/watchingnow/bocchi-the-rock.webp", title: "Bocchi the Rock", info: "12 episódios", season: "on-hold", studio: "CloverWorks", airedSeason: "2022-?", seasons: [12], url: "https://www.anime-planet.com/anime/bocchi-the-rock", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GXJHM3P19/bocchi-the-rock", malUrl: "https://myanimelist.net/anime/47917/Bocchi_the_Rock" },
-        ];
 
         const WATCHING_NO_SEASON_LABEL = { text: "Non-Seasonal Anime", color: "#7dd3fc" };
         const WATCHING_SEASON_ORDER = ["summer-2026", "spring-2026", "winter-2026", "on-hold",];
@@ -7941,233 +8032,6 @@
           unwatched: { text: "Unwatched or in Progress", color: "#f87171" }, // Vermelho coral (diferente do Watching Now)
         };
         
-        const favoriteEpisodesData = [
-          {
-            id: "code-geass",
-            anime: "Code Geass: Lelouch of the Rebellion",
-            episodeLabel: "T2.E25 — Zero Requiem",
-            img: "other-images/peakepisodes/code-geass-1.webp",
-            images: [
-              "other-images/peakepisodes/code-geass-1.webp",
-              "other-images/peakepisodes/code-geass-2.webp",
-              "other-images/peakepisodes/code-geass-3.webp",
-              "other-images/peakepisodes/code-geass-4.webp",
-              "other-images/peakepisodes/code-geass-5.webp",
-            ],
-            rating: 9.9,
-            imdbUrl: "https://www.imdb.com/pt/title/tt1310121/",
-            crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/GG1U2DD2M/final-turn---re",
-            myRating: 10,
-            note: "",
-          },
-          {
-            id: "jjk",
-            anime: "Jujutsu Kaisen",
-            episodeLabel: "T3.E12 — Sendai Colony",
-            img: "other-images/peakepisodes/jjk-1.webp",
-            images: [
-              "other-images/peakepisodes/jjk-1.webp",
-              "other-images/peakepisodes/jjk-2.webp",
-              "other-images/peakepisodes/jjk-3.webp",
-              "other-images/peakepisodes/jjk-4.webp",
-              "other-images/peakepisodes/jjk-5.webp",
-              "other-images/peakepisodes/jjk-6.webp",
-              "other-images/peakepisodes/jjk-7.webp",
-              "other-images/peakepisodes/jjk-8.webp",
-            ],
-            rating: 9.8,
-            imdbUrl: "https://www.imdb.com/title/tt40339350",
-            crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/GE00367579JAJP/sendai-colony",
-            myRating: 10,
-            note: "",
-          },
-          {
-            id: "one-piece",
-            anime: "One Piece",
-            episodeLabel: "E1136 — Kuma's Life",
-            img: "other-images/peakepisodes/one-piece-1.webp",
-            images: [
-              "other-images/peakepisodes/one-piece-1.webp",
-              "other-images/peakepisodes/one-piece-2.webp",
-              "other-images/peakepisodes/one-piece-3.webp",
-              "other-images/peakepisodes/one-piece-4.webp",
-              "other-images/peakepisodes/one-piece-5.webp",
-              "other-images/peakepisodes/one-piece-6.webp",
-            ],
-            rating: 9.8,
-            imdbUrl: "https://www.imdb.com/pt/title/tt37560958/",
-            crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/GG1UXVDJ7/kumas-life",
-            myRating: 9.9,
-            note: "",
-          },
-          {
-            id: "frieren",
-            anime: "Frieren: Beyond Journey's End",
-            episodeLabel: "T2.E8 — A Magnificent End",
-            img: "other-images/peakepisodes/frieren-1.webp",
-            images: [
-              "other-images/peakepisodes/frieren-1.webp",
-              "other-images/peakepisodes/frieren-2.webp",
-              "other-images/peakepisodes/frieren-3.webp",
-              "other-images/peakepisodes/frieren-4.webp",
-              "other-images/peakepisodes/frieren-6.webp",
-              "other-images/peakepisodes/frieren-7.webp",
-            ],
-            rating: 9.6,
-            imdbUrl: "https://www.imdb.com/pt/title/tt39373003/",
-            crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G0DUMNPJ1/a-magnificent-end",
-            myRating: 9.7,
-            note: "",
-          },
-          {
-            id: "mha",
-            anime: "My Hero Academia",
-            episodeLabel: "T4.E13 — Infinite 100%",
-            img: "other-images/peakepisodes/mha-1.webp",
-            images: [
-              "other-images/peakepisodes/mha-1.webp",
-              "other-images/peakepisodes/mha-3.webp",
-              "other-images/peakepisodes/mha-4.webp",
-              "other-images/peakepisodes/mha-6.webp",
-              "other-images/peakepisodes/mha-7.webp",
-            ],
-            rating: 9.7,
-            imdbUrl: "https://www.imdb.com/pt/title/tt11488600/",
-            crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G6ZJEE9GY/infinite-100",
-            myRating: 9.7,
-            note: "",
-          },
-          {
-            id: "solo-leveling",
-            anime: "Solo Leveling",
-            episodeLabel: "T2.E12 — Are You the King of Humans",
-            img: "other-images/peakepisodes/solo-leveling-1.webp",
-            images: [
-              "other-images/peakepisodes/solo-leveling-1.webp",
-              "other-images/peakepisodes/solo-leveling-2.webp",
-              "other-images/peakepisodes/solo-leveling-3.webp",
-              "other-images/peakepisodes/solo-leveling-4.webp",
-              "other-images/peakepisodes/solo-leveling-5.webp",
-            ],
-            rating: 9.6,
-            imdbUrl: "https://www.imdb.com/pt/title/tt36170608/",
-            crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/GG1UX5XMW/are-you-the-king-of-humans",
-            myRating: 9.7,
-            note: "",
-          },
-          {
-            id: "hxh",
-            anime: "Hunter x Hunter",
-            episodeLabel: "E131 — Anger × and × Light",
-            img: "other-images/peakepisodes/hxh-1.webp",
-            images: [
-              "other-images/peakepisodes/hxh-1.webp",
-              "other-images/peakepisodes/hxh-2.webp",
-              "other-images/peakepisodes/hxh-3.webp",
-              "other-images/peakepisodes/hxh-4.webp",
-              "other-images/peakepisodes/hxh-5.webp",
-            ],
-            rating: 9.9,
-            imdbUrl: "https://www.imdb.com/pt/title/tt3748420/",
-            crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G6Q4WZX9R/anger-x-and-x-light",
-            myRating: 9.5,
-            note: "",
-          },
-          {
-            id: "cote",
-            anime: "Classroom of the Elite",
-            episodeLabel: "T2.E12 — Force Without Wisdom Collapses Under Its Own Weight.",
-            img: "other-images/peakepisodes/cote-2.webp",
-            images: [
-              "other-images/peakepisodes/cote-2.webp",
-              "other-images/peakepisodes/cote-1.webp",
-              "other-images/peakepisodes/cote-3.webp",
-              "other-images/peakepisodes/cote-4.webp",
-            ],
-            rating: 9.6,
-            imdbUrl: "https://www.imdb.com/pt/title/tt21935338/",
-            crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G8WUN8PE8/force-without-wisdom-falls-of-its-own-weight",
-            myRating: 9.5,
-            note: "",
-          },
-          {
-            id: "re-zero",
-            anime: "Re:ZERO - Starting Life in Another World",
-            episodeLabel: "T1.E15 — Beyond Madness",
-            img: "other-images/peakepisodes/re-zero-2.webp",
-            images: [
-              "other-images/peakepisodes/re-zero-2.webp",
-              "other-images/peakepisodes/re-zero-3.webp",
-              "other-images/peakepisodes/re-zero-1.webp",
-              "other-images/peakepisodes/re-zero-4.webp",
-              "other-images/peakepisodes/re-zero-5.webp",
-            ],
-            rating: 9.8,
-            imdbUrl: "http://imdb.com/pt/title/tt5908784",
-            crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G63KQMPD6/the-sickness-called-despair--the-outside-of-madness",
-            myRating: 9.2,
-            note: "",
-          },
-        ]
-        const rawPlanToWatchData = [
-          { id: "bleach", img: "plantowatch-images/plantowatch/bleach.webp", title: "Bleach", info: "5 temporadas: 416 episódios", studio: "Studio Pierrot / Pierrrot Films", airedSeason: "2004-2026", url: "https://www.anime-planet.com/anime/bleach", crunchyroll: "", malUrl: "https://myanimelist.net/anime/269/Bleach" },
-          { id: "my-teen-romantic-comedy", img: "plantowatch-images/plantowatch/my-teen-romantic-comedy.webp", title: "My Teen Romantic Comedy SNAFU", info: "3 temporadas: 39 episódios", studio: "Brain's Base / feel", airedSeason: "2013-2020", url: "https://www.anime-planet.com/anime/my-teen-romantic-comedy-snafu", crunchyroll: "", malUrl: "https://myanimelist.net/anime/39547/Yahari_Ore_no_Seishun_Love_Comedy_wa_Machigatteiru_Kan" },
-          { id: "terror-in-resonance", img: "plantowatch-images/plantowatch/terror-in-resonance.webp", title: "Terror in Resonance", info: "11 episódios", studio: "MAPPA", airedSeason: "2014-2014", url: "https://www.anime-planet.com/anime/terror-in-resonance", crunchyroll: "", malUrl: "https://myanimelist.net/anime/23283/Zankyou_no_Terror" },
-          { id: "konosuba", img: "plantowatch-images/plantowatch/konosuba.webp", title: "Konosuba - God's Blessing on this Wonderful World", info: "3 temporadas: 31 episódios <br>1 Filme: 1h30m", studio: "Studio Deen / J.C. Staff", airedSeason: "2016", url: "https://www.anime-planet.com/anime/konosuba-gods-blessing-on-this-wonderful-world", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYE5K3GQR/konosuba--gods-blessing-on-this-wonderful-world", malUrl: "https://myanimelist.net/anime/30831/Kono_Subarashii_Sekai_ni_Shukufuku_wo" },
-          { id: "fruit-of-grisaia", img: "plantowatch-images/plantowatch/fruit-of-grisaia.webp", title: "The Fruit of Grisaia", info: "1ª temporada: 13 episódios", studio: "8-Bit", airedSeason: "2014", url: "https://www.anime-planet.com/anime/the-fruit-of-grisaia", crunchyroll: "", malUrl: "https://myanimelist.net/anime/17729/Grisaia_no_Kajitsu" },
-          { id: "sentenced-hero", img: "plantowatch-images/plantowatch/sentenced-hero.webp", title: "Sentenced to be a Hero", info: "12 episódios", studio: "Studio KAI", airedSeason: "2026", url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00356809/sentenced-to-be-a-hero", malUrl: "https://myanimelist.net/anime/56009/Yuusha-kei_ni_Shosu__Choubatsu_Yuusha_9004-tai_Keimu_Kiroku" },
-          { id: "wotakoi", img: "plantowatch-images/plantowatch/wotakoi.webp", title: "Wotakoi: Love is Hard for Otaku", info: "11 episódios", studio: "A-1 Pictures", airedSeason: "2018-2018", url: "https://www.anime-planet.com/anime/wotakoi-love-is-hard-for-otaku", crunchyroll: "", malUrl: "https://myanimelist.net/anime/35968/Wotaku_ni_Koi_wa_Muzukashii" },
-          { id: "spy-x-family", img: "plantowatch-images/plantowatch/spy-x-family.webp", title: "Spy x Family", info: "3 temporadas: 50 episódios", studio: "Wit Studio / CloverWorks", airedSeason: "2022", url: "https://www.anime-planet.com/anime/spy-x-family", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G4PH0WXVJ/spy-x-family", malUrl: "https://myanimelist.net/anime/50265/Spy_x_Family" },
-          { id: "kurokos-basketball", img: "plantowatch-images/plantowatch/kurokos-basketball.webp", title: "Kuroko's Basketball", info: "3 temporadas: 75 episódios <br> 1 Filme: 1h30m", studio: "Production I.G", airedSeason: "2012-2017", url: "https://www.anime-planet.com/anime/kurokos-basketball", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G62P48X56/kurokos-basketball", malUrl: "https://myanimelist.net/anime/11771/Kuroko_no_Basket" },
-          { id: "blue-lock", img: "plantowatch-images/plantowatch/blue-lock.webp", title: "Blue Lock", info: "2 temporadas: 38 episódios", studio: "8-Bit", airedSeason: "2022", url: "https://www.anime-planet.com/anime/blue-lock", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G4PH0WEKE/blue-lock", malUrl: "https://myanimelist.net/anime/49596/Blue_Lock" },
-          { id: "evangelion", img: "plantowatch-images/plantowatch/evangelion.webp", title: "Neon Genesis Evangelion", info: "1 temporada: 26 episódios <br>1 Filme: 1h27m", studio: "Gainax / Tatsunoko Production / Production I.G", airedSeason: "1995-1997", url: "https://www.anime-planet.com/anime/neon-genesis-evangelion", netflix: "https://www.netflix.com/title/81033445", malUrl: "https://myanimelist.net/anime/30/Shinseiki_Evangelion" },
-          { id: "black-clover", img: "plantowatch-images/plantowatch/black-clover.webp", title: "Black Clover", info: "4 temporadas: 170 episódios", studio: "Studio Pierrot", airedSeason: "2017", url: "https://www.anime-planet.com/anime/black-clover", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRE50KV36/black-clover", malUrl: "https://myanimelist.net/anime/34572/Black_Clover" },
-          { id: "fullmetal", img: "plantowatch-images/plantowatch/fullmetal.webp", title: "Fullmetal Alchemist: Brotherhood", info: "64 episódios", studio: "Bones", airedSeason: "2009-2010", url: "https://www.anime-planet.com/anime/fullmetal-alchemist-brotherhood", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRGGPG93R/fullmetal-alchemist-brotherhood", malUrl: "https://myanimelist.net/anime/5114/Fullmetal_Alchemist__Brotherhood" },
-          { id: "death-note", img: "plantowatch-images/plantowatch/death-note.webp", title: "Death Note", info: "37 episódios", studio: "MADHOUSE", airedSeason: "2006-2007", url: "https://www.anime-planet.com/anime/death-note", netflix: "https://www.netflix.com/title/70204970", malUrl: "https://myanimelist.net/anime/1535/Death_Note" },
-          { id: "i-want-to-eat-your-pancreas", img: "plantowatch-images/plantowatch/i-want-to-eat-your-pancreas.webp", title: "I Want to Eat Your Pancreas", info: "Filme: 1h48m", studio: "Studio VOLN", airedSeason: "2018", url: "https://www.anime-planet.com/anime/i-want-to-eat-your-pancreas", crunchyroll: "", malUrl: "https://myanimelist.net/anime/36098/Kimi_no_Suizou_wo_Tabetai" },
-          { id: "fate-zero", img: "plantowatch-images/plantowatch/fate-zero.webp", title: "Fate Zero", info: "2 temporadas: 25 episódios", studio: "ufotable", airedSeason: "2011-2012", url: "https://www.anime-planet.com/anime/fate-zero", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRJQ04Z3Y/fatezero", malUrl: "https://myanimelist.net/anime/10087/Fate_Zero" },
-          { id: "fate-heavens-feel", img: "plantowatch-images/plantowatch/fate-heavens-feel.webp", title: "Fate Stay Night: Heaven's Feel", info: "3 Filmes: 5h57m", studio: "ufotable", airedSeason: "2017-2020", url: "https://www.anime-planet.com/anime/fate-stay-night-heavens-feel-i-presage-flower", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GXJHM39V0/fatestay-night-heavens-feel", malUrl: "https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower" },
-          { id: "chainsaw-man", img: "plantowatch-images/plantowatch/chainsaw-man.webp", title: "Chainsaw Man", info: "1 temporada: 13 episódios <br>1 Filme: 1h40m", studio: "MAPPA", airedSeason: "2022", url: "https://www.anime-planet.com/anime/chainsaw-man", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GVDHX8QNW/chainsaw-man", malUrl: "https://myanimelist.net/anime/44511/Chainsaw_Man" },
-          { id: "cowboy-bebop", img: "plantowatch-images/plantowatch/cowboy-bebop.webp", title: "Cowboy Bebop", info: "1 temporada: 26 episódios <br>1 Filme: 1h55m", studio: "Sunrise", airedSeason: "1998-2001", url: "https://www.anime-planet.com/anime/cowboy-bebop", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYVNXMVP6/cowboy-bebop", malUrl: "https://myanimelist.net/anime/1/Cowboy_Bebop" },
-          { id: "your-name", img: "plantowatch-images/plantowatch/your-name.webp", title: "your name", info: "Filme: 1h50m", studio: "CoMix Wave Films", airedSeason: "2016", url: "https://www.anime-planet.com/anime/your-name", crunchyroll: "", malUrl: "https://myanimelist.net/anime/32281/Kimi_no_Na_wa" },
-          { id: "heavenly-delusion", img: "plantowatch-images/plantowatch/heavenly-delusion.webp", title: "Heavenly Delusion", info: "13 episódios", studio: "Production I.G", airedSeason: "2023", url: "https://www.anime-planet.com/anime/heavenly-delusion", crunchyroll: "", malUrl: "https://myanimelist.net/anime/53393/Tengoku_Daimakyou" },
-          { id: "to-be-hero-x", img: "plantowatch-images/plantowatch/to-be-hero-x.webp", title: "To be Hero X", info: "24 episódios", studio: "PB Animation, LAN Studio, Paper Plane, B.COOL STUDIO", airedSeason: "2025", url: "https://www.anime-planet.com/anime/to-be-hero-x", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GQWH0M1J3/to-be-hero-x", malUrl: "https://myanimelist.net/anime/53447/Tu_Bian_Yingxiong_X" },
-          { id: "tokyo-ghoul", img: "plantowatch-images/plantowatch/tokyo-ghoul.webp", title: "Tokyo Ghoul", info: "2 temporadas: 24 episódios", studio: "Studio Pierrot", airedSeason: "2014-2015", url: "https://www.anime-planet.com/anime/tokyo-ghoul", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G6NV7Z50Y/tokyo-ghoul", malUrl: "https://myanimelist.net/anime/22319/Tokyo_Ghoul" },
-          { id: "fate-stay-night", img: "plantowatch-images/plantowatch/fate-stay-night.webp", title: "Fate Stay Night: Unlimited Blade Works", info: "2 temporadas: 25 episódios", studio: "ufotable", airedSeason: "2014-2015", url: "https://www.anime-planet.com/anime/fate-stay-night-unlimited-blade-works", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GY8V11X7Y/fatestay-night-unlimited-blade-works", malUrl: "https://myanimelist.net/anime/22297/Fate_stay_night__Unlimited_Blade_Works" },
-          { id: "the-tunnel-to-summer", img: "plantowatch-images/plantowatch/the-tunnel-to-summer.webp", title: "The Tunnel to Summer, the Exit of Goodbyes", info: "Filme: 1h23m", studio: "CLAP", airedSeason: "2022", url: "https://www.anime-planet.com/anime/the-tunnel-to-summer-the-exit-of-goodbyes", crunchyroll: "", malUrl: "https://myanimelist.net/anime/50593/Natsu_e_no_Tunnel_Sayonara_no_Deguchi" },
-          { id: "gintama", img: "plantowatch-images/plantowatch/gintama.webp", title: "Gintama", info: "8 temporadas: 367 episódios <br> 1 Filme: 1h44m", studio: "Sunrise, Bandai Namco Pictures", airedSeason: "2006-2021", url: "https://www.anime-planet.com/anime/gintama", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYQ4MKDZ6/gintama", malUrl: "https://myanimelist.net/anime/918/Gintama" },
-          { id: "dororo", img: "plantowatch-images/plantowatch/dororo.webp", title: "Dororo (2019)", info: "24 episódios", studio: "Tezuka Productions / MAPPA", airedSeason: "2019-2019", url: "https://www.anime-planet.com/anime/dororo-2019", crunchyroll: "", malUrl: "https://myanimelist.net/anime/37520/Dororo" },
-          { id: "link-click", img: "plantowatch-images/plantowatch/link-click.webp", title: "Link Click", info: "3 temporadas: 35 episódios", studio: "LAN Studio / CMC Media", airedSeason: "2021", url: "https://www.anime-planet.com/anime/link-click", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GP5HJ8E81/link-click", malUrl: "https://myanimelist.net/anime/44074/Shiguang_Dailiren" },
-          { id: "jojo", img: "plantowatch-images/plantowatch/jojo.webp", title: "JoJo's Bizarre Adventure (2012)", info: "5 Partes: 193 episódios", studio: "David Production", airedSeason: "2013", url: "https://www.anime-planet.com/anime/jojos-bizarre-adventure", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYP8DP1MY/jojos-bizarre-adventure", malUrl: "https://myanimelist.net/anime/14719/JoJo_no_Kimyou_na_Bouken_TV" },
-          { id: "ranking-of-kings", img: "plantowatch-images/plantowatch/ranking-of-kings.webp", title: "Ranking of Kings", info: "2 temporadas: 33 episódios", studio: "Wit Studio", airedSeason: "2021-2023", url: "https://www.anime-planet.com/anime/ranking-of-kings", crunchyroll: "https://www.crunchyroll.com/pt-br/series/G79H23W70/ranking-of-kings", malUrl: "https://myanimelist.net/anime/40834/Ousama_Ranking" },
-          { id: "lom", img: "plantowatch-images/plantowatch/lom.webp", title: "Lord of Mysteries", info: "1 temporada: 13 episódios", studio: "B.CMAY PICTURES", airedSeason: "2025", url: "https://www.anime-planet.com/anime/lord-of-mysteries", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GEXH3W2EZ/lord-of-mysteries", malUrl: "https://myanimelist.net/anime/49818/Guimi_Zhi_Zhu__Xiaochou_Pian" },
-          { id: "takopi", img: "plantowatch-images/plantowatch/takopi.webp", title: "Takopi's Original Sin", info: "6 episódios", studio: "Enishiya", airedSeason: "2025-2025", url: "https://www.anime-planet.com/anime/takopis-original-sin", crunchyroll: "https://www.crunchyroll.com/pt-br/series/GKEH2G0X4/takopis-original-sin", malUrl: "https://myanimelist.net/anime/60489/Takopii_no_Genzai" },
-          { id: "monster", img: "plantowatch-images/plantowatch/monster.webp", title: "Monster", info: "74 episódios", studio: "MADHOUSE", airedSeason: "2004-2005", url: "https://www.anime-planet.com/anime/monster", netflix: "https://www.netflix.com/title/81409869", malUrl: "https://myanimelist.net/anime/19/Monster" },
-          { id: "quintessential-quintuplets", img: "plantowatch-images/plantowatch/quintessential-quintuplets.webp", title: "The Quintessential Quintuplets", info: "2 temporadas: 24 episódios <br>1 Filme: 2h16m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-quintessential-quintuplets", crunchyroll: "", malUrl: "" },
-          { id: "saiki", img: "plantowatch-images/plantowatch/saiki.webp", title: "The Disastrous Life of Saiki K.", info: "2 temporadas: 144 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-disastrous-life-of-saiki-k", crunchyroll: "", malUrl: "" },
-          { id: "astra-space", img: "plantowatch-images/plantowatch/astra-space.webp", title: "Astra Lost in Space", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/astra-lost-in-space", crunchyroll: "", malUrl: "" },
-          { id: "fate-strange-fake", img: "plantowatch-images/plantowatch/fate-strange-fake.webp", title: "Fate Strange Fake", info: "13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/fate-strange-fake", crunchyroll: "", malUrl: "" },
-          { id: "call-of-the-night", img: "plantowatch-images/plantowatch/call-of-the-night.webp", title: "Call of the Night", info: "2 temporadas: 25 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/call-of-the-night", crunchyroll: "", malUrl: "" },
-          { id: "100-meters", img: "plantowatch-images/plantowatch/100-meters.webp", title: "100 Meters", info: "Filme: 1h47m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/100-meters", crunchyroll: "", malUrl: "" },
-          { id: "hellsing", img: "plantowatch-images/plantowatch/hellsing.webp", title: "Hellsing", info: "13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/hellsing", crunchyroll: "", malUrl: "" },
-          { id: "pretty-derby", img: "plantowatch-images/plantowatch/pretty-derby.webp", title: "Uma Musume: Pretty Derby", info: "3 temporadas: 39 episódios <br>2 Filmes: 3h26m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/uma-musume-pretty-derby", crunchyroll: "", malUrl: "" },
-          { id: "spice-and-wolf", img: "plantowatch-images/plantowatch/spice-and-wolf.webp", title: "Spice and Wolf: Merchant Meets the Wise Wolf", info: "1 temporada: 25 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/spice-and-wolf-merchant-meets-the-wise-wolf", crunchyroll: "", malUrl: "" },
-          { id: "no-game-no-life", img: "plantowatch-images/plantowatch/no-game-no-life.webp", title: "No Game No Life ", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/no-game-no-life", crunchyroll: "", malUrl: "" },
-          { id: "noragami", img: "plantowatch-images/plantowatch/noragami.webp", title: "Noragami", info: "2 temporadas: 25 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/noragami", crunchyroll: "", malUrl: "" },
-          { id: "barakamon", img: "plantowatch-images/plantowatch/barakamon.webp", title: "Barakamon", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/barakamon", crunchyroll: "", malUrl: "" },
-          { id: "greatest-demon-lord", img: "plantowatch-images/plantowatch/greatest-demon-lord.webp", title: "The Greatest Demon Lord Is Reborn as a Typical Nobody", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-greatest-demon-lord-is-reborn-as-a-typical-nobody", crunchyroll: "", malUrl: "" },
-          { id: "radiant", img: "plantowatch-images/plantowatch/radiant.webp", title: "Radiant", info: "2 temporadas: 42 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/radiant", crunchyroll: "", malUrl: "" },
-          { id: "ramparts-of-ice", img: "plantowatch-images/plantowatch/ramparts-of-ice.webp", title: "The Ramparts of Ice", info: "14 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-ramparts-of-ice", crunchyroll: "", malUrl: "" },
-          { id: "yamada-witches", img: "plantowatch-images/plantowatch/yamada-witches.webp", title: "Yamada-kun and the Seven Witches", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/yamada-kun-and-the-seven-witches", crunchyroll: "", malUrl: "" },
-          { id: "sign-of-affection", img: "plantowatch-images/plantowatch/sign-of-affection.webp", title: "A Sign of Affection", info: "12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/a-sign-of-affection", crunchyroll: "", malUrl: "" },
-          { id: "clevatess", img: "plantowatch-images/plantowatch/clevatess.webp", title: "Clevatess", info: "1 temporada: 12 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/clevatess", crunchyroll: "", malUrl: "" },
-          { id: "secrets-of-the-silent-witch", img: "plantowatch-images/plantowatch/secrets-of-the-silent-witch.webp", title: "Secrets of the Silent Witch", info: "13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/secrets-of-the-silent-witch", crunchyroll: "", malUrl: "" },
-          { id: "darling-in-the-franxx", img: "plantowatch-images/plantowatch/darling-in-the-franxx.webp", title: "DARLING in the FRANXX", info: "24 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/darling-in-the-franxx", crunchyroll: "", malUrl: "" },
-          { id: "king-avatar", img: "plantowatch-images/plantowatch/king-avatar.webp", title: "The King's Avatar", info: "3 temporadas: 41 episódios <br>1 Filme: 1h38m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/the-kings-avatar", crunchyroll: "", malUrl: "" },
-          { id: "cute-girl-in-the-heros-party", img: "plantowatch-images/plantowatch/cute-girl-in-the-heros-party.webp", title: "There was a Cute Girl in the Hero’s Party, so I Tried Confessing to Her", info: "13 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/there-was-a-cute-girl-in-the-heros-party-so-i-tried-confessing-to-her", crunchyroll: "", malUrl: "" },
-          { id: "spare-me", img: "plantowatch-images/plantowatch/spare-me.webp", title: "Spare Me, Great Lord", info: "2 temporadas: 24 episódios", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/dawang-raoming", crunchyroll: "", malUrl: "" },
-          { id: "aura-last-war", img: "plantowatch-images/plantowatch/aura-last-war.webp", title: "Aura: Koga Maryuin's Last War", info: "Filme: 1h22m", studio: "", airedSeason: "", url: "https://www.anime-planet.com/anime/aura-koga-maryuins-last-war", crunchyroll: "", malUrl: "" },
-        ];
 
         const animeData = rawAnimeData.map(item => ({
           ...item,
@@ -8195,20 +8059,6 @@
         // animeData (id/img/title/info/...), renderizada com o mesmo card do
         // All Animes, mas sem "studio"/"airedSeason" (não fazem sentido pra
         // personagem) e ainda sem poster lightbox.
-        const trueCharactersData = [
-          { id: "lelouch", img: "other-images/truecharacters/lelouch.webp", title: "Lelouch vi Britannia", info: "Code Geass: Lelouch of the Rebellion" },
-          { id: "yuta", img: "other-images/truecharacters/yuta.webp", title: "Yuta Okkotsu", info: "Jujutsu Kaisen" },
-          { id: "echidna", img: "other-images/truecharacters/echidna.webp", title: "Echidna", info: "Re:ZERO - Starting Life in Another World" },
-          { id: "cc", img: "other-images/truecharacters/cc.webp", title: "C.C.", info: "Code Geass: Lelouch of the Rebellion" },
-          { id: "taira", img: "other-images/truecharacters/taira.webp", title: "Shuuji Taira", info: "You and I are Polar Opposites" },
-          { id: "subaru", img: "other-images/truecharacters/subaru.webp", title: "Subaru Natsuki", info: "Re:ZERO - Starting Life in Another World" },
-          { id: "stark", img: "other-images/truecharacters/stark.webp", title: "Stark", info: "Frieren: Beyond Journey's End" },
-          { id: "shizuku", img: "other-images/truecharacters/shizuku.webp", title: "Shizuku Murasaki", info: "Hunter x Hunter" },
-          { id: "cid", img: "other-images/truecharacters/shadow.webp", title: "Cid Kagenou", info: "The Eminence in Shadow" },
-          { id: "bakugo", img: "other-images/truecharacters/bakugo.webp", title: "Katsuki Bakugou", info: "My Hero Academia" },
-          { id: "chrollo", img: "other-images/truecharacters/chrollo.webp", title: "Chrollo Lucilfer", info: "Hunter x Hunter" },
-          { id: "tsukishima", img: "other-images/truecharacters/tsukishima.webp", title: "Kei Tsukishima", info: "Haikyu!!" },
-        ];
 
         // Metadados (Studio / temporada) definidos direto no HTML/JS acima,
         // usados como valor padrão no modal de detalhes de cada anime.
@@ -8245,67 +8095,6 @@
           });
 
         const SUB_RANK_MODES = new Set(['romance', 'isekai', 'sports', 'mecha']);
-
-        const romanceIds = [
-          "fragrant-flowers",
-          "chitose",
-          "your-lie-in-april",
-          "a-silent-voice",
-          "bunny-girl-senpai",
-          "horimiya",
-          "roshidere",
-          "makeine",
-          "the-100-girlfriends",
-          "blue-box",
-          "more-than-a-married-couple",
-          "nisekoi",
-          "my-dress-up-darling",
-          "the-girl-i-like-forgot-her-glasses",
-          "my-little-monster",
-          "angel-next-door",
-          "toradora",
-          "yamada-kun-lv999",
-          "masamune-kuns-revenge",
-          "opposites",
-          "prism-rondo",
-          "haibara-teenage"
-        ];
-
-        const isekaiIds = [
-          "mushoku",
-          "shadow",
-          "re-zero",
-          "tensei-shitara-slime",
-          "shangri-la-frontier",
-          "sword-art-online",
-          "tsukimichi-moonlit-fantasy",
-          "shield-hero",
-          "farming-life",
-          "the-wrong-way-to-use-healing-magic",
-          "the-water-magician",
-          "i-got-a-cheat-skill",
-          "campfire-cooking",
-          "failure-frame",
-          "black-summoner",
-          "the-worlds-finest-assassin",
-          "trapped-in-a-dating-sim",
-        ];
-
-        const sportsIds = [
-          "haikyuu", 
-          "hajime-no-ippo",
-          "welcome-to-the-ballroom", 
-          "blue-box",
-          "cinderella-gray",
-        ];
-        const mechaIds = [
-          "code-geass", 
-          "cyberpunk", 
-          "trapped-in-a-dating-sim",
-          "eighty-six",
-          "gurren-lagann",
-          "cannon-busters",
-        ];
 
         const SUB_CATEGORY_SETS = {
           romance: new Set(romanceIds),
@@ -8441,56 +8230,6 @@
             }
           });
         }
-
-        const nextSeasonMap = {
-          "haikyuu": { info: "New Movie in 2027" },
-          "frieren": { info: "3rd Season in 2027" },
-          "jjk": { info: "4th Season Announced" },
-          "solo-leveling": { info: "Two Sequels Announced" },
-          "oshi-no-ko": { info: "4th Season Announced" },
-          "cyberpunk": { info: "2nd Season in Oct 2026" },
-          "cote": { info: "5th Season Announced" },
-          "opm": { info: "3rd Season Part 2 in 2027" },
-          "shadow": { info: "New Movie in 2027" },
-          "gachiakuta": { info: "Season 2 in Production" },
-          "dan-da-dan": { info: "3rd Season in 2027" },
-          "demon-slayer": { info: "2 Movies in Production" },
-          "shangri-la-frontier": { info: "3rd Season in 2027" },
-          "blue-box": { info: "2nd Season in Oct 2026" },
-          "mashle": { info: "3rd Season in 2027" },
-          "roshidere": { info: "Season 2 in 2027" },
-          "chitose": { info: "Season 1 Part 2 in 2026" },
-          "makeine": { info: "2nd Season Announced" },
-          "tsukimichi": { info: "3rd Season in Production" },
-          "wistoria": { info: "3rd Season Announced" },
-          "healing-magic": { info: "2nd Season Announced" },
-          "i-got-a-cheat-skill": { info: "Season 2 in Production" },
-          "danmachi": { info: "Season 6 Announced" },
-          "the-worlds-finest-assassin": { info: "2nd Season in 2027" },
-          "the-apothecary-diaries": {info: "3rd Season in Oct 2026"},
-
-          //my chart
-          "black-clover": { info: "5th Season in Oct 2026" },
-          "blue-lock": { info: "3rd Season Announced" },
-          "to-be-hero-x": { info: "2nd Season Confirmed" },
-          "ramparts-of-ice": { info: "2nd Season in Oct 2026" },
-          "sentenced-hero": { info: "2nd Season in Production" },
-          "chainsaw-man": { info: "2nd Season in Production" },
-          "fate-strange-fake": { info: "2nd Season Announced" },
-          "spice-and-wolf": { info: "2nd Season Announced" },
-          "lom": { info: "2nd Season in 2027" },
-
-          // watching animes
-          "konosuba": { info: "4th Season Confirmed" },
-          "bocchi-the-rock": { info: "2nd Season in Production" },
-          "midnight-heart": { info: "2nd Season Announced" },
-          "aoashi": { info: "2nd Season in Oct 2026" },
-          "danmachi-5": { info: "Season 6 Announced" },
-
-          // others
-          "rw-demon-slayer": { info: "2 Movies in Production" },
-          "danmachi-5": { info: "Season 6 Announced" },
-        };
 
         // Cores de hover por categoria (mesmas cores usadas nos botões do drawer)
         const CATEGORY_HOVER_COLOR = {
@@ -9083,26 +8822,11 @@
         });
         drawerPanels.forEach(p => p.classList.toggle('active', p.getAttribute('data-panel') === 'ranks'));
 
-        // ── Painel "Credits", acessível pelo link no topo do drawer (não faz
-        // parte das abas Ranks/Lists/Search — nenhum botão da drawer-tabs fica
-        // "aceso" enquanto ele está visível). ──
-        function showCreditsPanel() {
-          drawerTabs.forEach(t => {
-            t.classList.remove('active');
-            t.setAttribute('aria-selected', 'false');
-          });
-          drawerPanels.forEach(p => p.classList.toggle('active', p.getAttribute('data-panel') === 'credits'));
-          if (drawerTitleEl) drawerTitleEl.textContent = 'My Attacks Have No Effect on You?';
-          updateHeaderTriggerButtons(null);
-        }
-
         function openDrawer(tab, opts) {
           if (!drawer || !backdrop) return;
           if (drawerFrame) cancelAnimationFrame(drawerFrame);
           isDrawerOpen = true;
-          if (tab === 'credits') {
-            showCreditsPanel();
-          } else if (tab) {
+          if (tab) {
             switchDrawerTab(tab, opts);
           } else {
             const activeTab = drawerTabs.find(t => t.classList.contains('active'));
@@ -9194,19 +8918,6 @@
 
           closeBtn.addEventListener('click', () => closeDrawer());
           backdrop.addEventListener('click', () => closeDrawer());
-
-          const creditsTriggerEl = document.getElementById('creditsTrigger');
-          if (creditsTriggerEl) {
-            creditsTriggerEl.addEventListener('click', (e) => {
-              e.preventDefault();
-              if (isDrawerOpen) {
-                showCreditsPanel();
-                saveDrawerStateNow();
-              } else {
-                openDrawer('credits');
-              }
-            });
-          }
 
           if (resetBtnEl) {
             resetBtnEl.addEventListener('click', () => {
