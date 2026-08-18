@@ -3483,15 +3483,34 @@
           diferença nenhuma — o layout continua idêntico ao de antes, tudo
           numa linha só. */
         .poster-lightbox:not(.simple-mode) .rank-mal-row.rank-mal-row-break .rank-mal-content {
-          max-width: 60%;
-          /* "block" (em vez de "inline-flex") faz o texto da temporada e dos
-            episódios fluir junto, como um parágrafo só. Assim, quando o
-            nome é grande e precisa quebrar linha, a quebra acontece num
-            ponto natural do texto (ex: "...The Final Chapters" / ": 2
-            episódios"), igual acontece com nomes longos tipo o do Monsters
-            do One Piece — em vez de temporada e episódios virarem duas
-            caixas flex separadas que quebram cada uma por conta própria. */
+          /* No mobile, títulos irregulares ocupam uma largura maior para que
+             "4ª temporada" não seja quebrado artificialmente em duas linhas.
+             Quando o texto inteiro não cabe, a quebra acontece naturalmente
+             entre palavras e o bloco de episódios (.rank-mal-eps) continua no
+             mesmo fluxo, podendo aparecer no começo da segunda linha. */
+          flex: 0 1 70%;
+          width: 70%;
+          max-width: 70%;
           display: block;
+          white-space: normal;
+          overflow: visible;
+          text-overflow: clip;
+          overflow-wrap: normal;
+          word-break: normal;
+          text-align: left;
+          line-height: 1.25;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-mal-row.rank-mal-row-break .rank-mal-season {
+          white-space: normal;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-mal-row.rank-mal-row-break .rank-mal-season--toggleable {
+          display: inline;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-mal-row.rank-mal-row-break .rank-mal-eps {
+          white-space: nowrap;
         }
 
         /* Quando o label já tem uma quebra manual (\n → <br
@@ -3524,6 +3543,19 @@
         .poster-lightbox:not(.simple-mode) .rank-mal-dots {
           display: block;
           align-self: center;
+        }
+
+        /* Quando o nome real (malName) é grande, ele fica na própria linha
+          (row-break) e por padrão pode se estender até a borda direita do
+          card — sobrepondo visualmente a nota da temporada, que fica na
+          linha de cima nessa mesma posição horizontal (extrema direita).
+          Reserva aqui a largura da nota (50px, ver ".rank-mal-note") + um
+          respiro (8px) pro nome real nunca "alcançar" essa faixa: em vez
+          de passar por baixo da nota, ele agora corta com reticências
+          (herdadas do "text-overflow: ellipsis" já existente em
+          ".rank-mal-realname") um pouco antes. */
+        .poster-lightbox:not(.simple-mode) .rank-mal-realname {
+          max-width: calc(100% - 58px);
         }
 
         .poster-lightbox:not(.simple-mode) .rank-mal-note {
@@ -10114,18 +10146,29 @@
             qTokens.forEach(qt => {
               let bestRatio = -1;
               tTokens.forEach(tt => {
-                if (tt.includes(qt) || (qt.length >= 3 && qt.startsWith(tt))) {
-                  // Palavra do título contém a palavra digitada (ou é prefixo
-                  // dela) — considera "match perfeito" desse token.
+                // Match exato do token inteiro sempre conta como perfeito.
+                if (tt === qt) {
                   if (bestRatio < 1) bestRatio = 1;
                   return;
                 }
+                // "Contém"/prefixo só conta como match forte quando a palavra
+                // digitada tem tamanho razoável (>=4). Sem esse mínimo,
+                // partículas curtas tipo "no", "de", "to", "wa" combinavam
+                // com qualquer palavra que as contivesse e infestavam a
+                // busca de falsos positivos (ex: "shingeki no kyojin"
+                // achando "Food Wars! Shokugeki no Soma" só pelo "no").
+                if (qt.length >= 4 && (tt.includes(qt) || (tt.length >= 4 && qt.startsWith(tt)))) {
+                  if (bestRatio < 0.95) bestRatio = 0.95;
+                  return;
+                }
                 // Senão, tolera erro de digitação proporcional ao tamanho da
-                // palavra (palavras curtas toleram menos erro).
+                // palavra (palavras curtas toleram menos erro, e o limiar
+                // geral ficou mais rígido pra não deixar match fraco contar
+                // como "cobertura" da query).
                 const maxLen = Math.max(qt.length, tt.length);
                 const dist = levenshtein(qt, tt);
                 const ratio = 1 - dist / maxLen;
-                const threshold = qt.length <= 3 ? 0.65 : 0.55;
+                const threshold = qt.length <= 3 ? 0.8 : 0.65;
                 if (ratio >= threshold && ratio > bestRatio) bestRatio = ratio;
               });
               if (bestRatio >= 0) {
@@ -10136,9 +10179,12 @@
 
             // Exige que a maioria das palavras digitadas tenha achado par —
             // evita, por ex, "one two three" combinar com qualquer título só
-            // porque uma palavra qualquer bateu por acaso.
+            // porque uma palavra qualquer bateu por acaso. Pra queries com 3+
+            // palavras a exigência é mais rígida (0.8) porque títulos/nomes
+            // MAL longos têm muitas palavras — sem isso, 2 matches de 3+
+            // palavras (uma delas uma partícula curta tipo "no") já passava.
             const coverage = matchedTokens / qTokens.length;
-            const minCoverage = qTokens.length <= 1 ? 1 : 0.6;
+            const minCoverage = qTokens.length <= 1 ? 1 : (qTokens.length === 2 ? 0.75 : 0.8);
             if (coverage < minCoverage) return 0;
 
             return Math.round(coverage * 500 - penalty * 40);
@@ -10452,6 +10498,11 @@
                       <div class="search-result-thumb-wrap">
                         <img class="search-result-thumb" data-src="${searchThumbSrc(entry.tag === 'favep' ? getFavEpThumb(entry.anime) : entry.anime.img)}" alt="" loading="lazy">
                         ${(() => {
+                          // No card de Peak Episodes (favep) não mostramos a faixa de
+                          // "nova temporada anunciada" — ela não faz sentido nesse
+                          // contexto (o card é sobre um episódio específico, não sobre
+                          // o anime como um todo).
+                          if (entry.tag === 'favep') return '';
                           const ns = nextSeasonMap[entry.anime.id];
                           if (!ns) return '';
                           const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
@@ -10604,7 +10655,18 @@
             const q = normalize(query);
             const matches = q
               ? searchIndex
-                  .map(entry => ({ entry, score: fuzzyMatchScore(query, entry.anime.searchText || entry.anime.title) }))
+                  .map(entry => {
+                    const titleScore = fuzzyMatchScore(query, entry.anime.searchText || entry.anime.title);
+                    // Também busca pelo malName do 1º item de entry.anime.mal
+                    // (nome oficial/MAL da 1ª temporada) — só o primeiro, não
+                    // os das outras temporadas, pra não gerar falsos positivos
+                    // entre animes diferentes que compartilham palavras no MAL.
+                    const firstMalName = Array.isArray(entry.anime.mal) && entry.anime.mal[0] && typeof entry.anime.mal[0].malName === 'string'
+                      ? entry.anime.mal[0].malName.trim()
+                      : '';
+                    const malScore = firstMalName ? fuzzyMatchScore(query, firstMalName) : 0;
+                    return { entry, score: Math.max(titleScore, malScore) };
+                  })
                   .filter(x => x.score > 0)
                   .sort((a, b) => b.score - a.score)
                   .slice(0, 30)

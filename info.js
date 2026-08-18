@@ -225,7 +225,7 @@ const rawAnimeData = [
       { label: "3ª temporada II", episodes: 10, note: 8, malName: "Shingeki no Kyojin Season 3 Part 2" },
       { label: "4ª temporada I", episodes: 16, note: 8, malName: "	Shingeki no Kyojin: The Final Season " },
       { label: "4ª temporada II", episodes: 12, note: 9, malName: "	Shingeki no Kyojin: The Final Season Part 2 " },
-      { label: "4ª temporada III: The Final \nChapters", episodes: 2, note: 9, malName: "Shingeki no Kyojin: The Final Season - Kanketsu-hen " },
+      { label: "4ª temporada III: The Final Chapters", episodes: 2, note: 9, malName: "Shingeki no Kyojin: The Final Season - Kanketsu-hen " },
     ],
   },
   {
