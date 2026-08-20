@@ -164,7 +164,7 @@ const rawAnimeData = [
       {
         label: "1ª temporada II",
         episodes: 12,
-        note: 8,
+        note: 9,
         malName: "Mushoku Tensei: Isekai Ittara Honki Dasu Part 2",
       },
       {
@@ -2607,3 +2607,110 @@ const nextSeasonMap = {
   "rw-demon-slayer": { info: "2 Movies in Production" },
   "danmachi-5": { info: "Season 6 Announced" },
 };
+
+// ─────────────────────────────────────────────────────────────────────────
+// Watched This Month — animes que você assistiu em cada mês, exibidos como
+// um carrossel horizontal (estilo "Assistidos" da Crunchyroll) logo no topo
+// do site, um "estante" por mês.
+//
+// Como adicionar/editar:
+// 1. O mês mais recente pode ficar em qualquer posição do array — a lista é
+//    ordenada automaticamente (mais recente primeiro) pelo campo "month"
+//    no formato "AAAA-MM" (ex: "2026-08").
+// 2. Cada anime dentro de "animes" aceita:
+//      id     -> qualquer texto único (não precisa bater com outra lista)
+//      img    -> caminho da imagem do pôster (pode reaproveitar uma imagem
+//                já usada em outra lista, ou subir uma nova pra pasta de
+//                imagens do site, ex: "watchedmonth-images/nome.webp")
+//      title  -> título mostrado embaixo do pôster
+//      tags   -> array de textos curtos mostrados embaixo do título
+//                (ex: ["Leg", "Dub"] ou ["Filme"], "12 eps", etc.) — opcional
+//      url    -> se preenchido, clicar no card abre esse link em nova aba
+//                (ex: link do MyAnimeList ou Crunchyroll) — opcional
+//      seasons   -> número de temporadas, mostrado no preview de hover — opcional
+//      episodes  -> número de episódios, mostrado no preview de hover — opcional
+//      synopsis  -> texto da sinopse, mostrado no preview de hover — opcional
+//                   (sem nota/votos e sem botões de play/salvar/+, só isso)
+// 3. Pra criar um mês novo, é só copiar um bloco { month, monthLabel, animes }
+//    e trocar os valores.
+// ─────────────────────────────────────────────────────────────────────────
+const watchedMonthlyData = [
+  {
+    month: "2025-05",
+    monthLabel: "May 2025",
+    animes: [
+      {
+        id: "watched-black-clover",
+        img: "plantowatch-images/plantowatch/black-clover.webp",
+        title: "Haikyu!!",
+        url: "https://myanimelist.net/anime/34572/Black_Clover",
+        seasons: 4,
+        episodes: 170,
+        synopsis: "Asta nasceu sem magia num mundo onde o poder mágico define tudo. Ao lado do rival Yuno, ele entra para os Black Bulls e enfrenta inimigos cada vez mais fortes na jornada para se tornar o Rei Mago.",
+      },
+      {
+        id: "watched-black-clover",
+        img: "plantowatch-images/plantowatch/black-clover.webp",
+        title: "Haikyu!!",
+        url: "https://myanimelist.net/anime/34572/Black_Clover",
+        seasons: 4,
+        episodes: 170,
+        synopsis: "Asta nasceu sem magia num mundo onde o poder mágico define tudo. Ao lado do rival Yuno, ele entra para os Black Bulls e enfrenta inimigos cada vez mais fortes na jornada para se tornar o Rei Mago.",
+      },
+      {
+        id: "watched-black-clover",
+        img: "plantowatch-images/plantowatch/black-clover.webp",
+        title: "Haikyu!!",
+        url: "https://myanimelist.net/anime/34572/Black_Clover",
+        seasons: 4,
+        episodes: 170,
+        synopsis: "Asta nasceu sem magia num mundo onde o poder mágico define tudo. Ao lado do rival Yuno, ele entra para os Black Bulls e enfrenta inimigos cada vez mais fortes na jornada para se tornar o Rei Mago.",
+      },
+      {
+        id: "watched-black-clover",
+        img: "plantowatch-images/plantowatch/black-clover.webp",
+        title: "Haikyu!!",
+        url: "https://myanimelist.net/anime/34572/Black_Clover",
+        seasons: 4,
+        episodes: 170,
+        synopsis: "Asta nasceu sem magia num mundo onde o poder mágico define tudo. Ao lado do rival Yuno, ele entra para os Black Bulls e enfrenta inimigos cada vez mais fortes na jornada para se tornar o Rei Mago.",
+      },
+      {
+        id: "watched-black-clover",
+        img: "plantowatch-images/plantowatch/black-clover.webp",
+        title: "Haikyu!!",
+        url: "https://myanimelist.net/anime/34572/Black_Clover",
+        seasons: 4,
+        episodes: 170,
+        synopsis: "Asta nasceu sem magia num mundo onde o poder mágico define tudo. Ao lado do rival Yuno, ele entra para os Black Bulls e enfrenta inimigos cada vez mais fortes na jornada para se tornar o Rei Mago.",
+      },
+      {
+        id: "watched-black-clover",
+        img: "plantowatch-images/plantowatch/black-clover.webp",
+        title: "Haikyu!!",
+        url: "https://myanimelist.net/anime/34572/Black_Clover",
+        seasons: 4,
+        episodes: 170,
+        synopsis: "Asta nasceu sem magia num mundo onde o poder mágico define tudo. Ao lado do rival Yuno, ele entra para os Black Bulls e enfrenta inimigos cada vez mais fortes na jornada para se tornar o Rei Mago.",
+      },
+      {
+        id: "watched-black-clover",
+        img: "plantowatch-images/plantowatch/black-clover.webp",
+        title: "Haikyu!!",
+        url: "https://myanimelist.net/anime/34572/Black_Clover",
+        seasons: 4,
+        episodes: 170,
+        synopsis: "Asta nasceu sem magia num mundo onde o poder mágico define tudo. Ao lado do rival Yuno, ele entra para os Black Bulls e enfrenta inimigos cada vez mais fortes na jornada para se tornar o Rei Mago.",
+      },
+      {
+        id: "watched-black-clover",
+        img: "plantowatch-images/plantowatch/black-clover.webp",
+        title: "Haikyu!!",
+        url: "https://myanimelist.net/anime/34572/Black_Clover",
+        seasons: 4,
+        episodes: 170,
+        synopsis: "Asta nasceu sem magia num mundo onde o poder mágico define tudo. Ao lado do rival Yuno, ele entra para os Black Bulls e enfrenta inimigos cada vez mais fortes na jornada para se tornar o Rei Mago.",
+      },
+    ],
+  },
+];
