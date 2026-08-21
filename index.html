@@ -5507,6 +5507,15 @@
           display: flex;
           gap: 14px;
           overflow-x: auto;
+          /* Sem isso, "overflow-x: auto" sozinho faz o navegador computar
+             "overflow-y" implicitamente como "auto" também (regra do spec
+             de CSS: um eixo != visible força o outro a sair de "visible").
+             Como o hover dos cards (translateY + scale) aumenta um pouco
+             a altura do conteúdo, isso criava uma área mínima de scroll
+             vertical invisível dentro do track — e o mouse wheel ficava
+             preso tentando rolar esse eixo Y interno em vez de rolar a
+             página, sempre que o cursor estava sobre um card. */
+          overflow-y: hidden;
           /* "mandatory" (em vez de "proximity") garante que, depois de um
              swipe no touch, o carrossel sempre volta a encaixar exatamente
              num card — com "proximity" o navegador às vezes deixa uns
@@ -5526,7 +5535,6 @@
         .watched-month-card {
           flex: 0 0 calc((100% - 5 * 14px) / 6);
           scroll-snap-align: start;
-          scroll-snap-stop: always;
           display: block;
           text-decoration: none;
           color: inherit;
@@ -5896,9 +5904,6 @@
           transform: translateX(0);
         }
 
-        @media (hover: none), (max-width: 760px) {
-          .watched-month-preview { display: none !important; }
-        }
       </style>
 
     </head>
@@ -9942,9 +9947,20 @@
 
           function renderWatchedMonthCard(anime) {
             const escapeHtml = escapeHtmlWatchedMonth;
+            const ns = (typeof nextSeasonMap !== 'undefined') ? nextSeasonMap[anime.id] : null;
+            let stripHtml = '';
+            if (ns && ns.info) {
+              const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
+              const isMulti = nsLines.length > 1;
+              stripHtml = `
+                  <div class="announce-strip"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
+                    <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
+                  </div>`;
+            }
             const inner = `
               <div class="watched-month-card-poster">
                 <img src="${escapeHtml(anime.img)}" alt="${escapeHtml(anime.title)}" loading="lazy">
+                ${stripHtml}
               </div>
               <div class="watched-month-card-title">${escapeHtml(anime.title)}</div>
             `;
@@ -9980,6 +9996,17 @@
             document.body.appendChild(el);
             el.addEventListener('mouseenter', () => { clearTimeout(watchedMonthPreviewHideTimer); });
             el.addEventListener('mouseleave', hideWatchedMonthPreview);
+            // O preview é position:fixed, solto direto no <body> (fora do
+            // carrossel), então enquanto o mouse está sobre ele é ELE quem
+            // recebe o evento de wheel — e como não tem altura própria pra
+            // rolar, o navegador não acha um ancestral scrollável e a
+            // página inteira trava (não dá pra rolar pra cima/baixo
+            // enquanto o mouse estiver em cima de um card). Repassa o
+            // delta manualmente pro scroll da página pra isso nunca travar.
+            el.addEventListener('wheel', (e) => {
+              window.scrollBy(0, e.deltaY);
+              e.preventDefault();
+            }, { passive: false });
             // Ícones de lista (canto inferior esquerdo) navegam pra categoria
             // correspondente em vez de abrir o link do anime — precisa
             // interceptar o clique antes que o <a> do preview atue.
@@ -10155,12 +10182,14 @@
               // que faz sentido colar o sufixo "Episódio(s)".
               const isNumericEpisodes = typeof anime.episodes === 'number';
               const episodesText = isNumericEpisodes
-                ? `${anime.episodes} Episódio${anime.episodes === 1 ? '' : 's'}`
+                ? `${anime.episodes} episódio${anime.episodes === 1 ? '' : 's'}`
                 : `${anime.episodes}`;
               metaParts.push({ html: escapeHtmlWatchedMonth(episodesText) });
             }
             const metaEl = el.querySelector('.watched-month-preview-meta');
-            metaEl.innerHTML = metaParts.map(part => `<span class="watched-month-preview-meta-badge">${part.html}</span>`).join('');
+            metaEl.innerHTML = metaParts.length
+              ? `<span class="watched-month-preview-meta-badge">${metaParts.map(part => part.html).join(': ')}</span>`
+              : '';
             metaEl.style.display = metaParts.length ? '' : 'none';
 
             const badgeEl = el.querySelector('.watched-month-preview-badge');
@@ -10184,27 +10213,63 @@
             el.classList.add('is-visible');
           }
 
+          function hideWatchedMonthPreviewNow() {
+            clearTimeout(watchedMonthPreviewHideTimer);
+            if (watchedMonthPreviewEl) watchedMonthPreviewEl.classList.remove('is-visible');
+            if (watchedMonthActiveCard) {
+              watchedMonthActiveCard.classList.remove('is-previewing');
+              watchedMonthActiveCard = null;
+            }
+            if (watchedMonthActiveCarousel) {
+              watchedMonthActiveCarousel.classList.remove('has-preview');
+              watchedMonthActiveCarousel = null;
+            }
+          }
+
           function hideWatchedMonthPreview() {
-            watchedMonthPreviewHideTimer = setTimeout(() => {
-              if (watchedMonthPreviewEl) watchedMonthPreviewEl.classList.remove('is-visible');
-              if (watchedMonthActiveCard) {
-                watchedMonthActiveCard.classList.remove('is-previewing');
-                watchedMonthActiveCard = null;
-              }
-              if (watchedMonthActiveCarousel) {
-                watchedMonthActiveCarousel.classList.remove('has-preview');
-                watchedMonthActiveCarousel = null;
-              }
-            }, 60);
+            watchedMonthPreviewHideTimer = setTimeout(hideWatchedMonthPreviewNow, 60);
           }
 
           function initWatchedMonthPreviewHovers(wrap) {
-            if (!window.matchMedia('(hover: hover)').matches) return; // não ativa em touch
+            const hasHover = window.matchMedia('(hover: hover)').matches;
             wrap.querySelectorAll('.watched-month-card[data-anime-id]').forEach((card) => {
-              card.addEventListener('mouseenter', () => showWatchedMonthPreview(card));
-              card.addEventListener('mouseleave', hideWatchedMonthPreview);
+              if (hasHover) {
+                card.addEventListener('mouseenter', () => showWatchedMonthPreview(card));
+                card.addEventListener('mouseleave', hideWatchedMonthPreview);
+              } else {
+                // Touch: o 1º toque revela o preview (em vez de já navegar);
+                // como o card já fica marcado "is-previewing" depois disso,
+                // um 2º toque passa direto (sem preventDefault) e segue o
+                // comportamento normal do link/card.
+                card.addEventListener('click', (e) => {
+                  if (!card.classList.contains('is-previewing')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showWatchedMonthPreview(card);
+                  }
+                });
+              }
             });
           }
+
+          // Toque fora do card ativo ou do próprio preview fecha o preview
+          // (equivalente ao mouseleave, que não existe em telas touch).
+          document.addEventListener('click', (e) => {
+            if (!watchedMonthActiveCard) return;
+            if (e.target.closest('.watched-month-card') || e.target.closest('.watched-month-preview')) return;
+            hideWatchedMonthPreview();
+          });
+
+          // O preview é position:fixed e sua posição é calculada uma única
+          // vez (no hover). Rolar a página verticalmente move o card mas
+          // não o preview, então ele "descola" do pôster. Já existe um
+          // listener de scroll horizontal por track pra esconder o preview
+          // nesse caso — aqui cobre o scroll vertical da página inteira
+          // (capture: true pra pegar scroll de qualquer container, não só
+          // da window).
+          window.addEventListener('scroll', () => {
+            if (watchedMonthActiveCard) hideWatchedMonthPreviewNow();
+          }, { passive: true, capture: true });
 
           function renderWatchedMonthSection(monthData, idx) {
             const rowId = `watchedMonthRow-${idx}`;
@@ -10278,7 +10343,7 @@
                   }
                 });
                 track.addEventListener('scroll', () => {
-                  hideWatchedMonthPreview();
+                  hideWatchedMonthPreviewNow();
                   updateWatchedMonthArrows(track);
                 });
                 if ('ResizeObserver' in window) {
@@ -10296,6 +10361,7 @@
             updateDrawerCounts();
             updateURLForCategory(currentCategory);
             loadMoreContainer.style.display = 'none';
+            initAnnounceStrips();
             if (window.__refreshScrollFab) window.__refreshScrollFab();
           }
 
@@ -12114,7 +12180,7 @@
             const SWIPE_MAX_TIME = 600;      // ms
 
             document.addEventListener('touchstart', (e) => {
-              if (e.target.closest('.category-drawer') || e.target.closest('.filter-wrapper') || e.target.closest('.fav-ep-media')) return;
+              if (e.target.closest('.category-drawer') || e.target.closest('.filter-wrapper') || e.target.closest('.fav-ep-media') || e.target.closest('.watched-month-carousel')) return;
               const lightboxEl = document.getElementById('posterLightbox');
               if (lightboxEl && lightboxEl.classList.contains('open')) return;
               const favEpLightboxEl = document.getElementById('favEpLightbox');
