@@ -5580,6 +5580,22 @@
           box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
         }
 
+        /* Enquanto o preview flutuante (position:fixed) está ativo em cima
+           do card, o pôster NÃO pode manter o zoom/translate do :hover — o
+           preview é dimensionado com base no retângulo "normal" (sem
+           transform) do card via getBoundingClientRect(), que não reflete
+           esse transform do filho (CSS transform não muda o layout box).
+           Resultado: durante a transição do :hover, o pôster ficava um
+           pouco maior que a área coberta pelo preview e uma fina fatia da
+           imagem original (sem blur) escapava pela borda. Forçar o
+           transform de volta ao normal, sem transição, assim que
+           .is-previewing é aplicado (no mesmo instante em que o JS mostra
+           o preview) elimina essa sobra. */
+        .watched-month-card.is-previewing .watched-month-card-poster {
+          transform: none !important;
+          transition: none !important;
+        }
+
         .watched-month-card-poster img {
           width: 100%;
           height: 100%;
@@ -5698,6 +5714,14 @@
           .watched-month-arrow { display: none; }
           .watched-month-header { padding: 0 0 0 4px; }
           .watched-month-track { padding: 2px 4px 8px; gap: 10px; scroll-padding-left: 4px; }
+          /* Sem as setas (escondidas acima, já que no mobile a navegação é
+             por swipe), o fade escurecido que ficava atrás delas (pensado só
+             pra dar contraste ao ícone da seta) sobra sem função — vira só
+             uma mancha opaca no canto do pôster. Remove o fade também. */
+          .watched-month-carousel::before,
+          .watched-month-carousel::after {
+            opacity: 0;
+          }
         }
 
         /* ── Preview flutuante estilo Crunchyroll (hover no card de "Watched
@@ -9942,8 +9966,19 @@
             return escaped.replace(/\b([IVXLCDM]+)$/, '<span style="font-family: \'Times New Roman\', Times, serif;">$1</span>');
           }
 
-          // Lookup usado pelo preview de hover estilo Crunchyroll (id -> dados do anime).
+          // Lookup usado pelo preview de hover estilo Crunchyroll.
+          // IMPORTANTE: não pode ser indexado pelo "id" do anime, porque o
+          // mesmo id se repete em várias entradas (cada temporada/filme do
+          // mesmo anime usa o mesmo id, só mudando title/synopsis/episodes).
+          // Se a chave fosse o id, cada card novo sobrescreveria os dados do
+          // card anterior com o mesmo id, e todos os cards daquele anime
+          // acabariam mostrando o preview do último renderizado. Por isso
+          // usamos uma chave sequencial única por card (data-preview-key)
+          // só para o preview; o data-anime-id original continua existindo
+          // à parte, para a navegação por categoria (que precisa do id
+          // compartilhado mesmo).
           const watchedMonthPreviewLookup = {};
+          let watchedMonthPreviewSeq = 0;
 
           function renderWatchedMonthCard(anime) {
             const escapeHtml = escapeHtmlWatchedMonth;
@@ -9964,11 +9999,13 @@
               </div>
               <div class="watched-month-card-title">${escapeHtml(anime.title)}</div>
             `;
-            if (anime.id) watchedMonthPreviewLookup[anime.id] = anime;
+            const previewKey = `wm${watchedMonthPreviewSeq++}`;
+            watchedMonthPreviewLookup[previewKey] = anime;
             const idAttr = anime.id ? ` data-anime-id="${escapeHtml(anime.id)}"` : '';
+            const previewKeyAttr = ` data-preview-key="${previewKey}"`;
             return anime.url
-              ? `<a class="watched-month-card"${idAttr} href="${escapeHtml(anime.url)}" target="_blank" rel="noopener">${inner}</a>`
-              : `<div class="watched-month-card"${idAttr}>${inner}</div>`;
+              ? `<a class="watched-month-card"${idAttr}${previewKeyAttr} href="${escapeHtml(anime.url)}" target="_blank" rel="noopener">${inner}</a>`
+              : `<div class="watched-month-card"${idAttr}${previewKeyAttr}>${inner}</div>`;
           }
 
           // ── Preview flutuante ao passar o mouse (estilo Crunchyroll), sem nota
@@ -9978,6 +10015,40 @@
           let watchedMonthPreviewHideTimer = null;
           let watchedMonthActiveCard = null;
           let watchedMonthActiveCarousel = null;
+          // Enquanto a página rola com o mouse parado, o navegador recalcula
+          // qual elemento está "sob o cursor" e dispara mouseenter/mouseleave
+          // sintéticos pros cards que passam por baixo dele — o que fazia o
+          // preview trocar de anime (ou até piscar) sozinho s recalcular
+          // durante o scroll. Enquanto watchedMonthSuppressHoverUntil (um
+          // timestamp) não passar, ignoramos esses eventos de hover vindos
+          // dos cards, mantendo o preview grudado no card que o usuário
+          // realmente colocou o mouse em cima. Esses eventos sintéticos são
+          // ignorados; só reposicionamos (ver scroll listener mais abaixo).
+          let watchedMonthSuppressHoverUntil = 0;
+          function watchedMonthMarkScrolling() {
+            watchedMonthSuppressHoverUntil = Date.now() + 250;
+          }
+
+          // Diferencia um "mouseenter" de verdade (o usuário moveu o cursor
+          // até o card) de um sintético (disparado pelo navegador quando o
+          // conteúdo rola por baixo do cursor PARADO). Sem isso, a janela de
+          // supressão acima (250ms após qualquer scroll) também engolia
+          // hovers genuínos — por exemplo, rolar a página até o carrossel e
+          // já ir passando o mouse num card em seguida, o caso mais comum de
+          // uso, ficava sem preview instantâneo até tirar e recolocar o
+          // mouse. Um "mousemove" real só existe quando o cursor de fato se
+          // deslocou; scroll por wheel/teclado/barra não dispara isso.
+          let watchedMonthLastRealMouseMoveTs = 0;
+          document.addEventListener('mousemove', () => {
+            watchedMonthLastRealMouseMoveTs = Date.now();
+          }, { passive: true });
+          function watchedMonthIsSyntheticHover() {
+            if (Date.now() >= watchedMonthSuppressHoverUntil) return false;
+            // Passou pouquíssimo tempo desde um movimento real do mouse ->
+            // é um hover genuíno acontecendo durante/logo após o scroll,
+            // não um recálculo do navegador com o cursor parado.
+            return (Date.now() - watchedMonthLastRealMouseMoveTs) > 50;
+          }
 
           function getWatchedMonthPreviewEl() {
             if (watchedMonthPreviewEl) return watchedMonthPreviewEl;
@@ -10003,8 +10074,24 @@
             // página inteira trava (não dá pra rolar pra cima/baixo
             // enquanto o mouse estiver em cima de um card). Repassa o
             // delta manualmente pro scroll da página pra isso nunca travar.
+            // Importante: quem realmente rola aqui é o <body> (ele tem
+            // overflow-y: auto próprio), não a window/<html> — por isso
+            // usamos document.body.scrollBy e não window.scrollBy, que não
+            // tinha efeito nenhum nesse layout.
             el.addEventListener('wheel', (e) => {
-              window.scrollBy(0, e.deltaY);
+              // e.deltaY vem em unidades diferentes dependendo do
+              // deltaMode do evento: 0 = pixels (a maioria dos trackpads
+              // e Chrome/Windows), 1 = linhas (comum em mouse comum no
+              // Firefox — cada "clique" da rodinha reporta só ~3), 2 =
+              // página inteira. Como repassamos o valor puro pro
+              // scrollBy, no modo "linha" cada scroll do mouse só movia
+              // ~3px, obrigando a girar a rodinha um monte pra descer —
+              // por isso escalamos aqui pro equivalente em pixels antes
+              // de repassar, igualando à sensação do scroll nativo.
+              let dy = e.deltaY;
+              if (e.deltaMode === 1) dy *= 16;
+              else if (e.deltaMode === 2) dy *= window.innerHeight;
+              document.body.scrollBy(0, dy);
               e.preventDefault();
             }, { passive: false });
             // Ícones de lista (canto inferior esquerdo) navegam pra categoria
@@ -10144,8 +10231,62 @@
             el.style.top = `${Math.floor(rect.top) - 2}px`;
           }
 
+          // Enquanto tem um preview aberto, mantém a posição sincronizada com
+          // o card via requestAnimationFrame em vez de depender só do evento
+          // "scroll". O evento "scroll" pode disparar um pouco depois da
+          // repintura real do navegador durante rolagens rápidas — nesse
+          // intervalo o preview (position:fixed) fica alguns pixels
+          // desalinhado do pôster de verdade por trás dele, e como o overlay
+          // com blur só cobre a área do preview, sobra uma fina tira da
+          // imagem original (sem blur) aparecendo na borda. Repetir o
+          // reposicionamento a cada frame elimina esse atraso.
+          let watchedMonthRafId = null;
+          // Timestamp do último evento de scroll real enquanto um preview
+          // está ativo. O sync loop (abaixo) só continua rodando enquanto
+          // esse timestamp for recente — ou seja, só enquanto a página
+          // está de fato rolando. Antes ele rodava pra sempre (a cada
+          // frame, 60x/s) só por ter um preview aberto, mesmo com o mouse
+          // parado, recalculando getBoundingClientRect + reescrevendo
+          // left/top/width/height do preview (que tem backdrop-filter,
+          // caro de repintar). Isso somava trabalho em cima do scroll da
+          // página e deixava a rolagem pesada sempre que um card estava
+          // em hover. Agora o loop se autoencerra ~120ms depois do último
+          // scroll e só é reativado quando um novo scroll acontece.
+          let watchedMonthLastScrollTs = 0;
+
+          function watchedMonthSyncLoop() {
+            if (!watchedMonthActiveCard) {
+              watchedMonthRafId = null;
+              return;
+            }
+            const rect = watchedMonthActiveCard.getBoundingClientRect();
+            const viewportH = window.innerHeight || document.documentElement.clientHeight;
+            if (rect.bottom <= 0 || rect.top >= viewportH) {
+              hideWatchedMonthPreviewNow();
+              return;
+            }
+            positionWatchedMonthPreview(watchedMonthActiveCard);
+            if (Date.now() - watchedMonthLastScrollTs < 120) {
+              watchedMonthRafId = requestAnimationFrame(watchedMonthSyncLoop);
+            } else {
+              watchedMonthRafId = null;
+            }
+          }
+
+          function watchedMonthStartSyncLoop() {
+            if (watchedMonthRafId != null) return;
+            watchedMonthRafId = requestAnimationFrame(watchedMonthSyncLoop);
+          }
+
+          function watchedMonthStopSyncLoop() {
+            if (watchedMonthRafId != null) {
+              cancelAnimationFrame(watchedMonthRafId);
+              watchedMonthRafId = null;
+            }
+          }
+
           function showWatchedMonthPreview(card) {
-            const anime = watchedMonthPreviewLookup[card.dataset.animeId];
+            const anime = watchedMonthPreviewLookup[card.dataset.previewKey];
             if (!anime) return;
             clearTimeout(watchedMonthPreviewHideTimer);
             if (watchedMonthActiveCard && watchedMonthActiveCard !== card) {
@@ -10211,10 +10352,12 @@
 
             positionWatchedMonthPreview(card);
             el.classList.add('is-visible');
+            watchedMonthStartSyncLoop();
           }
 
           function hideWatchedMonthPreviewNow() {
             clearTimeout(watchedMonthPreviewHideTimer);
+            watchedMonthStopSyncLoop();
             if (watchedMonthPreviewEl) watchedMonthPreviewEl.classList.remove('is-visible');
             if (watchedMonthActiveCard) {
               watchedMonthActiveCard.classList.remove('is-previewing');
@@ -10232,10 +10375,16 @@
 
           function initWatchedMonthPreviewHovers(wrap) {
             const hasHover = window.matchMedia('(hover: hover)').matches;
-            wrap.querySelectorAll('.watched-month-card[data-anime-id]').forEach((card) => {
+            wrap.querySelectorAll('.watched-month-card[data-preview-key]').forEach((card) => {
               if (hasHover) {
-                card.addEventListener('mouseenter', () => showWatchedMonthPreview(card));
-                card.addEventListener('mouseleave', hideWatchedMonthPreview);
+                card.addEventListener('mouseenter', () => {
+                  if (watchedMonthIsSyntheticHover()) return;
+                  showWatchedMonthPreview(card);
+                });
+                card.addEventListener('mouseleave', () => {
+                  if (watchedMonthIsSyntheticHover()) return;
+                  hideWatchedMonthPreview();
+                });
               } else {
                 // Touch: o 1º toque revela o preview (em vez de já navegar);
                 // como o card já fica marcado "is-previewing" depois disso,
@@ -10260,16 +10409,52 @@
             hideWatchedMonthPreview();
           });
 
-          // O preview é position:fixed e sua posição é calculada uma única
-          // vez (no hover). Rolar a página verticalmente move o card mas
-          // não o preview, então ele "descola" do pôster. Já existe um
-          // listener de scroll horizontal por track pra esconder o preview
-          // nesse caso — aqui cobre o scroll vertical da página inteira
-          // (capture: true pra pegar scroll de qualquer container, não só
-          // da window).
+          // O preview é position:fixed e sua posição é calculada a partir do
+          // pôster (ver positionWatchedMonthPreview). Rolar a página verticalmente
+          // move o card mas não atualiza o preview sozinho — ele "descolaria" do
+          // pôster se nada fosse feito. Em vez de esconder o preview a cada
+          // scroll (o que fazia ele sumir e reaparecer toda hora ao subir/descer),
+          // aqui reposicionamos o preview pra seguir o card em tempo real,
+          // mantendo-o aberto enquanto o usuário rola a página. Só escondemos de
+          // fato quando o card sai completamente da área visível (rolou pra fora
+          // da tela). Usa capture:true pra pegar o scroll de qualquer container
+          // que role (o <body>, no layout atual, mas também cobre outros
+          // possíveis containers scrolláveis).
+          // Marca que a página está rolando pra suprimir hovers sintéticos
+          // disparados pelos cards durante o scroll (ver
+          // watchedMonthSuppressHoverUntil, no início do bloco de preview).
+          // Reposicionar/esconder o preview em si já é feito continuamente
+          // pelo loop de requestAnimationFrame (watchedMonthSyncLoop) acima.
           window.addEventListener('scroll', () => {
-            if (watchedMonthActiveCard) hideWatchedMonthPreviewNow();
+            if (!watchedMonthActiveCard) return;
+            watchedMonthMarkScrolling();
+            watchedMonthLastScrollTs = Date.now();
+            watchedMonthStartSyncLoop();
           }, { passive: true, capture: true });
+
+          // Se um card do carrossel (que é um <a>, focável) estiver com foco
+          // de teclado — por ter sido clicado antes, tabulado, etc. — apertar
+          // as setas ←/→ faz o navegador rolar o track HORIZONTALMENTE de
+          // forma nativa (scroll-into-view do elemento focado), sem passar
+          // pelo clique do botão de seta. Isso ainda dispara o evento
+          // "scroll" do track (que já chama hideWatchedMonthPreviewNow via
+          // o listener registrado em renderWatchedMonthPanel), só que o
+          // preview (position:fixed, calculado a partir do card no momento
+          // do hover) pode ficar visualmente "preso" na posição antiga por
+          // um instante enquanto o navegador ainda está processando o
+          // scroll nativo — e como o card rolado pode nem ser o mesmo que
+          // está com o preview aberto (o foco pode estar em outro card, de
+          // outra fileira/mês, diferente do que o mouse está sobre agora),
+          // o preview antigo passa a sobrepor visualmente conteúdo de outra
+          // lista. Pra evitar essa sobreposição, fecha o preview de
+          // imediato assim que uma tecla de seta é pressionada, em vez de
+          // esperar o evento de scroll resolver isso sozinho.
+          document.addEventListener('keydown', (e) => {
+            if (!watchedMonthActiveCard) return;
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+              hideWatchedMonthPreviewNow();
+            }
+          }, { capture: true });
 
           function renderWatchedMonthSection(monthData, idx) {
             const rowId = `watchedMonthRow-${idx}`;
@@ -10366,6 +10551,18 @@
           }
 
           function render() {
+            // O preview flutuante do "Month by Month" (.watched-month-preview)
+            // fica em position:fixed direto no <body>, fora do container que
+            // este render() recria — por isso, ao trocar de lista (swipe, menu,
+            // botão de reset, URL/hash etc.) enquanto o preview estava aberto,
+            // ele não era removido e ficava sobreposto por cima da lista nova.
+            // Fecha explicitamente aqui, um único lugar por onde toda troca de
+            // categoria passa, em vez de repetir isso em cada ponto que muda
+            // currentCategory.
+            if (typeof hideWatchedMonthPreviewNow === 'function') {
+              hideWatchedMonthPreviewNow();
+            }
+
             if (currentCategory === 'watchedMonth') {
               renderWatchedMonthPanel();
               return;
