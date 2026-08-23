@@ -1758,7 +1758,7 @@
         }
 
         .poster-lightbox img {
-          width: min(38vw, 460px);
+          width: min(38vw, 500px);
           height: min(86vh, 680px);
           border-radius: 16px;
           box-shadow: 0 30px 80px rgba(0,0,0,0.6);
@@ -6852,7 +6852,7 @@
               if (!url) return '';
               return `
                 <a class="rank-mal-label rank-mal-label--anime-planet" href="${url}" target="_blank" rel="noopener">
-                  <span class="watch-now-more-info-text">MORE ABOUT</span>
+                  <span class="watch-now-more-info-text">LINKS ABOUT</span>
                   <img class="anime-planet-btn-logo" src="assets/credits-webp/anime-planet.webp" alt="Anime-Planet" loading="lazy" decoding="async">
                   ${EXTERNAL_LINK_ICON_SVG}
                 </a>`;
@@ -9635,6 +9635,13 @@
               const watchedAnnounced = animeData.filter(a => nextSeasonMap[a.id] && !planIds.has(a.id));
               const watchingAnnounced = watchingData.filter(a => nextSeasonMap[a.id]);
               const planAnnounced = planToWatchData.filter(a => nextSeasonMap[a.id]);
+              // Ordena pela mesma sequência das chaves em nextSeasonMap, em vez
+              // da ordem original de animeData/watchingData/planToWatchData.
+              const nextSeasonOrder = Object.keys(nextSeasonMap);
+              const byNextSeasonOrder = (a, b) => nextSeasonOrder.indexOf(a.id) - nextSeasonOrder.indexOf(b.id);
+              watchedAnnounced.sort(byNextSeasonOrder);
+              watchingAnnounced.sort(byNextSeasonOrder);
+              planAnnounced.sort(byNextSeasonOrder);
               return [...watchedAnnounced, ...watchingAnnounced, ...planAnnounced];
             } else if (mode === 'favEpisodes') {
               return favoriteEpisodesData;
