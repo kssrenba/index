@@ -1660,7 +1660,7 @@
           align-items: center;
           justify-content: center;
           padding: 24px;
-          background: rgba(0,0,0,0.55);
+          background: rgba(0,0,0,0.75);
           backdrop-filter: blur(6px);
           -webkit-backdrop-filter: blur(6px);
           opacity: 0;
@@ -1703,7 +1703,7 @@
           min-width: 140vw;
           min-height: 140vh;
           object-fit: cover;
-          filter: blur(70px) saturate(1.6) brightness(0.7);
+          filter: blur(70px) saturate(1.6) brightness(0.5);
           transform: translate(-50%, -50%) scale(1.4);
         }
 
@@ -1711,7 +1711,7 @@
           content: "";
           position: absolute;
           inset: 0;
-          background: radial-gradient(ellipse 130% 120% at 50% 45%, transparent 0%, rgba(0,0,0,0.25) 100%);
+          background: radial-gradient(ellipse 130% 120% at 50% 45%, transparent 0%, rgba(0,0,0,0.4) 100%);
         }
 
         /* No layout mobile em grid, a linha das tags/badges e a ficha técnica
@@ -1720,7 +1720,7 @@
           do gradiente e vira um bloco escuro que destoa do resto do blur. */
         @media (max-width: 760px) {
           .poster-lightbox-ambient::after {
-            background: radial-gradient(ellipse 140% 160% at 50% 38%, transparent 0%, rgba(0,0,0,0.22) 100%);
+            background: radial-gradient(ellipse 140% 160% at 50% 38%, transparent 0%, rgba(0,0,0,0.4) 100%);
           }
         }
 
@@ -8608,11 +8608,11 @@
 
           function getModeFromHash() {
             const h = (location.hash || '').replace('#', '').trim();
-            if (!h) return 'all';
+            if (!h) return 'watching';
             for (const [mode, slug] of Object.entries(hashMap)) {
               if (slug && slug === h) return mode;
             }
-            return 'all';
+            return 'watching';
           }
 
           function makeFallbackLabel(title) {
@@ -10963,22 +10963,73 @@
               bodyEl.style.scrollBehavior = prevBodyBehavior;
             };
 
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            // Confere se o card realmente ficou visível: se algo atrapalhou a
-            // rolagem acima, tenta de novo (dessa vez instantâneo, sem chance de
-            // ser interrompido) em vez de deixar o usuário achando que o clique
-            // não fez nada.
-            setTimeout(() => {
+            const isLandedOnTarget = () => {
               const rect = targetEl.getBoundingClientRect();
               const viewportH = window.innerHeight || document.documentElement.clientHeight;
               const centerY = rect.top + rect.height / 2;
-              const landedOk = centerY > 0 && centerY < viewportH;
-              if (!landedOk) {
-                targetEl.scrollIntoView({ behavior: 'auto', block: 'center' });
+              return centerY > 0 && centerY < viewportH;
+            };
+
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Assim como em restoreScrollPosition(), uma checagem única não basta
+            // aqui: clicar num resultado de busca pode trocar de categoria E
+            // expandir a lista inteira de uma vez (triggerExpand), revelando
+            // dezenas de cards com pôsteres carregando de forma assíncrona.
+            // Como a página desliga o "overflow-anchor" (ver comentário em
+            // html,body no <style>, feito pra evitar OUTRO bug de scroll), o
+            // navegador não recompensa sozinho a altura que essas imagens vão
+            // adicionando acima/abaixo do card enquanto a rolagem suave ainda
+            // está em andamento — então uma única correção aos 550ms quase
+            // sempre chega cedo demais (ou tarde demais) e o card acaba saindo
+            // do lugar de novo logo depois, sem mais nenhuma correção. Por
+            // isso, em vez de checar uma vez, repete a correção por um tempo
+            // e também re-corrige quando cada imagem pendente termina de
+            // carregar (mesma lógica de restoreScrollPosition()).
+            let __landAttempts = 0;
+            const __maxLandAttempts = 20; // ~4s de correções (200ms cada)
+            const __landIntervalId = setInterval(() => {
+              __landAttempts++;
+              if (!document.body.contains(targetEl)) {
+                clearInterval(__landIntervalId);
+                restoreScrollBehavior();
+                return;
               }
-              restoreScrollBehavior();
-            }, 550);
+              if (!isLandedOnTarget()) {
+                targetEl.scrollIntoView({ behavior: 'auto', block: 'center' });
+              } else if (__landAttempts > 3) {
+                // Já estabilizado por algumas checagens seguidas: encerra cedo.
+                clearInterval(__landIntervalId);
+                restoreScrollBehavior();
+                return;
+              }
+              if (__landAttempts >= __maxLandAttempts) {
+                clearInterval(__landIntervalId);
+                restoreScrollBehavior();
+              }
+            }, 200);
+
+            // Também recorrige quando as imagens ainda pendentes na lista
+            // terminarem de carregar, já que é isso que mais desloca o card.
+            const __pendingImgs = Array.from(document.querySelectorAll('#animeRankingList img'))
+              .filter(img => !img.complete);
+            if (__pendingImgs.length) {
+              let __remaining = __pendingImgs.length;
+              const __onImgDone = () => {
+                __remaining--;
+                if (document.body.contains(targetEl) && !isLandedOnTarget()) {
+                  targetEl.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+                if (__remaining <= 0) {
+                  clearInterval(__landIntervalId);
+                  restoreScrollBehavior();
+                }
+              };
+              __pendingImgs.forEach(img => {
+                img.addEventListener('load', __onImgDone, { once: true });
+                img.addEventListener('error', __onImgDone, { once: true });
+              });
+            }
 
             document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));        
             setTimeout(() => {
