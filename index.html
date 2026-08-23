@@ -8919,6 +8919,17 @@
                 .replace(/[-–:]?\s*Progress:\s*(?:\d+|-)\s*\/\s*(?:\d+|-)\s*/i, '')
                 .trim();
             }
+            // OVAs não aparecem no "info" do card (só na barra de progresso/
+            // posterlightbox) — remove qualquer linha (separada por <br>) que
+            // mencione "OVA" antes de montar o texto exibido no card.
+            if (remainingInfo) {
+              remainingInfo = remainingInfo
+                .split(/<\/br>|<br\s*\/?>/i)
+                .map(s => s.trim())
+                .filter(Boolean)
+                .filter(line => !/\bOVA\b/i.test(line))
+                .join('<br>');
+            }
             const topRankClass = rankIndex === 0 ? ' rank-gold'
               : rankIndex === 1 ? ' rank-silver'
               : rankIndex === 2 ? ' rank-bronze'
@@ -9016,7 +9027,7 @@
                       const movieIdxSet = new Set(Array.isArray(anime.movieSeasons) ? anime.movieSeasons : []);
                       let seasonNum = 0;
                       const seasonLabels = anime.seasons.map((epCount, idx) => {
-                        if (movieIdxSet.has(idx)) return { isMovie: true, label: 'Filme' };
+                        if (movieIdxSet.has(idx)) return { isMovie: true, label: (anime.movieLabels && anime.movieLabels[idx]) || 'Filme' };
                         seasonNum++;
                         return { isMovie: false, label: `${seasonNum}ª temporada` };
                       });
@@ -10206,6 +10217,29 @@
             }).join('');
           }
 
+          // Categorias de "MyRanks" onde faz sentido mostrar a posição do
+          // anime dentro da lista (ex: "#3 Romance Anime"). As demais
+          // (Watching Now, Plan to Watch, Announced Sequels) não são listas
+          // ordenadas por ranking, então ficam sem número — mesma convenção
+          // já usada em getMembershipTags/RANK_POSITION_KEYS.
+          const WATCHED_MONTH_RANK_MODES = new Set(['all', 'romance', 'isekai', 'sports', 'mecha']);
+
+          function getWatchedMonthListPosition(mode, animeId) {
+            if (WATCHED_MONTH_RANK_MODES.has(mode)) {
+              const list = (typeof getFilteredData === 'function') ? getFilteredData(mode) : [];
+              const idx = list.findIndex(a => a.id === animeId);
+              return idx === -1 ? null : idx + 1;
+            }
+            if (mode === 'favEpisodes' && typeof favoriteEpisodesData !== 'undefined') {
+              const favIdx = favoriteEpisodesData.findIndex(e => e.id === animeId);
+              if (favIdx === -1) return null;
+              return (typeof computeFavEpisodeRanks === 'function')
+                ? computeFavEpisodeRanks(favoriteEpisodesData)[favIdx]
+                : favIdx + 1;
+            }
+            return null;
+          }
+
           function renderWatchedMonthPreviewLists(el, anime) {
             const wrap = el.querySelector('.watched-month-preview-lists');
             if (!wrap) return;
@@ -10213,7 +10247,9 @@
             wrap.innerHTML = modes.map((mode) => {
               const meta = WATCHED_MONTH_LIST_META[mode];
               if (!meta) return '';
-              return `<button type="button" class="watched-month-preview-list-icon" data-list-mode="${mode}" style="--list-color: ${meta.color};" aria-label="${meta.label}"><span class="wml-icon">${meta.icon}</span><span class="wml-label-wrap"><span class="wml-label">${buildWatchedMonthLetterSpans(meta.label)}</span></span></button>`;
+              const position = getWatchedMonthListPosition(mode, anime.id);
+              const labelText = position != null ? `#${position} ${meta.label}` : meta.label;
+              return `<button type="button" class="watched-month-preview-list-icon" data-list-mode="${mode}" style="--list-color: ${meta.color};" aria-label="${labelText}"><span class="wml-icon">${meta.icon}</span><span class="wml-label-wrap"><span class="wml-label">${buildWatchedMonthLetterSpans(labelText)}</span></span></button>`;
             }).join('');
           }
 
