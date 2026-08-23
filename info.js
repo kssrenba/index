@@ -1227,7 +1227,7 @@ const rawWatchingData = [
   },
   {
     id: "prison-school",
-    img: "plantowatch-images/plantowatch/prison-school.webp",
+    img: "watchingnow-images/watchingnow/prison-school.webp",
     title: "Prison School",
     info: "12 episódios <br> 1 OVA: 25m",
     studio: "J.C. Staff",

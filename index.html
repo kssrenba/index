@@ -8608,11 +8608,11 @@
 
           function getModeFromHash() {
             const h = (location.hash || '').replace('#', '').trim();
-            if (!h) return 'watching';
+            if (!h) return 'all';
             for (const [mode, slug] of Object.entries(hashMap)) {
               if (slug && slug === h) return mode;
             }
-            return 'watching';
+            return 'all';
           }
 
           function makeFallbackLabel(title) {
