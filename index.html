@@ -3707,9 +3707,15 @@
 
         .poster-lightbox-list .list-tag-rank {
           font-weight: 900;
-          color: rgba(255,255,255,0.45);
+          color: rgba(255,255,255,0.5);
           letter-spacing: -0.01em;
         }
+
+        /* Top 3: ouro/prata/bronze no número "#N" das tags (mesma lógica
+          usada no rank-gold/silver/bronze dos cards e do selo de busca). */
+        .poster-lightbox-list .list-tag-rank.rank-gold { color: #d4af37; }
+        .poster-lightbox-list .list-tag-rank.rank-silver { color: #b8bcc2; }
+        .poster-lightbox-list .list-tag-rank.rank-bronze { color: #b0703f; }
 
         /* Tag combinada "Watching Now: <divisão>" (usada quando um anime de
           "Announced Sequels" também está em Watching Now) — cada metade tem
@@ -5480,22 +5486,18 @@
         }
 
         .watched-month-header {
-          margin-bottom: -15px;
+          margin-bottom: 0px;
           padding: 0 0 0 44px;
           display: flex;
           align-items: center;
           gap: 10px;
         }
 
-        /* Quando um dos cards que está VISUALMENTE na frente do carrossel
-          (ver updateWatchedMonthHeaderSpacing, que reavalia isso a cada
-          scroll) tem a badge de "assistido em 1 dia", o cabeçalho ganha um
-          respiro maior (0px) em vez do padrão mais colado (-15px). Antes
-          isso era feito só via CSS com :nth-child(-n+2), mas aí o cálculo
-          ficava travado nos 2 primeiros cards do DOM — depois de rolar o
-          carrossel com as setas, outros cards passam a ficar na frente e o
-          ajuste de espaço não acompanhava, deixando a badge sobreposta ao
-          header. */
+        /* Espaçamento do header sempre em 0px, independente de haver badge
+          de "assistido em 1 dia" nos cards visualmente na frente do
+          carrossel — antes o padrão era -15px e subia pra 0px só quando
+          havia badge (ver updateWatchedMonthHeaderSpacing); agora fica
+          fixo em 0px em ambos os casos. */
         .watched-month-section.has-front-badge .watched-month-header {
           margin-bottom: 0px;
         }
@@ -5558,6 +5560,7 @@
 
         .watched-month-card {
           flex: 0 0 calc((100% - 5 * 14px) / 6);
+          min-width: 0;
           scroll-snap-align: start;
           display: block;
           text-decoration: none;
@@ -5836,6 +5839,23 @@
           background: linear-gradient(180deg, rgba(25, 27, 29, 0.95) 0%, rgba(25, 27, 29, 0.88) 100%);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Enquanto a página está rolando com um preview aberto, o loop de
+          requestAnimationFrame (watchedMonthSyncLoop) reescreve left/top a
+          cada frame pra manter o preview grudado no card por baixo. Com o
+          backdrop-filter (blur) ativo, cada uma dessas reescritas de
+          posição obriga o navegador a re-borrar a área por trás do
+          elemento de novo, frame a frame — isso é o que deixava o scroll
+          pesado sempre que um preview estava ativo. A classe
+          .is-scrolling (ligada/desligada pelo próprio JS junto com o
+          loop) desliga o blur só durante o movimento real e devolve o
+          fundo sólido no lugar, sem re-borrar nada; o blur volta assim
+          que o scroll para. */
+        .watched-month-preview.is-scrolling .watched-month-preview-overlay {
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+          background: rgba(25, 27, 29, 0.97);
         }
 
         .watched-month-preview-badge {
@@ -7598,22 +7618,29 @@
                 const idx = list.findIndex(a => a.id === animeId);
                 t.position = idx === -1 ? null : idx + 1;
               });
-              // Se o anime tiver um episódio na lista "Peak Episodes"
-              // (favoriteEpisodesData), adiciona a tag ao final, com a posição
-              // dele dentro dessa lista (ex: "#1 Peak Episodes").
+              // Se o anime tiver um ou mais episódios na lista "Peak Episodes"
+              // (favoriteEpisodesData), adiciona uma tag pra CADA um deles, com
+              // a posição de cada um dentro dessa lista (ex: "#1 Peak Episodes"
+              // e "#4 Peak Episodes", caso o anime tenha dois entries — usa
+              // "animeId" pra ligar o episódio ao anime quando esse campo existe;
+              // entries antigos sem "animeId" continuam comparando pelo próprio
+              // "id", já que nesses casos id do episódio === id do anime).
               if (typeof favoriteEpisodesData !== 'undefined') {
-                const favIdx = favoriteEpisodesData.findIndex(e => e.id === animeId);
-                if (favIdx !== -1) {
-                  const favRank = (typeof computeFavEpisodeRanks === 'function')
-                    ? computeFavEpisodeRanks(favoriteEpisodesData)[favIdx]
-                    : favIdx + 1;
+                const favRanks = (typeof computeFavEpisodeRanks === 'function')
+                  ? computeFavEpisodeRanks(favoriteEpisodesData)
+                  : [];
+                favoriteEpisodesData.forEach((entry, favIdx) => {
+                  const entryAnimeId = entry.animeId || entry.id;
+                  if (entryAnimeId !== animeId) return;
+                  const favRank = favRanks[favIdx] != null ? favRanks[favIdx] : favIdx + 1;
                   tags.push({
                     key: 'favEpisodes',
                     label: CATEGORY_LABEL.favEpisodes,
                     color: CATEGORY_HOVER_COLOR.favEpisodes,
-                    position: favRank
+                    position: favRank,
+                    targetId: entry.id
                   });
-                }
+                });
               }
               // "Watching Now" sempre aparece primeiro entre as tags, quando
               // presente — as demais mantêm a ordem em que foram adicionadas.
@@ -7651,6 +7678,15 @@
               } else {
                 lightboxAmbientImg.onload = () => lightboxAmbient.classList.add('ready');
               }
+            }
+
+            // Mesma lógica de ouro/prata/bronze usada na busca (ver
+            // searchRankBadgeClass no drawer de busca) — duplicada aqui pois
+            // aquela função vive numa IIFE separada e não é visível neste
+            // escopo.
+            function searchRankBadgeClass(rank) {
+              const n = Number(rank);
+              return n === 1 ? ' rank-gold' : n === 2 ? ' rank-silver' : n === 3 ? ' rank-bronze' : '';
             }
 
             function showItem(item) {
@@ -7830,7 +7866,7 @@
                 }
 
                 const restTagsHtml = effectiveTags
-                  .map(t => `<button type="button" class="list-tag" data-mode="${t.key}" data-target-id="${escapeHtml(item.id)}" style="--tag-color:${t.color || 'var(--glow-accent)'}">${t.position != null ? `<span class="list-tag-rank">#${t.position}</span>` : ''}${escapeHtml(t.label)}</button>`)
+                  .map(t => `<button type="button" class="list-tag" data-mode="${t.key}" data-target-id="${escapeHtml(t.targetId || item.id)}" style="--tag-color:${t.color || 'var(--glow-accent)'}">${t.position != null ? `<span class="list-tag-rank${searchRankBadgeClass(t.position)}">#${t.position}</span>` : ''}${escapeHtml(t.label)}</button>`)
                   .join('<span class="list-sep"></span>');
 
                 const tagsHtml = mergedWatchingTagHtml
@@ -8681,7 +8717,7 @@
           const drawerItems = Array.from(document.querySelectorAll('.drawer-item:not([disabled])'));
           const FIRST_SEEN_KEY = 'myranks_seen_v1';
 
-          let currentCategory = 'announced';
+          let currentCategory = 'watching';
 
           const CATEGORY_ORDER = ['all', 'romance', 'isekai', 'sports', 'mecha', 'watching', 'plan', 'incomplete', 'announced'];
           let isDrawerOpen = false;
@@ -8703,11 +8739,11 @@
 
           function getModeFromHash() {
             const h = (location.hash || '').replace('#', '').trim();
-            if (!h) return 'announced';
+            if (!h) return 'watching';
             for (const [mode, slug] of Object.entries(hashMap)) {
               if (slug && slug === h) return mode;
             }
-            return 'announced';
+            return 'watching';
           }
 
           function makeFallbackLabel(title) {
@@ -10450,6 +10486,9 @@
               watchedMonthRafId = requestAnimationFrame(watchedMonthSyncLoop);
             } else {
               watchedMonthRafId = null;
+              // Scroll parou: desliga o modo "sem blur" e devolve o
+              // backdrop-filter normal do preview (ver .is-scrolling no CSS).
+              getWatchedMonthPreviewEl().classList.remove('is-scrolling');
             }
           }
 
@@ -10533,7 +10572,7 @@
           function hideWatchedMonthPreviewNow() {
             clearTimeout(watchedMonthPreviewHideTimer);
             watchedMonthStopSyncLoop();
-            if (watchedMonthPreviewEl) watchedMonthPreviewEl.classList.remove('is-visible');
+            if (watchedMonthPreviewEl) watchedMonthPreviewEl.classList.remove('is-visible', 'is-scrolling');
             if (watchedMonthActiveCard) {
               watchedMonthActiveCard.classList.remove('is-previewing');
               watchedMonthActiveCard = null;
@@ -10604,6 +10643,10 @@
             if (!watchedMonthActiveCard) return;
             watchedMonthMarkScrolling();
             watchedMonthLastScrollTs = Date.now();
+            // Liga o modo "sem blur" assim que o scroll real começa (ver
+            // .is-scrolling no CSS) — é isso que tira o custo de re-borrar
+            // o preview a cada frame enquanto a página rola.
+            getWatchedMonthPreviewEl().classList.add('is-scrolling');
             watchedMonthStartSyncLoop();
           }, { passive: true, capture: true });
 
