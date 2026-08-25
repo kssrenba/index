@@ -1269,7 +1269,7 @@ const rawWatchingData = [
   },
   {
     id: "tokyo-ghoul",
-    img: "plantowatch-images/plantowatch/tokyo-ghoul.webp",
+    img: "watchingnow-images/watchingnow/tokyo-ghoul.webp",
     title: "Tokyo Ghoul",
     info: "2 temporadas: 24 episódios",
     season: null,
@@ -2709,7 +2709,96 @@ const nextSeasonMap = {
 // ─────────────────────────────────────────────────────────────────────────
 const watchedMonthlyData = [
   {
-    month: "2025-05",
+    month: "2025-08",
+    monthLabel: "September 2025",
+    monthTheme: "peak month",
+    animes: [
+      {
+        id: "campfire-cooking",
+        img: "other-images/everymonth/campfire-cooking.webp",
+        title: "Campfire Cooking in Another World with My Absurd Skill",
+        url: "",
+        badge: "⚡ Assitido em 1 Dia",
+        seasonLabel: "1ª temporada",
+        episodes: 12,
+        synopsis: "",
+      },
+      {
+        id: "opm",
+        img: "other-images/everymonth/opm.webp",
+        title: "One-Punch Man",
+        url: "",
+        seasonLabel: "1ª temporada",
+        episodes: 12,
+        synopsis: "",
+      },
+      {
+        id: "opm",
+        img: "other-images/everymonth/opm2.webp",
+        title: "One-Punch Man 2",
+        url: "",
+        seasonLabel: "2ª temporada",
+        episodes: 12,
+        synopsis: "",
+      },
+      {
+        id: "dan-da-dan",
+        img: "other-images/everymonth/dan-da-dan2.webp",
+        title: "Dan da Dan 2nd Season",
+        url: "",
+        seasonLabel: "2ª temporada",
+        episodes: 12,
+        synopsis: "",
+      },
+      {
+        id: "grand-blue",
+        img: "other-images/everymonth/grand-blue2.webp",
+        title: "Grand Blue Season 2",
+        url: "",
+        seasonLabel: "2ª temporada",
+        episodes: 12,
+        synopsis: "",
+      },
+      {
+        id: "re-zero",
+        img: "other-images/everymonth/re-zero.webp",
+        title: "Re:ZERO: Starting Life in Another World",
+        url: "",
+        seasonLabel: "1ª temporada",
+        episodes: 25,
+        synopsis: "",
+      },
+      {
+        id: "shadow",
+        img: "other-images/everymonth/shadow.webp",
+        title: "The Eminence in Shadow",
+        url: "",
+        seasonLabel: "1ª temporada",
+        episodes: 20,
+        synopsis: "",
+      },
+      {
+        id: "shadow",
+        img: "other-images/everymonth/shadow2.webp",
+        title: "The Eminence in Shadow 2nd Season",
+        url: "",
+        seasonLabel: "2ª temporada",
+        episodes: 2,
+        synopsis: "",
+      },
+      {
+        id: "dr-stone",
+        img: "other-images/everymonth/dr-stone4-2.webp",
+        title: "Dr. Stone: Science Future - Part II",
+        url: "",
+        seasonLabel: "4ª temporada II",
+        episodes: 12,
+        synopsis: "",
+      },
+    ],
+  },
+  {
+    month: "2025-07",
     monthLabel: "August 2025",
     monthTheme: "isekai slop",
     animes: [
@@ -2781,7 +2870,7 @@ const watchedMonthlyData = [
     ],
   },
   {
-    month: "2025-05",
+    month: "2025-06",
     monthLabel: "July 2025",
     monthTheme: "another mid month",
     animes: [
@@ -2805,7 +2894,7 @@ const watchedMonthlyData = [
       },
       {
         id: "horimiya",
-        img: "other-images/everymonth/horimiya-missing.webp",
+        img: "other-images/everymonth/horimiya-pieces.webp",
         title: "Horimiya: The Missing Pieces",
         url: "",
         seasonLabel: "2ª temporada",
@@ -2929,7 +3018,7 @@ const watchedMonthlyData = [
     animes: [
       {
         id: "haikyuu",
-        img: "other-images/everymonth/haikyuu-3rd.webp",
+        img: "other-images/everymonth/haikyuu3.webp",
         title: "Haikyuu!! Karasuno High School vs Shiratorizawa Academy",
         url: "",
         seasonLabel: "3ª temporada",
@@ -2938,7 +3027,7 @@ const watchedMonthlyData = [
       },
       {
         id: "haikyuu",
-        img: "other-images/everymonth/haikyuu-top.webp",
+        img: "other-images/everymonth/haikyuu4.webp",
         title: "Haikyuu!! To the Top",
         url: "",
         seasonLabel: "4ª temporada I",
@@ -2947,7 +3036,7 @@ const watchedMonthlyData = [
       },
       {
         id: "haikyuu",
-        img: "other-images/everymonth/haikyuu-top2.webp",
+        img: "other-images/everymonth/haikyuu4-2.webp",
         title: "Haikyuu!! To the Top: Part II",
         url: "",
         seasonLabel: "4ª temporada II",

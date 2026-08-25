@@ -2204,7 +2204,8 @@
         /* Espaço fixo depois do Anime-Planet (sempre visível). O espaço entre
           ".watch-now-extra" e a seta é controlado pela própria ".watch-now-extra"
           (margin-right), que anima junto com o max-width — ver abaixo. */
-        .watch-now-links .rank-mal-label--anime-planet {
+        .watch-now-links .rank-mal-label--anime-planet,
+        .watch-now-links .rank-mal-label--links-about {
           margin-right: 16px;
           flex-shrink: 0;
         }
@@ -2246,6 +2247,16 @@
 
         .watch-now-links:not(.open) .rank-mal-label--anime-planet .anime-planet-btn-logo,
         .watch-now-links:not(.open) .rank-mal-label--anime-planet svg {
+          display: none;
+        }
+
+        /* Botão "LINKS ABOUT" do MyAnimeList no lightbox do "All Animes"
+          (myranks) — mesmo comportamento do "LINKS ABOUT" do Anime-Planet
+          acima: como nunca ganha a classe "open" (não existe seta/extra pra
+          revelar, é o único link), fica permanentemente só com o texto,
+          escondendo logo e ícone de link externo. */
+        .watch-now-links:not(.open) .rank-mal-label--links-about .mal-btn-logo,
+        .watch-now-links:not(.open) .rank-mal-label--links-about svg {
           display: none;
         }
 
@@ -2352,7 +2363,8 @@
             row-gap: 8px;
           }
 
-          .watch-now-links .rank-mal-label--anime-planet {
+          .watch-now-links .rank-mal-label--anime-planet,
+          .watch-now-links .rank-mal-label--links-about {
             margin-right: 8px;
           }
 
@@ -3246,6 +3258,22 @@
             scrollbar-gutter: stable;
           }
 
+          /* Quando o card logo abaixo do "meta" é só o "LINKS ABOUT" do
+            MyAnimeList (myranks) — escondido no mobile, ver
+            ".poster-lightbox-more-info:has(...)" mais abaixo — tira a linha
+            "moreinfo" de vez do grid, senão sobrava o row-gap (18px) dos
+            dois lados dela (36px ao todo) formando um vão grande entre o
+            card de studio/ano/rewatch e as tags de ranking (#1 All Animes
+            etc.) logo abaixo. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-figure:has(.poster-lightbox-more-info:has(.rank-mal-label--links-about)) {
+            grid-template-areas:
+              "media title"
+              "media info"
+              "meta   meta"
+              "list   list"
+              "mal    mal";
+          }
+
           /* Barra de rolagem mais discreta só dentro do lightbox mobile, pra
             não precisar de um respiro tão grande quanto os 10px genéricos
             (::-webkit-scrollbar do site inteiro). */
@@ -3312,6 +3340,7 @@
             text-align: center;
             justify-content: center;
             max-width: 100%;
+            margin-top: -5px;
           }
 
           .poster-lightbox:not(.simple-mode) .rank-meta {
@@ -3321,6 +3350,16 @@
               cartão contínuo (ver ".poster-lightbox-more-info" abaixo). */
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
+          }
+
+          /* Exceção: quando o card logo abaixo é só o "LINKS ABOUT" do
+            MyAnimeList (myranks) — que acabou de ser escondido no mobile,
+            ver ".poster-lightbox-more-info:has(...)" abaixo — não há mais
+            nada colado embaixo, então o ".rank-meta" volta a ter os cantos
+            arredondados normalmente, como um cartão sozinho. */
+          .poster-lightbox:not(.simple-mode) .rank-meta:has(+ .poster-lightbox-more-info:has(.rank-mal-label--links-about)) {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info {
@@ -3334,6 +3373,15 @@
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info:empty {
+            display: none;
+          }
+
+          /* No mobile, o botão "LINKS ABOUT" do MyAnimeList (lightbox do
+            "All Animes"/myranks) some por completo — junto some o cartão
+            ".poster-lightbox-more-info" inteiro (mesmo comportamento do
+            ":empty" acima), senão ficaria um cartão vazio colado embaixo
+            do ".rank-meta". */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info:has(.rank-mal-label--links-about) {
             display: none;
           }
 
@@ -6928,6 +6976,23 @@
                 </a>`;
             }
 
+            // Botão "LINKS ABOUT" do MyAnimeList usado no lightbox do "All
+            // Animes" (myranks), acima das notas/temporadas — visual IDÊNTICO
+            // ao botão "LINKS ABOUT" do Anime-Planet usado no Watching Now/
+            // Plan to Watch (mesma marcação: texto "LINKS ABOUT" + logo +
+            // ícone de link externo dentro de ".watch-now-links"), só que
+            // aponta pra sua lista pessoal no MyAnimeList em vez do
+            // Anime-Planet. Ver CSS ".rank-mal-label--links-about".
+            function buildMalLinksAboutButtonHtml(url) {
+              if (!url) return '';
+              return `
+                <a class="rank-mal-label rank-mal-label--mal rank-mal-label--links-about" href="${url}" target="_blank" rel="noopener">
+                  <span class="watch-now-more-info-text">LINKS ABOUT</span>
+                  <img class="mal-btn-logo" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async">
+                  ${EXTERNAL_LINK_ICON_SVG}
+                </a>`;
+            }
+
 
             // Monta as linhas de "1ª temporada", "2ª temporada" etc. (sem nota)
             // pra um anime do Watching Now que ainda não tem entrada no Global
@@ -7030,11 +7095,22 @@
               // "lightboxMediaWatchNow" mais abaixo.
               if (lightboxMediaWatchNow) lightboxMediaWatchNow.innerHTML = '';
 
+              // Precisa do "item" (entrada do anime no Global Ranking) já
+              // aqui em cima porque, fora do "Watching Now"/"Plan to Watch"
+              // (myranks), o botão "LINKS ABOUT" usa a URL da lista pessoal
+              // no MyAnimeList (buildMalProfileSearchUrl), que depende dele —
+              // e esse botão agora entra no MESMO fluxo de botões (cópia
+              // embaixo da imagem/acima do Studio) usado pelo Watching Now.
+              const animeTitleForId = (typeof ANIME_TITLE_BY_ID !== 'undefined') ? ANIME_TITLE_BY_ID[animeId] : undefined;
+              const item = (typeof animeData !== 'undefined')
+                ? animeData.find(a => a.id === animeId || (isWatchingNow && animeTitleForId && a.title === animeTitleForId))
+                : null;
+
               // Botões do Anime-Planet, Crunchyroll e MyAnimeList (sempre que
               // houver link) e, só em telas mobile (via CSS), também um botão
               // "Watch Now" que tenta abrir o anime direto no app do
               // Crunchyroll, quando existir link. Só aparecem nos cards do
-              // "Watching Now".
+              // "Watching Now"/"Plan to Watch".
               // Só o botão do Anime-Planet fica visível de cara; Crunchyroll e
               // MyAnimeList (quando existirem) ficam escondidos atrás da seta
               // e só aparecem com uma animação de expansão ao lado quando ela é
@@ -7044,12 +7120,19 @@
               // não depois). Como ela nasce com largura 0, a seta some coladinha
               // no Anime-Planet; quando abre, o crescimento da largura empurra a
               // seta pra direita até ela ficar do lado do MyAnimeList.
-              const allWatchNowBtnsHtml = [
-                buildAnimePlanetButtonHtml(animePlanetUrl),
-                buildCrunchyrollButtonHtml(crunchyrollUrl),
-                buildNetflixButtonHtml(netflixUrl),
-                buildWatchNowMalButtonHtml(watchNowMalUrl),
-              ].filter(Boolean);
+              //
+              // Fora do "Watching Now"/"Plan to Watch" (ou seja, no myranks/
+              // "All Animes"), não existem Anime-Planet/Crunchyroll/Netflix —
+              // só o botão "LINKS ABOUT" do MyAnimeList, levando pra sua
+              // lista pessoal (mesmo visual do "LINKS ABOUT" do Anime-Planet).
+              const allWatchNowBtnsHtml = isWatchingNow
+                ? [
+                    buildAnimePlanetButtonHtml(animePlanetUrl),
+                    buildCrunchyrollButtonHtml(crunchyrollUrl),
+                    buildNetflixButtonHtml(netflixUrl),
+                    buildWatchNowMalButtonHtml(watchNowMalUrl),
+                  ].filter(Boolean)
+                : [buildMalLinksAboutButtonHtml(buildMalProfileSearchUrl(item))].filter(Boolean);
               let watchNowButtonsHtml = '';
               if (allWatchNowBtnsHtml.length) {
                 const [firstWatchNowBtnHtml, ...restWatchNowBtnsHtml] = allWatchNowBtnsHtml;
@@ -7097,10 +7180,6 @@
               // como "unwatched: true" (ver rawAnimeData). Quando o anime só
               // existe no "Watching Now" (ex: Konosuba), não há notas: mostra
               // só os botões acima.
-              const animeTitleForId = (typeof ANIME_TITLE_BY_ID !== 'undefined') ? ANIME_TITLE_BY_ID[animeId] : undefined;
-              const item = (typeof animeData !== 'undefined')
-                ? animeData.find(a => a.id === animeId || (isWatchingNow && animeTitleForId && a.title === animeTitleForId))
-                : null;
               let entries = item && Array.isArray(item.mal) ? item.mal : null;
 
               // Fallback: quando o anime do "Watching Now" NÃO tiver uma entrada
@@ -7290,24 +7369,12 @@
                 return;
               }
 
-              const malProfileSearchUrl = buildMalProfileSearchUrl(item);
-
-              // Setinha ao lado do logo do MyAnimeList: abre/fecha TODAS as
-              // linhas de nome real de uma vez (ver "toggleAllMalRealnameRows"
-              // no JS), em vez de precisar clicar temporada por temporada. Só
-              // aparece quando existe pelo menos uma temporada com "malName".
-              const hasAnyMalName = entries.some(entry => typeof entry.malName === 'string' && entry.malName.trim());
-              const toggleAllHtml = hasAnyMalName
-                ? `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar nomes reais de todas as temporadas no MyAnimeList">${MAL_NAME_ARROW_SVG}</button>`
-                : '';
-
-              lightboxMal.innerHTML = `
-                <div class="rank-mal-mal-row">
-                  <a class="rank-mal-label rank-mal-label--mal" href="${malProfileSearchUrl}" target="_blank" rel="noopener">
-                    <img class="mal-btn-logo" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async">
-                  </a>${toggleAllHtml}
-                </div>
-                <div class="rank-mal-rows">${rowsHtml}</div>`;
+              // O botão "LINKS ABOUT" do MyAnimeList já foi montado lá em
+              // cima (ver "allWatchNowBtnsHtml") e enviado pras cópias
+              // embaixo da imagem (desktop) / acima do Studio (mobile) — ver
+              // "lightboxMediaWatchNow"/"lightboxMoreInfo". Aqui no painel
+              // sobra só as notas por temporada.
+              lightboxMal.innerHTML = `<div class="rank-mal-rows">${rowsHtml}</div>`;
             }
 
             function loadAllRatings() {
@@ -9091,13 +9158,22 @@
             // OVAs não aparecem no "info" do card (só na barra de progresso/
             // posterlightbox) — remove qualquer linha (separada por <br>) que
             // mencione "OVA" antes de montar o texto exibido no card.
+            // Linhas de "Filme" só são escondidas quando existe alguma linha
+            // de temporada junto (ex: "3 temporadas: 31 episódios" + "Filme:
+            // 1h30m") — nesse caso o filme fica só no poster-lightbox. Quando
+            // o item é SÓ filme (sem nenhuma linha de temporada), a linha de
+            // Filme continua aparecendo no card normalmente.
             if (remainingInfo) {
-              remainingInfo = remainingInfo
+              const infoLinesArr = remainingInfo
                 .split(/<\/br>|<br\s*\/?>/i)
                 .map(s => s.trim())
                 .filter(Boolean)
-                .filter(line => !/\bOVA\b/i.test(line))
-                .join('<br>');
+                .filter(line => !/\bOVA\b/i.test(line));
+              const hasSeasonLine = infoLinesArr.some(line => !/\bFilmes?\b/i.test(line));
+              remainingInfo = (hasSeasonLine
+                ? infoLinesArr.filter(line => !/\bFilmes?\b/i.test(line))
+                : infoLinesArr
+              ).join('<br>');
             }
             const topRankClass = rankIndex === 0 ? ' rank-gold'
               : rankIndex === 1 ? ' rank-silver'
