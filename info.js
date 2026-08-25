@@ -267,16 +267,16 @@ const rawAnimeData = [
     img: "myranks-images/myranks/re-zero.webp",
     title: "Re:ZERO - Starting Life in Another World",
     malSearch: "Re:Zero",
-    info: "(~) 3 temporadas: 66 episódios",
+    info: "3 temporadas: 66 episódios",
     studio: "White Fox",
     airedSeason: "2016-?",
     rewatch: "Only Season 1",
     mal: [
-      { label: "1ª temporada", episodes: 25, note: 9, malName: "	Re:Zero kara Hajimeru Isekai Seikatsu " },
-      { label: "2ª temporada I", episodes: 13, note: 8, malName: "	Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season  " },
-      { label: "2ª temporada II", episodes: 12, note: 8, malName: "		Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season Part 2 " },
-      { label: "3ª temporada", episodes: 16, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 3rd Season  " },
-      { label: "4ª temporada", episodes: 19, unwatched: true, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season " },
+      { label: "1ª temporada", episodes: 25, note: 9, malName: "Re:Zero kara Hajimeru Isekai Seikatsu" },
+      { label: "2ª temporada I", episodes: 13, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season" },
+      { label: "2ª temporada II", episodes: 12, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season Part 2" },
+      { label: "3ª temporada", episodes: 16, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 3rd Season" },
+      { label: "4ª temporada", episodes: 19, unwatched: true, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season" },
     ],
   },
   {
@@ -543,6 +543,19 @@ const rawAnimeData = [
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Mashle" },
       { label: "2ª temporada", episodes: 12, note: 7, malName: "Mashle: Shinkakusha Kouho Senbatsu Shiken-hen" },
+    ],
+  },
+  {
+    id: "prison-school",
+    img: "myranks-images/myranks/prison-school.webp",
+    title: "Prison School",
+    info: "12 episódios",
+    studio: "J.C. Staff",
+    airedSeason: "2015-2016",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
+      { label: "Mad Wax ", episodes: "OVA", note: 7, malName: "Prison School: Mad Wax" },
     ],
   },
   {
@@ -1227,21 +1240,6 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/38000/Kimetsu_no_Yaiba",
   },
   {
-    id: "prison-school",
-    img: "watchingnow-images/watchingnow/prison-school.webp",
-    title: "Prison School",
-    info: "12 episódios <br> 1 OVA: 25m",
-    studio: "J.C. Staff",
-    airedSeason: "2015-2016",
-    seasons: [12, 1],
-    movieSeasons: [1],
-    movieDurations: { 1: "25m" },
-    movieLabels: { 1: "OVA" },
-    url: "https://www.anime-planet.com/anime/prison-school",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRJQ1QMDY/prison-school",
-    malUrl: "https://myanimelist.net/anime/30240/Prison_School",
-  },
-  {
     id: "mob",
     img: "watchingnow-images/watchingnow/mob.webp",
     title: "Mob Psycho 100",
@@ -1268,6 +1266,19 @@ const rawWatchingData = [
     url: "https://www.anime-planet.com/anime/attack-on-titan-the-final-season-part-ii",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GR751KNZY/attack-on-titan",
     malUrl: "https://myanimelist.net/anime/48583/Shingeki_no_Kyojin__The_Final_Season_Part_2",
+  },
+  {
+    id: "tokyo-ghoul",
+    img: "plantowatch-images/plantowatch/tokyo-ghoul.webp",
+    title: "Tokyo Ghoul",
+    info: "2 temporadas: 24 episódios",
+    season: null,
+    studio: "Studio Pierrot",
+    airedSeason: "2014-2015",
+    seasons: [12, 12],
+    url: "https://www.anime-planet.com/anime/tokyo-ghoul",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/G6NV7Z50Y/tokyo-ghoul",
+    malUrl: "https://myanimelist.net/anime/22319/Tokyo_Ghoul",
   },
 
   // Summer 2026
@@ -2081,17 +2092,6 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/53447/Tu_Bian_Yingxiong_X",
   },
   {
-    id: "tokyo-ghoul",
-    img: "plantowatch-images/plantowatch/tokyo-ghoul.webp",
-    title: "Tokyo Ghoul",
-    info: "2 temporadas: 24 episódios",
-    studio: "Studio Pierrot",
-    airedSeason: "2014-2015",
-    url: "https://www.anime-planet.com/anime/tokyo-ghoul",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/G6NV7Z50Y/tokyo-ghoul",
-    malUrl: "https://myanimelist.net/anime/22319/Tokyo_Ghoul",
-  },
-  {
     id: "fate-stay-night",
     img: "plantowatch-images/plantowatch/fate-stay-night.webp",
     title: "Fate Stay Night: Unlimited Blade Works",
@@ -2599,11 +2599,18 @@ const isekaiIds = [
   "trapped-in-a-dating-sim",
 ];
 
+const comedyIds = [
+  "grand-blue",
+  "mashle",
+  "prison-school",
+  "opm",
+];
 const sportsIds = [
   "haikyuu",
   "hajime-no-ippo",
   "welcome-to-the-ballroom",
   "cinderella-gray",
+  "blue-box",
 ];
 const mechaIds = [
   "code-geass",
