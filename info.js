@@ -1556,6 +1556,19 @@ const rawWatchingData = [
   },
 
   // Winter 2026
+  {
+    id: "sentenced-hero",
+    img: "plantowatch-images/plantowatch/sentenced-hero.webp",
+    title: "Sentenced to be a Hero",
+    info: "12 episódios",
+    season: "winter-2026",
+    studio: "Studio KAI",
+    airedSeason: "2026",
+    url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00356809/sentenced-to-be-a-hero",
+    malUrl:
+      "https://myanimelist.net/anime/56009/Yuusha-kei_ni_Shosu__Choubatsu_Yuusha_9004-tai_Keimu_Kiroku",
+  },
 
   // On Hold
   {
@@ -1901,18 +1914,6 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/the-fruit-of-grisaia",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/17729/Grisaia_no_Kajitsu",
-  },
-  {
-    id: "sentenced-hero",
-    img: "plantowatch-images/plantowatch/sentenced-hero.webp",
-    title: "Sentenced to be a Hero",
-    info: "12 episódios",
-    studio: "Studio KAI",
-    airedSeason: "2026",
-    url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00356809/sentenced-to-be-a-hero",
-    malUrl:
-      "https://myanimelist.net/anime/56009/Yuusha-kei_ni_Shosu__Choubatsu_Yuusha_9004-tai_Keimu_Kiroku",
   },
   {
     id: "wotakoi",
