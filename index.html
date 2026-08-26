@@ -2508,6 +2508,13 @@
           transition: transform 0.15s ease, filter 0.15s ease;
         }
 
+        /* Logo do MyAnimeList maior só no botão "LINKS ABOUT" do lightbox do
+          "All Animes" (myranks) — as outras cópias (Watching Now/Plan to
+          Watch) continuam com 17px. Ver .rank-mal-label--mal acima. */
+        .rank-mal-label--links-about .mal-btn-logo {
+          height: 21px;
+        }
+
         a.rank-mal-label--anime-planet:hover .anime-planet-btn-logo,
         a.rank-mal-label--anime-planet:focus-visible .anime-planet-btn-logo,
         a.rank-mal-label--crunchyroll:hover .crunchyroll-btn-logo,
@@ -3240,9 +3247,9 @@
             grid-template-areas:
               "media title"
               "media info"
+              "list   list"
               "meta   meta"
               "moreinfo moreinfo"
-              "list   list"
               "mal    mal";
             column-gap: 16px;
             row-gap: 18px;
@@ -3269,8 +3276,8 @@
             grid-template-areas:
               "media title"
               "media info"
-              "meta   meta"
               "list   list"
+              "meta   meta"
               "mal    mal";
           }
 
@@ -3338,10 +3345,88 @@
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list {
             grid-area: list;
             text-align: center;
-            justify-content: center;
+            justify-content: flex-start;
             max-width: 100%;
-            margin-top: -5px;
+            /* Puxa as tags (#1 All Animes etc) pra mais perto do card de
+              studio/ano/rewatch logo abaixo — reduz mais o row-gap do grid
+              (18px) do que o espaço original entre elas. */
+            margin-bottom: -12px;
+            /* Carrossel infinito: sem wrap, sem barra de rolagem visível,
+              conteúdo cortado pra fora vira invisível (a animação abaixo
+              é quem "rola" o conteúdo, não o dedo do usuário). */
+            flex-wrap: nowrap;
+            overflow: hidden;
           }
+
+          /* Trilha com as DUAS cópias das tags lado a lado (ver JS que monta
+            ".poster-lightbox-list-track"/".poster-lightbox-list-group"). A
+            largura é automática (soma das duas cópias) e a animação anda
+            exatamente metade dela — ou seja, a largura de UMA cópia — antes
+            de reiniciar, criando o loop infinito sem costura visível. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-list-track {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: max-content;
+            animation: poster-lightbox-list-marquee 14s linear infinite;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-list-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+          }
+
+          /* Garante que as tags/divisões nunca quebrem linha nem encolham
+            dentro da trilha do carrossel — senão a matemática do -50% da
+            animação (metade da largura = 1 cópia) desalinha. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-list .list-tag,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-list .list-division,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-list .list-sep {
+            white-space: nowrap;
+            flex-shrink: 0;
+          }
+
+          /* No mobile a 2ª cópia (aria-hidden, escondida por padrão no CSS
+            base) precisa aparecer — é ela que faz o loop parecer contínuo. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-list-group[aria-hidden="true"] {
+            display: flex;
+          }
+
+          @keyframes poster-lightbox-list-marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+          }
+
+          /* Plan to Watch: no mobile, as tags não usam o carrossel infinito.
+             Elas ficam como uma linha estática centralizada. */
+          .poster-lightbox.plan-to-watch-mode:not(.plan-to-watch-carousel) .poster-lightbox-panel .poster-lightbox-list {
+            justify-content: center;
+            overflow: visible;
+            flex-wrap: wrap;
+          }
+
+          .poster-lightbox.plan-to-watch-mode:not(.plan-to-watch-carousel) .poster-lightbox-list-track {
+            display: contents;
+            animation: none;
+            width: auto;
+          }
+
+          .poster-lightbox.plan-to-watch-mode:not(.plan-to-watch-carousel) .poster-lightbox-list-group {
+            display: contents;
+          }
+
+          .poster-lightbox.plan-to-watch-mode:not(.plan-to-watch-carousel) .poster-lightbox-list-group[aria-hidden="true"] {
+            display: none;
+          }
+
+          .poster-lightbox.plan-to-watch-mode .poster-lightbox-list .list-tag,
+          .poster-lightbox.plan-to-watch-mode .poster-lightbox-list .list-division,
+          .poster-lightbox.plan-to-watch-mode .poster-lightbox-list .list-sep {
+            flex-shrink: 0;
+          }
+
 
           .poster-lightbox:not(.simple-mode) .rank-meta {
             grid-area: meta;
@@ -3706,6 +3791,21 @@
         }
 
         .poster-lightbox-list:empty { display: none; }
+
+        /* Estrutura de duplicação usada pelo carrossel infinito (só ativado
+          no mobile, ver media query abaixo). Por padrão (desktop) fica
+          "invisível" ao layout: o track e a 1ª cópia usam display:contents
+          (os filhos viram itens do flex ".poster-lightbox-list" direto,
+          exatamente como antes da duplicação) e a 2ª cópia (aria-hidden)
+          some por completo. */
+        .poster-lightbox-list-track,
+        .poster-lightbox-list-group {
+          display: contents;
+        }
+
+        .poster-lightbox-list-group[aria-hidden="true"] {
+          display: none;
+        }
 
         .poster-lightbox-list .list-division {
           display: inline-flex;
@@ -7816,6 +7916,8 @@
               const netflixUrl = item.getAttribute('data-netflix-url');
               const watchNowMalUrl = item.getAttribute('data-watchnow-mal-url');
               lightbox.classList.toggle('simple-mode', !(isMyRanks || isRichPanel));
+              lightbox.classList.toggle('plan-to-watch-mode', isPlanToWatch);
+              lightbox.classList.remove('plan-to-watch-carousel');
 
               if (lightboxSimpleLink) {
                 lightboxSimpleLink.innerHTML = '';
@@ -7962,7 +8064,20 @@
                   : '';
 
                 lightboxList.classList.remove('no-division');
-                lightboxList.innerHTML = tagsHtml + divisionHtml;
+                // A lista fica duplicada (2 cópias idênticas lado a lado) pra
+                // viabilizar o carrossel infinito só no mobile (ver CSS
+                // ".poster-lightbox-list-track"): a animação anda exatamente
+                // metade da largura (a largura de UMA cópia) e reinicia sem
+                // deixar costura visível. No desktop a 2ª cópia (aria-hidden)
+                // fica escondida via CSS e tudo continua igual a antes.
+                // Plan to Watch: 1 tag = estática centralizada; 2+ tags = carrossel.
+                const planToWatchTagCount = (mergedWatchingTagHtml ? 1 : 0) + effectiveTags.length;
+                lightbox.classList.toggle('plan-to-watch-carousel', isPlanToWatch && planToWatchTagCount > 1);
+
+                const listContent = tagsHtml + divisionHtml;
+                lightboxList.innerHTML = listContent
+                  ? `<div class="poster-lightbox-list-track"><div class="poster-lightbox-list-group">${listContent}</div><div class="poster-lightbox-list-group" aria-hidden="true">${listContent}</div></div>`
+                  : '';
               }
               if (lightboxAnnounce) {
                 const ns = nextSeasonMap[item.id];

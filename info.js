@@ -679,7 +679,7 @@ const rawAnimeData = [
     rewatch: "Yes",
     mal: [
       { label: "1ª temporada", episodes: 24, note: 7, malName: "Shokugeki no Souma" },
-      { label: "2ª temporada", episodes: 13, note: 7, malName: "Shokugeki no Souma Ni no Sara" },
+      { label: "2ª temporada", episodes: 13, note: 8, malName: "Shokugeki no Souma Ni no Sara" },
       { label: "3ª temporada I", episodes: 12, note: 7, malName: "Shokugeki no Souma: San no Sara" },
       { label: "3ª temporada II", episodes: 12, note: 6, malName: "Shokugeki no Souma: San no Sara - Tootsuki Ressha-hen" },
       { label: "4ª temporada", episodes: 12, note: 5, malName: "Shokugeki no Souma: Shin no Sara" },
@@ -1558,12 +1558,13 @@ const rawWatchingData = [
   // Winter 2026
   {
     id: "sentenced-hero",
-    img: "plantowatch-images/plantowatch/sentenced-hero.webp",
+    img: "watchingnow-images/watchingnow/sentenced-hero.webp",
     title: "Sentenced to be a Hero",
     info: "12 episódios",
     season: "winter-2026",
     studio: "Studio KAI",
     airedSeason: "2026",
+    seasons: [12],
     url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00356809/sentenced-to-be-a-hero",
     malUrl:
