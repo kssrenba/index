@@ -73,11 +73,11 @@
           flex-direction: column;
           justify-content: space-evenly;
           gap: 18px;
-          opacity: 0.34;
-          filter: blur(5px) saturate(0.8) brightness(0.65);
+          opacity: 0.2;
+          filter: blur(7px) saturate(0.7) brightness(0.42);
           pointer-events: none;
-          mask-image: linear-gradient(90deg, #000, transparent 44%, transparent 56%, #000);
-          -webkit-mask-image: linear-gradient(90deg, #000, transparent 44%, transparent 56%, #000);
+          mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+          -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
           animation: siteAuthCarouselIn 1.1s ease both;
         }
 
@@ -313,8 +313,10 @@
         /* Desktop: composição totalmente aberta, sem card/campo tradicional. */
         @media (min-width: 601px) {
           .site-auth-desktop-carousel {
-            mask-image: none;
-            -webkit-mask-image: none;
+            opacity: 0.2;
+            filter: blur(7px) saturate(0.7) brightness(0.42);
+            mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+            -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
           }
 
           .site-auth-box {
@@ -4613,37 +4615,56 @@
           }
         }
 
-        .poster-lightbox-close {
+        .poster-lightbox-close,
+        .poster-lightbox-calendar {
           position: fixed;
           top: 20px;
-          right: 24px;
           width: 40px;
           height: 40px;
           border-radius: 12px;
           border: none;
-          background: rgba(255,255,255,0.015);
+          background: transparent;
+          box-shadow: none;
           color: #cbd5e1;
-          display: inline-flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           outline: none;
+          z-index: 2;
           transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
         }
 
-        .poster-lightbox-close:hover {
+        .poster-lightbox-close {
+          right: 24px;
+          display: inline-flex;
+        }
+
+        .poster-lightbox-calendar {
+          right: 72px;
+          display: none;
+        }
+
+        .poster-lightbox-calendar.visible {
+          display: inline-flex;
+        }
+
+        .poster-lightbox-close:hover,
+        .poster-lightbox-calendar:hover {
           background: rgba(255,255,255,0.05);
           color: #fff;
           transform: scale(1.02);
         }
 
         .poster-lightbox-close:focus,
-        .poster-lightbox-close:focus-visible {
+        .poster-lightbox-close:focus-visible,
+        .poster-lightbox-calendar:focus,
+        .poster-lightbox-calendar:focus-visible {
           outline: none;
           box-shadow: none;
         }
 
-        .poster-lightbox-close svg {
+        .poster-lightbox-close svg,
+        .poster-lightbox-calendar svg {
           width: 22px;
           height: 22px;
           stroke: currentColor;
@@ -4653,7 +4674,10 @@
 
         @media (max-width: 600px) {
           .poster-lightbox { padding: 20px; }
-          .poster-lightbox-close { top: 14px; right: 14px; width: 38px; height: 38px; }
+          .poster-lightbox-close,
+          .poster-lightbox-calendar { top: 14px; width: 38px; height: 38px; }
+          .poster-lightbox-close { right: 14px; }
+          .poster-lightbox-calendar { right: 60px; }
         }
 
         /* ── Botão flutuante: ir para o topo / ir para o final ── */
@@ -6790,6 +6814,291 @@
           transform: translateX(0);
         }
 
+
+        /* ── CALENDÁRIO DE LANÇAMENTOS ── */
+        .calendar-toggle-btn[hidden] {
+          display: none !important;
+        }
+
+        .calendar-toggle-btn {
+          width: 44px !important;
+          min-width: 44px !important;
+          height: 44px;
+          padding: 0 !important;
+          flex: 0 0 44px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 0;
+          border-radius: 14px;
+          background: transparent;
+          color: var(--muted);
+          cursor: pointer;
+          transition:
+            color 0.18s ease,
+            background 0.18s ease,
+            transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.18s ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .calendar-toggle-btn svg {
+          width: 21px;
+          height: 21px;
+          stroke-width: 2;
+        }
+
+        .calendar-toggle-btn.active {
+          width: 40px !important;
+          min-width: 40px !important;
+          height: 40px;
+          flex-basis: 40px;
+          border: 0;
+          border-radius: 12px;
+          background: transparent;
+          color: #cbd5e1;
+          box-shadow: none;
+        }
+
+        .calendar-toggle-btn:hover,
+        .calendar-toggle-btn.active:hover {
+          background: rgba(255,255,255,0.05);
+          color: #fff;
+          transform: scale(1.02);
+          box-shadow: none;
+        }
+
+        .calendar-toggle-btn.active svg {
+          width: 22px;
+          height: 22px;
+          stroke-width: 2.2;
+        }
+
+        .release-calendar-view[hidden] {
+          display: none !important;
+        }
+
+        .release-calendar-view {
+          width: 100%;
+          max-width: none;
+          margin: 0;
+          padding: 0 0 42px;
+          animation: releaseCalendarIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes releaseCalendarIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .release-calendar-head {
+          display: none !important;
+        }
+
+        .release-calendar-kicker {
+          margin: 0 0 7px;
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+        }
+
+        .release-calendar-title {
+          margin: 0;
+          color: var(--text);
+          font: 800 clamp(26px, 3vw, 38px)/1 var(--font-title);
+          letter-spacing: -0.025em;
+        }
+
+        .release-calendar-count {
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 700;
+          white-space: nowrap;
+        }
+
+        .release-day-section {
+          padding: 22px 0 34px;
+        }
+
+        .release-day-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 18px;
+        }
+
+        .release-day-name {
+          margin: 0;
+          color: #fff;
+          font: 800 24px/1 var(--font-title);
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+        }
+
+        .release-day-line {
+          height: 1px;
+          flex: 1;
+          min-width: 20px;
+          background: linear-gradient(90deg, rgba(255,255,255,0.16), transparent);
+          opacity: 0.7;
+        }
+
+        .release-calendar-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(142px, 1fr));
+          gap: 18px 14px;
+        }
+
+        .release-calendar-card {
+          position: relative;
+          min-width: 0;
+        }
+
+        .release-calendar-poster {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 2 / 3;
+          overflow: hidden;
+          border-radius: 13px;
+          background: #111;
+          box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+          transform: translateZ(0);
+          transition:
+            transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.25s ease;
+        }
+
+        .release-calendar-card:hover .release-calendar-poster {
+          transform: translateY(-3px);
+          box-shadow:
+            0 12px 30px rgba(0,0,0,0.34),
+            0 0 0 1px rgba(255,255,255,0.13);
+        }
+
+        .release-calendar-poster img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .release-calendar-card:hover .release-calendar-poster img {
+          transform: scale(1.025);
+        }
+
+        .release-calendar-card-title {
+          margin: 9px 2px 0;
+          color: rgba(255,255,255,0.88);
+          font-size: 12px;
+          font-weight: 700;
+          line-height: 1.35;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+        }
+
+        .release-calendar-empty {
+          grid-column: 1 / -1;
+          min-height: 84px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px dashed rgba(255,255,255,0.08);
+          border-radius: 14px;
+          color: rgba(156,163,175,0.62);
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .release-calendar-list {
+          margin: 0 !important;
+          width: 100%;
+        }
+
+        .release-calendar-list .anime-item {
+          content-visibility: visible;
+        }
+
+        .release-calendar-list .watch-progress {
+          display: none !important;
+        }
+
+        .release-calendar-list .anime-item {
+          cursor: pointer !important;
+        }
+
+        .release-day-section .release-calendar-empty {
+          width: 100%;
+          min-height: 72px;
+        }
+
+        body.release-calendar-mode #rankingContainer,
+        body.release-calendar-mode .load-more-container {
+          display: none !important;
+        }
+
+        @media (max-width: 600px) {
+          .header-controls {
+            gap: 5px;
+          }
+
+          .calendar-toggle-btn {
+            width: 42px !important;
+            min-width: 42px !important;
+            height: 42px;
+            border-radius: 12px;
+          }
+
+          .release-calendar-view {
+            padding: 0 0 28px;
+          }
+
+          .release-calendar-head {
+            margin: 0 2px 12px;
+            padding-bottom: 14px;
+          }
+
+          .release-calendar-title {
+            font-size: 25px;
+          }
+
+          .release-calendar-count {
+            display: none;
+          }
+
+          .release-day-section {
+            padding: 20px 0 28px;
+          }
+
+          .release-day-header {
+            margin-bottom: 14px;
+            gap: 9px;
+            padding-left: 12px;
+          }
+
+          .release-day-name {
+            font-size: 20px;
+          }
+
+          .release-calendar-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px 9px;
+          }
+
+          .release-calendar-poster {
+            border-radius: 10px;
+          }
+
+          .release-calendar-card-title {
+            margin-top: 7px;
+            font-size: 10.5px;
+          }
+        }
+
       </style>
 
     </head>
@@ -7322,6 +7631,13 @@
           </div>
 
           <div class="header-controls">
+            <button id="calendarBtn" class="calendar-toggle-btn" type="button" title="Calendário de lançamentos" aria-label="Calendário de lançamentos" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <path d="M16 3v4M8 3v4M3 10h18"></path>
+                <path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path>
+              </svg>
+            </button>
             <div class="filter-wrapper">
               <button id="filterBtn" class="filter-btn icon-only" title="Filtrar" aria-expanded="false" aria-haspopup="true" aria-controls="categoryDrawer" aria-label="Filtrar">
                 <span class="left-pill">
@@ -7343,6 +7659,8 @@
           <ol class="ranking" id="animeRankingList"></ol>
         </div>
 
+        <div id="releaseCalendarView" class="release-calendar-view" hidden aria-hidden="true"></div>
+
         <div class="load-more-container">
           <button id="toggleBtn" class="toggle-btn" style="display:none;">
             <span id="btnText">Mostrar Tudo</span>
@@ -7363,6 +7681,13 @@
         <div class="poster-lightbox-ambient" id="posterLightboxAmbient">
           <img id="posterLightboxAmbientImg" src="" alt="" aria-hidden="true">
         </div>
+        <button type="button" class="poster-lightbox-calendar" id="posterLightboxCalendar" aria-label="Ir para este anime no calendário" title="Ir para o calendário">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+            <path d="M16 3v4M8 3v4M3 10h18"></path>
+            <path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path>
+          </svg>
+        </button>
         <button type="button" class="poster-lightbox-close" id="posterLightboxClose" aria-label="Fechar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M18 6 6 18"></path>
@@ -7508,6 +7833,7 @@
             const lightboxMediaCategory = document.getElementById('posterLightboxMediaCategory');
             const lightboxSimpleCaption = document.getElementById('posterLightboxSimpleCaption');
             const lightboxSimpleLink = document.getElementById('posterLightboxSimpleLink');
+            const calendarBtn = document.getElementById('posterLightboxCalendar');
             const closeBtn = document.getElementById('posterLightboxClose');
             if (!lightbox || !lightboxImg || !closeBtn) return;
 
@@ -8831,6 +9157,25 @@
               }
 
               currentItem = item;
+
+              // Mostra o atalho do calendário somente para animes que fazem
+              // parte do release calendar. O ID real do anime fica salvo no
+              // próprio botão para o clique conseguir localizar calendar-<id>.
+              if (calendarBtn) {
+                const animeId = item.getAttribute('data-calendar-target') || item.id || '';
+                const calendarItems = (typeof rawReleaseCalendarData !== 'undefined' && Array.isArray(rawReleaseCalendarData))
+                  ? rawReleaseCalendarData
+                  : [];
+                const isInCalendar = !!animeId && calendarItems.some(calendarItem =>
+                  calendarItem && calendarItem.releaseDay && calendarItem.id === animeId
+                );
+
+                calendarBtn.classList.toggle('visible', isInCalendar);
+                calendarBtn.dataset.animeId = isInCalendar ? animeId : '';
+                calendarBtn.setAttribute('aria-hidden', isInCalendar ? 'false' : 'true');
+                calendarBtn.tabIndex = isInCalendar ? 0 : -1;
+              }
+
               lightboxImg.src = src;
               lightboxImg.alt = title;
               updateAmbientFromPoster(src);
@@ -9044,6 +9389,12 @@
                 if (lightboxTitle) lightboxTitle.textContent = '';
                 if (lightboxInfo) lightboxInfo.textContent = '';
                 lightbox.classList.remove('simple-mode');
+                if (calendarBtn) {
+                  calendarBtn.classList.remove('visible');
+                  calendarBtn.dataset.animeId = '';
+                  calendarBtn.setAttribute('aria-hidden', 'true');
+                  calendarBtn.tabIndex = -1;
+                }
                 if (lightboxAmbient) lightboxAmbient.classList.remove('ready');
                 if (lightboxAmbientImg) lightboxAmbientImg.src = '';
                 currentItem = null;
@@ -9064,6 +9415,11 @@
 
               const item = e.target.closest('.anime-item');
               if (!item) return;
+
+              // O calendário reaproveita o visual dos cards do Watching Now,
+              // mas não usa poster lightbox. O clique serve apenas para abrir
+              // aquele anime dentro da lista Watching Now.
+              if (item.closest('#releaseCalendarView')) return;
 
               // True Characters usa o mesmo card do All Animes, mas ainda sem
               // poster lightbox (a lista não tem os dados/metadados que o
@@ -9092,6 +9448,40 @@
 
               openLightbox(item);
             }, true);
+
+            if (calendarBtn) {
+              calendarBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const animeId = calendarBtn.dataset.animeId || '';
+                if (!animeId) return;
+
+                closeLightbox();
+
+                // O calendário já expõe sua função de abertura globalmente.
+                // Mantém o scroll durante a troca e, depois do render, leva
+                // diretamente ao card correspondente dentro do dia correto.
+                if (typeof window.__setReleaseCalendarMode === 'function') {
+                  window.__setReleaseCalendarMode(true, { keepScroll: true });
+                }
+
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    const target = document.getElementById(`calendar-${animeId}`);
+                    if (!target) return;
+
+                    target.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'center',
+                    });
+
+                    target.classList.add('highlight-active');
+                    setTimeout(() => target.classList.remove('highlight-active'), 1400);
+                  });
+                });
+              });
+            }
 
             closeBtn.addEventListener('click', function(e) {
               e.stopPropagation();
@@ -10515,6 +10905,11 @@
           }
 
           function updatePageTexts() {
+            const calendarBtn = document.getElementById('calendarBtn');
+            if (calendarBtn) {
+              calendarBtn.hidden = currentCategory !== 'watching';
+            }
+
             if (currentCategory === 'all') pageTitle.innerText = "ranking of all the anime I've watched";
             else if (currentCategory === 'romance') pageTitle.innerText = "romance anime ranking";
             else if (currentCategory === 'isekai') pageTitle.innerText = "isekai/reincarnation anime ranking";
@@ -10854,6 +11249,9 @@
                 const mode = item.getAttribute('data-mode');
                 
                 if (currentCategory !== mode) {
+                  if (window.__isReleaseCalendarMode && window.__isReleaseCalendarMode()) {
+                    window.__setReleaseCalendarMode(false, { keepScroll: true });
+                  }
                   currentCategory = mode;
                   
                   try {
@@ -13911,6 +14309,10 @@
           const ARROW_NAV_ORDER = ['plan', 'watching', 'all'];
 
           function switchCategory(step) {
+            if (window.__isReleaseCalendarMode && window.__isReleaseCalendarMode()) {
+              window.__setReleaseCalendarMode(false, { keepScroll: true });
+            }
+
             const idx = ARROW_NAV_ORDER.indexOf(currentCategory);
             const base = idx === -1 ? 0 : idx;
             const nextIdx = (base + step + ARROW_NAV_ORDER.length) % ARROW_NAV_ORDER.length;
@@ -14122,6 +14524,199 @@
             } catch (e) {}
           }
 
+
+          // ── Calendário semanal de lançamentos ──
+          function initReleaseCalendar() {
+            const calendarBtn = document.getElementById('calendarBtn');
+            const calendarView = document.getElementById('releaseCalendarView');
+            const pageTitleEl = document.getElementById('pageTitle');
+            if (!calendarBtn || !calendarView || !pageTitleEl) return;
+
+            const baseDayOrder = [
+              { key: 'monday', label: 'Monday' },
+              { key: 'tuesday', label: 'Tuesday' },
+              { key: 'wednesday', label: 'Wednesday' },
+              { key: 'thursday', label: 'Thursday' },
+              { key: 'friday', label: 'Friday' },
+              { key: 'saturday', label: 'Saturday' },
+              { key: 'sunday', label: 'Sunday' },
+            ];
+
+            const jsDayToKey = {
+              0: 'sunday',
+              1: 'monday',
+              2: 'tuesday',
+              3: 'wednesday',
+              4: 'thursday',
+              5: 'friday',
+              6: 'saturday',
+            };
+
+            const calendarIconSvg = `
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <path d="M16 3v4M8 3v4M3 10h18"></path>
+                <path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path>
+              </svg>
+            `;
+
+            const closeIconSvg = `
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18"></path>
+              </svg>
+            `;
+
+            let calendarMode = false;
+
+            function escapeCalendarHtml(value) {
+              return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+            }
+
+            function getSeasonLabel(item) {
+              if (!item || !item.season) return { text: 'Seasonal', color: 'var(--glow-accent)' };
+              if (typeof WATCHING_SEASON_LABELS !== 'undefined' && WATCHING_SEASON_LABELS[item.season]) {
+                return WATCHING_SEASON_LABELS[item.season];
+              }
+              return { text: item.season, color: 'var(--glow-accent)' };
+            }
+
+            function getCalendarItems() {
+              return (typeof rawReleaseCalendarData !== 'undefined' && Array.isArray(rawReleaseCalendarData))
+                ? rawReleaseCalendarData.filter(item => item && item.releaseDay)
+                : [];
+            }
+
+            function getRotatedDayOrder(todayKey) {
+              const startIndex = baseDayOrder.findIndex(day => day.key === todayKey);
+              if (startIndex < 0) return baseDayOrder;
+              return [
+                ...baseDayOrder.slice(startIndex),
+                ...baseDayOrder.slice(0, startIndex),
+              ];
+            }
+
+            function renderReleaseCalendar() {
+              const items = getCalendarItems();
+              const todayKey = jsDayToKey[new Date().getDay()];
+              const dayOrder = getRotatedDayOrder(todayKey);
+              const groups = {};
+
+              baseDayOrder.forEach(day => { groups[day.key] = []; });
+
+              items.forEach(item => {
+                if (groups[item.releaseDay]) groups[item.releaseDay].push(item);
+              });
+
+              calendarView.innerHTML = dayOrder
+                .filter(day => (groups[day.key] || []).length > 0)
+                .map(day => {
+                  const dayItems = groups[day.key];
+
+                  const cards = dayItems.map(calendarItem => {
+                    const sourceAnime =
+                      (typeof watchingData !== 'undefined' && Array.isArray(watchingData)
+                        ? watchingData.find(anime => anime.id === calendarItem.id)
+                        : null) || calendarItem;
+
+                    const anime = { ...sourceAnime, ...calendarItem };
+                    let cardHtml = createAnimeCard(anime, 'watching', null);
+
+                    // Evita IDs duplicados enquanto o calendário está aberto e
+                    // guarda o anime real como destino do clique.
+                    cardHtml = cardHtml.replace(
+                      `id="${escapeCalendarHtml(anime.id)}"`,
+                      `id="calendar-${escapeCalendarHtml(anime.id)}" data-calendar-target="${escapeCalendarHtml(anime.id)}"`
+                    );
+
+                    return cardHtml;
+                  }).join('');
+
+                  return `
+                    <section class="release-day-section" data-release-day="${day.key}">
+                      <div class="release-day-header">
+                        <h2 class="release-day-name">${day.label}</h2>
+                        <span class="release-day-line" aria-hidden="true"></span>
+                      </div>
+                      <ol class="ranking mode-watching release-calendar-list">${cards}</ol>
+                    </section>
+                  `;
+                }).join('');
+
+              if (typeof initPosterImages === 'function') initPosterImages();
+              if (typeof initAnnounceStrips === 'function') initAnnounceStrips();
+            }
+
+            function setCalendarMode(enabled, options = {}) {
+              calendarMode = !!enabled;
+              document.body.classList.toggle('release-calendar-mode', calendarMode);
+              calendarBtn.classList.toggle('active', calendarMode);
+              calendarBtn.setAttribute('aria-pressed', calendarMode ? 'true' : 'false');
+              calendarBtn.setAttribute('title', calendarMode ? 'Close release calendar' : 'Release calendar');
+              calendarBtn.setAttribute('aria-label', calendarMode ? 'Close release calendar' : 'Release calendar');
+              calendarBtn.innerHTML = calendarMode ? closeIconSvg : calendarIconSvg;
+
+              calendarView.hidden = !calendarMode;
+              calendarView.setAttribute('aria-hidden', calendarMode ? 'false' : 'true');
+
+              if (calendarMode) {
+                pageTitleEl.innerText = 'anime release calendar';
+                renderReleaseCalendar();
+                if (!options.keepScroll) {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              } else {
+                updatePageTexts();
+              }
+
+              if (window.__refreshScrollFab) {
+                requestAnimationFrame(() => window.__refreshScrollFab());
+              }
+            }
+
+            calendarBtn.addEventListener('click', () => setCalendarMode(!calendarMode));
+
+            calendarView.addEventListener('click', (e) => {
+              const card = e.target.closest('.anime-item[data-calendar-target]');
+              if (!card || !calendarView.contains(card)) return;
+
+              e.preventDefault();
+              e.stopPropagation();
+
+              const animeId = card.getAttribute('data-calendar-target');
+              if (!animeId) return;
+
+              setCalendarMode(false, { keepScroll: true });
+
+              if (currentCategory !== 'watching') {
+                currentCategory = 'watching';
+                render();
+              }
+
+              requestAnimationFrame(() => {
+                const target = document.getElementById(animeId);
+                if (!target) return;
+
+                target.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'center',
+                });
+
+                target.classList.add('highlight-active');
+                setTimeout(() => target.classList.remove('highlight-active'), 1400);
+              });
+            });
+
+            window.__refreshReleaseCalendar = renderReleaseCalendar;
+            window.__setReleaseCalendarMode = setCalendarMode;
+            window.__isReleaseCalendarMode = () => calendarMode;
+          }
+
+
           currentCategory = getModeFromHash() || 'all';
 
           setupFirstVisitButtonState();
@@ -14130,6 +14725,8 @@
           initSearchMarquee();
           await loadWatchProgressOverrides();
           render();
+          initReleaseCalendar();
+          updatePageTexts();
           restoreScrollPosition();
           restoreDrawerState();
 
