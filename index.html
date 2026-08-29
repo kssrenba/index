@@ -2057,9 +2057,7 @@
           .anime-item-ambient já promovido pra camada própria de GPU, o
           navegador ainda precisa recompor dezenas dessas camadas borradas a
           cada frame de rolagem — e isso escala com a quantidade de cards, daí
-          o "All" ficar bem mais pesado. Igual já se faz no preview do
-          "Watched This Month" (ver watchedMonthMarkScrolling/.is-scrolling
-          mais abaixo no JS), aqui a gente desliga o blur assim que a rolagem
+          o "All" ficar bem mais pesado. Aqui a gente desliga o blur assim que a rolagem
           de verdade começa — ninguém está reparando no wallpaper borrado
           enquanto a lista voa na tela — e liga de volta pouco depois que a
           rolagem para (ver markAmbientScrolling no JS). */
@@ -4970,8 +4968,8 @@
           }
           li.anime-item {
             border-radius: 0;
-            grid-template-columns: 24px 148px 1fr;
-            min-height: 86px;
+            grid-template-columns: 24px 96px 1fr;
+            min-height: 171px;
             gap: 12px;
             padding: 6px 10px 6px 10px;
             align-items: stretch;
@@ -4980,8 +4978,8 @@
 
           .rank-wrap { padding: 0; }
           .poster-wrap  {
-            width: 148px;
-            height: 74px;
+            width: 96px;
+            height: 171px;
             border-radius: 0;
             align-self: center;
           }
@@ -5023,8 +5021,8 @@
         }
 
         @media (max-width: 380px) {
-          li.anime-item { grid-template-columns: 20px 128px 1fr; min-height: 76px; gap: 10px; }
-          .poster-wrap { width: 128px; height: 64px; }
+          li.anime-item { grid-template-columns: 20px 82px 1fr; min-height: 146px; gap: 10px; }
+          .poster-wrap { width: 82px; height: 146px; }
           .title-anime { font-size: 13.5px; }
         }
 
@@ -5032,121 +5030,245 @@
           .search-result-title { font-size: 12px; }
         }
 
-            /* ── "True Characters" — cards de personagem em estilo "profile card" ──
-          Avatar circular com anel de destaque, badge de rank flutuante
-          sobreposto ao avatar, e card com fundo/borda próprios (em vez da
-          linha poster+texto usada nos outros modos). */
+            /* ── "True Characters" — layout editorial / character dossier ──
+          Sem avatar circular e sem pill. A imagem vira um retrato vertical,
+          o rank fica grande no fundo e a obra aparece como legenda limpa. */
         ol.ranking.mode-true-characters {
-          --true-character-size: 152px;
-          --true-character-pad: 18px;
-          column-gap: 16px;
-          row-gap: 16px;
+          --true-character-poster-w: 156px;
+          --true-character-card-h: 156px;
+          column-gap: 14px;
+          row-gap: 14px;
         }
 
         ol.ranking.mode-true-characters li.anime-item {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-          grid-template-columns: none;
-          min-height: 0;
-          padding: var(--true-character-pad) 22px var(--true-character-pad) var(--true-character-pad);
-          background: linear-gradient(155deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
-          border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 22px;
+          position: relative;
+          display: grid;
+          grid-template-columns: var(--true-character-poster-w) minmax(0, 1fr);
+          min-height: var(--true-character-card-h);
+          padding: 0;
+          gap: 0;
+          align-items: stretch;
+          overflow: hidden;
+          isolation: isolate;
+          background:
+            linear-gradient(110deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012) 58%),
+            rgba(8,8,10,0.88);
+          border: 1px solid rgba(255,255,255,0.075);
+          border-radius: 16px;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
+          transition:
+            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+            border-color 0.25s ease,
+            box-shadow 0.3s ease,
+            background 0.3s ease;
+        }
+
+        ol.ranking.mode-true-characters li.anime-item::before {
+          content: none;
         }
 
         ol.ranking.mode-true-characters li.anime-item:hover {
-          transform: translateY(-4px) translateZ(0);
-          border-color: rgba(244,114,182,0.35);
-          box-shadow: 0 16px 34px -12px rgba(244,114,182,0.28), 0 12px 30px -10px rgba(0,0,0,0.6);
+          transform: translateY(-3px) translateZ(0);
+          border-color: color-mix(in srgb, var(--item-hover-color, #e2e8f0) 48%, transparent);
+          background:
+            linear-gradient(110deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012) 58%),
+            rgba(8,8,10,0.88);
+          box-shadow: 0 18px 38px -18px rgba(0,0,0,0.8);
         }
 
-        /* Garante que a especificidade maior deste bloco não quebre a
-          ocultação de itens filtrados/pesquisados. */
-        ol.ranking.mode-true-characters li.anime-item.hidden-item {
-          display: none;
+        ol.ranking.mode-true-characters li.anime-item:hover::before {
+          content: none;
         }
 
-        /* ── Avatar circular ── */
+        ol.ranking.mode-true-characters li.anime-item.hidden-item { display: none; }
+
+        /* Retrato vertical, ocupando toda a altura esquerda do card. */
         ol.ranking.mode-true-characters .poster-wrap {
-          width: var(--true-character-size);
-          height: var(--true-character-size);
-          aspect-ratio: 1 / 1;
-          border-radius: 50%;
+          position: relative;
+          z-index: 2;
+          width: var(--true-character-poster-w);
+          height: 100%;
+          min-height: var(--true-character-card-h);
+          aspect-ratio: auto;
+          border-radius: 0;
+          align-self: stretch;
+          overflow: hidden;
           flex-shrink: 0;
-          box-shadow: 0 0 0 3px rgba(255,255,255,0.08), 0 6px 16px -4px rgba(0,0,0,0.55);
-          transition: box-shadow 0.3s ease;
           cursor: default;
+          box-shadow: none;
+          background: #0b0b0d;
+        }
+
+        ol.ranking.mode-true-characters .poster-wrap::after {
+          content: none;
         }
 
         ol.ranking.mode-true-characters .thumb {
           width: 100%;
           height: 100%;
+          aspect-ratio: auto;
           object-fit: cover;
-          aspect-ratio: 1 / 1;
+          object-position: center;
+          transform: scale(1.01);
+          filter: saturate(0.92) contrast(1.03);
+          transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
         }
 
-        ol.ranking.mode-true-characters li.anime-item:hover .poster-wrap {
-          box-shadow: 0 0 0 3px rgba(244,114,182,0.55), 0 0 22px -2px rgba(244,114,182,0.4), 0 6px 18px -4px rgba(0,0,0,0.6);
+        ol.ranking.mode-true-characters li.anime-item:hover .thumb {
+          transform: scale(1.07);
+          filter: saturate(1.08) contrast(1.04);
         }
 
-        /* ── Rank como texto "#N" colado antes do nome do personagem ── */
+        ol.ranking.mode-true-characters li.anime-item:hover .poster-wrap,
+        ol.ranking.mode-true-characters li.anime-item.rank-gold .poster-wrap,
+        ol.ranking.mode-true-characters li.anime-item.rank-silver .poster-wrap,
+        ol.ranking.mode-true-characters li.anime-item.rank-bronze .poster-wrap {
+          box-shadow: none;
+        }
+
+        /* O rank principal (#N) entra como marca d'água no .meta::before.
+           Nos rankings secundários (romance, isekai, comedy etc.), o .rank-wrap
+           fica visível só para mostrar, logo abaixo, a posição no All Ranking. */
         ol.ranking.mode-true-characters .rank-wrap {
+          position: absolute;
+          top: 66px;
+          right: 18px;
+          z-index: 4;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: auto;
+          padding: 0;
+          pointer-events: none;
+        }
+
+        ol.ranking.mode-true-characters .rank-wrap .rank {
           display: none;
         }
 
-        ol.ranking.mode-true-characters .title-anime::before {
-          content: "#" counter(item) " ";
-          color: #f9a8d4;
-          font-weight: 900;
-          opacity: 0.9;
+        ol.ranking.mode-true-characters .rank-secondary {
+          display: block;
+          font-family: var(--font-title);
+          font-size: 15px;
+          font-weight: 800;
+          line-height: 1;
+          letter-spacing: -0.03em;
+          color: rgba(255,255,255,0.10);
+          opacity: 1;
+          transition: color 0.25s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        ol.ranking.mode-true-characters li.anime-item.rank-gold .title-anime::before { color: #d4af37; }
-        ol.ranking.mode-true-characters li.anime-item.rank-silver .title-anime::before { color: #b8bcc2; }
-        ol.ranking.mode-true-characters li.anime-item.rank-bronze .title-anime::before { color: #b0703f; }
-
-        ol.ranking.mode-true-characters li.anime-item.rank-gold .poster-wrap {
-          box-shadow: 0 0 0 3px rgba(212,175,55,0.55), 0 6px 16px -4px rgba(0,0,0,0.55);
-        }
-        ol.ranking.mode-true-characters li.anime-item.rank-silver .poster-wrap {
-          box-shadow: 0 0 0 3px rgba(184,188,194,0.5), 0 6px 16px -4px rgba(0,0,0,0.55);
-        }
-        ol.ranking.mode-true-characters li.anime-item.rank-bronze .poster-wrap {
-          box-shadow: 0 0 0 3px rgba(176,112,63,0.5), 0 6px 16px -4px rgba(0,0,0,0.55);
+        ol.ranking.mode-true-characters li.anime-item:hover .rank-secondary {
+          color: color-mix(in srgb, var(--item-hover-color, #e2e8f0) 38%, transparent);
+          transform: translateX(-3px);
         }
 
-        /* ── Texto ── */
         ol.ranking.mode-true-characters .meta {
-          flex: 1 1 auto;
+          position: relative;
+          z-index: 2;
           min-width: 0;
           display: flex;
           flex-direction: column;
           justify-content: center;
-          gap: 7px;
-          padding: 0;
+          gap: 10px;
+          padding: 22px 48px 22px 22px;
+          overflow: hidden;
+        }
+
+        ol.ranking.mode-true-characters .meta::before {
+          content: "#" counter(item);
+          position: absolute;
+          top: 10px;
+          right: 16px;
+          z-index: -1;
+          color: rgba(255,255,255,0.32);
+          font: 900 54px/1 var(--font-title);
+          letter-spacing: -0.06em;
+          pointer-events: none;
+          transition: color 0.25s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Watching Now, Plan to Watch, Incomplete e Announced não exibem ranking no card. */
+        ol.ranking.category-watching .meta::before,
+        ol.ranking.category-plan .meta::before,
+        ol.ranking.category-incomplete .meta::before,
+        ol.ranking.category-announced .meta::before {
+          content: none;
+        }
+
+        ol.ranking.mode-true-characters li.anime-item:hover .meta::before {
+          color: color-mix(in srgb, var(--item-hover-color, #e2e8f0) 70%, transparent);
+          transform: translateX(-3px);
+        }
+
+        ol.ranking.mode-true-characters li.anime-item.rank-gold .meta::before {
+          color: rgba(212,175,55,0.30);
+        }
+        ol.ranking.mode-true-characters li.anime-item.rank-silver .meta::before {
+          color: rgba(190,200,214,0.38);
+          text-shadow: none;
+        }
+        ol.ranking.mode-true-characters li.anime-item.rank-bronze .meta::before {
+          color: rgba(176,112,63,0.30);
+        }
+
+        ol.ranking.mode-true-characters li.anime-item.rank-gold:hover .meta::before {
+          color: rgba(212,175,55,0.55);
+        }
+        ol.ranking.mode-true-characters li.anime-item.rank-silver:hover .meta::before {
+          color: rgba(200,210,224,0.56);
+          text-shadow: none;
+        }
+        ol.ranking.mode-true-characters li.anime-item.rank-bronze:hover .meta::before {
+          color: rgba(176,112,63,0.55);
+        }
+
+        ol.ranking.mode-true-characters .title-row {
+          position: relative;
+          min-width: 0;
+          padding-top: 14px;
+        }
+
+        ol.ranking.mode-true-characters .title-row::before {
+          content: none;
         }
 
         ol.ranking.mode-true-characters .title-anime {
-          font-size: 18.5px;
+          margin: 0;
+          font-size: 20px;
           font-weight: 800;
-          letter-spacing: -0.01em;
-          line-height: 1.25;
+          letter-spacing: -0.02em;
+          line-height: 1.16;
+          color: #fff;
+          text-wrap: balance;
+        }
+
+        ol.ranking.mode-true-characters .title-anime::before { content: none; }
+
+        ol.ranking.mode-true-characters .info-row {
+          position: relative;
+          overflow: visible;
+          padding-left: 0;
+        }
+
+        ol.ranking.mode-true-characters .info-row::before {
+          content: none;
         }
 
         ol.ranking.mode-true-characters .info-row .info {
-          display: inline-flex;
-          align-items: center;
-          width: fit-content;
+          display: block;
+          width: 100%;
           max-width: 100%;
-          color: #f9a8d4;
+          margin: 0;
+          padding: 0;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
+          color: rgba(255,255,255,0.5);
+          font-size: 11.5px;
           font-weight: 600;
-          font-size: 12px;
-          letter-spacing: 0.15px;
-          background: rgba(244,114,182,0.09);
-          border: 1px solid rgba(244,114,182,0.2);
-          padding: 5px 11px;
-          border-radius: 999px;
+          line-height: 1.35;
+          letter-spacing: 0.025em;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -5154,49 +5276,74 @@
 
         @media (max-width: 1100px) {
           ol.ranking.mode-true-characters {
-            --true-character-size: 136px;
+            --true-character-poster-w: 144px;
+            --true-character-card-h: 144px;
           }
+          ol.ranking.mode-true-characters .title-anime { font-size: 18px; }
         }
 
         @media (max-width: 900px) {
           ol.ranking.mode-true-characters {
-            --true-character-size: 120px;
-            --true-character-pad: 16px;
+            --true-character-poster-w: 130px;
+            --true-character-card-h: 130px;
           }
-          ol.ranking.mode-true-characters li.anime-item {
-            gap: 16px;
-          }
-          ol.ranking.mode-true-characters .title-anime {
-            font-size: 16.5px;
-          }
+          ol.ranking.mode-true-characters .meta { padding: 18px 40px 18px 18px; }
+          ol.ranking.mode-true-characters .title-anime { font-size: 16.5px; }
+          ol.ranking.mode-true-characters .meta::before { font-size: 46px; }
+          ol.ranking.mode-true-characters .rank-wrap { top: 58px; right: 14px; }
+          ol.ranking.mode-true-characters .rank-secondary { font-size: 13px; }
+          ol.ranking.category-watching .meta::before,
+          ol.ranking.category-plan .meta::before,
+          ol.ranking.category-incomplete .meta::before,
+          ol.ranking.category-announced .meta::before { font-size: 13px; }
         }
 
         @media (max-width: 600px) {
           ol.ranking.mode-true-characters {
-            --true-character-size: 104px;
-            --true-character-pad: 12px;
-            row-gap: 12px;
+            --true-character-poster-w: 112px;
+            --true-character-card-h: 112px;
+            row-gap: 8px;
           }
           ol.ranking.mode-true-characters li.anime-item {
             border-radius: 0;
-            gap: 14px;
-            align-items: center;
+            border-left: 0;
+            border-right: 0;
           }
+          ol.ranking.mode-true-characters li.anime-item:hover {
+            transform: none;
+            box-shadow: none;
+          }
+          ol.ranking.mode-true-characters .meta { padding: 16px 34px 16px 16px; gap: 8px; }
+          ol.ranking.mode-true-characters .title-row { padding-top: 12px; }
           ol.ranking.mode-true-characters .title-anime {
             font-size: 15.5px;
             -webkit-line-clamp: 2;
             line-clamp: 2;
           }
+          ol.ranking.mode-true-characters .info-row .info { font-size: 10.5px; }
+          ol.ranking.mode-true-characters .meta::before { top: 9px; right: 11px; font-size: 40px; }
+          ol.ranking.mode-true-characters .rank-wrap { top: 51px; right: 11px; }
+          ol.ranking.mode-true-characters .rank-secondary { font-size: 11px; }
+          ol.ranking.category-watching .meta::before,
+          ol.ranking.category-plan .meta::before,
+          ol.ranking.category-incomplete .meta::before,
+          ol.ranking.category-announced .meta::before { font-size: 11px; }
         }
 
         @media (max-width: 380px) {
           ol.ranking.mode-true-characters {
-            --true-character-size: 92px;
-            --true-character-pad: 10px;
+            --true-character-poster-w: 98px;
+            --true-character-card-h: 98px;
           }
-          ol.ranking.mode-true-characters li.anime-item {
-            gap: 12px;
-          }
+          ol.ranking.mode-true-characters .meta { padding: 13px 28px 13px 13px; }
+          ol.ranking.mode-true-characters .title-anime { font-size: 14.5px; }
+          ol.ranking.mode-true-characters .meta::before { font-size: 34px; }
+          ol.ranking.mode-true-characters .rank-wrap { top: 44px; right: 9px; }
+          ol.ranking.mode-true-characters .rank-secondary { font-size: 10px; }
+          ol.ranking.category-watching .meta::before,
+          ol.ranking.category-plan .meta::before,
+          ol.ranking.category-incomplete .meta::before,
+          ol.ranking.category-announced .meta::before { font-size: 10px; }
         }
 
     /* ── "Watching Now" list — vertical/portrait cover art ── */
@@ -5463,13 +5610,13 @@
         }
 
         @media (max-width: 600px) {
-          ol.ranking.mode-watching li.anime-item { grid-template-columns: 30px 96px 1fr; min-height: 134px; }
-          ol.ranking.mode-watching .poster-wrap { width: 96px; height: 134px; }
+          ol.ranking.mode-watching li.anime-item { grid-template-columns: 30px 96px 1fr; min-height: 171px; }
+          ol.ranking.mode-watching .poster-wrap { width: 96px; height: 171px; }
         }
 
         @media (max-width: 380px) {
-          ol.ranking.mode-watching li.anime-item { grid-template-columns: 26px 82px 1fr; min-height: 115px; }
-          ol.ranking.mode-watching .poster-wrap { width: 82px; height: 115px; }
+          ol.ranking.mode-watching li.anime-item { grid-template-columns: 26px 82px 1fr; min-height: 146px; }
+          ol.ranking.mode-watching .poster-wrap { width: 82px; height: 146px; }
         }
 
         /* ── Top 3: borda superior especial (ouro, prata, bronze) ── */
@@ -6243,578 +6390,6 @@
           .fav-ep-lightbox-badges { justify-content: center; }
         }
 
-        /* ── "Watched This Month" — carrossel horizontal por mês, estilo
-            "Assistidos" da Crunchyroll. Dados vêm de "watchedMonthlyData"
-            no info.js. ── */
-        .watched-month-wrap {
-          padding-top: 6px;
-        }
-
-        .watched-month-empty {
-          padding: 40px 4px;
-          color: var(--muted);
-          font-size: 15px;
-        }
-
-        .watched-month-section {
-          margin: 0 0 28px;
-          padding: 0;
-        }
-
-        .watched-month-header {
-          margin-bottom: 0px;
-          padding: 0 0 0 44px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        /* Espaçamento do header sempre em 0px, independente de haver badge
-          de "assistido em 1 dia" nos cards visualmente na frente do
-          carrossel — antes o padrão era -15px e subia pra 0px só quando
-          havia badge (ver updateWatchedMonthHeaderSpacing); agora fica
-          fixo em 0px em ambos os casos. */
-        .watched-month-section.has-front-badge .watched-month-header {
-          margin-bottom: 0px;
-        }
-
-        .watched-month-title {
-          margin: 0;
-          font-family: var(--font-title);
-          font-size: 22px;
-          font-weight: 800;
-          letter-spacing: 0.03em;
-          text-transform: uppercase;
-          color: var(--text);
-        }
-
-        .watched-month-theme {
-          margin: 0;
-          font-size: 13px;
-          font-weight: 500;
-          color: var(--muted);
-          letter-spacing: 0.01em;
-          text-transform: lowercase;
-        }
-
-        .watched-month-theme:empty {
-          display: none;
-        }
-
-        .watched-month-carousel {
-          position: relative;
-        }
-
-        .watched-month-track {
-          display: flex;
-          gap: 14px;
-          overflow-x: auto;
-          /* Sem isso, "overflow-x: auto" sozinho faz o navegador computar
-             "overflow-y" implicitamente como "auto" também (regra do spec
-             de CSS: um eixo != visible força o outro a sair de "visible").
-             Como o hover dos cards (translateY + scale) aumenta um pouco
-             a altura do conteúdo, isso criava uma área mínima de scroll
-             vertical invisível dentro do track — e o mouse wheel ficava
-             preso tentando rolar esse eixo Y interno em vez de rolar a
-             página, sempre que o cursor estava sobre um card. */
-          overflow-y: hidden;
-          /* "mandatory" (em vez de "proximity") garante que, depois de um
-             swipe no touch, o carrossel sempre volta a encaixar exatamente
-             num card — com "proximity" o navegador às vezes deixa uns
-             pixels de scrollLeft residual quando você solta o dedo perto
-             do início, e aí a primeira imagem fica desalinhada com o
-             título (MAY 2025) que fica fora da área de scroll. */
-          scroll-snap-type: x mandatory;
-          scroll-behavior: smooth;
-          scroll-padding-left: 44px;
-          padding: 2px 44px 8px 44px;
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-
-        .watched-month-track::-webkit-scrollbar { display: none; }
-
-        .watched-month-card {
-          flex: 0 0 calc((100% - 5 * 14px) / 6);
-          min-width: 0;
-          scroll-snap-align: start;
-          display: block;
-          text-decoration: none;
-          color: inherit;
-          cursor: pointer;
-        }
-
-        .watched-month-card-poster {
-          position: relative;
-          width: 100%;
-          aspect-ratio: 2 / 3;
-          border-radius: 0;
-          overflow: hidden;
-          background: var(--surface);
-          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-          transition: transform 0.18s ease, box-shadow 0.18s ease;
-        }
-
-        /* Slot com altura fixa acima do poster: existe em TODO card (com
-          ou sem badge), então o poster sempre começa na mesma altura em
-          toda a fileira — o badge, quando existe, só preenche esse slot
-          por dentro, sem empurrar o poster de forma variável. */
-        .watched-month-card-badge-slot {
-          height: 17px;
-          margin-bottom: 6px;
-          display: flex;
-          align-items: center;
-        }
-
-        .watched-month-card-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          max-width: 100%;
-          cursor: default;
-        }
-
-        .watched-month-card-badge-icon {
-          font-size: 10px;
-          line-height: 1;
-          flex-shrink: 0;
-        }
-
-        .watched-month-card-badge-text {
-          font-size: 9.5px;
-          font-weight: 700;
-          color: #fbbf24;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .watched-month-card:hover .watched-month-card-poster,
-        .watched-month-card:focus-visible .watched-month-card-poster {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
-        }
-
-        /* Enquanto o preview flutuante (position:fixed) está ativo em cima
-           do card, o pôster NÃO pode manter o zoom/translate do :hover — o
-           preview é dimensionado com base no retângulo "normal" (sem
-           transform) do card via getBoundingClientRect(), que não reflete
-           esse transform do filho (CSS transform não muda o layout box).
-           Resultado: durante a transição do :hover, o pôster ficava um
-           pouco maior que a área coberta pelo preview e uma fina fatia da
-           imagem original (sem blur) escapava pela borda. Forçar o
-           transform de volta ao normal, sem transição, assim que
-           .is-previewing é aplicado (no mesmo instante em que o JS mostra
-           o preview) elimina essa sobra. */
-        .watched-month-card.is-previewing .watched-month-card-poster {
-          transform: none !important;
-          transition: none !important;
-        }
-
-        .watched-month-card-poster img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-
-        .watched-month-card-title {
-          margin-top: 8px;
-          font-size: 13.5px;
-          font-weight: 700;
-          color: var(--text);
-          line-height: 1.3;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          opacity: 1;
-          transition: opacity 0.18s ease;
-        }
-
-        /* Controlado via JS (classe .is-previewing), não por :hover puro:
-          o preview flutuante fica em cima do card com posição "fixed" e
-          "rouba" o hover do mouse (o browser passa a considerar o mouse
-          sobre o preview, não mais sobre o .watched-month-card), então o
-          :hover do card soltava antes da hora e o título reaparecia
-          por baixo do preview. */
-        .watched-month-card.is-previewing .watched-month-card-title {
-          opacity: 0;
-        }
-
-        .watched-month-arrow {
-          position: absolute;
-          top: 0;
-          bottom: 28px;
-          margin: auto 0;
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: none;
-          background: transparent;
-          cursor: pointer;
-          outline: none;
-          color: #fff;
-          opacity: 0;
-          pointer-events: none;
-          z-index: 501;
-          filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9)) drop-shadow(0 0 6px rgba(0,0,0,0.6));
-          transition: opacity 0.18s ease, transform 0.15s ease;
-        }
-
-        .watched-month-arrow--prev { left: 8px; }
-        .watched-month-arrow--next { right: 8px; }
-
-        .watched-month-arrow:hover {
-          transform: scale(1.15);
-        }
-
-        .watched-month-arrow svg {
-          width: 22px;
-          height: 22px;
-        }
-
-        /* Setas sempre ativas (não dependem mais de :hover) — só somem
-          quando o carrossel está no início/fim (ver .at-start/.at-end
-          abaixo, controladas via JS em updateWatchedMonthArrows). */
-        .watched-month-arrow {
-          opacity: 1;
-          pointer-events: auto;
-        }
-
-        .watched-month-carousel.at-start .watched-month-arrow--prev,
-        .watched-month-carousel.at-end .watched-month-arrow--next {
-          opacity: 0;
-          pointer-events: none;
-        }
-
-        /* Fade nos cards da extremidade (onde as setas ficam por cima).
-          Antes só aparecia no hover — agora fica sempre visível, e some
-          apenas do lado que não tem mais pra onde rolar (mesma lógica das
-          setas, via .at-start/.at-end). */
-        .watched-month-carousel::before,
-        .watched-month-carousel::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          bottom: 28px;
-          width: 72px;
-          pointer-events: none;
-          z-index: 500;
-          opacity: 1;
-          transition: opacity 0.18s ease;
-        }
-
-        /* Curva "easing" (não-linear) em vez de um gradiente reto de 2 pontos.
-           Um fade linear de opaco pra transparente cria uma faixa cinza-suja
-           por cima de imagens coloridas e termina com uma linha bem visível
-           onde a opacidade chega em 0. Com vários stops seguindo uma curva
-           ease-out, a transição fica gradual o tempo todo e a ponta se
-           dissolve por completo — sem borda perceptível. */
-        .watched-month-carousel::before {
-          left: 0;
-          background: linear-gradient(to right,
-            rgba(3,3,3,0.90) 0%,
-            rgba(3,3,3,0.664) 19%,
-            rgba(3,3,3,0.487) 34%,
-            rgba(3,3,3,0.344) 47%,
-            rgba(3,3,3,0.25) 56.5%,
-            rgba(3,3,3,0.175) 65%,
-            rgba(3,3,3,0.113) 73%,
-            rgba(3,3,3,0.068) 80.2%,
-            rgba(3,3,3,0.038) 86.1%,
-            rgba(3,3,3,0.019) 91%,
-            rgba(3,3,3,0.007) 95.2%,
-            rgba(3,3,3,0.002) 98.2%,
-            rgba(3,3,3,0) 100%);
-        }
-
-        .watched-month-carousel::after {
-          right: 0;
-          background: linear-gradient(to left,
-            rgba(3,3,3,0.90) 0%,
-            rgba(3,3,3,0.664) 19%,
-            rgba(3,3,3,0.487) 34%,
-            rgba(3,3,3,0.344) 47%,
-            rgba(3,3,3,0.25) 56.5%,
-            rgba(3,3,3,0.175) 65%,
-            rgba(3,3,3,0.113) 73%,
-            rgba(3,3,3,0.068) 80.2%,
-            rgba(3,3,3,0.038) 86.1%,
-            rgba(3,3,3,0.019) 91%,
-            rgba(3,3,3,0.007) 95.2%,
-            rgba(3,3,3,0.002) 98.2%,
-            rgba(3,3,3,0) 100%);
-        }
-
-        .watched-month-carousel.at-start::before,
-        .watched-month-carousel.at-end::after {
-          opacity: 0;
-        }
-
-        @media (max-width: 760px) {
-          .watched-month-card { flex-basis: calc((100% - 2 * 10px) / 3); }
-          .watched-month-title { font-size: 18px; }
-          .watched-month-arrow { display: none; }
-          .watched-month-header { padding: 0 0 0 4px; }
-          .watched-month-track { padding: 2px 4px 8px; gap: 10px; scroll-padding-left: 4px; }
-          /* Sem as setas (escondidas acima, já que no mobile a navegação é
-             por swipe), o fade escurecido que ficava atrás delas (pensado só
-             pra dar contraste ao ícone da seta) sobra sem função — vira só
-             uma mancha opaca no canto do pôster. Remove o fade também. */
-          .watched-month-carousel::before,
-          .watched-month-carousel::after {
-            opacity: 0;
-          }
-        }
-
-        /* ── Preview flutuante estilo Crunchyroll (hover no card de "Watched
-          This Month") — não duplica o pôster: o texto (título, temporadas/
-          episódios e sinopse) fica sobreposto em cima da própria arte do
-          card, com um gradiente escuro por baixo pra garantir legibilidade.
-          Sem nota/votos e sem os botões de play/salvar/+. ── */
-        .watched-month-preview {
-          position: fixed;
-          border-radius: 0;
-          overflow: hidden;
-          background: transparent;
-          z-index: 500;
-          opacity: 0;
-          pointer-events: none;
-          text-decoration: none;
-          color: inherit;
-          display: block;
-        }
-
-        .watched-month-preview.is-visible {
-          opacity: 1;
-          pointer-events: auto;
-        }
-
-        .watched-month-preview-img {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: fill;
-          display: block;
-        }
-
-        .watched-month-preview-overlay {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-          padding: 14px;
-          background: linear-gradient(180deg, rgba(25, 27, 29, 0.95) 0%, rgba(25, 27, 29, 0.88) 100%);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-        }
-
-        /* Enquanto a página está rolando com um preview aberto, o loop de
-          requestAnimationFrame (watchedMonthSyncLoop) reescreve left/top a
-          cada frame pra manter o preview grudado no card por baixo. Com o
-          backdrop-filter (blur) ativo, cada uma dessas reescritas de
-          posição obriga o navegador a re-borrar a área por trás do
-          elemento de novo, frame a frame — isso é o que deixava o scroll
-          pesado sempre que um preview estava ativo. A classe
-          .is-scrolling (ligada/desligada pelo próprio JS junto com o
-          loop) desliga o blur só durante o movimento real e devolve o
-          fundo sólido no lugar, sem re-borrar nada; o blur volta assim
-          que o scroll para. */
-        .watched-month-preview.is-scrolling .watched-month-preview-overlay {
-          backdrop-filter: none;
-          -webkit-backdrop-filter: none;
-          background: rgba(25, 27, 29, 0.97);
-        }
-
-        .watched-month-preview-badge {
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
-          width: fit-content;
-          max-width: 100%;
-          margin: 0 0 10px;
-        }
-
-        .watched-month-preview-badge:empty {
-          display: none;
-        }
-
-        .watched-month-preview-badge-inner {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 5px 12px 5px 9px;
-          border-radius: 999px;
-          background: rgba(245, 158, 11, 0.12);
-          border: 1px solid rgba(245, 158, 11, 0.32);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-          max-width: 100%;
-        }
-
-        .watched-month-preview-badge-icon {
-          font-size: 11px;
-          line-height: 1;
-          flex-shrink: 0;
-        }
-
-        .watched-month-preview-badge-text {
-          font-size: 10px;
-          font-weight: 700;
-          color: #fbbf24;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .watched-month-preview-title {
-          margin: 0 0 8px;
-          font-size: 13px;
-          font-weight: 800;
-          line-height: 1.25;
-          color: #fff;
-          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-        }
-
-        .watched-month-preview-meta {
-          margin: 0 0 10px;
-          display: flex;
-          flex-direction: column;
-          gap: 1px;
-        }
-
-        .watched-month-preview-meta-badge {
-          display: block;
-          font-size: 11px;
-          font-weight: 600;
-          color: rgba(255, 255, 255, 0.75);
-          line-height: 1.35;
-        }
-
-        .watched-month-preview-synopsis {
-          margin: 0;
-          font-size: 11.5px;
-          line-height: 1.5;
-          color: rgba(255, 255, 255, 0.75);
-          text-align: justify;
-          hyphens: auto;
-          -webkit-hyphens: auto;
-          -ms-hyphens: auto;
-          display: -webkit-box;
-          -webkit-line-clamp: 5;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        /* ── Ícones das listas às quais o anime pertence (canto inferior
-            esquerdo do preview) — cada um leva direto pra categoria
-            correspondente ao ser clicado. ── */
-        .watched-month-preview-lists {
-          position: absolute;
-          left: 14px;
-          bottom: 12px;
-          z-index: 2;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          flex-wrap: wrap;
-        }
-
-        .watched-month-preview-lists:empty { display: none; }
-
-        .watched-month-preview-list-icon {
-          --list-color: #e2e8f0;
-          display: inline-flex;
-          align-items: center;
-          height: 32px;
-          min-width: 32px;
-          padding: 0 7px;
-          border-radius: 16px;
-          border: none;
-          background: transparent;
-          color: var(--list-color);
-          cursor: pointer;
-          flex-shrink: 0;
-          overflow: hidden;
-          transition: transform 0.15s ease;
-        }
-
-        .watched-month-preview-list-icon:hover,
-        .watched-month-preview-list-icon:focus-visible {
-          transform: translateY(-2px) scale(1.08);
-        }
-
-        .wml-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .wml-icon svg {
-          width: 18px;
-          height: 18px;
-          display: block;
-        }
-
-        /* Wrapper que anima via CSS Grid (0fr -> 1fr) pra expandir
-          exatamente até a largura do texto, sem chute de max-width. */
-        .wml-label-wrap {
-          display: grid;
-          grid-template-columns: 0fr;
-          min-width: 0;
-          transition: grid-template-columns 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .watched-month-preview-list-icon:hover .wml-label-wrap,
-        .watched-month-preview-list-icon:focus-visible .wml-label-wrap {
-          grid-template-columns: 1fr;
-        }
-
-        .wml-label {
-          overflow: hidden;
-          min-width: 0;
-          display: flex;
-          white-space: nowrap;
-          padding-left: 0;
-          transition: padding-left 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .watched-month-preview-list-icon:hover .wml-label,
-        .watched-month-preview-list-icon:focus-visible .wml-label {
-          padding-left: 6px;
-        }
-
-        .wml-label .letter {
-          display: inline-block;
-          font-family: var(--font-title);
-          font-size: 12px;
-          font-weight: 600;
-          letter-spacing: 0.1px;
-          white-space: pre;
-          opacity: 0;
-          transform: translateX(-6px);
-          transition: opacity 0.22s ease, transform 0.22s ease;
-        }
-
-        .watched-month-preview-list-icon:hover .letter,
-        .watched-month-preview-list-icon:focus-visible .letter {
-          opacity: 1;
-          transform: translateX(0);
-        }
-
-
         /* ── CALENDÁRIO DE LANÇAMENTOS ── */
         .calendar-toggle-btn[hidden] {
           display: none !important;
@@ -6875,6 +6450,18 @@
         }
 
         .release-calendar-view[hidden] {
+          display: none !important;
+        }
+
+        /* No calendário, os cards não exibem posição/ranking.
+           O layout mode-true-characters também cria o número via .meta::before,
+           então os dois pontos precisam ser desligados aqui. */
+        .release-calendar-list .rank-wrap {
+          display: none !important;
+        }
+
+        .release-calendar-list .meta::before {
+          content: none !important;
           display: none !important;
         }
 
@@ -7099,7 +6686,328 @@
           }
         }
 
-      </style>
+      
+        /* ── Altura fixa dos cards das listas principais ──────────────────
+           Todas estas categorias usam o layout editorial/portrait. A altura
+           agora é EXATA (não apenas min-height), então conteúdo interno não
+           consegue esticar um card individual. O pôster acompanha exatamente
+           a mesma altura do card. */
+        ol.ranking:is(
+          .category-all,
+          .category-romance,
+          .category-isekai,
+          .category-comedy,
+          .category-mecha,
+          .category-sports,
+          .category-watching,
+          .category-plan,
+          .category-announced,
+          .category-incomplete
+        ) li.anime-item {
+          height: 220px !important;
+          min-height: 220px !important;
+          max-height: 220px !important;
+        }
+
+        ol.ranking:is(
+          .category-all,
+          .category-romance,
+          .category-isekai,
+          .category-comedy,
+          .category-mecha,
+          .category-sports,
+          .category-watching,
+          .category-plan,
+          .category-announced,
+          .category-incomplete
+        ) li.anime-item .poster-wrap {
+          height: 220px !important;
+          min-height: 220px !important;
+          max-height: 220px !important;
+          align-self: stretch;
+        }
+
+        @media (max-width: 1100px) {
+          ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item,
+          ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
+            height: 192px !important;
+            min-height: 192px !important;
+            max-height: 192px !important;
+          }
+        }
+
+        @media (max-width: 900px) {
+          ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item,
+          ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
+            height: 165px !important;
+            min-height: 165px !important;
+            max-height: 165px !important;
+          }
+        }
+
+        @media (max-width: 600px) {
+          ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item,
+          ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
+            height: 134px !important;
+            min-height: 134px !important;
+            max-height: 134px !important;
+          }
+        }
+
+        @media (max-width: 380px) {
+          ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item,
+          ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
+            height: 115px !important;
+            min-height: 115px !important;
+            max-height: 115px !important;
+          }
+        }
+
+        /* ── Preview: rank principal ocupa LITERALMENTE toda a altura do card,
+           SOMENTE no All Ranking. O número é ampliado além da caixa e recortado
+           pelas bordas do card, fazendo o glifo encostar no topo e na base. ── */
+        ol.ranking.mode-true-characters.category-all li.anime-item,
+        ol.ranking.mode-true-characters.category-trueCharacters li.anime-item {
+          overflow: hidden !important;
+        }
+
+        ol.ranking.mode-true-characters.category-all .meta::before,
+        ol.ranking.mode-true-characters.category-trueCharacters .meta::before {
+          top: 50%;
+          right: 10px;
+          width: 150px;
+          text-align: right;
+          font-size: 96px;
+          line-height: 0.72;
+          font-variant-numeric: tabular-nums;
+          font-feature-settings: "tnum" 1;
+          letter-spacing: -0.06em;
+          transform-origin: center center;
+        }
+
+        ol.ranking.mode-true-characters.category-all .meta::before {
+          transform: translateY(-50%) scaleY(3.55);
+        }
+
+        ol.ranking.mode-true-characters.category-trueCharacters .meta::before {
+          transform: translateY(-50%) scaleY(3.15);
+        }
+
+        ol.ranking.mode-true-characters.category-all li.anime-item:hover .meta::before {
+          transform: translate(-3px, -50%) scaleY(3.55);
+        }
+
+        ol.ranking.mode-true-characters.category-trueCharacters li.anime-item:hover .meta::before {
+          transform: translate(-3px, -50%) scaleY(3.15);
+        }
+
+        /* All Ranking e True Characters: posições 1–9 usam zero à esquerda (#01 ... #09). */
+        ol.ranking.mode-true-characters.category-all .meta::before,
+        ol.ranking.mode-true-characters.category-trueCharacters .meta::before {
+          content: "#" counter(item, decimal-leading-zero);
+        }
+
+        /* All Ranking: reserva a área do #XX com um pequeno respiro visual.
+           Mantém títulos longos aproveitando a largura disponível, mas evita
+           que finais como “Edgerunners” encostem no rank gigante. */
+        ol.ranking.mode-true-characters.category-all .title-row,
+        ol.ranking.mode-true-characters.category-trueCharacters .title-row {
+          padding-right: 102px;
+        }
+
+        /* True Characters: mantém o retrato 1:1 e impede título/subtítulo
+           de entrarem por baixo do rank gigante. O rank continua idêntico ao All Anime. */
+        ol.ranking.mode-true-characters.category-trueCharacters .title-row,
+        ol.ranking.mode-true-characters.category-trueCharacters .info-row {
+          padding-right: 155px;
+        }
+
+        /* Mobile: mantém o rank grande, mas com bem menos alongamento vertical. */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters.category-all .title-row {
+            padding-right: 46px;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .title-row,
+          ol.ranking.mode-true-characters.category-trueCharacters .info-row {
+            padding-right: 68px;
+          }
+
+          ol.ranking.mode-true-characters.category-all .meta::before {
+            transform: translateY(-50%) scaleY(1.45);
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .meta::before {
+            transform: translateY(-50%) scaleY(1.35);
+          }
+
+          ol.ranking.mode-true-characters.category-all li.anime-item:hover .meta::before {
+            transform: translate(-3px, -50%) scaleY(1.45);
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters li.anime-item:hover .meta::before {
+            transform: translate(-3px, -50%) scaleY(1.35);
+          }
+        }
+
+        @media (max-width: 380px) {
+          ol.ranking.mode-true-characters.category-all .title-row {
+            padding-right: 38px;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .title-row,
+          ol.ranking.mode-true-characters.category-trueCharacters .info-row {
+            padding-right: 56px;
+          }
+
+          ol.ranking.mode-true-characters.category-all .meta::before {
+            transform: translateY(-50%) scaleY(1.30);
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .meta::before {
+            transform: translateY(-50%) scaleY(1.22);
+          }
+
+          ol.ranking.mode-true-characters.category-all li.anime-item:hover .meta::before {
+            transform: translate(-3px, -50%) scaleY(1.30);
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters li.anime-item:hover .meta::before {
+            transform: translate(-3px, -50%) scaleY(1.22);
+          }
+        }
+
+
+        /* ── Sub-rankings (Romance / Isekai / Comedy / Mecha / Sports) ──────────
+           Desktop: rank principal usa o mesmo tratamento gigante do All Ranking.
+           O rank secundário (posição no All Ranking) fica removido em todos os tamanhos.
+           Mobile: volta ao rank compacto, sem o caractere #. */
+        ol.ranking.mode-true-characters:is(
+          .category-romance,
+          .category-isekai,
+          .category-comedy,
+          .category-mecha,
+          .category-sports
+        ) .rank-secondary {
+          display: none !important;
+        }
+
+        @media (min-width: 601px) {
+          ol.ranking.mode-true-characters:is(
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) li.anime-item {
+            overflow: hidden !important;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) .meta::before {
+            content: "#" counter(item, decimal-leading-zero);
+            top: 50%;
+            right: 10px;
+            width: 150px;
+            text-align: right;
+            font-size: 96px;
+            line-height: 0.72;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum" 1;
+            letter-spacing: -0.06em;
+            transform-origin: center center;
+            transform: translateY(-50%) scaleY(3.55);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) li.anime-item:hover .meta::before {
+            transform: translate(-3px, -50%) scaleY(3.55);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) .title-row {
+            padding-right: 102px;
+          }
+        }
+
+        @media (max-width: 600px) {
+          /* Mobile: All Ranking + sub-rankings usam o mesmo #X compacto no canto. */
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-trueCharacters,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) .meta::before {
+            content: "#" counter(item);
+            top: 9px;
+            right: 11px;
+            width: auto;
+            text-align: initial;
+            font-size: 40px;
+            line-height: 1;
+            font-variant-numeric: normal;
+            font-feature-settings: normal;
+            letter-spacing: -0.06em;
+            transform: none;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-trueCharacters,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) li.anime-item:hover .meta::before {
+            transform: translateX(-3px);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-trueCharacters,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) .title-row {
+            padding-right: 0;
+          }
+        }
+
+        @media (max-width: 380px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-trueCharacters,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) .meta::before {
+            font-size: 34px;
+          }
+        }
+</style>
 
     </head>
 
@@ -7496,18 +7404,6 @@
                   <span class="drawer-item-text">
                     <span class="label">Plan to Watch</span>
                     <span class="drawer-item-count" data-count-mode="plan"></span>
-                  </span>
-                  <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="m9 18 6-6-6-6"></path>
-                  </svg>
-                </button>
-                <button class="drawer-item" data-mode="watchedMonth" role="menuitem" style="--cat-color: #84cc16;">
-                  <span class="drawer-item-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>
-                  </span>
-                  <span class="drawer-item-text">
-                    <span class="label">Month by Month</span>
-                    <span class="drawer-item-count" data-count-mode="watchedMonth"></span>
                   </span>
                   <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="m9 18 6-6-6-6"></path>
@@ -10023,8 +9919,6 @@
           }
 
 
-
-
           // Notas do MyAnimeList (opcional, só pra itens do "All Animes"):
           // adicione um campo "mal" em qualquer item abaixo, assim:
           //   mal: [
@@ -10168,7 +10062,6 @@
             announced: 'announced-sequels',
             favEpisodes: 'favorite-episodes',
             trueCharacters: 'true-characters',
-            watchedMonth: 'watched-this-month',
           };
 
           function getModeFromHash() {
@@ -10437,7 +10330,6 @@
             announced: '#34d399',
             favEpisodes: '#7fb2ff',
             trueCharacters: '#f472b6',
-            watchedMonth: '#84cc16',
           };
 
           // Nomes exibidos por categoria (mesmos textos usados no drawer)
@@ -10452,7 +10344,6 @@
             plan: 'Plan to Watch',
             incomplete: 'Incomplete',
             announced: 'Announced Sequels:',
-            watchedMonth: 'Month by Month',
             favEpisodes: 'Peak Episodes',
             trueCharacters: 'True Characters',
           };
@@ -10724,7 +10615,8 @@
               subClass = ` sub-list sub-${mode}`;
             }
 
-            const hoverColor = seasonColor || CATEGORY_HOVER_COLOR[mode] || null;
+            const colorMode = mode === 'announced-unwatched' ? 'announced' : mode;
+            const hoverColor = CATEGORY_HOVER_COLOR[colorMode] || seasonColor || null;
             const hoverStyle = hoverColor ? ` style="--item-hover-color: ${hoverColor};"` : '';
             const isLinkableMode = (mode === 'watching' || mode === 'plan' || mode === 'announced-unwatched');
             // Watching Now não usa data-anime-planet-url pro clique do card em
@@ -10922,7 +10814,6 @@
             else if (currentCategory === 'announced') pageTitle.innerText = "anime with announced sequels or movies";
             else if (currentCategory === 'favEpisodes') pageTitle.innerText = "episodes that are absolute cinema for me";
             else if (currentCategory === 'trueCharacters') pageTitle.innerText = "characters that are absolutely peak";
-            else if (currentCategory === 'watchedMonth') pageTitle.innerText = "anime i've watched, month by month";
           }
 
           function selectDrawerItem(mode) {
@@ -11150,7 +11041,7 @@
           const MODE_TAB = {
             all: 'ranks', romance: 'ranks', isekai: 'ranks', sports: 'ranks', comedy: 'ranks', mecha: 'ranks',
             watching: 'lists', plan: 'lists', incomplete: 'lists', announced: 'lists',
-            watchedMonth: 'lists', favEpisodes: 'lists', trueCharacters: 'lists'
+            favEpisodes: 'lists', trueCharacters: 'lists'
           };
 
           function createDrawerController() {
@@ -11311,8 +11202,6 @@
               return favoriteEpisodesData;
             } else if (mode === 'trueCharacters') {
               return trueCharactersData;
-            } else if (mode === 'watchedMonth') {
-              return (typeof watchedMonthlyData !== 'undefined' ? watchedMonthlyData : []).flatMap(m => m.animes || []);
             }
             return [];
           }
@@ -11744,730 +11633,17 @@
             __favEpResizeTO = setTimeout(sizeAllFavEpThumbstrips, 150);
           }, { passive: true });
 
-          // ── "Watched This Month" — lista separada (dentro de MyLists) com um
-          // carrossel horizontal por mês, estilo "Assistidos" da Crunchyroll.
-          // Os dados vêm de "watchedMonthlyData" (definido no info.js). Modo
-          // simples: não usa o sistema de card/lightbox do resto do site — só
-          // pôster, título, tags e (opcional) link externo. ──
-          //
-          // Existe uma função escapeHtml em outro escopo do arquivo (fora do
-          // alcance daqui), então precisamos da nossa própria cópia local
-          // (mesmo motivo documentado em outros trechos do script).
-          function escapeHtmlWatchedMonth(str) {
-            return String(str == null ? '' : str)
-              .replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#39;');
-          }
-
-          // Detecta um algarismo romano (I, II, III, IV...) no final de textos
-          // tipo "4ª Temporada I" e envolve só ele numa span em Times New Roman,
-          // deixando o resto do texto na fonte normal.
-          function formatSeasonLabelWatchedMonth(str) {
-            const escaped = escapeHtmlWatchedMonth(str);
-            return escaped.replace(/\b([IVXLCDM]+)$/, '<span style="font-family: \'Times New Roman\', Times, serif;">$1</span>');
-          }
-
-          // Lookup usado pelo preview de hover estilo Crunchyroll.
-          // IMPORTANTE: não pode ser indexado pelo "id" do anime, porque o
-          // mesmo id se repete em várias entradas (cada temporada/filme do
-          // mesmo anime usa o mesmo id, só mudando title/synopsis/episodes).
-          // Se a chave fosse o id, cada card novo sobrescreveria os dados do
-          // card anterior com o mesmo id, e todos os cards daquele anime
-          // acabariam mostrando o preview do último renderizado. Por isso
-          // usamos uma chave sequencial única por card (data-preview-key)
-          // só para o preview; o data-anime-id original continua existindo
-          // à parte, para a navegação por categoria (que precisa do id
-          // compartilhado mesmo).
-          const watchedMonthPreviewLookup = {};
-          let watchedMonthPreviewSeq = 0;
-
-          function renderWatchedMonthCard(anime) {
-            const escapeHtml = escapeHtmlWatchedMonth;
-            const ns = (typeof nextSeasonMap !== 'undefined') ? nextSeasonMap[anime.id] : null;
-            let stripHtml = '';
-            if (ns && ns.info) {
-              const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
-              const isMulti = nsLines.length > 1;
-              stripHtml = `
-                  <div class="announce-strip"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
-                    <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
-                  </div>`;
-            }
-            let cardBadgeHtml = '';
-            if (anime.badge) {
-              const badgeMatch = String(anime.badge).match(/^(\S+)\s+(.*)$/);
-              const badgeIcon = badgeMatch ? badgeMatch[1] : '';
-              const badgeText = badgeMatch ? badgeMatch[2] : anime.badge;
-              const iconHtml = badgeIcon ? `<span class="watched-month-card-badge-icon">${escapeHtml(badgeIcon)}</span>` : '';
-              cardBadgeHtml = `<div class="watched-month-card-badge">${iconHtml}<span class="watched-month-card-badge-text">${escapeHtml(badgeText)}</span></div>`;
-            }
-            const inner = `
-              <div class="watched-month-card-badge-slot">${cardBadgeHtml}</div>
-              <div class="watched-month-card-poster">
-                <img src="${escapeHtml(anime.img)}" alt="${escapeHtml(anime.title)}" loading="lazy">
-                ${stripHtml}
-              </div>
-              <div class="watched-month-card-title">${escapeHtml(anime.title)}</div>
-            `;
-            const previewKey = `wm${watchedMonthPreviewSeq++}`;
-            watchedMonthPreviewLookup[previewKey] = anime;
-            const idAttr = anime.id ? ` data-anime-id="${escapeHtml(anime.id)}"` : '';
-            const previewKeyAttr = ` data-preview-key="${previewKey}"`;
-            return anime.url
-              ? `<a class="watched-month-card"${idAttr}${previewKeyAttr} href="${escapeHtml(anime.url)}" target="_blank" rel="noopener">${inner}</a>`
-              : `<div class="watched-month-card"${idAttr}${previewKeyAttr}>${inner}</div>`;
-          }
-
-          // ── Preview flutuante ao passar o mouse (estilo Crunchyroll), sem nota
-          // e sem os botões (play/salvar/+) — só pôster, título, temporadas/
-          // episódios (se definidos em info.js) e sinopse (se definida). ──
-          let watchedMonthPreviewEl = null;
-          let watchedMonthPreviewHideTimer = null;
-          let watchedMonthActiveCard = null;
-          let watchedMonthActiveCarousel = null;
-          // Enquanto a página rola com o mouse parado, o navegador recalcula
-          // qual elemento está "sob o cursor" e dispara mouseenter/mouseleave
-          // sintéticos pros cards que passam por baixo dele — o que fazia o
-          // preview trocar de anime (ou até piscar) sozinho s recalcular
-          // durante o scroll. Enquanto watchedMonthSuppressHoverUntil (um
-          // timestamp) não passar, ignoramos esses eventos de hover vindos
-          // dos cards, mantendo o preview grudado no card que o usuário
-          // realmente colocou o mouse em cima. Esses eventos sintéticos são
-          // ignorados; só reposicionamos (ver scroll listener mais abaixo).
-          let watchedMonthSuppressHoverUntil = 0;
-          function watchedMonthMarkScrolling() {
-            watchedMonthSuppressHoverUntil = Date.now() + 250;
-          }
-
-          // Diferencia um "mouseenter" de verdade (o usuário moveu o cursor
-          // até o card) de um sintético (disparado pelo navegador quando o
-          // conteúdo rola por baixo do cursor PARADO). Sem isso, a janela de
-          // supressão acima (250ms após qualquer scroll) também engolia
-          // hovers genuínos — por exemplo, rolar a página até o carrossel e
-          // já ir passando o mouse num card em seguida, o caso mais comum de
-          // uso, ficava sem preview instantâneo até tirar e recolocar o
-          // mouse. Um "mousemove" real só existe quando o cursor de fato se
-          // deslocou; scroll por wheel/teclado/barra não dispara isso.
-          let watchedMonthLastRealMouseMoveTs = 0;
-          document.addEventListener('mousemove', () => {
-            watchedMonthLastRealMouseMoveTs = Date.now();
-          }, { passive: true });
-          function watchedMonthIsSyntheticHover() {
-            if (Date.now() >= watchedMonthSuppressHoverUntil) return false;
-            // Passou pouquíssimo tempo desde um movimento real do mouse ->
-            // é um hover genuíno acontecendo durante/logo após o scroll,
-            // não um recálculo do navegador com o cursor parado.
-            return (Date.now() - watchedMonthLastRealMouseMoveTs) > 50;
-          }
-
-          function getWatchedMonthPreviewEl() {
-            if (watchedMonthPreviewEl) return watchedMonthPreviewEl;
-            const el = document.createElement('a');
-            el.className = 'watched-month-preview';
-            el.innerHTML = `
-              <img class="watched-month-preview-img" alt="">
-              <div class="watched-month-preview-overlay">
-                <p class="watched-month-preview-title"></p>
-                <p class="watched-month-preview-meta"></p>
-                <p class="watched-month-preview-synopsis"></p>
-                <div class="watched-month-preview-lists"></div>
-              </div>
-            `;
-            document.body.appendChild(el);
-            el.addEventListener('mouseenter', () => { clearTimeout(watchedMonthPreviewHideTimer); });
-            el.addEventListener('mouseleave', hideWatchedMonthPreview);
-            // O preview é position:fixed, solto direto no <body> (fora do
-            // carrossel), então enquanto o mouse está sobre ele é ELE quem
-            // recebe o evento de wheel — e como não tem altura própria pra
-            // rolar, o navegador não acha um ancestral scrollável e a
-            // página inteira trava (não dá pra rolar pra cima/baixo
-            // enquanto o mouse estiver em cima de um card). Repassa o
-            // delta manualmente pro scroll da página pra isso nunca travar.
-            // Importante: quem realmente rola aqui é o <body> (ele tem
-            // overflow-y: auto próprio), não a window/<html> — por isso
-            // usamos document.body.scrollBy e não window.scrollBy, que não
-            // tinha efeito nenhum nesse layout.
-            el.addEventListener('wheel', (e) => {
-              // e.deltaY vem em unidades diferentes dependendo do
-              // deltaMode do evento: 0 = pixels (a maioria dos trackpads
-              // e Chrome/Windows), 1 = linhas (comum em mouse comum no
-              // Firefox — cada "clique" da rodinha reporta só ~3), 2 =
-              // página inteira. Como repassamos o valor puro pro
-              // scrollBy, no modo "linha" cada scroll do mouse só movia
-              // ~3px, obrigando a girar a rodinha um monte pra descer —
-              // por isso escalamos aqui pro equivalente em pixels antes
-              // de repassar, igualando à sensação do scroll nativo.
-              let dy = e.deltaY;
-              if (e.deltaMode === 1) dy *= 16;
-              else if (e.deltaMode === 2) dy *= window.innerHeight;
-              document.body.scrollBy(0, dy);
-              e.preventDefault();
-            }, { passive: false });
-            // Ícones de lista (canto inferior esquerdo) navegam pra categoria
-            // correspondente em vez de abrir o link do anime — precisa
-            // interceptar o clique antes que o <a> do preview atue.
-            el.addEventListener('click', (e) => {
-              const iconBtn = e.target.closest('.watched-month-preview-list-icon');
-              if (!iconBtn) return;
-              e.preventDefault();
-              e.stopPropagation();
-              const mode = iconBtn.dataset.listMode;
-              const animeId = watchedMonthActiveCard ? watchedMonthActiveCard.dataset.animeId : null;
-              el.classList.remove('is-visible');
-              if (watchedMonthActiveCard) {
-                watchedMonthActiveCard.classList.remove('is-previewing');
-                watchedMonthActiveCard = null;
-              }
-              if (watchedMonthActiveCarousel) {
-                watchedMonthActiveCarousel.classList.remove('has-preview');
-                watchedMonthActiveCarousel = null;
-              }
-              if (mode && animeId) navigateToAnimeInCategory(animeId, mode);
-            });
-            watchedMonthPreviewEl = el;
-            return el;
-          }
-
-          // Mapa de listas/categorias -> ícone e cor, reaproveitando os
-          // mesmos SVGs e cores usados nos itens do drawer, pra manter a
-          // identidade visual consistente entre o menu e os ícones do
-          // preview do "Month by Month".
-          const WATCHED_MONTH_LIST_META = {
-            all: {
-              label: 'All Animes',
-              color: '#e2e8f0',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>'
-            },
-            romance: {
-              label: 'Romance Anime',
-              color: '#f472b6',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>'
-            },
-            isekai: {
-              label: 'Isekai Anime',
-              color: '#a78bfa',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 16h5v5"></path></svg>'
-            },
-            sports: {
-              label: 'Sport Anime',
-              color: '#facc15',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"></path><path d="M7 4H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4"></path><path d="M17 4h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"></path></svg>'
-            },
-            comedy: {
-              label: 'Comedy Anime',
-              color: '#fb923c',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>'
-            },
-            mecha: {
-              label: 'Mecha/Cyberpunk',
-              color: '#38bdf8',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"></path><rect x="4" y="8" width="16" height="12" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path></svg>'
-            },
-            watching: {
-              label: 'Watching Now',
-              color: '#2dd4bf',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>'
-            },
-            plan: {
-              label: 'Plan to Watch',
-              color: '#f59e0b',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 15 2 2 4-4"></path></svg>'
-            },
-            announced: {
-              label: 'Announced Sequels',
-              color: '#34d399',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>'
-            },
-            favEpisodes: {
-              label: 'Peak Episodes',
-              color: '#3b82f6',
-              icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="13" rx="2"></rect><path d="M8 21h8"></path><path d="M12 18v3"></path></svg>'
-            }
-          };
-
-          // Descobre em quais listas/categorias um anime (pelo id) aparece,
-          // reaproveitando os mesmos arrays/sets que getFilteredData() usa
-          // pra montar cada categoria. "trueCharacters" fica de fora de
-          // propósito: os ids dessa lista são de personagens, não de anime,
-          // e podem colidir por coincidência com ids da lista principal
-          // (ver comentário perto de trueCharRankById), então não dá pra
-          // confiar num match por id ali.
-          function getWatchedMonthAnimeLists(id) {
-            if (!id) return [];
-            const modes = [];
-            const inPlan = typeof planIds !== 'undefined' && planIds.has(id);
-            const inAll = typeof animeData !== 'undefined' && animeData.some(a => a.id === id);
-            if (inAll && !inPlan) modes.push('all');
-            if (typeof romanceIds !== 'undefined' && romanceIds.includes(id) && !inPlan) modes.push('romance');
-            if (typeof isekaiIds !== 'undefined' && isekaiIds.includes(id) && !inPlan) modes.push('isekai');
-            if (typeof sportsIds !== 'undefined' && sportsIds.includes(id) && !inPlan) modes.push('sports');
-            if (typeof comedyIds !== 'undefined' && comedyIds.includes(id) && !inPlan) modes.push('comedy');
-            if (typeof mechaIds !== 'undefined' && mechaIds.includes(id) && !inPlan) modes.push('mecha');
-            if (typeof watchingData !== 'undefined' && watchingData.some(a => a.id === id)) modes.push('watching');
-            if (inPlan) modes.push('plan');
-            if (typeof nextSeasonMap !== 'undefined' && nextSeasonMap[id]) modes.push('announced');
-            if (typeof favoriteEpisodesData !== 'undefined' && favoriteEpisodesData.some(e => e.id === id)) modes.push('favEpisodes');
-            return modes;
-          }
-
-          // Monta o label letra por letra: cada <span> ganha um transition-delay
-          // crescente, criando o efeito de "digitação" surgindo da esquerda
-          // pra direita quando o botão recebe hover/foco.
-          function buildWatchedMonthLetterSpans(text) {
-            return text.split('').map((ch, i) => {
-              const delay = (i * 26) + 'ms';
-              const safeCh = ch === ' ' ? '&nbsp;' : ch;
-              return `<span class="letter" style="transition-delay:${delay}">${safeCh}</span>`;
-            }).join('');
-          }
-
-          // Categorias de "MyRanks" onde faz sentido mostrar a posição do
-          // anime dentro da lista (ex: "#3 Romance Anime"). As demais
-          // (Watching Now, Plan to Watch, Announced Sequels) não são listas
-          // ordenadas por ranking, então ficam sem número — mesma convenção
-          // já usada em getMembershipTags/RANK_POSITION_KEYS.
-          const WATCHED_MONTH_RANK_MODES = new Set(['all', 'romance', 'isekai', 'sports', 'mecha', 'comedy']);
-
-          function getWatchedMonthListPosition(mode, animeId) {
-            if (WATCHED_MONTH_RANK_MODES.has(mode)) {
-              const list = (typeof getFilteredData === 'function') ? getFilteredData(mode) : [];
-              const idx = list.findIndex(a => a.id === animeId);
-              return idx === -1 ? null : idx + 1;
-            }
-            if (mode === 'favEpisodes' && typeof favoriteEpisodesData !== 'undefined') {
-              const favIdx = favoriteEpisodesData.findIndex(e => e.id === animeId);
-              if (favIdx === -1) return null;
-              return (typeof computeFavEpisodeRanks === 'function')
-                ? computeFavEpisodeRanks(favoriteEpisodesData)[favIdx]
-                : favIdx + 1;
-            }
-            return null;
-          }
-
-          function renderWatchedMonthPreviewLists(el, anime) {
-            const wrap = el.querySelector('.watched-month-preview-lists');
-            if (!wrap) return;
-            const modes = getWatchedMonthAnimeLists(anime.id);
-            wrap.innerHTML = modes.map((mode) => {
-              const meta = WATCHED_MONTH_LIST_META[mode];
-              if (!meta) return '';
-              const position = getWatchedMonthListPosition(mode, anime.id);
-              const labelText = position != null ? `#${position} ${meta.label}` : meta.label;
-              return `<button type="button" class="watched-month-preview-list-icon" data-list-mode="${mode}" style="--list-color: ${meta.color};" aria-label="${labelText}"><span class="wml-icon">${meta.icon}</span><span class="wml-label-wrap"><span class="wml-label">${buildWatchedMonthLetterSpans(labelText)}</span></span></button>`;
-            }).join('');
-          }
-
-          function positionWatchedMonthPreview(card) {
-            const el = getWatchedMonthPreviewEl();
-            const cardRect = card.getBoundingClientRect();
-            // O preview cobre só do pôster pra baixo (poster + título) — o
-            // slot do badge (ex.: "ASSISTIDO EM 1 DIA") fica ACIMA dessa
-            // área e continua visível por cima do preview, em vez de ser
-            // coberto junto com o resto do card.
-            const posterEl = card.querySelector('.watched-month-card-poster');
-            const posterRect = posterEl ? posterEl.getBoundingClientRect() : cardRect;
-            const height = cardRect.bottom - posterRect.top;
-            // Mesmo tamanho e posição exatos do pôster do card — o preview só
-            // sobrepõe um gradiente + texto em cima da própria arte, sem
-            // aumentar nem esticar o card.
-            // Cobre um pouco além do card (arredondamento + qualquer resíduo
-            // de layout) pra garantir que nada do título/tags original apareça.
-            el.style.width = `${Math.ceil(posterRect.width) + 4}px`;
-            el.style.height = `${Math.ceil(height) + 8}px`;
-            el.style.left = `${Math.floor(posterRect.left) - 2}px`;
-            el.style.top = `${Math.floor(posterRect.top) - 2}px`;
-          }
-
-          // Enquanto tem um preview aberto, mantém a posição sincronizada com
-          // o card via requestAnimationFrame em vez de depender só do evento
-          // "scroll". O evento "scroll" pode disparar um pouco depois da
-          // repintura real do navegador durante rolagens rápidas — nesse
-          // intervalo o preview (position:fixed) fica alguns pixels
-          // desalinhado do pôster de verdade por trás dele, e como o overlay
-          // com blur só cobre a área do preview, sobra uma fina tira da
-          // imagem original (sem blur) aparecendo na borda. Repetir o
-          // reposicionamento a cada frame elimina esse atraso.
-          let watchedMonthRafId = null;
-          // Timestamp do último evento de scroll real enquanto um preview
-          // está ativo. O sync loop (abaixo) só continua rodando enquanto
-          // esse timestamp for recente — ou seja, só enquanto a página
-          // está de fato rolando. Antes ele rodava pra sempre (a cada
-          // frame, 60x/s) só por ter um preview aberto, mesmo com o mouse
-          // parado, recalculando getBoundingClientRect + reescrevendo
-          // left/top/width/height do preview (que tem backdrop-filter,
-          // caro de repintar). Isso somava trabalho em cima do scroll da
-          // página e deixava a rolagem pesada sempre que um card estava
-          // em hover. Agora o loop se autoencerra ~120ms depois do último
-          // scroll e só é reativado quando um novo scroll acontece.
-          let watchedMonthLastScrollTs = 0;
-
-          function watchedMonthSyncLoop() {
-            if (!watchedMonthActiveCard) {
-              watchedMonthRafId = null;
-              return;
-            }
-            const rect = watchedMonthActiveCard.getBoundingClientRect();
-            const viewportH = window.innerHeight || document.documentElement.clientHeight;
-            if (rect.bottom <= 0 || rect.top >= viewportH) {
-              hideWatchedMonthPreviewNow();
-              return;
-            }
-            positionWatchedMonthPreview(watchedMonthActiveCard);
-            if (Date.now() - watchedMonthLastScrollTs < 120) {
-              watchedMonthRafId = requestAnimationFrame(watchedMonthSyncLoop);
-            } else {
-              watchedMonthRafId = null;
-              // Scroll parou: desliga o modo "sem blur" e devolve o
-              // backdrop-filter normal do preview (ver .is-scrolling no CSS).
-              getWatchedMonthPreviewEl().classList.remove('is-scrolling');
-            }
-          }
-
-          function watchedMonthStartSyncLoop() {
-            if (watchedMonthRafId != null) return;
-            watchedMonthRafId = requestAnimationFrame(watchedMonthSyncLoop);
-          }
-
-          function watchedMonthStopSyncLoop() {
-            if (watchedMonthRafId != null) {
-              cancelAnimationFrame(watchedMonthRafId);
-              watchedMonthRafId = null;
-            }
-          }
-
-          function showWatchedMonthPreview(card) {
-            const anime = watchedMonthPreviewLookup[card.dataset.previewKey];
-            if (!anime) return;
-            clearTimeout(watchedMonthPreviewHideTimer);
-            if (watchedMonthActiveCard && watchedMonthActiveCard !== card) {
-              watchedMonthActiveCard.classList.remove('is-previewing');
-            }
-            card.classList.add('is-previewing');
-            watchedMonthActiveCard = card;
-
-            // O preview fica em position:fixed fora do carrossel (ver
-            // getWatchedMonthPreviewEl), então enquanto o mouse está sobre ele
-            // o CSS :hover do .watched-month-carousel se perde (o preview não
-            // é descendente dele no DOM) e as setas somem. Marca manualmente
-            // o carrossel correspondente pra manter as setas visíveis.
-            const carouselEl = card.closest('.watched-month-carousel');
-            if (watchedMonthActiveCarousel && watchedMonthActiveCarousel !== carouselEl) {
-              watchedMonthActiveCarousel.classList.remove('has-preview');
-            }
-            if (carouselEl) carouselEl.classList.add('has-preview');
-            watchedMonthActiveCarousel = carouselEl;
-
-            const el = getWatchedMonthPreviewEl();
-            if (anime.url) el.href = anime.url; else el.removeAttribute('href');
-            const imgEl = el.querySelector('.watched-month-preview-img');
-            imgEl.src = anime.img || '';
-            imgEl.alt = anime.title || '';
-            el.querySelector('.watched-month-preview-title').textContent = anime.title || '';
-
-            const metaParts = [];
-            if (anime.seasonLabel) metaParts.push({ html: formatSeasonLabelWatchedMonth(anime.seasonLabel) });
-            else if (anime.seasons) metaParts.push({ html: escapeHtmlWatchedMonth(`${anime.seasons} Temporada${anime.seasons == 1 ? '' : 's'}`) });
-            if (anime.episodes != null && anime.episodes !== '') {
-              // "episodes" pode ser um número de episódios (série) ou uma
-              // duração tipo "1h25m" (filme) — só quando é número mesmo é
-              // que faz sentido colar o sufixo "Episódio(s)".
-              const isNumericEpisodes = typeof anime.episodes === 'number';
-              const episodesText = isNumericEpisodes
-                ? `${anime.episodes} episódio${anime.episodes === 1 ? '' : 's'}`
-                : `${anime.episodes}`;
-              metaParts.push({ html: escapeHtmlWatchedMonth(episodesText) });
-            }
-            const metaEl = el.querySelector('.watched-month-preview-meta');
-            metaEl.innerHTML = metaParts.length
-              ? `<span class="watched-month-preview-meta-badge">${metaParts.map(part => part.html).join(': ')}</span>`
-              : '';
-            metaEl.style.display = metaParts.length ? '' : 'none';
-
-            // Badge (ex.: "ASSISTIDO EM 1 DIA") não é mais duplicado aqui
-            // dentro do preview flutuante — ele já aparece acima do card
-            // (slot fixo, ver .watched-month-card-badge-slot) e continua
-            // visível mesmo durante o preview, então repetir aqui embaixo
-            // (com fundo/borda) seria redundante.
-
-            const synopsisEl = el.querySelector('.watched-month-preview-synopsis');
-            synopsisEl.textContent = anime.synopsis || '';
-            synopsisEl.style.display = anime.synopsis ? '' : 'none';
-
-            renderWatchedMonthPreviewLists(el, anime);
-
-            positionWatchedMonthPreview(card);
-            el.classList.add('is-visible');
-            watchedMonthStartSyncLoop();
-          }
-
-          function hideWatchedMonthPreviewNow() {
-            clearTimeout(watchedMonthPreviewHideTimer);
-            watchedMonthStopSyncLoop();
-            if (watchedMonthPreviewEl) watchedMonthPreviewEl.classList.remove('is-visible', 'is-scrolling');
-            if (watchedMonthActiveCard) {
-              watchedMonthActiveCard.classList.remove('is-previewing');
-              watchedMonthActiveCard = null;
-            }
-            if (watchedMonthActiveCarousel) {
-              watchedMonthActiveCarousel.classList.remove('has-preview');
-              watchedMonthActiveCarousel = null;
-            }
-          }
-
-          function hideWatchedMonthPreview() {
-            watchedMonthPreviewHideTimer = setTimeout(hideWatchedMonthPreviewNow, 60);
-          }
-
-          function initWatchedMonthPreviewHovers(wrap) {
-            const hasHover = window.matchMedia('(hover: hover)').matches;
-            wrap.querySelectorAll('.watched-month-card[data-preview-key]').forEach((card) => {
-              if (hasHover) {
-                card.addEventListener('mouseenter', () => {
-                  if (watchedMonthIsSyntheticHover()) return;
-                  showWatchedMonthPreview(card);
-                });
-                card.addEventListener('mouseleave', () => {
-                  if (watchedMonthIsSyntheticHover()) return;
-                  hideWatchedMonthPreview();
-                });
-              } else {
-                // Touch: o 1º toque revela o preview (em vez de já navegar);
-                // como o card já fica marcado "is-previewing" depois disso,
-                // um 2º toque passa direto (sem preventDefault) e segue o
-                // comportamento normal do link/card.
-                card.addEventListener('click', (e) => {
-                  if (!card.classList.contains('is-previewing')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showWatchedMonthPreview(card);
-                  }
-                });
-              }
-            });
-          }
-
-          // Toque fora do card ativo ou do próprio preview fecha o preview
-          // (equivalente ao mouseleave, que não existe em telas touch).
-          document.addEventListener('click', (e) => {
-            if (!watchedMonthActiveCard) return;
-            if (e.target.closest('.watched-month-card') || e.target.closest('.watched-month-preview')) return;
-            hideWatchedMonthPreview();
-          });
-
-          // O preview é position:fixed e sua posição é calculada a partir do
-          // pôster (ver positionWatchedMonthPreview). Rolar a página verticalmente
-          // move o card mas não atualiza o preview sozinho — ele "descolaria" do
-          // pôster se nada fosse feito. Em vez de esconder o preview a cada
-          // scroll (o que fazia ele sumir e reaparecer toda hora ao subir/descer),
-          // aqui reposicionamos o preview pra seguir o card em tempo real,
-          // mantendo-o aberto enquanto o usuário rola a página. Só escondemos de
-          // fato quando o card sai completamente da área visível (rolou pra fora
-          // da tela). Usa capture:true pra pegar o scroll de qualquer container
-          // que role (o <body>, no layout atual, mas também cobre outros
-          // possíveis containers scrolláveis).
-          // Marca que a página está rolando pra suprimir hovers sintéticos
-          // disparados pelos cards durante o scroll (ver
-          // watchedMonthSuppressHoverUntil, no início do bloco de preview).
-          // Reposicionar/esconder o preview em si já é feito continuamente
-          // pelo loop de requestAnimationFrame (watchedMonthSyncLoop) acima.
-          window.addEventListener('scroll', () => {
-            if (!watchedMonthActiveCard) return;
-            watchedMonthMarkScrolling();
-            watchedMonthLastScrollTs = Date.now();
-            // Liga o modo "sem blur" assim que o scroll real começa (ver
-            // .is-scrolling no CSS) — é isso que tira o custo de re-borrar
-            // o preview a cada frame enquanto a página rola.
-            getWatchedMonthPreviewEl().classList.add('is-scrolling');
-            watchedMonthStartSyncLoop();
-          }, { passive: true, capture: true });
-
-          // Se um card do carrossel (que é um <a>, focável) estiver com foco
-          // de teclado — por ter sido clicado antes, tabulado, etc. — apertar
-          // as setas ←/→ faz o navegador rolar o track HORIZONTALMENTE de
-          // forma nativa (scroll-into-view do elemento focado), sem passar
-          // pelo clique do botão de seta. Isso ainda dispara o evento
-          // "scroll" do track (que já chama hideWatchedMonthPreviewNow via
-          // o listener registrado em renderWatchedMonthPanel), só que o
-          // preview (position:fixed, calculado a partir do card no momento
-          // do hover) pode ficar visualmente "preso" na posição antiga por
-          // um instante enquanto o navegador ainda está processando o
-          // scroll nativo — e como o card rolado pode nem ser o mesmo que
-          // está com o preview aberto (o foco pode estar em outro card, de
-          // outra fileira/mês, diferente do que o mouse está sobre agora),
-          // o preview antigo passa a sobrepor visualmente conteúdo de outra
-          // lista. Pra evitar essa sobreposição, fecha o preview de
-          // imediato assim que uma tecla de seta é pressionada, em vez de
-          // esperar o evento de scroll resolver isso sozinho.
-          document.addEventListener('keydown', (e) => {
-            if (!watchedMonthActiveCard) return;
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-              hideWatchedMonthPreviewNow();
-            }
-          }, { capture: true });
-
-          function renderWatchedMonthSection(monthData, idx) {
-            const rowId = `watchedMonthRow-${idx}`;
-            const cards = (monthData.animes || []).map(renderWatchedMonthCard).join('');
-            return `
-              <section class="watched-month-section">
-                <div class="watched-month-header">
-                  <h2 class="watched-month-title">${escapeHtmlWatchedMonth(monthData.monthLabel || monthData.month || '')}</h2>
-                  ${monthData.monthTheme ? `<p class="watched-month-theme">${escapeHtmlWatchedMonth(monthData.monthTheme)}</p>` : ''}
-                </div>
-                <div class="watched-month-carousel">
-                  <button type="button" class="watched-month-arrow watched-month-arrow--prev" data-row="${rowId}" aria-label="Anterior">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
-                  </button>
-                  <div class="watched-month-track" id="${rowId}">${cards}</div>
-                  <button type="button" class="watched-month-arrow watched-month-arrow--next" data-row="${rowId}" aria-label="Próximo">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-                  </button>
-                </div>
-              </section>
-            `;
-          }
-
-          // Atualiza as classes "at-start"/"at-end" do carrossel de acordo
-          // com a posição atual do scroll — some a seta correspondente
-          // quando não há mais pra onde rolar naquela direção.
-          function updateWatchedMonthArrows(track) {
-            const carousel = track.closest('.watched-month-carousel');
-            if (!carousel) return;
-            const maxScroll = track.scrollWidth - track.clientWidth;
-            carousel.classList.toggle('at-start', track.scrollLeft <= 1);
-            carousel.classList.toggle('at-end', track.scrollLeft >= maxScroll - 1);
-          }
-
-          // Ajusta o respiro do header (.watched-month-header) conforme os
-          // cards que estão VISUALMENTE na frente da fileira no momento —
-          // e não os 2 primeiros cards do mês em ordem de DOM (que é o que
-          // um seletor CSS :nth-child(-n+2) enxergaria). Como o carrossel só
-          // rola (não reordena o DOM), depois de usar as setas os cards que
-          // ficam encostados no início do carrossel podem ser outros, e um
-          // deles pode ter a badge (ex: "assistido em 1 dia") sem que os 2
-          // primeiros do DOM tenham — por isso o cálculo precisa ser
-          // dinâmico, refeito a cada scroll/resize.
-          function updateWatchedMonthHeaderSpacing(track) {
-            const section = track.closest('.watched-month-section');
-            if (!section) return;
-            const cards = track.querySelectorAll('.watched-month-card');
-            if (!cards.length) return;
-            const trackLeft = track.getBoundingClientRect().left;
-            const frontCards = [];
-            cards.forEach((card) => {
-              if (frontCards.length >= 2) return;
-              const rect = card.getBoundingClientRect();
-              // Já rolou pra fora do início do carrossel — não conta como "à frente".
-              if (rect.right <= trackLeft + 1) return;
-              frontCards.push(card);
-            });
-            const hasBadge = frontCards.some((card) => card.querySelector('.watched-month-card-badge'));
-            section.classList.toggle('has-front-badge', hasBadge);
-          }
-
-          function renderWatchedMonthPanel() {
-            const data = (typeof watchedMonthlyData !== 'undefined' ? watchedMonthlyData : []).slice();
-            data.sort((a, b) => String(b.month).localeCompare(String(a.month)));
-
-            container.innerHTML = data.length
-              ? `<div class="watched-month-wrap" id="watchedMonthWrap">${data.map(renderWatchedMonthSection).join('')}</div>`
-              : `<div class="watched-month-empty">Nenhum anime cadastrado ainda — adicione em "watchedMonthlyData" no info.js.</div>`;
-
-            const wrap = document.getElementById('watchedMonthWrap');
-            if (wrap) {
-              wrap.addEventListener('click', (e) => {
-                const btn = e.target.closest('.watched-month-arrow');
-                if (!btn) return;
-                const track = document.getElementById(btn.dataset.row);
-                if (!track) return;
-                const amount = track.clientWidth * 0.85;
-                track.scrollBy({ left: btn.classList.contains('watched-month-arrow--prev') ? -amount : amount, behavior: 'smooth' });
-              });
-              initWatchedMonthPreviewHovers(wrap);
-              wrap.querySelectorAll('.watched-month-track').forEach((track) => {
-                // No primeiro render o layout pode ainda não estar 100%
-                // assentado (fontes/imagens carregando, transições de
-                // entrada da página, etc.), então uma medição síncrona aqui
-                // pode pegar um clientWidth/scrollWidth desatualizado e
-                // deixar a seta esquerda aparecendo à toa. Adiamos com
-                // rAF (2x, pra garantir que passou por um layout+paint) e
-                // ainda reconferimos quando fontes/imagens terminarem.
-                const scheduleUpdate = () => requestAnimationFrame(() => requestAnimationFrame(() => {
-                  updateWatchedMonthArrows(track);
-                  updateWatchedMonthHeaderSpacing(track);
-                }));
-                scheduleUpdate();
-                if (document.fonts && document.fonts.ready) {
-                  document.fonts.ready.then(scheduleUpdate).catch(() => {});
-                }
-                track.querySelectorAll('img').forEach((img) => {
-                  if (!img.complete) {
-                    img.addEventListener('load', scheduleUpdate, { once: true });
-                    img.addEventListener('error', scheduleUpdate, { once: true });
-                  }
-                });
-                track.addEventListener('scroll', () => {
-                  hideWatchedMonthPreviewNow();
-                  updateWatchedMonthArrows(track);
-                  updateWatchedMonthHeaderSpacing(track);
-                });
-                if ('ResizeObserver' in window) {
-                  new ResizeObserver(() => {
-                    updateWatchedMonthArrows(track);
-                    updateWatchedMonthHeaderSpacing(track);
-                  }).observe(track);
-                } else {
-                  window.addEventListener('resize', () => {
-                    updateWatchedMonthArrows(track);
-                    updateWatchedMonthHeaderSpacing(track);
-                  });
-                }
-              });
-            }
-
-            updatePageTexts();
-            selectDrawerItem(currentCategory);
-            updateFilterButtonText();
-            updateGlowColor(currentCategory);
-            updateDrawerCounts();
-            updateURLForCategory(currentCategory);
-            loadMoreContainer.style.display = 'none';
-            initAnnounceStrips();
-            if (window.__refreshScrollFab) window.__refreshScrollFab();
-          }
-
           function render() {
             // Invalida imediatamente a fila de posters pertencente à lista
             // anterior, antes de substituir seus elementos no DOM.
             __posterRenderGeneration++;
             __posterObjectUrls.forEach(url => URL.revokeObjectURL(url));
             __posterObjectUrls.clear();
-            // O preview flutuante do "Month by Month" (.watched-month-preview)
-            // fica em position:fixed direto no <body>, fora do container que
-            // este render() recria — por isso, ao trocar de lista (swipe, menu,
-            // botão de reset, URL/hash etc.) enquanto o preview estava aberto,
-            // ele não era removido e ficava sobreposto por cima da lista nova.
-            // Fecha explicitamente aqui, um único lugar por onde toda troca de
-            // categoria passa, em vez de repetir isso em cada ponto que muda
-            // currentCategory.
-            if (typeof hideWatchedMonthPreviewNow === 'function') {
-              hideWatchedMonthPreviewNow();
-            }
-
-            if (currentCategory === 'watchedMonth') {
-              renderWatchedMonthPanel();
-              return;
-            }
-
             const listModeClass = currentCategory === 'favEpisodes'
               ? ' mode-fav-episodes'
-              : currentCategory === 'trueCharacters'
-                ? ' mode-true-characters'
-                : ' mode-watching';
-            container.innerHTML = `<ol class="ranking${listModeClass}" id="animeRankingList"></ol>`;
+              : ' mode-true-characters';
+            const categoryModeClass = ` category-${currentCategory}`;
+            container.innerHTML = `<ol class="ranking${listModeClass}${categoryModeClass}" id="animeRankingList"></ol>`;
             const list = document.getElementById('animeRankingList');
 
             const filteredData = getFilteredData(currentCategory);
@@ -14369,7 +13545,7 @@
             const SWIPE_MAX_TIME = 600;      // ms
 
             document.addEventListener('touchstart', (e) => {
-              if (e.target.closest('.category-drawer') || e.target.closest('.filter-wrapper') || e.target.closest('.fav-ep-media') || e.target.closest('.watched-month-carousel')) return;
+              if (e.target.closest('.category-drawer') || e.target.closest('.filter-wrapper') || e.target.closest('.fav-ep-media')) return;
               const lightboxEl = document.getElementById('posterLightbox');
               if (lightboxEl && lightboxEl.classList.contains('open')) return;
               const favEpLightboxEl = document.getElementById('favEpLightbox');
@@ -14642,7 +13818,7 @@
                         <h2 class="release-day-name">${day.label}</h2>
                         <span class="release-day-line" aria-hidden="true"></span>
                       </div>
-                      <ol class="ranking mode-watching release-calendar-list">${cards}</ol>
+                      <ol class="ranking mode-true-characters release-calendar-list">${cards}</ol>
                     </section>
                   `;
                 }).join('');

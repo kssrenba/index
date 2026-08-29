@@ -14,7 +14,7 @@
 
 // All Animes — lista principal usada na aba "All Animes".
 const rawAnimeData = [
-  {
+{
     id: "code-geass",
     img: "myranks-images/myranks/code-geass.webp",
     title: "Code Geass: Lelouch of the Rebellion",
@@ -37,7 +37,7 @@ const rawAnimeData = [
       },
     ],
   },
-  {
+{
     id: "hxh",
     img: "myranks-images/myranks/hxh.webp",
     title: "Hunter x Hunter (2011)",
@@ -47,7 +47,7 @@ const rawAnimeData = [
     rewatch: "2 Times",
     mal: [{ label: "1 temporada", episodes: 148, note: 10, malName: "Hunter x Hunter (2011)" }],
   },
-  {
+{
     id: "frieren",
     img: "myranks-images/myranks/frieren.webp",
     title: "Frieren: Beyond Journey's End",
@@ -65,7 +65,7 @@ const rawAnimeData = [
       },
     ],
   },
-  {
+{
     id: "one-piece",
     img: "myranks-images/myranks/one-piece.webp",
     title: "One Piece",
@@ -90,7 +90,7 @@ const rawAnimeData = [
       { label: "Heroines", episodes: "TV Special", note: 7, malName: "One Piece: Heroines " },
     ],
   },
-  {
+{
     id: "jjk",
     img: "myranks-images/myranks/jjk.webp",
     title: "Jujutsu Kaisen",
@@ -110,7 +110,7 @@ const rawAnimeData = [
       },
     ],
   },
-  {
+{
     id: "haikyuu",
     img: "myranks-images/myranks/haikyuu.webp",
     title: "Haikyuu!!",
@@ -132,7 +132,7 @@ const rawAnimeData = [
       },
     ],
   },
-  {
+{
     id: "oshi-no-ko",
     img: "myranks-images/myranks/oshi-no-ko.webp",
     title: "[Oshi no Ko]",
@@ -146,7 +146,7 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 11, note: 9, malName: "[Oshi No Ko] 3rd Season" },
     ],
   },
-  {
+{
     id: "mushoku",
     img: "myranks-images/myranks/mushoku.webp",
     title: "Mushoku Tensei: Jobless Reincarnation",
@@ -187,7 +187,7 @@ const rawAnimeData = [
       },
     ],
   },
-  {
+{
     id: "cyberpunk",
     img: "myranks-images/myranks/cyberpunk.webp",
     title: "Cyberpunk: Edgerunners",
@@ -197,7 +197,7 @@ const rawAnimeData = [
     rewatch: "Only Season 1",
     mal: [{ label: "1ª temporada", episodes: 10, note: 9, malName: "Cyberpunk: Edgerunners " }],
   },
-  {
+{
     id: "solo-leveling",
     img: "myranks-images/myranks/solo-leveling.webp",
     title: "Solo Leveling",
@@ -210,7 +210,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 13, note: 9, malName: "Ore dake Level Up na Ken Season 2: Arise from the Shadow " },
     ],
   },
-  {
+{
     id: "aot",
     img: "myranks-images/myranks/aot.webp",
     title: "Attack on Titan",
@@ -228,7 +228,7 @@ const rawAnimeData = [
       { label: "4ª temporada III: The Final Chapters", episodes: 2, note: 9, malName: "Shingeki no Kyojin: The Final Season - Kanketsu-hen " },
     ],
   },
-  {
+{
     id: "dr-stone",
     img: "myranks-images/myranks/dr-stone.webp",
     title: "Dr. Stone",
@@ -247,7 +247,7 @@ const rawAnimeData = [
       { label: "4ª temporada III", episodes: 13, note: 8, malName: "Dr. Stone: Science Future Part 3 " },
     ],
   },
-  {
+{
     id: "cote",
     img: "myranks-images/myranks/cote.webp",
     title: "Classroom of the Elite",
@@ -262,7 +262,7 @@ const rawAnimeData = [
       { label: "4ª temporada", episodes: 16, note: 8, malName: "	Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 4th Season: 2-nensei...  " },
     ],
   },
-  {
+{
     id: "re-zero",
     img: "myranks-images/myranks/re-zero.webp",
     title: "Re:ZERO - Starting Life in Another World",
@@ -279,7 +279,7 @@ const rawAnimeData = [
       { label: "4ª temporada", episodes: 19, unwatched: true, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season" },
     ],
   },
-  {
+{
     id: "mha",
     img: "myranks-images/myranks/my-hero-academia.webp",
     title: "My Hero Academia",
@@ -302,7 +302,7 @@ const rawAnimeData = [
       { label: "Episode 171: More", episodes: "TV Special", note: 7, malName: "	Boku no Hero Academia: More " },
     ],
   },
-  {
+{
     id: "grand-blue",
     img: "myranks-images/myranks/grand-blue.webp",
     title: "Grand Blue Dreaming",
@@ -316,7 +316,7 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Grand Blue Season 3" },
     ],
   },
-  {
+{
     id: "opm",
     img: "myranks-images/myranks/opm.webp",
     title: "One-Punch Man",
@@ -330,7 +330,7 @@ const rawAnimeData = [
       { label: "3ª temporada I", episodes: 12, note: 2, malName: "One Punch Man 3 " },
     ],
   },
-  {
+{
     id: "dan-da-dan",
     img: "myranks-images/myranks/dan-da-dan.webp",
     title: "Dan da Dan",
@@ -343,7 +343,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 9, malName: "Dandadan 2nd Season" },
     ],
   },
-  {
+{
     id: "shadow",
     img: "myranks-images/myranks/shadow.webp",
     title: "The Eminence in Shadow",
@@ -356,7 +356,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Kage no Jitsuryokusha ni Naritakute! 2nd Season" },
     ],
   },
-  {
+{
     id: "tensei-shitara-slime",
     img: "myranks-images/myranks/tensei-shitara-slime.webp",
     title: "That Time I Got Reincarnated as a Slime",
@@ -373,7 +373,7 @@ const rawAnimeData = [
       { label: "4ª temporada", episodes: 24, unwatched: true, malName: "Tensei Shitara Slime Datta Ken 4th Season" },
     ],
   },
-  {
+{
     id: "hajime-no-ippo",
     img: "myranks-images/myranks/hajime-no-ippo.webp",
     title: "Hajime no Ippo: The Fighting",
@@ -387,7 +387,7 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 25, unwatched: true, malName: "Hajime no Ippo: Rising" },
     ],
   },
-  {
+{
     id: "gachiakuta",
     img: "myranks-images/myranks/gachiakuta.webp",
     title: "Gachiakuta",
@@ -397,7 +397,7 @@ const rawAnimeData = [
     rewatch: "Not Yet",
     mal: [{ label: "1ª temporada", episodes: 24, note: 8, malName: "Gachiakuta" }],
   },
-  {
+{
     id: "hells-paradise",
     img: "myranks-images/myranks/hells-paradise.webp",
     title: "Hell's Paradise: Jigokuraku",
@@ -410,17 +410,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Jigokuraku 2nd Season" },
     ],
   },
-  {
-    id: "fragrant-flowers",
-    img: "myranks-images/myranks/fragrant-flowers.webp",
-    title: "The Fragrant Flowers Bloom with Dignity",
-    info: "13 episódios",
-    studio: "CloverWorks",
-    airedSeason: "2025-?",
-    rewatch: "Yes",
-    mal: [{ label: "1ª temporada", episodes: 13, note: 8, malName: "Kaoru Hana wa Rin to Saku" }],
-  },
-  {
+{
     id: "horimiya",
     img: "myranks-images/myranks/horimiya.webp",
     title: "Horimiya",
@@ -433,20 +423,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 13, note: 7, malName: "Horimiya: Piece" },
     ],
   },
-  {
-    id: "opposites",
-    img: "myranks-images/myranks/opposites.webp",
-    title: "You and I are Polar Opposites",
-    info: "1 temporada: 12 episódios",
-    studio: "Lapin Track",
-    airedSeason: "2026-?",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 8, malName: "Seihantai na Kimi to Boku" },
-      { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Seihantai na Kimi to Boku 2nd Season" },
-    ],
-  },
-  {
+{
     id: "vinland-saga",
     img: "myranks-images/myranks/vinland-saga.webp",
     title: "Vinland Saga",
@@ -459,7 +436,30 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 24, note: 8, malName: "Vinland Saga Season 2" },
     ],
   },
-  {
+{
+    id: "fragrant-flowers",
+    img: "myranks-images/myranks/fragrant-flowers.webp",
+    title: "The Fragrant Flowers Bloom with Dignity",
+    info: "13 episódios",
+    studio: "CloverWorks",
+    airedSeason: "2025-?",
+    rewatch: "Yes",
+    mal: [{ label: "1ª temporada", episodes: 13, note: 8, malName: "Kaoru Hana wa Rin to Saku" }],
+  },
+{
+    id: "opposites",
+    img: "myranks-images/myranks/opposites.webp",
+    title: "You and I are Polar Opposites",
+    info: "1 temporada: 12 episódios",
+    studio: "Lapin Track",
+    airedSeason: "2026-?",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 8, malName: "Seihantai na Kimi to Boku" },
+      { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Seihantai na Kimi to Boku 2nd Season" },
+    ],
+  },
+{
     id: "demon-slayer",
     img: "myranks-images/myranks/demon-slayer.webp",
     title: "Demon Slayer: Kimetsu no Yaiba",
@@ -476,7 +476,7 @@ const rawAnimeData = [
       { label: "Movie: Infinity Castle Part 1", episodes: "2h35m", note: 8, malName: "Kimetsu no Yaiba Movie 1: Mugenjou-hen - Akaza Sairai" },
     ],
   },
-  {
+{
     id: "shangri-la-frontier",
     img: "myranks-images/myranks/shangri-la-frontier.webp",
     title: "Shangri-La Frontier",
@@ -489,111 +489,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 25, note: 7, malName: "Shangri-La Frontier: Kusoge Hunter, Kamige ni Idoman to su 2nd Season" },
     ],
   },
-  {
-    id: "your-lie-in-april",
-    img: "myranks-images/myranks/your-lie-in-april.webp",
-    title: "Your Lie in April",
-    info: "22 episódios",
-    studio: "A-1 Pictures",
-    airedSeason: "2014-2015",
-    rewatch: "Impossible",
-    mal: [{ label: "1 temporada", episodes: 22, note: 8, malName: "Shigatsu wa Kimi no Uso" }],
-  },
-  {
-    id: "sentenced-hero",
-    img: "myranks-images/myranks/sentenced-hero.webp",
-    title: "Sentenced to be a Hero",
-    info: "12 episódios",
-    studio: "Studio KAI",
-    airedSeason: "2026",
-    rewatch: "No",
-    mal: [
-      { label: "1 temporada", episodes: 12, note: 8, malName: "Yuusha-kei ni Shosu: Choubatsu Yuusha 9004-tai Keimu Kiroku" },
-    ],    
-  },
-  {
-    id: "akame-ga-kill",
-    img: "myranks-images/myranks/akame-ga-kill.webp",
-    title: "Akame ga Kill",
-    info: "24 episódios",
-    studio: "White Fox",
-    airedSeason: "2014-2014",
-    rewatch: "Yes",
-    mal: [{ label: "1 temporada", episodes: 24, note: 8, malName: "Akame ga Kill!" }],
-  },
-  {
-    id: "wistoria",
-    img: "myranks-images/myranks/wistoria.webp",
-    title: "Wistoria: Wand and Sword",
-    info: "2 temporadas: 24 episódios",
-    studio: "Bandai Filmworks / Actas",
-    airedSeason: "2024-?",
-    rewatch: "Season 1",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 7, malName: "Tsue to Tsurugi no Wistoria" },
-      { label: "2ª temporada", episodes: 12, note: 8, malName: "Tsue to Tsurugi no Wistoria Season 2" },
-    ],
-  },
-  {
-    id: "roshidere",
-    img: "myranks-images/myranks/roshidere.webp",
-    title: "Alya Sometimes Hides Her Feelings in Russian",
-    info: "1 temporada: 12 episódios",
-    studio: "Doga Kobo",
-    airedSeason: "2024-?",
-    rewatch: "Yes",
-    mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san" }],
-  },
-  {
-    id: "mashle",
-    img: "myranks-images/myranks/mashle.webp",
-    title: "Mashle: Magic and Muscles",
-    info: "2 temporadas: 24 episódios",
-    studio: "A-1 Pictures",
-    airedSeason: "2023-?",
-    rewatch: "Yes",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 7, malName: "Mashle" },
-      { label: "2ª temporada", episodes: 12, note: 7, malName: "Mashle: Shinkakusha Kouho Senbatsu Shiken-hen" },
-    ],
-  },
-  {
-    id: "prison-school",
-    img: "myranks-images/myranks/prison-school.webp",
-    title: "Prison School",
-    info: "12 episódios",
-    studio: "J.C. Staff",
-    airedSeason: "2015-2016",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
-      { label: "Mad Wax ", episodes: "OVA", note: 7, malName: "Prison School: Mad Wax" },
-    ],
-  },
-  {
-    id: "blue-box",
-    img: "myranks-images/myranks/blue-box.webp",
-    title: "Blue Box",
-    info: "1 temporada: 25 episódios",
-    studio: "Telecom / Animation Film",
-    airedSeason: "2024-?",
-    rewatch: "Yes",
-    mal: [{ label: "1ª temporada", episodes: 25, note: 8, malName: "Ao no Hako" }],
-  },
-  {
-    id: "cinderella-gray",
-    img: "myranks-images/myranks/cinderella-gray.webp",
-    title: "Uma Musume: Cinderella Gray",
-    info: "23 episódios",
-    studio: "CygamesPictures",
-    airedSeason: "2025",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada I", episodes: 13, note: 8, malName: "Uma Musume: Cinderella Gray" },
-      { label: "1ª temporada II", episodes: 10, note: 7, malName: "Uma Musume: Cinderella Gray Part 2" },
-    ],
-  },
-  {
+{
     id: "bunny-girl-senpai",
     img: "myranks-images/myranks/bunny-girl-senpai.webp",
     title: "Rascal Does Not Dream of Bunny Girl Senpai",
@@ -624,7 +520,111 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Seishun Buta Yarou wa Santa Claus no Yume wo Minai" },
     ],
   },
-  {
+{
+    id: "your-lie-in-april",
+    img: "myranks-images/myranks/your-lie-in-april.webp",
+    title: "Your Lie in April",
+    info: "22 episódios",
+    studio: "A-1 Pictures",
+    airedSeason: "2014-2015",
+    rewatch: "Impossible",
+    mal: [{ label: "1 temporada", episodes: 22, note: 8, malName: "Shigatsu wa Kimi no Uso" }],
+  },
+{
+    id: "sentenced-hero",
+    img: "myranks-images/myranks/sentenced-hero.webp",
+    title: "Sentenced to be a Hero",
+    info: "12 episódios",
+    studio: "Studio KAI",
+    airedSeason: "2026",
+    rewatch: "No",
+    mal: [
+      { label: "1 temporada", episodes: 12, note: 8, malName: "Yuusha-kei ni Shosu: Choubatsu Yuusha 9004-tai Keimu Kiroku" },
+    ],    
+  },
+{
+    id: "akame-ga-kill",
+    img: "myranks-images/myranks/akame-ga-kill.webp",
+    title: "Akame ga Kill",
+    info: "24 episódios",
+    studio: "White Fox",
+    airedSeason: "2014-2014",
+    rewatch: "Yes",
+    mal: [{ label: "1 temporada", episodes: 24, note: 8, malName: "Akame ga Kill!" }],
+  },
+{
+    id: "prison-school",
+    img: "myranks-images/myranks/prison-school.webp",
+    title: "Prison School",
+    info: "12 episódios",
+    studio: "J.C. Staff",
+    airedSeason: "2015-2016",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
+      { label: "Mad Wax ", episodes: "OVA", note: 7, malName: "Prison School: Mad Wax" },
+    ],
+  },
+{
+    id: "wistoria",
+    img: "myranks-images/myranks/wistoria.webp",
+    title: "Wistoria: Wand and Sword",
+    info: "2 temporadas: 24 episódios",
+    studio: "Bandai Filmworks / Actas",
+    airedSeason: "2024-?",
+    rewatch: "Season 1",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 7, malName: "Tsue to Tsurugi no Wistoria" },
+      { label: "2ª temporada", episodes: 12, note: 8, malName: "Tsue to Tsurugi no Wistoria Season 2" },
+    ],
+  },
+{
+    id: "blue-box",
+    img: "myranks-images/myranks/blue-box.webp",
+    title: "Blue Box",
+    info: "1 temporada: 25 episódios",
+    studio: "Telecom / Animation Film",
+    airedSeason: "2024-?",
+    rewatch: "Yes",
+    mal: [{ label: "1ª temporada", episodes: 25, note: 8, malName: "Ao no Hako" }],
+  },
+{
+    id: "cinderella-gray",
+    img: "myranks-images/myranks/cinderella-gray.webp",
+    title: "Uma Musume: Cinderella Gray",
+    info: "23 episódios",
+    studio: "CygamesPictures",
+    airedSeason: "2025",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada I", episodes: 13, note: 8, malName: "Uma Musume: Cinderella Gray" },
+      { label: "1ª temporada II", episodes: 10, note: 7, malName: "Uma Musume: Cinderella Gray Part 2" },
+    ],
+  },
+{
+    id: "mashle",
+    img: "myranks-images/myranks/mashle.webp",
+    title: "Mashle: Magic and Muscles",
+    info: "2 temporadas: 24 episódios",
+    studio: "A-1 Pictures",
+    airedSeason: "2023-?",
+    rewatch: "Yes",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 7, malName: "Mashle" },
+      { label: "2ª temporada", episodes: 12, note: 7, malName: "Mashle: Shinkakusha Kouho Senbatsu Shiken-hen" },
+    ],
+  },
+{
+    id: "roshidere",
+    img: "myranks-images/myranks/roshidere.webp",
+    title: "Alya Sometimes Hides Her Feelings in Russian",
+    info: "1 temporada: 12 episódios",
+    studio: "Doga Kobo",
+    airedSeason: "2024-?",
+    rewatch: "Yes",
+    mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san" }],
+  },
+{
     id: "makeine",
     img: "myranks-images/myranks/makeine.webp",
     title: "Makeine: Too Many Losing Heroines!",
@@ -634,7 +634,40 @@ const rawAnimeData = [
     rewatch: "Not Yet",
     mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Make Heroine ga Oosugiru!" }],
   },
-  {
+{
+    id: "zom-100",
+    img: "myranks-images/myranks/zom-100.webp",
+    title: "Zom 100: Bucket List of the Dead",
+    info: "12 episódios",
+    studio: "Bug Films",
+    airedSeason: "2023",
+    rewatch: "Yes",
+    mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto" }],
+  },
+{
+    id: "silent-voice",
+    img: "myranks-images/myranks/silent-voice.webp",
+    title: "A Silent Voice",
+    info: "Filme: 2h10m",
+    studio: "Kyoto Animation",
+    airedSeason: "2016",
+    rewatch: "No",
+    mal: [{ label: "Filme", episodes: "2h10m", note: 7, malName: "Koe no Katachi" }],
+  },
+{
+    id: "eighty-six",
+    img: "myranks-images/myranks/eighty-six.webp",
+    title: "86 Eighty-Six",
+    info: "2 temporadas: 23 episódios",
+    studio: "A-1 Pictures",
+    airedSeason: "2021",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada I", episodes: 11, note: 7, malName: "86" },
+      { label: "1ª temporada II", episodes: 12, note: 7, malName: "86 Part 2" },
+    ],
+  },
+{
     id: "the-100-girlfriends",
     img: "myranks-images/myranks/the-100-girlfriends.webp",
     title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
@@ -648,40 +681,7 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo 3rd Season" },
     ],
   },
-  {
-    id: "silent-voice",
-    img: "myranks-images/myranks/silent-voice.webp",
-    title: "A Silent Voice",
-    info: "Filme: 2h10m",
-    studio: "Kyoto Animation",
-    airedSeason: "2016",
-    rewatch: "No",
-    mal: [{ label: "Filme", episodes: "2h10m", note: 7, malName: "Koe no Katachi" }],
-  },
-  {
-    id: "zom-100",
-    img: "myranks-images/myranks/zom-100.webp",
-    title: "Zom 100: Bucket List of the Dead",
-    info: "12 episódios",
-    studio: "Bug Films",
-    airedSeason: "2023",
-    rewatch: "Yes",
-    mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto" }],
-  },
-  {
-    id: "eighty-six",
-    img: "myranks-images/myranks/eighty-six.webp",
-    title: "86 Eighty-Six",
-    info: "2 temporadas: 23 episódios",
-    studio: "A-1 Pictures",
-    airedSeason: "2021",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada I", episodes: 11, note: 7, malName: "86" },
-      { label: "1ª temporada II", episodes: 12, note: 7, malName: "86 Part 2" },
-    ],
-  },
-  {
+{
     id: "food-wars",
     img: "myranks-images/myranks/food-wars.webp",
     title: "Food Wars! Shokugeki no Soma",
@@ -698,35 +698,7 @@ const rawAnimeData = [
       { label: "5ª temporada", episodes: 13, note: 4, malName: "Shokugeki no Souma: Gou no Sara" },
     ],
   },
-  {
-    id: "tsukimichi",
-    img: "myranks-images/myranks/tsukimichi.webp",
-    title: "Tsukimichi -Moonlit Fantasy-",
-    malSearch: "tsukimichi",
-    info: "2 temporadas: 37 episódios",
-    studio: "C2C / J.C. Staff",
-    airedSeason: "2021-?",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 7, malName: "Tsuki ga Michibiku Isekai Douchuu" },
-      { label: "2ª temporada", episodes: 25, note: 7, malName: "Tsuki ga Michibiku Isekai Douchuu 2nd Season" },
-    ],
-  },
-
-  {
-    id: "my-dress-up-darling",
-    img: "myranks-images/myranks/my-dress-up-darling.webp",
-    title: "My Dress-Up Darling",
-    info: "(~) 1ª temporada: 12 episódios",
-    studio: "CloverWorks",
-    airedSeason: "2022-?",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 7, malName: "Sono Bisque Doll wa Koi wo Suru" },
-      { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Sono Bisque Doll wa Koi wo Suru Season 2" },
-    ],
-  },
-  {
+{
     id: "danmachi",
     img: "myranks-images/myranks/danmachi.webp",
     title: "Danmachi: Is It Wrong to Try to Pick Up Girls in a Dungeon",
@@ -744,17 +716,34 @@ const rawAnimeData = [
       { label: "5ª temporada", episodes: 15, unwatched: true, malName: "Dungeon ni Deai wo Motomeru no wa Machigatteiru Darou ka V: Houjou no Megami-hen" },
     ],
   },
-  {
-    id: "sword-art-online",
-    img: "myranks-images/myranks/sword-art-online.webp",
-    title: "Sword Art Online",
-    info: "(~~~) 1ª temporada: 25 episódios",
-    studio: "A-1 Pictures",
-    airedSeason: "2012-?",
-    rewatch: "Yes",
-    mal: [{ label: "1ª temporada", episodes: 25, note: 7, malName: "Sword Art Online" }],
+{
+    id: "tsukimichi",
+    img: "myranks-images/myranks/tsukimichi.webp",
+    title: "Tsukimichi -Moonlit Fantasy-",
+    malSearch: "tsukimichi",
+    info: "2 temporadas: 37 episódios",
+    studio: "C2C / J.C. Staff",
+    airedSeason: "2021-?",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 7, malName: "Tsuki ga Michibiku Isekai Douchuu" },
+      { label: "2ª temporada", episodes: 25, note: 7, malName: "Tsuki ga Michibiku Isekai Douchuu 2nd Season" },
+    ],
   },
-  {
+{
+    id: "my-dress-up-darling",
+    img: "myranks-images/myranks/my-dress-up-darling.webp",
+    title: "My Dress-Up Darling",
+    info: "(~) 1ª temporada: 12 episódios",
+    studio: "CloverWorks",
+    airedSeason: "2022-?",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 7, malName: "Sono Bisque Doll wa Koi wo Suru" },
+      { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Sono Bisque Doll wa Koi wo Suru Season 2" },
+    ],
+  },
+{
     id: "chitose",
     img: "myranks-images/myranks/chitose.webp",
     title: "Chitose is in Ramune Bottle",
@@ -764,7 +753,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1ª temporada", episodes: 13, note: 7, malName: "Chitose-kun wa Ramune Bin no Naka" }],
   },
-  {
+{
     id: "welcome-to-the-ballroom",
     img: "myranks-images/myranks/welcome-to-the-ballroom.webp",
     title: "Welcome to the Ballroom",
@@ -774,26 +763,45 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 24, note: 7, malName: "Ballroom e Youkoso" }],
   },
-  {
-    id: "nanatsu-no-taizai",
-    img: "myranks-images/myranks/nanatsu-no-taizai.webp",
-    title: "The Seven Deadly Sins: Nanatsu no Taizai",
-    info: "4 temporadas: 100 episódios <br>3 Filmes: 3h50m",
-    studio: "A-1 Pictures / Studio Deen",
-    airedSeason: "2014-2021",
-    rewatch: "2 First Seasons",
+{
+    id: "apothecary-diaries",
+    img: "myranks-images/myranks/apothecary-diaries.webp",
+    title: "The Apothecary Diaries",
+    info: "(~) 1ª temporada: 24 episódios",
+    studio: "OLM / TOHO Animation Studio",
+    airedSeason: "2023-?",
+    rewatch: "Not Yet",
     mal: [
-      { label: "1ª temporada", episodes: 24, note: 7, malName: "Nanatsu no Taizai" },
-      { label: "1ª temporada II", episodes: 4, note: 7, malName: "Nanatsu no Taizai: Seisen no Shirushi" },
-      { label: "2ª temporada", episodes: 24, note: 7, malName: "Nanatsu no Taizai: Imashime no Fukkatsu" },
-      { label: "Movie 1: Prisoners of the Sky", episodes: "1h39m", note: 6, malName: "Nanatsu no Taizai Movie 1: Tenkuu no Torawarebito" },
-      { label: "3ª temporada", episodes: 24, note: 6, malName: "Nanatsu no Taizai: Kamigami no Gekirin" },
-      { label: "4ª temporada", episodes: 24, note: 5, malName: "Nanatsu no Taizai: Funnu no Shinpan" },
-      { label: "Movie 2: Cursed By Light", episodes: "1h19m", note: 5, malName: "Nanatsu no Taizai Movie 2: Hikari ni Norowareshi Mono-tachi" },
-      { label: "ONA: Grudge of Edinburgh", episodes: "52m", note: 3, malName: "Nanatsu no Taizai: Ensa no Edinburgh" },
+      { label: "1ª temporada", episodes: 24, note: 7, malName: "Kusuriya no Hitorigoto" },
+      { label: "2ª temporada", episodes: 24, unwatched: true, malName: "Kusuriya no Hitorigoto 2nd Season" },
     ],
   },
-  {
+{
+    id: "shield-hero",
+    img: "myranks-images/myranks/shield-hero.webp",
+    title: "The Rising of the Shield Hero",
+    info: "(~) 1ª temporada: 25 episódios",
+    studio: "Kinema Citrus",
+    airedSeason: "2019-?",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada", episodes: 25, note: 7, malName: "Tate no Yuusha no Nariagari" },
+      { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 2" },
+      { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 3" },
+      { label: "4ª temporada", episodes: 12, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 4" },
+    ],
+  },
+{
+    id: "sword-art-online",
+    img: "myranks-images/myranks/sword-art-online.webp",
+    title: "Sword Art Online",
+    info: "(~~~) 1ª temporada: 25 episódios",
+    studio: "A-1 Pictures",
+    airedSeason: "2012-?",
+    rewatch: "Yes",
+    mal: [{ label: "1ª temporada", episodes: 25, note: 7, malName: "Sword Art Online" }],
+  },
+{
     id: "gurren-lagann",
     img: "myranks-images/myranks/gurren-lagann.webp",
     title: "Gurren Lagann",
@@ -812,35 +820,7 @@ const rawAnimeData = [
       },
     ],
   },
-  {
-    id: "apothecary-diaries",
-    img: "myranks-images/myranks/apothecary-diaries.webp",
-    title: "The Apothecary Diaries",
-    info: "(~) 1ª temporada: 24 episódios",
-    studio: "OLM / TOHO Animation Studio",
-    airedSeason: "2023-?",
-    rewatch: "Not Yet",
-    mal: [
-      { label: "1ª temporada", episodes: 24, note: 7, malName: "Kusuriya no Hitorigoto" },
-      { label: "2ª temporada", episodes: 24, unwatched: true, malName: "Kusuriya no Hitorigoto 2nd Season" },
-    ],
-  },
-  {
-    id: "shield-hero",
-    img: "myranks-images/myranks/shield-hero.webp",
-    title: "The Rising of the Shield Hero",
-    info: "(~) 1ª temporada: 25 episódios",
-    studio: "Kinema Citrus",
-    airedSeason: "2019-?",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada", episodes: 25, note: 7, malName: "Tate no Yuusha no Nariagari" },
-      { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 2" },
-      { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 3" },
-      { label: "4ª temporada", episodes: 12, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 4" },
-    ],
-  },
-  {
+{
     id: "otaku-gyaru",
     img: "myranks-images/myranks/otaku-gyaru.webp",
     title: "Gals Can't Be Kind to Otaku",
@@ -850,7 +830,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Otaku ni Yasashii Gal wa Inai!?" }],
   },
-  {
+{
     id: "nisekoi",
     img: "myranks-images/myranks/nisekoi.webp",
     title: "Nisekoi: False Love",
@@ -863,17 +843,26 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 6, malName: "Nisekoi:" },
     ],
   },
-  {
-    id: "prism-rondo",
-    img: "myranks-images/myranks/prism-rondo.webp",
-    title: "Love Through a Prism",
-    info: "20 episódios",
-    studio: "Wit Studio",
-    airedSeason: "2026",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 20, note: 7, malName: "Prism Rondo" }],
+{
+    id: "nanatsu-no-taizai",
+    img: "myranks-images/myranks/nanatsu-no-taizai.webp",
+    title: "The Seven Deadly Sins: Nanatsu no Taizai",
+    info: "4 temporadas: 100 episódios <br>3 Filmes: 3h50m",
+    studio: "A-1 Pictures / Studio Deen",
+    airedSeason: "2014-2021",
+    rewatch: "2 First Seasons",
+    mal: [
+      { label: "1ª temporada", episodes: 24, note: 7, malName: "Nanatsu no Taizai" },
+      { label: "1ª temporada II", episodes: 4, note: 7, malName: "Nanatsu no Taizai: Seisen no Shirushi" },
+      { label: "2ª temporada", episodes: 24, note: 7, malName: "Nanatsu no Taizai: Imashime no Fukkatsu" },
+      { label: "Movie 1: Prisoners of the Sky", episodes: "1h39m", note: 6, malName: "Nanatsu no Taizai Movie 1: Tenkuu no Torawarebito" },
+      { label: "3ª temporada", episodes: 24, note: 6, malName: "Nanatsu no Taizai: Kamigami no Gekirin" },
+      { label: "4ª temporada", episodes: 24, note: 5, malName: "Nanatsu no Taizai: Funnu no Shinpan" },
+      { label: "Movie 2: Cursed By Light", episodes: "1h19m", note: 5, malName: "Nanatsu no Taizai Movie 2: Hikari ni Norowareshi Mono-tachi" },
+      { label: "ONA: Grudge of Edinburgh", episodes: "52m", note: 3, malName: "Nanatsu no Taizai: Ensa no Edinburgh" },
+    ],
   },
-  {
+{
     id: "angel-next-door",
     img: "myranks-images/myranks/angel-next-door.webp",
     title: "The Angel Next Door Spoils Me Rotten",
@@ -886,7 +875,17 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken 2nd Season" },
     ],
   },
-  {
+{
+    id: "prism-rondo",
+    img: "myranks-images/myranks/prism-rondo.webp",
+    title: "Love Through a Prism",
+    info: "20 episódios",
+    studio: "Wit Studio",
+    airedSeason: "2026",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 20, note: 7, malName: "Prism Rondo" }],
+  },
+{
     id: "farming-life",
     img: "myranks-images/myranks/farming-life.webp",
     title: "Farming Life in Another World",
@@ -899,7 +898,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Isekai Nonbiri Nouka 2nd Season" },
     ],
   },
-  {
+{
     id: "the-girl-i-like-forgot-her-glasses",
     img: "myranks-images/myranks/the-girl-i-like-forgot-her-glasses.webp",
     title: "The Girl I Like Forgot Her Glasses",
@@ -909,17 +908,33 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 7, malName: "Suki na Ko ga Megane wo Wasureta" }],
   },
-  {
-    id: "toradora",
-    img: "myranks-images/myranks/toradora.webp",
-    title: "Toradora!",
-    info: "25 episódios",
-    studio: "J.C. Staff",
-    airedSeason: "2008-2009",
+{
+    id: "highschool-of-the-dead",
+    img: "myranks-images/myranks/highschool-of-the-dead.webp",
+    title: "Highschool of the Dead",
+    info: "12 episódios",
+    studio: "MADHOUSE",
+    airedSeason: "2010-2011",
     rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 25, note: 7, malName: "Toradora!" }],
+    mal: [
+      { label: "1 temporada", episodes: 12, note: 6, malName: "Highschool of the Dead" },
+      { label: "Drifters of the Dead", episodes: "OVA", note: 5, malName: "Highschool of the Dead: Drifters of the Dead" },
+    ],
   },
-  {
+{
+    id: "midnight-heart",
+    img: "myranks-images/myranks/midnight-heart.webp",
+    title: "Tune In to the Midnight Heart",
+    info: "12 episódios",
+    season: "winter-2026",
+    studio: "Gekkou",
+    airedSeason: "2026",
+    rewatch: "No",
+    mal: [
+      { label: "1 temporada", episodes: 12, note: 6, malName: "Mayonaka Heart Tune" },
+    ],
+  },
+{
     id: "more-than-married-couple",
     img: "myranks-images/myranks/more-than-married-couple.webp",
     title: "More than a Married Couple, but Not Lovers",
@@ -929,7 +944,17 @@ const rawAnimeData = [
     rewatch: "Yes",
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Fuufu Ijou, Koibito Miman." }],
   },
-  {
+{
+    id: "toradora",
+    img: "myranks-images/myranks/toradora.webp",
+    title: "Toradora!",
+    info: "25 episódios",
+    studio: "J.C. Staff",
+    airedSeason: "2008-2009",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 25, note: 7, malName: "Toradora!" }],
+  },
+{
     id: "yamada-kun-lv999",
     img: "myranks-images/myranks/yamada-kun-lv999.webp",
     title: "My Love Story with Yamada-kun at LV999",
@@ -939,7 +964,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Yamada-kun to Lv999 no Koi wo Suru" }],
   },
-  {
+{
     id: "lookism",
     img: "myranks-images/myranks/lookism.webp",
     title: "Lookism",
@@ -949,7 +974,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 8, note: 6, malName: "Lookism" }],
   },
-  {
+{
     id: "tower-of-god",
     img: "myranks-images/myranks/tower-of-god.webp",
     title: "Tower of God",
@@ -963,7 +988,7 @@ const rawAnimeData = [
       { label: "2ª temporada II", episodes: 13, unwatched: true, malName: "Kami no Tou: Ouji Houkan" },
     ],
   },
-  {
+{
     id: "the-god-of-high-school",
     img: "myranks-images/myranks/the-god-of-high-school.webp",
     title: "The God of High School",
@@ -973,33 +998,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 7, malName: "The God of High School" }],
   },
-  {
-    id: "highschool-of-the-dead",
-    img: "myranks-images/myranks/highschool-of-the-dead.webp",
-    title: "Highschool of the Dead",
-    info: "12 episódios",
-    studio: "MADHOUSE",
-    airedSeason: "2010-2011",
-    rewatch: "No",
-    mal: [
-      { label: "1 temporada", episodes: 12, note: 6, malName: "Highschool of the Dead" },
-      { label: "Drifters of the Dead", episodes: "OVA", note: 5, malName: "Highschool of the Dead: Drifters of the Dead" },
-    ],
-  },
-  {
-    id: "midnight-heart",
-    img: "myranks-images/myranks/midnight-heart.webp",
-    title: "Tune In to the Midnight Heart",
-    info: "12 episódios",
-    season: "winter-2026",
-    studio: "Gekkou",
-    airedSeason: "2026",
-    rewatch: "No",
-    mal: [
-      { label: "1 temporada", episodes: 12, note: 6, malName: "Mayonaka Heart Tune" },
-    ],
-  },
-  {
+{
     id: "immortal-king",
     img: "myranks-images/myranks/immortal-king.webp",
     title: "The Daily Life of the Immortal King",
@@ -1015,17 +1014,7 @@ const rawAnimeData = [
       { label: "5ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 5" },
     ],
   },
-  {
-    id: "the-water-magician",
-    img: "myranks-images/myranks/the-water-magician.webp",
-    title: "The Water Magician",
-    info: "12 episódios",
-    studio: "Arvo Animation",
-    airedSeason: "2025",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 12, note: 6, malName: "Mizu Zokusei no Mahoutsukai" }],
-  },
-  {
+{
     id: "healing-magic",
     img: "myranks-images/myranks/healing-magic.webp",
     title: "The Wrong Way to Use Healing Magic",
@@ -1035,7 +1024,17 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1ª temporada", episodes: 13, note: 6, malName: "Chiyu Mahou no Machigatta Tsukaikata" }],
   },
-  {
+{
+    id: "the-water-magician",
+    img: "myranks-images/myranks/the-water-magician.webp",
+    title: "The Water Magician",
+    info: "12 episódios",
+    studio: "Arvo Animation",
+    airedSeason: "2025",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 12, note: 6, malName: "Mizu Zokusei no Mahoutsukai" }],
+  },
+{
     id: "my-little-monster",
     img: "myranks-images/myranks/my-little-monster.webp",
     title: "My Little Monster",
@@ -1045,7 +1044,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Tonari no Kaibutsu-kun" }],
   },
-  {
+{
     id: "blue-period",
     img: "myranks-images/myranks/blue-period.webp",
     title: "Blue Period",
@@ -1055,20 +1054,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Blue Period" }],
   },
-  {
-    id: "i-got-a-cheat-skill",
-    img: "myranks-images/myranks/i-got-a-cheat-skill.webp",
-    title: "I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too",
-    info: "(~) 13 episódios",
-    studio: "Marvy Jack",
-    airedSeason: "2022-?",
-    rewatch: "No",
-    mal: [
-      { label: "1 temporada", episodes: 13, note: 5, malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta" },
-      { label: "TV Special", episodes: "47m", malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta (TV Special)", unwatched: true },
-    ],
-  },
-  {
+{
     id: "masamune-kuns-revenge",
     img: "myranks-images/myranks/masamune-kuns-revenge.webp",
     title: "Masamune-kun's Revenge",
@@ -1081,7 +1067,20 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Masamune-kun no Revenge R" },
     ],
   },
-  {
+{
+    id: "i-got-a-cheat-skill",
+    img: "myranks-images/myranks/i-got-a-cheat-skill.webp",
+    title: "I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too",
+    info: "(~) 13 episódios",
+    studio: "Marvy Jack",
+    airedSeason: "2022-?",
+    rewatch: "No",
+    mal: [
+      { label: "1 temporada", episodes: 13, note: 5, malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta" },
+      { label: "TV Special", episodes: "47m", malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta (TV Special)", unwatched: true },
+    ],
+  },
+{
     id: "no-game-no-life-zero",
     img: "myranks-images/myranks/no-game-no-life-zero.webp",
     title: "No Game No Life: Zero",
@@ -1091,7 +1090,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "Filme", episodes: "1h47m", note: 6, malName: "No Game No Life: Zero" }],
   },
-  {
+{
     id: "bottom-tier",
     img: "myranks-images/myranks/bottom-tier.webp",
     title: "Bottom-Tier Character Tomozaki",
@@ -1104,17 +1103,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Jaku-Chara Tomozaki-kun 2nd Stage" },
     ],
   },
-  {
-    id: "4-cut",
-    img: "myranks-images/myranks/4-cut.webp",
-    title: "4 Cut Hero",
-    info: "10 episódios",
-    studio: "Marvy Jack",
-    airedSeason: "2024",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 10, note: 4, malName: "Si Ge Yongzhe" }],
-  },
-  {
+{
     id: "bubble",
     img: "myranks-images/myranks/bubble.webp",
     title: "Bubble",
@@ -1124,7 +1113,27 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "Filme", episodes: "1h40m", note: 6, malName: "Bubble" }],
   },
-  {
+{
+    id: "magi-sinbad",
+    img: "myranks-images/myranks/magi-adventure-of-sinbad.webp",
+    title: "Magi: Adventure of Sinbad",
+    info: "13 episódios",
+    studio: "A-1 Pictures / Sanzigen",
+    airedSeason: "2016",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Magi: Sinbad no Bouken" }],
+  },
+{
+    id: "failure-frame",
+    img: "myranks-images/myranks/failure-frame.webp",
+    title: "Failure Frame: I Became the Strongest and Annihilated Everything With Low-Level Spells",
+    info: "12 episódios",
+    studio: "Arvo Animation",
+    airedSeason: "2023",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Hazurewaku no \"Joutai Ijou Skill\" de Saikyou ni Natta Ore ga Subete wo Juurin suru made" }],
+  },
+{
     id: "campfire-cooking",
     img: "myranks-images/myranks/campfire-cooking.webp",
     title: "Campfire Cooking in Another World with My Absurd Skill",
@@ -1137,57 +1146,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Tondemo Skill de Isekai Hourou Meshi 2" },
     ],
   },
-  {
-    id: "magi-sinbad",
-    img: "myranks-images/myranks/magi-adventure-of-sinbad.webp",
-    title: "Magi: Adventure of Sinbad",
-    info: "13 episódios",
-    studio: "A-1 Pictures / Sanzigen",
-    airedSeason: "2016",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Magi: Sinbad no Bouken" }],
-  },
-  {
-    id: "failure-frame",
-    img: "myranks-images/myranks/failure-frame.webp",
-    title: "Failure Frame: I Became the Strongest and Annihilated Everything With Low-Level Spells",
-    info: "12 episódios",
-    studio: "Arvo Animation",
-    airedSeason: "2023",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Hazurewaku no \"Joutai Ijou Skill\" de Saikyou ni Natta Ore ga Subete wo Juurin suru made" }],
-  },
-  {
-    id: "the-worlds-finest-assassin",
-    img: "myranks-images/myranks/the-worlds-finest-assassin.webp",
-    title: "The World's Finest Assassin Gets Reincarnated in Another World as an Aristocrat",
-    info: "1 temporada: 12 episódios",
-    studio: "Satelight",
-    airedSeason: "2021-?",
-    rewatch: "No",
-    mal: [{ label: "1ª temporada", episodes: 12, note: 5, malName: "Sekai Saikou no Ansatsusha, Isekai Kizoku ni Tensei suru" }],
-  },
-  {
-    id: "black-summoner",
-    img: "myranks-images/myranks/black-summoner.webp",
-    title: "Black Summoner",
-    info: "12 episódios",
-    studio: "C2C",
-    airedSeason: "2022",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Kuro no Shoukanshi" }],
-  },
-  {
-    id: "akashic-records",
-    img: "myranks-images/myranks/akashic-records.webp",
-    title: "Akashic Records of Bastard Magic Instructor",
-    info: "12 episódios",
-    studio: "Liden Films",
-    airedSeason: "2017",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 12, note: 4, malName: "Rokudenashi Majutsu Koushi to Akashic Records" }],
-  },
-  {
+{
     id: "trapped-in-a-dating-sim",
     img: "myranks-images/myranks/trapped-in-a-dating-sim.webp",
     title: "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs",
@@ -1197,7 +1156,27 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1ª temporada", episodes: 12, note: 4, malName: "Otome Game Sekai wa Mob ni Kibishii Sekai desu" }],
   },
-  {
+{
+    id: "4-cut",
+    img: "myranks-images/myranks/4-cut.webp",
+    title: "4 Cut Hero",
+    info: "10 episódios",
+    studio: "Marvy Jack",
+    airedSeason: "2024",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 10, note: 4, malName: "Si Ge Yongzhe" }],
+  },
+{
+    id: "the-worlds-finest-assassin",
+    img: "myranks-images/myranks/the-worlds-finest-assassin.webp",
+    title: "The World's Finest Assassin Gets Reincarnated in Another World as an Aristocrat",
+    info: "1 temporada: 12 episódios",
+    studio: "Satelight",
+    airedSeason: "2021-?",
+    rewatch: "No",
+    mal: [{ label: "1ª temporada", episodes: 12, note: 5, malName: "Sekai Saikou no Ansatsusha, Isekai Kizoku ni Tensei suru" }],
+  },
+{
     id: "haibara-teenage",
     img: "myranks-images/myranks/haibara-teenage.webp",
     title: "Haibara's Teenage New Game",
@@ -1207,7 +1186,27 @@ const rawAnimeData = [
     rewatch: "Never",
     mal: [{ label: "1 temporada", episodes: 12, note: 3, malName: "Haibara-kun no Tsuyokute Seishun New Game" }],
   },
-  {
+{
+    id: "akashic-records",
+    img: "myranks-images/myranks/akashic-records.webp",
+    title: "Akashic Records of Bastard Magic Instructor",
+    info: "12 episódios",
+    studio: "Liden Films",
+    airedSeason: "2017",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 12, note: 4, malName: "Rokudenashi Majutsu Koushi to Akashic Records" }],
+  },
+{
+    id: "black-summoner",
+    img: "myranks-images/myranks/black-summoner.webp",
+    title: "Black Summoner",
+    info: "12 episódios",
+    studio: "C2C",
+    airedSeason: "2022",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Kuro no Shoukanshi" }],
+  },
+{
     id: "cannon-busters",
     img: "myranks-images/myranks/cannon-busters.webp",
     title: "Cannon Busters",
@@ -1217,7 +1216,7 @@ const rawAnimeData = [
     rewatch: "Never",
     mal: [{ label: "1 temporada", episodes: 12, note: 3, malName: "Cannon Busters" }],
   },
-  {
+{
     id: "wind-breaker",
     img: "myranks-images/myranks/wind-breaker.webp",
     title: "Wind Breaker",
@@ -1492,7 +1491,7 @@ const rawWatchingData = [
     img: "watchingnow-images/watchingnow/re-zero.webp",
     title: "Re:ZERO - Starting Life in Another World",
     malSearch: "Re:ZERO",
-    info: "4 temporadas: 85 episódios",
+    info: "4ª temporadas: 19 episódios",
     season: "spring-2026",
     studio: "White Fox",
     airedSeason: "2016-?",
@@ -1914,7 +1913,7 @@ const rawReleaseCalendarData = [
 
   // WEDNESDAY
   {
-    id: "re-zero",
+    id: "re-zero-4",
     img: "watchingnow-images/watchingnow/re-zero.webp",
     title: "Re:ZERO - Starting Life in Another World",
     season: "summer-2026",
@@ -2768,16 +2767,6 @@ const mechaIds = [
 
 // Next Season Map — status/anúncios de próximas temporadas por id.
 const nextSeasonMap = {
-  // weekly 
-  // "re-zero": { info: "4th Season Weekly" },
-  // "grand-blue": { info: "3rd Season Weekly" },
-  // "the-100-girlfriends": { info: "3rd Season Weekly" },
-  // "angel-next-door": { info: "2nd Season Weekly" },
-  // "farming-life": { info: "2nd Season Weekly" },
-  // "opposites": { info: "2nd Season Weekly" },
-  // "tensei-shitara-slime": { info: "4th Season Weekly" },
-  // "mushoku": { info: "3rd Season Weekly" },
-
   // all ranking
   "cyberpunk": { info: "2nd Season in Oct 2026" },
   "blue-box": { info: "2nd Season in Oct 2026" },
@@ -2820,481 +2809,3 @@ const nextSeasonMap = {
   "blue-lock": { info: "3rd Season Announced" },
   "bocchi-the-rock": { info: "2nd Season in Production" },
 };
-
-// ─────────────────────────────────────────────────────────────────────────
-// Watched This Month — animes que você assistiu em cada mês, exibidos como
-// um carrossel horizontal (estilo "Assistidos" da Crunchyroll) logo no topo
-// do site, um "estante" por mês.
-//
-// Como adicionar/editar:
-// 1. O mês mais recente pode ficar em qualquer posição do array — a lista é
-//    ordenada automaticamente (mais recente primeiro) pelo campo "month"
-//    no formato "AAAA-MM" (ex: "2026-08").
-// 2. Cada anime dentro de "animes" aceita:
-//      id     -> qualquer texto único (não precisa bater com outra lista)
-//      img    -> caminho da imagem do pôster (pode reaproveitar uma imagem
-//                já usada em outra lista, ou subir uma nova pra pasta de
-//                imagens do site, ex: "watchedmonth-images/nome.webp")
-//      title  -> título mostrado embaixo do pôster
-//      tags   -> array de textos curtos mostrados embaixo do título
-//                (ex: ["Leg", "Dub"] ou ["Filme"], "12 eps", etc.) — opcional
-//      url    -> se preenchido, clicar no card abre esse link em nova aba
-//                (ex: link do MyAnimeList ou Crunchyroll) — opcional
-//      seasons   -> número de temporadas, mostrado no preview de hover — opcional
-//      seasonLabel -> texto livre pra substituir o "X Temporadas" automático,
-//                      pra casos tipo "3ª Temporada" ou "4ª Temporada I"
-//                      (parte 1 de uma temporada dividida em duas) — opcional.
-//                      Quando preenchido, tem prioridade sobre "seasons".
-//      episodes  -> número de episódios, mostrado no preview de hover — opcional
-//      synopsis  -> texto da sinopse, mostrado no preview de hover — opcional
-//                   (sem nota/votos e sem botões de play/salvar/+, só isso)
-// 3. Pra criar um mês novo, é só copiar um bloco { month, monthLabel, animes }
-//    e trocar os valores.
-// ─────────────────────────────────────────────────────────────────────────
-const watchedMonthlyData = [
-  {
-    month: "2025-08",
-    monthLabel: "September 2025",
-    monthTheme: "peak month",
-    animes: [
-      {
-        id: "campfire-cooking",
-        img: "other-images/everymonth/campfire-cooking.webp",
-        title: "Campfire Cooking in Another World with My Absurd Skill",
-        url: "",
-        badge: "⚡ Assitido em 1 Dia",
-        seasonLabel: "1ª temporada",
-        episodes: 12,
-        synopsis: "",
-      },
-      {
-        id: "opm",
-        img: "other-images/everymonth/opm.webp",
-        title: "One-Punch Man",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 12,
-        synopsis: "",
-      },
-      {
-        id: "opm",
-        img: "other-images/everymonth/opm2.webp",
-        title: "One-Punch Man 2",
-        url: "",
-        seasonLabel: "2ª temporada",
-        episodes: 12,
-        synopsis: "",
-      },
-      {
-        id: "dan-da-dan",
-        img: "other-images/everymonth/dan-da-dan2.webp",
-        title: "Dan da Dan 2nd Season",
-        url: "",
-        seasonLabel: "2ª temporada",
-        episodes: 12,
-        synopsis: "",
-      },
-      {
-        id: "grand-blue",
-        img: "other-images/everymonth/grand-blue2.webp",
-        title: "Grand Blue Season 2",
-        url: "",
-        seasonLabel: "2ª temporada",
-        episodes: 12,
-        synopsis: "",
-      },
-      {
-        id: "re-zero",
-        img: "other-images/everymonth/re-zero.webp",
-        title: "Re:ZERO: Starting Life in Another World",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 25,
-        synopsis: "",
-      },
-      {
-        id: "shadow",
-        img: "other-images/everymonth/shadow.webp",
-        title: "The Eminence in Shadow",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 20,
-        synopsis: "",
-      },
-      {
-        id: "shadow",
-        img: "other-images/everymonth/shadow2.webp",
-        title: "The Eminence in Shadow 2nd Season",
-        url: "",
-        seasonLabel: "2ª temporada",
-        episodes: 2,
-        synopsis: "",
-      },
-      {
-        id: "dr-stone",
-        img: "other-images/everymonth/dr-stone4-2.webp",
-        title: "Dr. Stone: Science Future - Part II",
-        url: "",
-        seasonLabel: "4ª temporada II",
-        episodes: 12,
-        synopsis: "",
-      },
-    ],
-  },
-  {
-    month: "2025-07",
-    monthLabel: "August 2025",
-    monthTheme: "isekai slop",
-    animes: [
-      {
-        id: "i-got-a-cheat-skill",
-        img: "other-images/everymonth/i-got-a-cheat-skill.webp",
-        title: "I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 13,
-        synopsis: "Yuuya Tenjou sofre bullying por causa de sua aparência e encontra um portal para outro mundo na casa de seu avô. Ao descobrir que pode viajar entre os dois mundos, ele ganha habilidades extraordinárias e começa a transformar sua vida tanto na fantasia quanto na realidade.",
-      },
-      {
-        id: "failure-frame",
-        img: "other-images/everymonth/failure-frame.webp",
-        title: "Failure Frame: I Became the Strongest and Annihilated Everything With Low-Level Spells",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 12,
-        synopsis: "Touka Mimori e sua turma são transportados para outro mundo para se tornarem heróis. Considerado inútil por possuir apenas habilidades de baixo nível, Touka é enviado para morrer em uma masmorra, mas descobre que seus poderes são muito mais perigosos do que pareciam.",
-      },
-      {
-        id: "black-summoner",
-        img: "other-images/everymonth/black-summoner.webp",
-        title: "Black Summoner",
-        url: "",
-        badge: "⚡ Assitido em 1 Dia",
-        seasonLabel: "1 temporada",
-        episodes: 12,
-        synopsis: "Kelvin desperta em outro mundo sem lembranças de sua vida anterior, mas com habilidades poderosas concedidas pela própria deusa que o reencarnou. Fascinado por batalhas, ele se torna um invocador e parte em uma jornada enquanto enfrenta monstros, aventureiros e inimigos cada vez mais fortes.",
-      },
-      {
-        id: "farming-life",
-        img: "other-images/everymonth/farming-life.webp",
-        title: "Farming Life in Another World",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 12,
-        synopsis: "Após morrer por uma doença, Hiraku Machio recebe a chance de recomeçar a vida em outro mundo. Com uma ferramenta agrícola capaz de fazer praticamente qualquer coisa, ele começa a construir uma fazenda do zero e acaba criando uma pequena comunidade cheia de humanos, elfos, vampiros e outras criaturas.",
-      },
-      {
-        id: "wistoria",
-        img: "other-images/everymonth/wistoria.webp",
-        title: "Wistoria: Wand and Sword",
-        url: "",
-        badge: "⚡ Assitido em 1 Dia",
-        seasonLabel: "1ª temporada",
-        episodes: 12,
-        synopsis: "Will Serfort frequenta uma academia de magia em um mundo onde o poder mágico define o valor de cada pessoa. Sem conseguir usar magia, ele depende de sua habilidade com a espada para avançar e alcançar seu objetivo de se tornar um dos Magia Vander e cumprir uma promessa importante do passado.",
-      },
-      {
-        id: "the-worlds-finest-assassin",
-        img: "other-images/everymonth/the-worlds-finest-assassin.webp",
-        title: "The World's Finest Assassin Gets Reincarnated in Another World as an Aristocrat",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 12,
-        synopsis: "O maior assassino do mundo morre após ser traído e recebe uma nova chance de viver em outro mundo. Reencarnado como Lugh Tuatha Dé, ele cresce como membro de uma família de assassinos e é encarregado de eliminar o herói que poderá destruir o mundo no futuro.",
-      },
-      {
-        id: "cyberpunk",
-        img: "other-images/everymonth/cyberpunk.webp",
-        title: "Cyperpunk: Edgerunners",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 12,
-        synopsis: "David Martinez é um jovem que vive nas partes pobres de Night City, uma cidade dominada por tecnologia, violência e desigualdade. Após uma tragédia que muda completamente sua vida, ele decide seguir o caminho dos mercenários conhecidos como edgerunners e se envolve cada vez mais no perigoso submundo da cidade.",
-      },
-    ],
-  },
-  {
-    month: "2025-06",
-    monthLabel: "July 2025",
-    monthTheme: "another mid month",
-    animes: [
-      {
-        id: "the-girl-i-like-forgot-her-glasses",
-        img: "other-images/everymonth/the-girl-i-like-forgot-her-glasses.webp",
-        title: "The Girl I Like Forgot Her Glasses",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 13,
-        synopsis: "Kaede Komura gosta de sua colega de classe Ai Mie, uma garota frequentemente distraída que costuma esquecer os próprios óculos. Por precisar ficar cada vez mais próxima de Kaede para enxergar, Ai acaba criando momentos inesperadamente íntimos entre os dois.",
-      },
-      {
-        id: "wind-breaker",
-        img: "other-images/everymonth/wind-breaker.webp",
-        title: "Wind Breaker",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 13,
-        synopsis: "Haruka Sakura chega à Furin High School determinado a se tornar o mais forte de todos. Porém, descobre que os estudantes da escola formam o Bofurin, um grupo que protege a cidade, fazendo com que Sakura tenha que aprender que força não significa apenas vencer lutas.",
-      },
-      {
-        id: "horimiya",
-        img: "other-images/everymonth/horimiya-pieces.webp",
-        title: "Horimiya: The Missing Pieces",
-        url: "",
-        seasonLabel: "2ª temporada",
-        episodes: 13,
-        synopsis: "A história retorna a Hori, Miyamura e seus amigos, mostrando acontecimentos do cotidiano do grupo que ficaram de fora da primeira temporada. Entre momentos escolares, amizades e relacionamentos, novos episódios exploram melhor a vida dos personagens e suas relações.",
-      },
-      {
-        id: "makeine",
-        img: "other-images/everymonth/makeine.webp",
-        title: "Makeine: Too Many Losing Heroines!",
-        url: "",
-        badge: "⚡ Assitido em 1 Dia",
-        seasonLabel: "1 temporada",
-        episodes: 12,
-        synopsis: "Kazuhiko Nukumizu é um estudante comum que acaba testemunhando várias garotas serem rejeitadas pelos garotos de quem gostam. Ao se envolver com essas heroínas perdedoras, ele forma um grupo inesperado e começa a experimentar situações românticas que nunca imaginou viver.",
-      },
-      {
-        id: "highschool-of-the-dead",
-        img: "other-images/everymonth/highschool-of-the-dead.webp",
-        title: "Highschool of the Dead",
-        url: "",
-        badge: "⚡ Assitido em 1 Dia",
-        seasonLabel: "1 temporada",
-        episodes: 12,
-        synopsis: "Uma epidemia transforma grande parte da população em criaturas agressivas e mergulha o mundo no caos. Takashi Komuro e um grupo de estudantes precisam atravessar uma cidade tomada pelo perigo enquanto procuram um lugar seguro e tentam encontrar suas famílias.",
-      },
-      {
-        id: "bunny-girl-senpai",
-        img: "other-images/everymonth/bunny-girl-senpai.webp",
-        title: "Rascal Does Not Dream of Bunny Girl Senpai",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 13,
-        synopsis: "Sakuta Azusagawa encontra Mai Sakurajima, uma atriz famosa que está temporariamente afastada da carreira e parece ter se tornado invisível para as outras pessoas. Enquanto tenta descobrir a causa desse fenômeno, Sakuta começa a investigar casos semelhantes envolvendo outras garotas próximas a ele.",
-      },
-      {
-        id: "grand-blue",
-        img: "other-images/everymonth/grand-blue.webp",
-        title: "Grand Blue Dreaming",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 12,
-        synopsis: "Iori Kitahara começa a faculdade e se muda para a loja de mergulho de seu tio, esperando aproveitar uma vida universitária tranquila. Em vez disso, ele é arrastado para o excêntrico clube de mergulho Peek a Boo e passa a viver entre mergulhos, festas e situações completamente absurdas.",
-      },
-    ],
-  },
-  {
-    month: "2025-05",
-    monthLabel: "June 2025",
-    monthTheme: "sub month trying to be peak",
-    animes: [
-      {
-        id: "yamada-kun-lv999",
-        img: "other-images/everymonth/yamada-kun-lv999.webp",
-        title: "My Love Story with Yamada-kun at LV999",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 13,
-        badge: "⚡ Assitido em 1 Dia",
-        synopsis: "Depois de ser abandonada pelo namorado, Akane começa a jogar o mesmo MMORPG que os dois frequentavam e conhece Akito Yamada, um jogador extremamente habilidoso e pouco sociável. O encontro entre os dois acontece primeiro dentro do jogo, mas aos poucos a relação começa a se desenvolver também fora dele.",
-      },
-      {
-        id: "your-lie-in-april",
-        img: "other-images/everymonth/your-lie-in-april.webp",
-        title: "Your Lie in April",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 22,
-        synopsis: "Kousei Arima é um pianista prodígio que abandona a música após a morte de sua mãe e passa a enxergar o mundo sem cor. Sua vida muda quando conhece Kaori Miyazono, uma violinista de personalidade livre que o inspira a voltar a tocar e enfrentar o passado.",
-      },
-      {
-        id: "mashle",
-        img: "other-images/everymonth/mashle2.webp",
-        title: "Mashle: Magic and Muscles - The Divine Visionary Candidate Exam Arc",
-        url: "",
-        seasonLabel: "2ª temporada",
-        episodes: 12,
-        synopsis: "Mash Burnedead continua escondendo o fato de ser incapaz de usar magia enquanto frequenta uma academia onde esse poder determina o valor de cada pessoa. Durante o exame para se tornar um Divine Visionary, ele e seus amigos enfrentam adversários cada vez mais perigosos e começam a desafiar a estrutura da sociedade mágica.",
-      },
-      {
-        id: "dr-stone",
-        img: "other-images/everymonth/dr-stone4.webp",
-        title: "Dr. Stone: Science Future",
-        url: "",
-        seasonLabel: "4ª temporada I",
-        episodes: 12,
-        synopsis: "Senku e o Reino da Ciência continuam sua jornada para reconstruir a civilização e encontrar respostas sobre a misteriosa petrificação da humanidade. Para avançar em direção ao seu objetivo, o grupo precisa desenvolver novas tecnologias e enfrentar os desafios que surgem durante a expansão de sua jornada pelo mundo.",
-      },
-      {
-        id: "welcome-to-the-ballroom",
-        img: "other-images/everymonth/welcome-to-the-ballroom.webp",
-        title: "Welcome to the Ballroom",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 24,
-        synopsis: "Tatara Fujita é um estudante sem objetivos claros até conhecer o mundo da dança de salão. Fascinado pela modalidade, ele decide aprender a dançar e começa uma jornada competitiva ao lado de outros jovens talentosos, descobrindo aos poucos seu próprio potencial.",
-      },
-      {
-        id: "apothecary-diaries",
-        img: "other-images/everymonth/apothecary-diaries.webp",
-        title: "The Apothecary Diaries",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 24,
-        synopsis: "Maomao, uma jovem criada em um distrito de entretenimento e especialista em medicina e venenos, é sequestrada e levada para trabalhar no palácio imperial. Ao perceber que diversos mistérios e doenças cercam a corte, ela começa a usar seu conhecimento para resolver casos que chamam a atenção de pessoas importantes.",
-      },
-      {
-        id: "silent-voice",
-        img: "other-images/everymonth/silent-voice.webp",
-        title: "A Silent Voice",
-        url: "",
-        episodes: "2h10m",
-        synopsis: "Shoya Ishida, que atormentou sua colega surda Shoko Nishimiya durante a infância, passa anos carregando a culpa pelo que fez. Quando os dois se reencontram no ensino médio, Shoya tenta reparar seus erros e reconstruir uma relação com Shoko enquanto enfrenta o isolamento causado por suas próprias escolhas.",
-      },
-    ],
-  },
-  {
-    month: "2025-05",
-    monthLabel: "May 2025",
-    monthTheme: "ABSOLUTE ROMANCE",
-    animes: [
-      {
-        id: "haikyuu",
-        img: "other-images/everymonth/haikyuu3.webp",
-        title: "Haikyuu!! Karasuno High School vs Shiratorizawa Academy",
-        url: "",
-        seasonLabel: "3ª temporada",
-        episodes: 10,
-        synopsis: "Após derrotar a Aoba Johsai, o Karasuno enfrenta o poderoso Shiratorizawa na final das eliminatórias de Miyagi. Hinata, Kageyama e seus companheiros precisam superar a equipe liderada pelo talentoso Wakatoshi Ushijima para conquistar uma vaga no torneio nacional.",
-      },
-      {
-        id: "haikyuu",
-        img: "other-images/everymonth/haikyuu4.webp",
-        title: "Haikyuu!! To the Top",
-        url: "",
-        seasonLabel: "4ª temporada I",
-        episodes: 13,
-        synopsis: "O Karasuno se prepara para o torneio nacional e participa de treinamentos especiais para enfrentar adversários cada vez mais fortes. Enquanto Hinata e Kageyama buscam evoluir individualmente, o time trabalha para alcançar um novo nível antes da competição.",
-      },
-      {
-        id: "haikyuu",
-        img: "other-images/everymonth/haikyuu4-2.webp",
-        title: "Haikyuu!! To the Top: Part II",
-        url: "",
-        seasonLabel: "4ª temporada II",
-        episodes: 12,
-        synopsis: "No torneio nacional, o Karasuno enfrenta o Inarizaki High, uma das equipes mais fortes da competição. A partida coloca à prova tudo o que Hinata, Kageyama e seus companheiros aprenderam, enquanto cada jogador precisa superar seus próprios limites para manter o time vivo no torneio.",
-      },
-      {
-        id: "haikyuu",
-        img: "other-images/everymonth/haikyuu-dumpster.webp",
-        title: "Haikyuu!! Movie 5: The Dumpster Battle",
-        url: "",
-        episodes: "1h25m",
-        synopsis: "Durante o torneio nacional, o Karasuno finalmente enfrenta o Nekoma em uma partida oficial. Após anos de rivalidade e amistosos, os dois times disputam a aguardada 'Batalha do Lixão', transformando o confronto em um dos jogos mais esperados de suas trajetórias.",
-      },
-      {
-        id: "blue-box",
-        img: "other-images/everymonth/blue-box.webp",
-        title: "Blue Box",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 25,
-        synopsis: "Taiki Inomata é um jogador de badminton apaixonado por Chinatsu Kano, uma talentosa atleta de basquete que treina no mesmo ginásio. Quando os dois passam a morar juntos por uma circunstância inesperada, Taiki precisa lidar com seus sentimentos enquanto continua perseguindo seus objetivos no esporte.",
-      },
-      {
-        id: "my-dress-up-darling",
-        img: "other-images/everymonth/my-dress-up-darling.webp",
-        title: "My Dress-Up Darling",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 12,
-        synopsis: "Wakana Gojo dedica seu tempo a aprender a fabricar bonecas hina, mantendo seu hobby em segredo por medo de ser julgado. Tudo muda quando Marin Kitagawa descobre seu talento e pede sua ajuda para produzir cosplays, aproximando os dois enquanto trabalham juntos em diferentes projetos.",
-      },
-      {
-        id: "blue-period",
-        img: "other-images/everymonth/blue-period.webp",
-        title: "Blue Period",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 12,
-        synopsis: "Yatora Yaguchi é um estudante dedicado que leva uma vida aparentemente perfeita, mas sente que falta algo em seu cotidiano. Depois de descobrir a pintura e se apaixonar pela arte, ele decide entrar em uma universidade de artes e enfrenta a intensa competição para alcançar seu novo objetivo.",
-      },
-      {
-        id: "angel-next-door",
-        img: "other-images/everymonth/angel-next-door.webp",
-        title: "The Angel Next Door Spoils Me Rotten",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 12,
-        synopsis: "Amane Fujimiya mora sozinho e mantém uma rotina tranquila, até ajudar Mahiru Shiina, a garota mais popular da escola, em um dia chuvoso. A partir desse encontro, Mahiru começa a cuidar dele e os dois passam cada vez mais tempo juntos, criando uma relação que vai muito além da simples amizade.",
-      },
-      {
-        id: "horimiya",
-        img: "other-images/everymonth/horimiya.webp",
-        title: "Horimiya",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 13,
-        synopsis: "Kyoko Hori é uma estudante popular que esconde uma vida doméstica muito diferente daquela que seus colegas conhecem. Izumi Miyamura, por outro lado, parece ser um estudante reservado, mas também possui um lado completamente diferente fora da escola. Quando os dois descobrem seus segredos, uma amizade especial começa a surgir entre eles.",
-      },
-      {
-        id: "more-than-married-couple",
-        img: "other-images/everymonth/more-than-married-couple.webp",
-        title: "More than a Married Couple, but Not Lovers",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 12,
-        badge: "⚡ Assistido 2 Vezes em um mês",
-        synopsis: "Jirou Yakuin participa de um projeto escolar no qual os alunos precisam formar duplas e simular a vida de um casal. Emparelhado com Akari Watanabe, os dois precisam aprender a conviver e agir como marido e mulher, enquanto seus sentimentos começam a ficar cada vez mais difíceis de ignorar.",
-      },
-      {
-        id: "roshidere",
-        img: "other-images/everymonth/roshidere.webp",
-        title: "Alya Sometimes Hides Her Feelings in Russian",
-        url: "",
-        seasonLabel: "1 temporada",
-        episodes: 12,
-        synopsis: "Alya é uma estudante meio-russa conhecida por sua personalidade fria e por suas excelentes notas. Ela costuma murmurar seus verdadeiros sentimentos em russo para esconder a vergonha, sem perceber que seu colega Masachika entende perfeitamente o idioma e sabe exatamente o que ela está dizendo.",
-      },
-      {
-        id: "cote",
-        img: "other-images/everymonth/cote.webp",
-        title: "Classroom of the Elite",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 12,
-        synopsis: "Kiyotaka Ayanokoji entra na prestigiada Escola Metropolitana Avançada de Tóquio e é colocado na aparentemente inferior Classe D. Embora pareça ser um estudante comum, sua inteligência e habilidade para analisar as pessoas começam a se destacar conforme ele participa das disputas entre as diferentes classes.",
-      },
-      {
-        id: "cote",
-        img: "other-images/everymonth/cote2.webp",
-        title: "Classroom of the Elite 2nd Season",
-        url: "",
-        seasonLabel: "2ª temporada",
-        episodes: 13,
-        synopsis: "A Classe D continua enfrentando provas especiais que colocam os estudantes uns contra os outros. Enquanto as disputas ficam mais complexas, Ayanokoji começa a agir nos bastidores para garantir a sobrevivência da turma, mantendo sua verdadeira capacidade escondida dos demais.",
-      },
-      {
-        id: "cote",
-        img: "other-images/everymonth/cote3.webp",
-        title: "Classroom of the Elite 3rd Season",
-        url: "",
-        seasonLabel: "3ª temporada",
-        episodes: 13,
-        synopsis: "A disputa entre as classes se torna ainda mais intensa com novos exames especiais e confrontos psicológicos. Ayanokoji precisa lidar com novos inimigos e alianças enquanto manipula os acontecimentos das sombras para alcançar seus objetivos sem revelar completamente suas verdadeiras intenções.",
-      },
-      {
-        id: "masamune-kuns-revenge",
-        img: "other-images/everymonth/masamune-kuns-revenge.webp",
-        title: "Masamune-kun's Revenge",
-        url: "",
-        seasonLabel: "1ª temporada",
-        episodes: 12,
-        synopsis: "Quando criança, Masamune Makabe foi rejeitado e humilhado por Aki Adagaki, que o apelidou de 'Porquinho'. Anos depois, ele retorna completamente transformado e decide se vingar fazendo Aki se apaixonar por ele, apenas para rejeitá-la da mesma forma que foi rejeitado no passado.",
-      },
-    ],
-  },
-];
