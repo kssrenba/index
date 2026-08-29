@@ -8,6 +8,27 @@ set "base=C:\Users\Pichau\Desktop\myhtml"
 cls
 
 echo.
+echo === GERENCIAR ANIME ===
+echo.
+echo 1 - Mover imagem
+echo 2 - Deletar imagem
+echo 3 - Sair
+echo.
+
+set /p "acao=Escolha uma opcao: "
+
+if "%acao%"=="3" exit /b
+if "%acao%"=="1" goto mover
+if "%acao%"=="2" goto deletar
+
+echo.
+echo Opcao invalida.
+pause
+goto inicio
+
+:mover
+cls
+echo.
 echo === MOVER ANIME ===
 echo.
 echo 1 - Plan to Watch
@@ -23,22 +44,111 @@ if not "%origem%"=="1" if not "%origem%"=="2" if not "%origem%"=="3" (
     echo.
     echo Origem invalida.
     pause
-    exit /b
+    goto inicio
 )
 
 if not "%destino%"=="1" if not "%destino%"=="2" if not "%destino%"=="3" (
     echo.
     echo Destino invalido.
     pause
-    exit /b
+    goto inicio
 )
 
 if "%origem%"=="%destino%" (
     echo.
     echo A origem e o destino nao podem ser iguais.
     pause
-    exit /b
+    goto inicio
 )
+
+rem ============================================================
+rem DELETAR IMAGEM
+rem ============================================================
+
+:deletar
+cls
+echo.
+echo === DELETAR IMAGEM ===
+echo.
+echo 1 - Plan to Watch
+echo 2 - Watching Now
+echo 3 - MyRanks
+echo.
+
+set /p "grupo=De qual grupo deseja deletar? "
+set /p "anime=Digite o ID/nome do anime: "
+
+if not "%grupo%"=="1" if not "%grupo%"=="2" if not "%grupo%"=="3" (
+    echo.
+    echo Grupo invalido.
+    pause
+    goto inicio
+)
+
+if "%grupo%"=="1" set "grupoNome=Plan to Watch"
+if "%grupo%"=="2" set "grupoNome=Watching Now"
+if "%grupo%"=="3" set "grupoNome=MyRanks"
+
+if "%grupo%"=="1" (
+    set "pasta1=%base%\plantowatch-images\plantowatch"
+    set "pasta2=%base%\plantowatch-images\plantowatch-search"
+    set "pasta3=%base%\plantowatch-images\plantowatch-sequels"
+)
+
+if "%grupo%"=="2" (
+    set "pasta1=%base%\watchingnow-images\watchingnow"
+    set "pasta2=%base%\watchingnow-images\watchingnow-search"
+    set "pasta3=%base%\watchingnow-images\watchingnow-sequels"
+)
+
+if "%grupo%"=="3" (
+    set "pasta1=%base%\myranks-images\myranks"
+    set "pasta2=%base%\myranks-images\myranks-search"
+    set "pasta3=%base%\myranks-images\myranks-sequels"
+)
+
+echo.
+echo ATENCAO: isso vai apagar "%anime%" das pastas de %grupoNome%.
+set /p "confirmar=Tem certeza? (S/N): "
+
+if /i not "%confirmar%"=="S" (
+    echo.
+    echo Exclusao cancelada.
+    pause
+    goto inicio
+)
+
+set "apagou=0"
+
+for %%N in (1 2 3) do (
+    set "pasta=!pasta%%N!"
+
+    if exist "!pasta!" (
+        for /f "delims=" %%F in ('dir /b /a-d "!pasta!\*" 2^>nul') do (
+            set "nomeArquivo=%%~nF"
+
+            if /i "!nomeArquivo!"=="%anime%" (
+                del /Q "!pasta!\%%F"
+
+                if not errorlevel 1 (
+                    echo Deletado: !pasta!\%%F
+                    set "apagou=1"
+                )
+            )
+        )
+    )
+)
+
+echo.
+if "!apagou!"=="1" (
+    echo Imagem(ns) deletada(s) com sucesso.
+) else (
+    echo Nenhuma imagem encontrada com esse nome.
+)
+
+echo.
+pause
+goto inicio
 
 rem ============================================================
 rem DEFINIR NOMES DOS GRUPOS

@@ -14,6 +14,17 @@
       <meta name="apple-mobile-web-app-title" content="myhtml">
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
       <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+      <script>
+        // Decide antes do primeiro paint se este navegador ainda está liberado.
+        (function () {
+          const AUTH_KEY = 'myhtml_access_until_v1';
+          let unlocked = false;
+          try {
+            unlocked = Number(localStorage.getItem(AUTH_KEY) || 0) > Date.now();
+          } catch (e) {}
+          document.documentElement.classList.add(unlocked ? 'site-auth-ok' : 'site-auth-locked');
+        })();
+      </script>
 
       <style>
         :root{
@@ -35,6 +46,520 @@
         }
 
         * { box-sizing: border-box; }
+
+        html.site-auth-locked body > *:not(.site-auth-gate):not(script) {
+          visibility: hidden !important;
+        }
+
+        .site-auth-gate {
+          position: fixed;
+          inset: 0;
+          z-index: 999999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          background:
+            radial-gradient(ellipse 90% 55% at 50% 0%, rgba(203,213,225,0.17), transparent 65%),
+            #050505;
+          animation: siteAuthGateIn 0.42s ease both;
+          overflow: hidden;
+        }
+
+        .site-auth-desktop-carousel {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-evenly;
+          gap: 18px;
+          opacity: 0.34;
+          filter: blur(5px) saturate(0.8) brightness(0.65);
+          pointer-events: none;
+          mask-image: linear-gradient(90deg, #000, transparent 44%, transparent 56%, #000);
+          -webkit-mask-image: linear-gradient(90deg, #000, transparent 44%, transparent 56%, #000);
+          animation: siteAuthCarouselIn 1.1s ease both;
+        }
+
+        .site-auth-marquee-mobile-fourth { display: none; }
+
+        @keyframes siteAuthCarouselIn {
+          from { opacity: 0; transform: scale(1.025); }
+          to { opacity: 0.34; transform: scale(1); }
+        }
+
+        .site-auth-gate.is-unlocking {
+          pointer-events: none;
+          animation: siteAuthGateOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+
+        @keyframes siteAuthGateIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes siteAuthGateOut {
+          from { opacity: 1; transform: scale(1); }
+          to { opacity: 0; transform: scale(1.025); }
+        }
+
+        html.site-auth-ok .site-auth-gate { display: none; }
+
+        .site-auth-box {
+          width: min(560px, 100%);
+          padding: 48px 40px;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
+          box-shadow: none;
+          text-align: center;
+          position: relative;
+          z-index: 1;
+        }
+
+        .site-auth-desktop-mark,
+        .site-auth-desktop-counter { display: none; }
+
+        @media (min-width: 601px) {
+          .site-auth-box {
+            width: min(660px, calc(100vw - 48px));
+            padding: 52px 58px 46px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 32px;
+            background:
+              linear-gradient(145deg, rgba(255,255,255,0.075), rgba(255,255,255,0.018)),
+              rgba(8,8,10,0.7);
+            box-shadow: 0 38px 100px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.06);
+            backdrop-filter: blur(24px) saturate(1.15);
+            -webkit-backdrop-filter: blur(24px) saturate(1.15);
+            overflow: hidden;
+            animation: siteAuthDesktopPanelIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          }
+
+          .site-auth-box::before {
+            content: "";
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            width: 360px;
+            height: 230px;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: rgba(226,232,240,0.11);
+            filter: blur(60px);
+            pointer-events: none;
+          }
+
+          .site-auth-desktop-mark {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 58px;
+            height: 58px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.13);
+            border-radius: 18px;
+            background: rgba(255,255,255,0.055);
+            color: #e2e8f0;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
+          }
+
+          .site-auth-desktop-mark svg {
+            width: 25px;
+            height: 25px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+          }
+
+          .site-auth-title {
+            position: relative;
+            margin-bottom: 12px;
+            font-size: 42px;
+            letter-spacing: -0.035em;
+            text-transform: none;
+          }
+
+          .site-auth-description {
+            position: relative;
+            width: min(410px, 100%);
+            margin: 0 auto 32px;
+            color: rgba(203,213,225,0.62);
+            font-size: 14px;
+          }
+
+          .site-auth-input {
+            position: relative;
+            height: 68px;
+            padding: 0 58px 0 22px;
+            border-color: rgba(255,255,255,0.11);
+            border-radius: 17px;
+            background: rgba(0,0,0,0.28);
+            font-size: 19px;
+            letter-spacing: 0.115em;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
+          }
+
+          .site-auth-input:focus {
+            border-color: rgba(226,232,240,0.42);
+            background: rgba(0,0,0,0.38);
+            box-shadow: 0 0 0 4px rgba(226,232,240,0.045), inset 0 1px 0 rgba(255,255,255,0.035);
+          }
+
+          .site-auth-desktop-counter {
+            position: absolute;
+            right: 78px;
+            bottom: 69px;
+            z-index: 2;
+            display: block;
+            color: rgba(203,213,225,0.38);
+            font: 700 10px/1 var(--font-body);
+            letter-spacing: 0.06em;
+            pointer-events: none;
+          }
+
+          .site-auth-submit { display: none; }
+          .site-auth-error { margin-top: 16px; }
+
+          @keyframes siteAuthDesktopPanelIn {
+            from { opacity: 0; transform: translateY(22px) scale(0.975); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+        }
+
+        .site-auth-title {
+          margin: 0 0 8px;
+          color: #fff;
+          font: 800 38px/1.15 var(--font-title);
+        }
+
+        .site-auth-description {
+          margin: 0 0 24px;
+          color: #9ca3af;
+          font-size: 15px;
+          line-height: 1.5;
+        }
+
+        .site-auth-input {
+          width: 100%;
+          height: 58px;
+          padding: 0 16px;
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 12px;
+          outline: none;
+          background: rgba(255,255,255,0.045);
+          color: #fff;
+          font: 600 20px/1 var(--font-body);
+          letter-spacing: 0.08em;
+          text-align: center;
+          transition: border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .site-auth-input:focus {
+          border-color: rgba(203,213,225,0.48);
+          background: rgba(255,255,255,0.065);
+        }
+
+        .site-auth-input.is-error { border-color: rgba(248,113,113,0.72); }
+
+        .site-auth-submit {
+          width: 100%;
+          height: 46px;
+          margin-top: 12px;
+          border: 0;
+          border-radius: 12px;
+          background: #e2e8f0;
+          color: #09090b;
+          font: 800 13px/1 var(--font-body);
+          cursor: pointer;
+          transition: transform 0.12s ease, background 0.12s ease;
+        }
+
+        .site-auth-submit:hover { background: #fff; transform: translateY(-1px); }
+        .site-auth-submit:disabled { opacity: 0.55; cursor: wait; transform: none; }
+
+        .site-auth-error {
+          width: fit-content;
+          min-height: 0;
+          margin: 12px auto 0;
+          padding: 0;
+          border: 1px solid transparent;
+          border-radius: 999px;
+          background: transparent;
+          color: #fca5a5;
+          font-size: 12px;
+          line-height: 1.3;
+          opacity: 0;
+          transform: translateY(-5px);
+          transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), padding 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .site-auth-error.is-visible {
+          padding: 0;
+          border-color: transparent;
+          background: transparent;
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .site-auth-keypad { display: none; }
+        .site-auth-mobile-label { display: none; }
+        .site-auth-pin-display { display: none; }
+        .site-auth-desktop-code { display: none; }
+
+        /* Desktop: composição totalmente aberta, sem card/campo tradicional. */
+        @media (min-width: 601px) {
+          .site-auth-desktop-carousel {
+            mask-image: none;
+            -webkit-mask-image: none;
+          }
+
+          .site-auth-box {
+            width: min(860px, calc(100vw - 60px));
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            overflow: visible;
+            animation: siteAuthSequenceIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+          }
+
+          .site-auth-box::before,
+          .site-auth-desktop-mark,
+          .site-auth-description,
+          .site-auth-desktop-counter,
+          .site-auth-submit { display: none; }
+
+          .site-auth-title {
+            margin: 0 0 34px;
+            color: rgba(255,255,255,0.82);
+            font: 700 14px/1 var(--font-body);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+          }
+
+          .site-auth-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            border: 0;
+            opacity: 0;
+            pointer-events: none;
+          }
+
+          .site-auth-desktop-code {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 14px 10px;
+            width: min(790px, calc(100vw - 80px));
+            margin: 0 auto;
+            cursor: text;
+          }
+
+          .site-auth-code-slot {
+            height: 42px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font: 700 19px/1 var(--font-body);
+            transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+
+          .site-auth-code-slot.is-filled {
+            border-color: rgba(255,255,255,0.58);
+          }
+
+          .site-auth-code-slot.is-new {
+            animation: siteAuthSlotFill 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+          }
+
+          .site-auth-code-slot.is-current {
+            border-color: #fff;
+            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.055));
+          }
+
+          .site-auth-desktop-code.is-error { animation: siteAuthShake 0.34s ease; }
+          .site-auth-error { margin-top: 22px; }
+
+          @keyframes siteAuthSequenceIn {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+
+          @keyframes siteAuthSlotFill {
+            from { opacity: 0.2; transform: translateY(5px) scale(0.88); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+        }
+
+        @media (max-width: 600px) {
+          .site-auth-desktop-carousel {
+            display: flex;
+            opacity: 0.2;
+            filter: blur(7px) saturate(0.7) brightness(0.42);
+            gap: 10px;
+            mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+            -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+            animation: siteAuthCarouselMobileIn 1.2s ease both;
+          }
+
+          .site-auth-desktop-carousel .search-marquee-track { gap: 8px; }
+          .site-auth-desktop-carousel .search-marquee-poster { width: 92px; height: 130px; border-radius: 10px; }
+          .site-auth-desktop-carousel .search-marquee-poster--wide { width: 231px; height: 130px; }
+          .site-auth-marquee-mobile-fourth { display: block; }
+          .site-auth-gate { padding: 16px; }
+          .site-auth-box { width: 100%; padding: 20px 8px; }
+          .site-auth-title,
+          .site-auth-description,
+          .site-auth-submit { display: none; }
+
+          .site-auth-mobile-label {
+            display: block;
+            margin: 0 0 12px;
+            color: rgba(255,255,255,0.72);
+            font: 700 13px/1 var(--font-body);
+            letter-spacing: 0.18em;
+            animation: siteAuthContentIn 0.7s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both;
+          }
+
+          .site-auth-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: 0;
+            opacity: 0;
+            pointer-events: none;
+          }
+
+          .site-auth-input:focus,
+          .site-auth-input.is-error { border: 0; background: transparent; }
+          .site-auth-input::placeholder { color: transparent; }
+
+          .site-auth-pin-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2.7px;
+            width: 264px;
+            height: 28px;
+            margin: 0 auto 24px;
+            overflow: hidden;
+            color: #fff;
+            animation: siteAuthContentIn 0.72s 0.14s cubic-bezier(0.16, 1, 0.3, 1) both;
+          }
+
+          .site-auth-pin-char {
+            flex: 0 0 6px;
+            width: 6px;
+            color: #fff;
+            font: 700 13px/1 var(--font-body);
+            text-align: center;
+            animation: siteAuthPinCharIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+          }
+
+          .site-auth-pin-char.is-dot {
+            font-size: 15px;
+            line-height: 1;
+          }
+
+          .site-auth-pin-display.is-error { animation: siteAuthShake 0.34s ease; }
+
+          .site-auth-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 72px);
+            justify-content: center;
+            gap: 14px 24px;
+          }
+
+          .site-auth-key {
+            width: 72px;
+            height: 72px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font: 500 25px/1 var(--font-body);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            transform: scale(0.72);
+            opacity: 0;
+            animation: siteAuthKeyIn 0.62s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: background 0.24s ease, transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+          }
+
+          .site-auth-key:nth-child(1), .site-auth-key:nth-child(2), .site-auth-key:nth-child(3) { animation-delay: 0.08s; }
+          .site-auth-key:nth-child(4), .site-auth-key:nth-child(5), .site-auth-key:nth-child(6) { animation-delay: 0.13s; }
+          .site-auth-key:nth-child(7), .site-auth-key:nth-child(8), .site-auth-key:nth-child(9) { animation-delay: 0.18s; }
+          .site-auth-key:nth-child(10), .site-auth-key:nth-child(11), .site-auth-key:nth-child(12) { animation-delay: 0.23s; }
+          .site-auth-key:active { background: rgba(255,255,255,0.22); transform: scale(0.92); box-shadow: 0 0 0 9px rgba(255,255,255,0.03); }
+          .site-auth-key.is-ready {
+            opacity: 1;
+            transform: scale(1);
+            animation: none;
+          }
+
+          .site-auth-key.is-ready.key-pop {
+            opacity: 1;
+            transform: scale(0.9);
+            background: rgba(255,255,255,0.24);
+            box-shadow: 0 0 0 9px rgba(255,255,255,0.03);
+          }
+          .site-auth-key--action { background: transparent; font-size: 17px; font-weight: 700; }
+          .site-auth-key--delete svg { width: 25px; height: 25px; fill: currentColor; }
+          .site-auth-key--delete.is-held { color: #f87171; transform: scale(0.86); }
+          .site-auth-error { margin-top: 18px; }
+          .site-auth-pin-display.digit-pulse { animation: siteAuthDigitPulse 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
+
+          @keyframes siteAuthContentIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+
+          @keyframes siteAuthKeyIn {
+            to { opacity: 1; transform: scale(1); }
+          }
+
+          @keyframes siteAuthCarouselMobileIn {
+            from { opacity: 0; transform: scale(1.04); }
+            to { opacity: 0.2; transform: scale(1); }
+          }
+
+          @keyframes siteAuthDigitPulse {
+            0% { transform: scale(1); opacity: 1; }
+            45% { transform: scale(1.035); opacity: 0.78; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+
+          @keyframes siteAuthPinCharIn {
+            from { opacity: 0; transform: translateY(4px) scale(0.75); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+
+          @keyframes siteAuthShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-9px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(4px); }
+          }
+        }
 
         ::selection {
           background: var(--glow-accent);
@@ -1458,8 +1983,8 @@
           background: rgba(255,255,255,0.02);
           overflow: hidden;
           contain: layout style paint;
-          transform: translateZ(0);
-          backface-visibility: hidden;
+          content-visibility: auto;
+          contain-intrinsic-size: auto 114px;
         }
 
         /* will-change só entra durante o hover, não em todos os cards o tempo todo —
@@ -1470,18 +1995,40 @@
           will-change: transform, box-shadow;
         }
 
-        /* ── Ambient: o próprio poster, borrado, como wallpaper do card (mesma mecânica do posterlight) ── */
+        /* ── Ambient: o próprio poster, borrado, como wallpaper do card (mesma mecânica do posterlight) ──
+          Raio de blur reduzido (30px -> 16px) e menos filtros encadeados: blur()
+          é uma das operações de composição mais caras que existem, e isso rodava
+          em TODO card visível assim que o poster carregava. Com dezenas de cards
+          terminando de carregar quase ao mesmo tempo (mesma leva de requests),
+          várias dessas transições disparavam juntas e travavam a rolagem —
+          principalmente nas listas com mais itens (ex: "All"). Custo do blur cai
+          de forma aproximadamente quadrática com o raio, então 16px já é bem
+          mais barato que 30px mantendo o efeito de "wallpaper borrado".
+        */
         .anime-item-ambient {
           position: absolute;
           inset: -30px;
           z-index: 0;
           background-size: cover;
           background-position: center;
-          filter: blur(30px) saturate(1.5) brightness(0.55);
+          /* O blur voltou a ser seguro porque, no MyRanks desktop, o wallpaper
+             agora usa a miniatura reduzida criada pelo JS em vez da imagem
+             original enorme. Durante o scroll ele ainda é suspenso pela regra
+             body.is-scrolling-ambient, preservando a rolagem suave. */
+          filter: blur(16px) brightness(0.55);
           opacity: 0;
           transform: scale(1.1);
           transition: opacity 0.4s ease, transform 0.6s ease;
           pointer-events: none;
+        }
+
+        /* will-change só entra durante a transição de entrada (quando o poster
+          termina de carregar e a classe "ready" é adicionada via JS) e é
+          removido logo depois (ver startLoadingPoster) — assim o navegador não
+          fica com dezenas de camadas de composição reservadas o tempo todo,
+          só durante o instante em que a transição realmente acontece. */
+        .anime-item-ambient.ambient-transitioning {
+          will-change: opacity, transform;
         }
 
         .anime-item-ambient.ready {
@@ -1501,6 +2048,61 @@
         li.anime-item:hover .anime-item-ambient.ready {
           animation: ambientDrift 4s ease-in-out infinite;
           animation-delay: 140ms;
+        }
+
+        /* Em listas com muitos cards ao mesmo tempo na tela/DOM (ex: Myranks/
+          "All", ~270 itens, contra ~120 do Plan to Watch), mesmo com cada
+          .anime-item-ambient já promovido pra camada própria de GPU, o
+          navegador ainda precisa recompor dezenas dessas camadas borradas a
+          cada frame de rolagem — e isso escala com a quantidade de cards, daí
+          o "All" ficar bem mais pesado. Igual já se faz no preview do
+          "Watched This Month" (ver watchedMonthMarkScrolling/.is-scrolling
+          mais abaixo no JS), aqui a gente desliga o blur assim que a rolagem
+          de verdade começa — ninguém está reparando no wallpaper borrado
+          enquanto a lista voa na tela — e liga de volta pouco depois que a
+          rolagem para (ver markAmbientScrolling no JS). */
+        body.is-scrolling-ambient .anime-item-ambient {
+          filter: none;
+          opacity: 0 !important;
+          transition: none;
+          animation: none !important;
+        }
+
+        /* No desktop, o elemento que passa por baixo do cursor durante o scroll
+           continua em :hover. Transformar card, sombra e pôster ao mesmo tempo
+           em que a grade se move força novas camadas de composição. Suspende
+           todo o hover apenas durante a rolagem; ao parar, o visual volta. */
+        body.is-scrolling-ambient li.anime-item:hover {
+          transform: none !important;
+          box-shadow: none !important;
+          will-change: auto !important;
+        }
+
+        body.is-scrolling-ambient li.anime-item:hover::after {
+          opacity: 0 !important;
+          transition: none !important;
+        }
+
+        body.is-scrolling-ambient li.anime-item:hover .thumb {
+          transform: none !important;
+          will-change: auto !important;
+          backface-visibility: visible !important;
+          transition: none !important;
+        }
+
+        /* Além de desligar durante o scroll (regra acima), cards que estão
+          longe da área visível (ver ambientVisibilityObserver no JS) ficam com
+          o wallpaper borrado totalmente pausado — não só sem o custo do blur,
+          como sem gerar camada de composição nenhuma pra ele. Isso faz o
+          número de camadas borradas ativas ao mesmo tempo depender só de
+          quanto cabe perto da tela, não do tamanho total da lista — por isso
+          Myranks/"All" (~270 itens) e Plan to Watch (~120 itens) passam a
+          pesar praticamente igual, já que só a vizinhança da viewport conta. */
+        li.anime-item.ambient-offscreen .anime-item-ambient {
+          filter: none !important;
+          opacity: 0 !important;
+          transition: none !important;
+          animation: none !important;
         }
 
         .anime-item-ambient-shade {
@@ -6193,6 +6795,238 @@
     </head>
 
     <body>
+      <div class="site-auth-gate" id="siteAuthGate">
+        <div class="site-auth-desktop-carousel" aria-hidden="true">
+          <div class="search-marquee-row search-marquee-row-right"><div class="search-marquee-track" id="siteAuthMarqueeRight"></div></div>
+          <div class="search-marquee-row search-marquee-row-left"><div class="search-marquee-track" id="siteAuthMarqueeLeft"></div></div>
+          <div class="search-marquee-row search-marquee-row-right"><div class="search-marquee-track" id="siteAuthMarqueeRight2"></div></div>
+          <div class="search-marquee-row search-marquee-row-left site-auth-marquee-mobile-fourth"><div class="search-marquee-track" id="siteAuthMarqueeLeft2"></div></div>
+        </div>
+        <form class="site-auth-box" id="siteAuthForm" autocomplete="off">
+          <div class="site-auth-desktop-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path><path d="M12 14v3"></path></svg>
+          </div>
+          <h1 class="site-auth-title">Enter access sequence</h1>
+          <p class="site-auth-description">Enter your 30-digit passkey to open the archive.<br>This device stays trusted for 30 days.</p>
+          <p class="site-auth-mobile-label">ENTER PASSWORD</p>
+          <div class="site-auth-pin-display" id="siteAuthPinDisplay" aria-hidden="true"></div>
+          <input class="site-auth-input" id="siteAuthInput" type="password" inputmode="numeric" maxlength="30" pattern="[0-9]{30}" placeholder="••••••••••••••••••••••••••••••" aria-label="Senha" required autofocus>
+          <div class="site-auth-desktop-code" id="siteAuthDesktopCode" aria-label="Código de acesso com 30 dígitos"></div>
+          <span class="site-auth-desktop-counter" id="siteAuthDesktopCounter">0 / 30</span>
+          <button class="site-auth-submit" id="siteAuthSubmit" type="submit">ENTER</button>
+          <div class="site-auth-keypad" id="siteAuthKeypad" aria-label="Teclado numérico">
+            <button class="site-auth-key" type="button" data-auth-digit="1">1</button>
+            <button class="site-auth-key" type="button" data-auth-digit="2">2</button>
+            <button class="site-auth-key" type="button" data-auth-digit="3">3</button>
+            <button class="site-auth-key" type="button" data-auth-digit="4">4</button>
+            <button class="site-auth-key" type="button" data-auth-digit="5">5</button>
+            <button class="site-auth-key" type="button" data-auth-digit="6">6</button>
+            <button class="site-auth-key" type="button" data-auth-digit="7">7</button>
+            <button class="site-auth-key" type="button" data-auth-digit="8">8</button>
+            <button class="site-auth-key" type="button" data-auth-digit="9">9</button>
+            <button class="site-auth-key site-auth-key--action site-auth-key--delete" id="siteAuthDelete" type="button" aria-label="Apagar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.12c.36.53.9.88 1.59.88h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2Zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59Z"></path></svg>
+            </button>
+            <button class="site-auth-key" type="button" data-auth-digit="0">0</button>
+            <button class="site-auth-key site-auth-key--action" id="siteAuthOk" type="button">OK</button>
+          </div>
+          <p class="site-auth-error" id="siteAuthError" aria-live="polite"></p>
+        </form>
+      </div>
+      <script>
+        (function () {
+          const form = document.getElementById('siteAuthForm');
+          const input = document.getElementById('siteAuthInput');
+          const submit = document.getElementById('siteAuthSubmit');
+          const error = document.getElementById('siteAuthError');
+          const gate = document.getElementById('siteAuthGate');
+          const pinDisplay = document.getElementById('siteAuthPinDisplay');
+          const desktopCounter = document.getElementById('siteAuthDesktopCounter');
+          const desktopCode = document.getElementById('siteAuthDesktopCode');
+          const keypad = document.getElementById('siteAuthKeypad');
+          const deleteKey = document.getElementById('siteAuthDelete');
+          const okKey = document.getElementById('siteAuthOk');
+          const AUTH_KEY = 'myhtml_access_until_v1';
+          const PASSWORD_HASH = '34d8b1925931d2de3b1f360cb6d68ebb1a639d0b59fdbd526e6c6d9d21cd3fa4';
+          const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+          let isChecking = false;
+          let pinMaskTimer = null;
+          let desktopMaskTimer = null;
+
+          function renderMobilePin(revealLast) {
+            if (!pinDisplay) return;
+            const digits = input.value.split('');
+            pinDisplay.innerHTML = digits.map((digit, index) => {
+              const showDigit = revealLast && index === digits.length - 1;
+              return `<span class="site-auth-pin-char${showDigit ? '' : ' is-dot'}">${showDigit ? digit : '•'}</span>`;
+            }).join('');
+            clearTimeout(pinMaskTimer);
+            if (revealLast && digits.length) {
+              pinMaskTimer = setTimeout(() => renderMobilePin(false), 520);
+            }
+          }
+
+          function clearAuthError() {
+            input.classList.remove('is-error');
+            if (pinDisplay) pinDisplay.classList.remove('is-error');
+            if (desktopCode) desktopCode.classList.remove('is-error');
+            error.classList.remove('is-visible');
+            error.textContent = '';
+          }
+
+          function showAuthError(message) {
+            input.classList.remove('is-error');
+            void input.offsetWidth;
+            input.classList.add('is-error');
+            if (pinDisplay) {
+              pinDisplay.classList.remove('is-error');
+              void pinDisplay.offsetWidth;
+              pinDisplay.classList.add('is-error');
+            }
+            if (desktopCode && window.matchMedia('(min-width: 601px)').matches) {
+              desktopCode.classList.remove('is-error');
+              void desktopCode.offsetWidth;
+              desktopCode.classList.add('is-error');
+            }
+            error.textContent = message;
+            error.classList.add('is-visible');
+          }
+
+          function pulseDigits() {
+            const target = window.matchMedia('(max-width: 600px)').matches && pinDisplay ? pinDisplay : input;
+            target.classList.remove('digit-pulse');
+            void target.offsetWidth;
+            target.classList.add('digit-pulse');
+          }
+
+          function updateDesktopCounter(revealLast = false) {
+            if (desktopCounter) desktopCounter.textContent = `${input.value.length} / 30`;
+            if (desktopCode) {
+              const length = input.value.length;
+              desktopCode.innerHTML = Array.from({ length: 30 }, (_, index) => {
+                const filled = index < length;
+                const current = index === length && length < 30;
+                const newest = filled && index === length - 1;
+                const showDigit = revealLast && newest;
+                return `<span class="site-auth-code-slot${filled ? ' is-filled' : ''}${newest ? ' is-new' : ''}${current ? ' is-current' : ''}">${filled ? (showDigit ? input.value[index] : '•') : ''}</span>`;
+              }).join('');
+              clearTimeout(desktopMaskTimer);
+              if (revealLast && length) desktopMaskTimer = setTimeout(() => updateDesktopCounter(false), 520);
+            }
+          }
+
+          if (desktopCode) desktopCode.addEventListener('click', () => input.focus());
+          updateDesktopCounter();
+
+          async function sha256(value) {
+            const bytes = new TextEncoder().encode(value);
+            const hash = await crypto.subtle.digest('SHA-256', bytes);
+            return Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('');
+          }
+
+          form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            if (isChecking) return;
+            isChecking = true;
+            const value = input.value.replace(/\s+/g, '');
+            clearAuthError();
+            submit.disabled = true;
+
+            try {
+              const matches = value.length === 30 && await sha256(value) === PASSWORD_HASH;
+              if (!matches) {
+                showAuthError('That password doesn’t match. Try again');
+                input.select();
+                return;
+              }
+
+              localStorage.setItem(AUTH_KEY, String(Date.now() + THIRTY_DAYS_MS));
+              if (gate) gate.classList.add('is-unlocking');
+              setTimeout(() => {
+                document.documentElement.classList.remove('site-auth-locked');
+                document.documentElement.classList.add('site-auth-ok');
+                input.value = '';
+              }, 280);
+            } catch (e) {
+              showAuthError('Couldn’t verify the password. Please try again.');
+            } finally {
+              isChecking = false;
+              submit.disabled = false;
+            }
+          });
+
+          input.addEventListener('input', function () {
+            input.value = input.value.replace(/\D/g, '').slice(0, 30);
+            updateDesktopCounter(true);
+            clearAuthError();
+            pulseDigits();
+            if (input.value.length === 30) form.requestSubmit();
+          });
+
+          if (window.matchMedia('(max-width: 600px)').matches) {
+            input.readOnly = true;
+            input.removeAttribute('autofocus');
+          }
+
+          if (keypad) {
+            keypad.querySelectorAll('[data-auth-digit]').forEach(key => {
+              key.addEventListener('animationend', function (event) {
+                if (event.animationName === 'siteAuthKeyIn') key.classList.add('is-ready');
+              }, { once: true });
+              key.addEventListener('click', function () {
+                if (input.value.length >= 30) return;
+                input.value += key.getAttribute('data-auth-digit');
+                updateDesktopCounter();
+                clearAuthError();
+                renderMobilePin(true);
+                pulseDigits();
+                key.classList.add('key-pop');
+                setTimeout(() => key.classList.remove('key-pop'), 120);
+                if (input.value.length === 30) form.requestSubmit();
+              });
+            });
+          }
+
+          if (deleteKey) {
+            let holdTimer = null;
+            let clearedByHold = false;
+
+            deleteKey.addEventListener('pointerdown', function (event) {
+              event.preventDefault();
+              clearedByHold = false;
+              clearTimeout(holdTimer);
+              holdTimer = setTimeout(() => {
+                input.value = '';
+                updateDesktopCounter();
+                clearAuthError();
+                renderMobilePin(false);
+                pulseDigits();
+                deleteKey.classList.add('is-held');
+                clearedByHold = true;
+              }, 520);
+            });
+
+            deleteKey.addEventListener('pointerup', function () {
+              clearTimeout(holdTimer);
+              deleteKey.classList.remove('is-held');
+              if (!clearedByHold) input.value = input.value.slice(0, -1);
+              updateDesktopCounter();
+              clearAuthError();
+              renderMobilePin(false);
+              pulseDigits();
+            });
+
+            deleteKey.addEventListener('pointercancel', function () {
+              clearTimeout(holdTimer);
+              deleteKey.classList.remove('is-held');
+            });
+
+            deleteKey.addEventListener('click', event => event.preventDefault());
+          }
+
+          if (okKey) okKey.addEventListener('click', () => form.requestSubmit());
+        })();
+      </script>
       <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
       <aside class="category-drawer" id="categoryDrawer" aria-hidden="true">
@@ -7878,7 +8712,14 @@
               const posterWrap = item.querySelector('.poster-wrap');
               const img = posterWrap ? posterWrap.querySelector('.thumb') : null;
               if (!img) return;
-              const src = img.currentSrc || img.src || img.getAttribute('data-src');
+              // No All Ranks desktop, o card pode estar usando um blob reduzido
+              // para ficar tão leve quanto o Plan to Watch. O lightbox sempre
+              // abre o data-src original, mantendo resolução e identificação
+              // do MyRanks intactas.
+              const cardSrc = img.currentSrc || img.src || img.getAttribute('data-src');
+              const src = img.dataset.listMode === 'all'
+                ? (img.getAttribute('data-src') || cardSrc)
+                : cardSrc;
               if (!src) return;
 
               const titleEl = item.querySelector('.title-anime');
@@ -8942,11 +9783,11 @@
 
           function getModeFromHash() {
             const h = (location.hash || '').replace('#', '').trim();
-            if (!h) return 'watching';
+            if (!h) return 'all';
             for (const [mode, slug] of Object.entries(hashMap)) {
               if (slug && slug === h) return mode;
             }
-            return 'watching';
+            return 'all';
           }
 
           function makeFallbackLabel(title) {
@@ -8964,8 +9805,109 @@
                     observer.unobserve(entry.target);
                   }
                 });
-              }, { rootMargin: '300px 0px', threshold: 0.01 })
+              }, { rootMargin: '80px 0px', threshold: 0.01 })
             : null;
+
+          // Pausa o wallpaper borrado (.anime-item-ambient) dos cards que estão
+          // longe da tela (ver "ambient-offscreen" no CSS) e liga de volta
+          // quando eles se aproximam. Ao contrário do posterObserver acima
+          // (que só carrega a imagem uma vez e para de observar), este fica
+          // observando pra sempre — a visibilidade muda toda hora conforme o
+          // usuário rola a lista pra cima e pra baixo. Margem moderada em relação ao
+          // poster (80px) porque aqui o objetivo é manter só uma vizinhança
+          // pequena da tela com blur ativo ao mesmo tempo, não só antecipar o
+          // carregamento da imagem.
+          const ambientVisibilityObserver = ('IntersectionObserver' in window)
+            ? new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                  entry.target.classList.toggle('ambient-offscreen', !entry.isIntersecting);
+                });
+              }, { rootMargin: '400px 0px', threshold: 0 })
+            : null;
+
+          // Fila que espaça o INÍCIO do carregamento de cada poster (o
+          // "img.src = src" logo abaixo, que dispara o decode da imagem).
+          // Sem isso, quando a página carrega e ~30 cards já estão visíveis
+          // de uma vez (o tamanho padrão da lista antes de "Mostrar Tudo"),
+          // o IntersectionObserver dispara startLoadingPoster pra todos eles
+          // quase no mesmo instante — todas as imagens decodificam juntas e
+          // todas as transições do wallpaper borrado disparam juntas, o que
+          // travava a rolagem bem no início. Itens revelados depois (rolando
+          // a lista, "31 pra baixo") já entram um de cada vez, naturalmente
+          // espaçados pelo tempo de rolagem, por isso nunca sofriam disso.
+          // Espaçamento pequeno (35ms) não afeta a sensação de carregamento
+          // individual — só evita a rajada de ~30 de uma vez.
+          // Três filas paralelas: acelera o carregamento durante a descida sem
+          // voltar à rajada de ~21 decodificações simultâneas que travava o
+          // MyRanks. Cada fila ainda espera sua imagem terminar por completo.
+          const __posterLoadQueueTails = [Promise.resolve(), Promise.resolve(), Promise.resolve()];
+          let __posterLoadQueueCursor = 0;
+          let __posterRenderGeneration = 0;
+          const __posterObjectUrls = new Set();
+
+          // Os wallpapers do MyRanks são consideravelmente maiores que as
+          // capas do Plan to Watch. No desktop, manter várias texturas grandes
+          // nos cards custa muita memória de GPU. Cria uma cópia leve somente
+          // para a miniatura do card; o lightbox continua usando anime.img e,
+          // portanto, conserva o arquivo original em resolução total.
+          async function optimizeAllRankCardPoster(img) {
+            if (!img || img.dataset.listMode !== 'all') return false;
+            if (!window.matchMedia('(min-width: 901px)').matches) return false;
+            if (img.dataset.cardOptimized === '1' || img.dataset.cardOptimizing === '1') return false;
+
+            const naturalW = img.naturalWidth || 0;
+            const naturalH = img.naturalHeight || 0;
+            const maxSide = 480;
+            if (!naturalW || !naturalH || Math.max(naturalW, naturalH) <= maxSide) {
+              img.dataset.cardOptimized = '1';
+              return false;
+            }
+
+            img.dataset.cardOptimizing = '1';
+            const scale = Math.min(1, maxSide / Math.max(naturalW, naturalH));
+            const width = Math.max(1, Math.round(naturalW * scale));
+            const height = Math.max(1, Math.round(naturalH * scale));
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d', { alpha: false });
+            if (!ctx) {
+              delete img.dataset.cardOptimizing;
+              img.dataset.cardOptimized = '1';
+              return false;
+            }
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.86));
+            delete img.dataset.cardOptimizing;
+            img.dataset.cardOptimized = '1';
+            if (!blob || !img.isConnected) return false;
+
+            const objectUrl = URL.createObjectURL(blob);
+            __posterObjectUrls.add(objectUrl);
+            img.src = objectUrl;
+            try { await img.decode(); } catch (e) {}
+            return true;
+          }
+
+          function queuePosterLoadStart(task, generation) {
+            const run = async () => {
+              // Ao trocar de lista, descarta trabalhos que ainda estavam na
+              // fila do render anterior. Antes, posters de uma lista já removida
+              // continuavam decodificando enquanto o All Ranks era aberto.
+              if (generation === __posterRenderGeneration) {
+                // Espera o download E a decodificação terminarem. O código
+                // anterior esperava apenas um tempo fixo, então vários WebPs
+                // grandes acabavam decodificando juntos apesar da fila.
+                await task();
+              }
+              await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 24)));
+            };
+            const lane = __posterLoadQueueCursor++ % __posterLoadQueueTails.length;
+            __posterLoadQueueTails[lane] = __posterLoadQueueTails[lane].then(run, run);
+          }
 
           function startLoadingPoster(wrap) {
             const img = wrap.querySelector('img.thumb');
@@ -8978,8 +9920,20 @@
 
             const item = wrap.closest('.anime-item, .fav-ep-card');
             const ambient = item ? item.querySelector('.anime-item-ambient, .fav-ep-ambient') : null;
+            const posterGeneration = __posterRenderGeneration;
 
-            img.addEventListener('load', () => {
+            img.addEventListener('load', async () => {
+              if (!wrap.isConnected || posterGeneration !== __posterRenderGeneration) return;
+
+              // Na primeira carga do MyRanks desktop, troca a imagem enorme por
+              // uma miniatura leve antes de ativar o card. O novo src dispara
+              // este listener novamente e então segue para a renderização.
+              if (img.dataset.listMode === 'all' && img.dataset.cardOptimized !== '1') {
+                if (img.dataset.cardOptimizing === '1') return;
+                const replaced = await optimizeAllRankCardPoster(img);
+                if (replaced) return;
+              }
+
               wrap.classList.remove('has-fallback');
               img.style.display = 'block';
               img.classList.add('loaded');
@@ -8990,20 +9944,64 @@
                 // e reseta o fundo de volta pra capa antiga.
                 const currentSrc = img.currentSrc || img.src;
                 if (currentSrc) {
-                  ambient.style.backgroundImage = `url("${currentSrc}")`;
-                  ambient.classList.add('ready');
+                  // requestAnimationFrame em vez de aplicar direto no callback de
+                  // load: quando várias imagens da lista terminam de carregar quase
+                  // juntas (comum, já que os requests saem em lote), isso evita que
+                  // todas disparem a transição com blur no mesmíssimo instante —
+                  // cada uma cai num frame de paint em vez de empilhar tudo de vez.
+                  requestAnimationFrame(() => {
+                    ambient.style.backgroundImage = `url("${currentSrc}")`;
+                    ambient.classList.add('ready', 'ambient-transitioning');
+                    const clearTransitioning = () => ambient.classList.remove('ambient-transitioning');
+                    ambient.addEventListener('transitionend', clearTransitioning, { once: true });
+                    // Fallback: se o transitionend não disparar por algum motivo
+                    // (ex: elemento removido no meio de uma troca de categoria),
+                    // garante que will-change não fique preso pra sempre.
+                    setTimeout(clearTransitioning, 800);
+                  });
                 }
               }
             });
 
             img.addEventListener('error', () => {
+              if (!wrap.isConnected || posterGeneration !== __posterRenderGeneration) return;
               wrap.classList.add('has-fallback');
               fallback.textContent = makeFallbackLabel(title);
               img.style.display = 'none';
             });
 
             if (src) {
-              img.src = src;
+              queuePosterLoadStart(async () => {
+                if (!wrap.isConnected) return;
+
+                // Ao rolar rapidamente, o IntersectionObserver pode colocar na
+                // fila cards que só atravessaram a viewport. Se já saíram da
+                // vizinhança da tela quando chega a vez deles, não desperdiça
+                // CPU decodificando-os no fundo: devolve ao observer para serem
+                // carregados quando realmente voltarem a aparecer.
+                const rect = wrap.getBoundingClientRect();
+                const nearViewport = rect.bottom >= -120 && rect.top <= window.innerHeight + 120;
+                if (!nearViewport) {
+                  delete img.dataset.loadStarted;
+                  if (posterObserver) posterObserver.observe(wrap);
+                  return;
+                }
+
+                img.src = src;
+                if (typeof img.decode === 'function') {
+                  try { await img.decode(); } catch (e) {}
+                } else if (!img.complete) {
+                  await new Promise(resolve => {
+                    img.addEventListener('load', resolve, { once: true });
+                    img.addEventListener('error', resolve, { once: true });
+                  });
+                }
+                // Não começa o próximo pôster enquanto a versão leve deste
+                // ainda estiver sendo criada.
+                while (img.dataset.cardOptimizing === '1') {
+                  await new Promise(resolve => setTimeout(resolve, 16));
+                }
+              }, posterGeneration);
             }
           }
 
@@ -9019,6 +10017,20 @@
                 startLoadingPoster(wrap);
               }
             });
+
+            if (ambientVisibilityObserver) {
+              root.querySelectorAll('li.anime-item').forEach(item => {
+                if (item.dataset.ambientObserved === '1') return;
+                item.dataset.ambientObserved = '1';
+                // Começa pausado (mesmo estado que o observer aplicaria pra
+                // quem está fora da tela) — evita todo card nascer com o
+                // blur ligado por um instante antes do primeiro callback do
+                // observer, o que já derrubava frames logo no primeiro render
+                // de listas grandes.
+                item.classList.add('ambient-offscreen');
+                ambientVisibilityObserver.observe(item);
+              });
+            }
           }
 
           // Cores de hover por categoria (mesmas cores usadas nos botões do drawer)
@@ -9484,7 +10496,7 @@
                   ${secondaryRankHtml}
                 </div>
                 <div class="poster-wrap">
-                  <img class="thumb" data-src="${(mode === 'announced' || mode === 'announced-unwatched') ? sequelsThumbSrc(anime.img) : anime.img}" alt="${anime.title}" decoding="async">
+                  <img class="thumb" data-list-mode="${mode}" data-src="${(mode === 'announced' || mode === 'announced-unwatched') ? sequelsThumbSrc(anime.img) : anime.img}" alt="${anime.title}" decoding="async">
                   <div class="poster-fallback" aria-hidden="true"></div>
                   ${stripHtml}
                 </div>
@@ -11030,6 +12042,11 @@
           }
 
           function render() {
+            // Invalida imediatamente a fila de posters pertencente à lista
+            // anterior, antes de substituir seus elementos no DOM.
+            __posterRenderGeneration++;
+            __posterObjectUrls.forEach(url => URL.revokeObjectURL(url));
+            __posterObjectUrls.clear();
             // O preview flutuante do "Month by Month" (.watched-month-preview)
             // fica em position:fixed direto no <body>, fora do container que
             // este render() recria — por isso, ao trocar de lista (swipe, menu,
@@ -11113,69 +12130,81 @@
             });
           }
 
+          // Lista compartilhada dos "announce strips" atualmente preparados —
+          // junto com o listener de resize único abaixo, evita o bug de vazar um
+          // novo `window.addEventListener('resize', ...)` a cada render() (cada
+          // troca de categoria criava um listener novo que nunca era removido,
+          // e cada um segurava referências aos elementos antigos na memória).
+          let __announceStripsPrepared = [];
+          let __announceResizeListenerAdded = false;
+          let __announceResizeTO = null;
+
+          function __measureAndStartAnnounceStrips() {
+            // Descarta entradas de renders antigos cujo elemento já saiu do DOM.
+            __announceStripsPrepared = __announceStripsPrepared.filter(({ strip }) => strip.isConnected);
+
+            const PX_PER_SEC = 22;
+            const widths = __announceStripsPrepared.map(({ track }) => track.children[0].getBoundingClientRect().width);
+
+            __announceStripsPrepared.forEach(({ track }, i) => {
+              const singleWidth = widths[i];
+              if (!singleWidth) return;
+              const duration = singleWidth / PX_PER_SEC;
+
+              track.style.animation = 'none';
+              track.style.setProperty('--marquee-distance', `-${singleWidth}px`);
+              track.style.animationDuration = `${duration}s`;
+            });
+
+            requestAnimationFrame(() => {
+              __announceStripsPrepared.forEach(({ track }, i) => {
+                const singleWidth = widths[i];
+                if (!singleWidth) return;
+                const duration = singleWidth / PX_PER_SEC;
+                track.style.animation = `announce-marquee ${duration}s linear infinite`;
+              });
+            });
+          }
+
           function initAnnounceStrips() {
             const strips = Array.from(document.querySelectorAll('.announce-strip[data-lines]'))
               .filter(strip => strip.dataset.rotateReady !== '1');
 
-            if (!strips.length) return;
+            if (strips.length) {
+              strips.forEach(strip => {
+                strip.dataset.rotateReady = '1';
 
-            const prepared = [];
-            strips.forEach(strip => {
-              strip.dataset.rotateReady = '1';
+                let lines;
+                try { lines = JSON.parse(strip.getAttribute('data-lines')); } catch (e) { return; }
+                if (!Array.isArray(lines) || lines.length < 2) return;
 
-              let lines;
-              try { lines = JSON.parse(strip.getAttribute('data-lines')); } catch (e) { return; }
-              if (!Array.isArray(lines) || lines.length < 2) return;
+                const track = strip.querySelector('.announce-track');
+                if (!track) return;
 
-              const track = strip.querySelector('.announce-track');
-              if (!track) return;
+                const joined = lines.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+                track.innerHTML =
+                  `<span class="announce-line">${joined}</span>` +
+                  `<span class="announce-line">${joined}</span>`;
 
-              const joined = lines.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-              track.innerHTML =
-                `<span class="announce-line">${joined}</span>` +
-                `<span class="announce-line">${joined}</span>`;
-
-              prepared.push({ strip, track });
-            });
-
-            const PX_PER_SEC = 22;
-
-            // Fase de leitura: coleta todas as larguras de uma vez (evita layout thrashing)
-            function measureAndStart() {
-              const widths = prepared.map(({ track }) => track.children[0].getBoundingClientRect().width);
-
-              prepared.forEach(({ track }, i) => {
-                const singleWidth = widths[i];
-                if (!singleWidth) return;
-                const duration = singleWidth / PX_PER_SEC;
-
-                track.style.animation = 'none';
-                track.style.setProperty('--marquee-distance', `-${singleWidth}px`);
-                track.style.animationDuration = `${duration}s`;
+                __announceStripsPrepared.push({ strip, track });
               });
 
-              // Fase de escrita separada: reinicia todas as animações juntas
-              requestAnimationFrame(() => {
-                prepared.forEach(({ track }, i) => {
-                  const singleWidth = widths[i];
-                  if (!singleWidth) return;
-                  const duration = singleWidth / PX_PER_SEC;
-                  track.style.animation = `announce-marquee ${duration}s linear infinite`;
-                });
-              });
+              __measureAndStartAnnounceStrips();
+              if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(__measureAndStartAnnounceStrips);
+              }
             }
 
-            measureAndStart();
-            if (document.fonts && document.fonts.ready) {
-              document.fonts.ready.then(measureAndStart);
+            // Listener de resize registrado uma única vez, não a cada render().
+            if (!__announceResizeListenerAdded) {
+              __announceResizeListenerAdded = true;
+              window.addEventListener('resize', () => {
+                clearTimeout(__announceResizeTO);
+                __announceResizeTO = setTimeout(__measureAndStartAnnounceStrips, 200);
+              }, { passive: true });
             }
-
-            let resizeTO = null;
-            window.addEventListener('resize', () => {
-              clearTimeout(resizeTO);
-              resizeTO = setTimeout(measureAndStart, 200);
-            }, { passive: true });
           }
+
 
           function setupFirstVisitButtonState() {
             filterBtnEl.classList.add('icon-only');
@@ -11583,6 +12612,20 @@
             buildRow(rowRight, pool, COUNT);
             buildRow(rowLeft, pool, COUNT);
             buildRow(rowRight2, pool, COUNT);
+
+            // No desktop, a tela de senha reutiliza exatamente o mesmo tipo de
+            // carrossel do drawer de busca, com outro embaralhamento por linha.
+            const authRight = document.getElementById('siteAuthMarqueeRight');
+            const authLeft = document.getElementById('siteAuthMarqueeLeft');
+            const authRight2 = document.getElementById('siteAuthMarqueeRight2');
+            const authLeft2 = document.getElementById('siteAuthMarqueeLeft2');
+            if (authRight && authLeft && authRight2) {
+              const authCount = window.matchMedia('(max-width: 600px)').matches ? Math.min(8, COUNT) : COUNT;
+              buildRow(authRight, pool, authCount);
+              buildRow(authLeft, pool, authCount);
+              buildRow(authRight2, pool, authCount);
+              if (authLeft2) buildRow(authLeft2, pool, authCount);
+            }
           }
 
           function initSearch() {
@@ -12851,12 +13894,21 @@
           // Ctrl+F (ou Cmd+F no Mac) abre a busca do site em vez do "find" nativo do navegador.
           document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key === 'f' || e.key === 'F')) {
+              // Com qualquer poster lightbox aberto, não intercepta o atalho e
+              // não abre o drawer de busca do site.
+              const posterLightboxOpen = document.getElementById('posterLightbox')?.classList.contains('open');
+              const favEpLightboxOpen = document.getElementById('favEpLightbox')?.classList.contains('open');
+              if (posterLightboxOpen || favEpLightboxOpen) {
+                e.preventDefault();
+                return;
+              }
+
               e.preventDefault();
               openDrawer('search', { focus: true });
             }
           });
 
-          const ARROW_NAV_ORDER = ['plan', 'watching', 'watchedMonth'];
+          const ARROW_NAV_ORDER = ['plan', 'watching', 'all'];
 
           function switchCategory(step) {
             const idx = ARROW_NAV_ORDER.indexOf(currentCategory);
@@ -13080,6 +14132,26 @@
           render();
           restoreScrollPosition();
           restoreDrawerState();
+
+          // ── Desliga o wallpaper borrado dos cards (.anime-item-ambient) durante
+          // rolagem ativa (ver a regra "body.is-scrolling-ambient" no CSS) —
+          // mesma ideia já usada no preview do "Watched This Month". Isso tira
+          // o custo de recompor dezenas de camadas com filter: blur() a cada
+          // frame, que é o que mais pesa em listas grandes tipo Myranks/"All"
+          // (~270 itens) comparado com listas menores tipo Plan to Watch
+          // (~120 itens). O blur volta a aparecer pouco depois que a rolagem
+          // para de verdade (debounce), sem precisar de nenhum RAF contínuo.
+          (function initAmbientScrollSuppression() {
+            let ambientScrollTimeout = null;
+            function markAmbientScrolling() {
+              document.body.classList.add('is-scrolling-ambient');
+              if (ambientScrollTimeout) clearTimeout(ambientScrollTimeout);
+              ambientScrollTimeout = setTimeout(() => {
+                document.body.classList.remove('is-scrolling-ambient');
+              }, 160);
+            }
+            window.addEventListener('scroll', markAmbientScrolling, { passive: true });
+          })();
 
           // ── Botão flutuante: topo <-> final da página ──
           (function initScrollFab() {

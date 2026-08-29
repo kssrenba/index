@@ -490,16 +490,6 @@ const rawAnimeData = [
     ],
   },
   {
-    id: "akame-ga-kill",
-    img: "myranks-images/myranks/akame-ga-kill.webp",
-    title: "Akame ga Kill",
-    info: "24 episódios",
-    studio: "White Fox",
-    airedSeason: "2014-2014",
-    rewatch: "Yes",
-    mal: [{ label: "1 temporada", episodes: 24, note: 8, malName: "Akame ga Kill!" }],
-  },
-  {
     id: "your-lie-in-april",
     img: "myranks-images/myranks/your-lie-in-april.webp",
     title: "Your Lie in April",
@@ -508,6 +498,28 @@ const rawAnimeData = [
     airedSeason: "2014-2015",
     rewatch: "Impossible",
     mal: [{ label: "1 temporada", episodes: 22, note: 8, malName: "Shigatsu wa Kimi no Uso" }],
+  },
+  {
+    id: "sentenced-hero",
+    img: "myranks-images/myranks/sentenced-hero.webp",
+    title: "Sentenced to be a Hero",
+    info: "12 episódios",
+    studio: "Studio KAI",
+    airedSeason: "2026",
+    rewatch: "No",
+    mal: [
+      { label: "1 temporada", episodes: 12, note: 8, malName: "Yuusha-kei ni Shosu: Choubatsu Yuusha 9004-tai Keimu Kiroku" },
+    ],    
+  },
+  {
+    id: "akame-ga-kill",
+    img: "myranks-images/myranks/akame-ga-kill.webp",
+    title: "Akame ga Kill",
+    info: "24 episódios",
+    studio: "White Fox",
+    airedSeason: "2014-2014",
+    rewatch: "Yes",
+    mal: [{ label: "1 temporada", episodes: 24, note: 8, malName: "Akame ga Kill!" }],
   },
   {
     id: "wistoria",
@@ -1339,6 +1351,47 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/62076/Super_no_Ura_de_Yani_Suu_Futari",
   },
   {
+    id: "hanaori-san-still-wants-to-fight",
+    img: "watchingnow-images/watchingnow/hanaori-san-still-wants-to-fight.webp",
+    title: "Hanaori-san Still Wants to Fight in the Next Life",
+    info: "12 episódios",
+    season: "summer-2026",
+    studio: "LIDENFILMS",
+    airedSeason: "2026",
+    seasons: [12],
+    url: "https://www.anime-planet.com/anime/hanaori-san-still-wants-to-fight-in-the-next-life",
+    crunchyroll:
+      "https://www.crunchyroll.com/pt-br/series/GT00378066/hanaori-san-still-wants-to-fight-in-the-next-life",
+    malUrl: "https://myanimelist.net/anime/62535/Hanaori-san_wa_Tensei_shitemo_Kenka_ga_Shitai",
+  },
+  {
+    id: "black-torch",
+    img: "watchingnow-images/watchingnow/black-torch.webp",
+    title: "Black Torch",
+    info: "NaN episódios - Progress: -/-",
+    season: "summer-2026",
+    studio: "100studio",
+    airedSeason: "2026",
+    url: "https://www.anime-planet.com/anime/black-torch",
+    crunchyroll:
+      "https://www.crunchyroll.com/pt-br/series/GT00377907/black-torch",
+    malUrl: "https://myanimelist.net/anime/61169/Black_Torch",
+  },
+  {
+    id: "villainess",
+    img: "watchingnow-images/watchingnow/villainess.webp",
+    title: "Though I Am an Inept Villainess",
+    info: "11 episódios",
+    season: "summer-2026",
+    studio: "Doga Kobo",
+    airedSeason: "2026",
+    seasons: [11],
+    url: "https://www.anime-planet.com/anime/though-i-am-an-inept-villainess",
+    crunchyroll:
+      "https://www.crunchyroll.com/pt-br/series/GT00371881/though-i-am-an-inept-villainess",
+    malUrl: "https://myanimelist.net/anime/61240/Futsutsuka_na_Akujo_dewa_Gozaimasu_ga__Suuguu_Chouso_Torikae_Den",
+  },
+  {
     id: "love-unseen",
     img: "watchingnow-images/watchingnow/love-unseen.webp",
     title: "Love Unseen Beneath the Clear Night Sky",
@@ -1421,21 +1474,6 @@ const rawWatchingData = [
     url: "https://www.anime-planet.com/anime/the-ghost-in-the-shell",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/58929/Koukaku_Kidoutai_TV",
-  },
-  {
-    id: "i-became-a-legend",
-    img: "watchingnow-images/watchingnow/i-became-a-legend.webp",
-    title: "I Became a Legend After My 10 Year-Long Last Stand",
-    info: "12 episódios",
-    season: "summer-2026",
-    studio: "Gekkou",
-    airedSeason: "2026",
-    seasons: [12],
-    url: "https://www.anime-planet.com/anime/i-became-a-legend-after-my-10-year-long-last-stand",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00371671/i-became-a-legend-after-my-10-year-long-last-stand",
-    malUrl:
-      "https://myanimelist.net/anime/62617/Koko_wa_Ore_ni_Makasete_Saki_ni_Ike_to_Itte_kara_10-nen_ga_Tattara_Densetsu_ni_Natteita",
   },
   {
     id: "wrong-about-her",
@@ -1556,20 +1594,6 @@ const rawWatchingData = [
   },
 
   // Winter 2026
-  {
-    id: "sentenced-hero",
-    img: "watchingnow-images/watchingnow/sentenced-hero.webp",
-    title: "Sentenced to be a Hero",
-    info: "12 episódios",
-    season: "winter-2026",
-    studio: "Studio KAI",
-    airedSeason: "2026",
-    seasons: [12],
-    url: "https://www.anime-planet.com/anime/sentenced-to-be-a-hero",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00356809/sentenced-to-be-a-hero",
-    malUrl:
-      "https://myanimelist.net/anime/56009/Yuusha-kei_ni_Shosu__Choubatsu_Yuusha_9004-tai_Keimu_Kiroku",
-  },
 
   // On Hold
   {
