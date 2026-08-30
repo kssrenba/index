@@ -2213,8 +2213,8 @@
             0 0 12px -3px var(--item-hover-color);
         }
 
-        li.anime-item.hidden-item { display: none; }
-        li.season-header.hidden-item { display: none; }
+        li.anime-item.hidden-item { display: none !important; }
+        li.season-header.hidden-item { display: none !important; }
         /* Cabeçalho de divisão que existe só pra a poster lightbox conseguir
           achar a tag de divisão (ex: "Non-Seasonal Anime") — não deve
           aparecer visualmente na grid, só servir de marcador no DOM. */
@@ -14113,10 +14113,12 @@
 
             const limit = currentCategory === 'watching' ? 27 : 30;
             
-            const expandedKey = 'myanimerank_expanded_' + currentCategory;
-            let isExpanded = true;
+            const isMobileLoadMore = window.matchMedia('(max-width: 600px)').matches;
+            const expandedKey = 'myanimerank_expanded_' + (isMobileLoadMore ? 'mobile_' : 'desktop_') + currentCategory;
+            let isExpanded = false;
             try {
-              isExpanded = (sessionStorage.getItem(expandedKey) || localStorage.getItem(expandedKey)) === 'true';
+              const savedExpanded = sessionStorage.getItem(expandedKey) ?? localStorage.getItem(expandedKey);
+              isExpanded = savedExpanded === 'true';
             } catch(e) {}
 
             if (btn) btn.classList.remove('active');
@@ -14126,29 +14128,9 @@
               const currentItems = list.querySelectorAll('.anime-item');
               const headers = list.querySelectorAll('.season-header');
 
-              // Mapeia cada anime-item ao seu season-header mais próximo (o que vem
-              // antes dele no DOM), para nunca cortar uma temporada no meio.
-              const itemHeaderMap = [];
-              let runningHeader = null;
-              Array.from(list.children).forEach(child => {
-                if (child.classList && child.classList.contains('season-header')) {
-                  runningHeader = child;
-                } else if (child.classList && child.classList.contains('anime-item')) {
-                  itemHeaderMap.push(runningHeader);
-                }
-              });
-
-              // Se o corte (limit) cairia no meio de um grupo de temporada,
-              // estende o corte até o fim desse grupo.
-              let cutoff = limit;
-              if (currentItems.length > limit) {
-                const headerAtCut = itemHeaderMap[limit - 1];
-                if (headerAtCut) {
-                  let i = limit;
-                  while (i < itemHeaderMap.length && itemHeaderMap[i] === headerAtCut) i++;
-                  cutoff = i;
-                }
-              }
+              // O botão Mostrar Tudo/Mostrar Menos usa um corte fixo.
+              // Fechado: mostra exatamente até o limite. Aberto: mostra todos.
+              const cutoff = Math.min(limit, currentItems.length);
 
               currentItems.forEach((item, index) => {
                 if (isExpanded) {
