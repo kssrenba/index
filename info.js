@@ -1235,6 +1235,21 @@ const rawAnimeData = [
 const rawWatchingData = [
   // Non-Seasonal Anime
   {
+    id: "tqq",
+    img: "watchingnow-images/watchingnow/tqq.webp",
+    title: "The Quintessential Quintuplets",
+    info: "2 temporadas: 24 episódios <br>1 Filme: 2h16m",
+    season: null,
+    studio: "Tezuka Productions / Bibury Animation Studios",
+    airedSeason: "2019-2022",
+    seasons: [12, 12, 1],
+    movieSeasons: [2],
+    movieDurations: { 2: "2h16m" },
+    url: "https://www.anime-planet.com/anime/the-quintessential-quintuplets",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GY4PD7Z06/the-quintessential-quintuplets",
+    malUrl: "https://myanimelist.net/anime/38101/5-toubun_no_Hanayome",
+  },
+  {
     id: "rw-aot",
     img: "watchingnow-images/watchingnow/aot.webp",
     title: "Attack on Titan",
@@ -2356,17 +2371,6 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/monster",
     netflix: "https://www.netflix.com/title/81409869",
     malUrl: "https://myanimelist.net/anime/19/Monster",
-  },
-  {
-    id: "quintessential-quintuplets",
-    img: "plantowatch-images/plantowatch/quintessential-quintuplets.webp",
-    title: "The Quintessential Quintuplets",
-    info: "2 temporadas: 24 episódios <br>1 Filme: 2h16m",
-    studio: "Tezuka Productions / Bibury Animation Studios",
-    airedSeason: "2019-2022",
-    url: "https://www.anime-planet.com/anime/the-quintessential-quintuplets",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GY4PD7Z06/the-quintessential-quintuplets",
-    malUrl: "https://myanimelist.net/anime/38101/5-toubun_no_Hanayome",
   },
   {
     id: "astra-space",

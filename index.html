@@ -4,14 +4,78 @@
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width,initial-scale=1" />
       <title>myhtml</title>
-      <link rel="shortcut icon" href="assets/icon-site.webp" type="image/x-icon">
-      <link rel="manifest" href="manifest.json">
+      <link id="siteFavicon" rel="icon" href="assets/icon-site.webp" type="image/webp">
+      <link id="siteManifest" rel="manifest" href="manifest.json">
       <meta name="theme-color" content="#030303">
-      <link rel="apple-touch-icon" href="assets/icon-192.png">
+      <link id="siteAppleTouchIcon" rel="apple-touch-icon" href="assets/icon-192.png">
       <meta name="mobile-web-app-capable" content="yes">
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
       <meta name="apple-mobile-web-app-title" content="myhtml">
+      <script>
+        // Cria uma versão a partir dos bytes dos ícones. Quando qualquer imagem
+        // for trocada mantendo o mesmo nome, o navegador passa a enxergar uma
+        // URL nova e atualiza também o ícone do PWA já instalado.
+        (function () {
+          const ICON_FILES = [
+            'assets/icon-site.webp',
+            'assets/icon-192.png',
+            'assets/icon-512.png'
+          ];
+
+          function hashBytes(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let hash = 2166136261;
+            for (let i = 0; i < bytes.length; i += 1) {
+              hash ^= bytes[i];
+              hash = Math.imul(hash, 16777619);
+            }
+            return `${bytes.length.toString(36)}${(hash >>> 0).toString(36)}`;
+          }
+
+          function withIconVersion(path, version) {
+            const url = new URL(path, document.baseURI);
+            url.searchParams.set('iconVersion', version);
+            return url.href;
+          }
+
+          async function refreshPwaIconVersion() {
+            try {
+              const versions = await Promise.all(
+                ICON_FILES.map(async (path) => {
+                  const response = await fetch(path, { cache: 'no-store' });
+                  if (!response.ok) throw new Error(`Icon not found: ${path}`);
+                  return hashBytes(await response.arrayBuffer());
+                })
+              );
+
+              const version = versions.join('-');
+              const manifest = document.getElementById('siteManifest');
+              const favicon = document.getElementById('siteFavicon');
+              const appleIcon = document.getElementById('siteAppleTouchIcon');
+
+              if (manifest) manifest.href = withIconVersion('manifest.json', version);
+              if (favicon) favicon.href = withIconVersion(ICON_FILES[0], versions[0]);
+              if (appleIcon) appleIcon.href = withIconVersion(ICON_FILES[1], versions[1]);
+
+              try {
+                localStorage.setItem('myhtml_pwa_icon_version', version);
+              } catch (e) {}
+
+              return version;
+            } catch (error) {
+              // Se estiver offline, mantém os ícones que já estavam disponíveis.
+              return null;
+            }
+          }
+
+          window.refreshPwaIconVersion = refreshPwaIconVersion;
+          window.addEventListener('load', refreshPwaIconVersion);
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') refreshPwaIconVersion();
+          });
+        })();
+      </script>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
       <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
       <script>
@@ -6525,11 +6589,7 @@
         }
 
         .release-day-line {
-          height: 1px;
-          flex: 1;
-          min-width: 20px;
-          background: linear-gradient(90deg, rgba(255,255,255,0.16), transparent);
-          opacity: 0.7;
+          display: none;
         }
 
         .release-calendar-grid {
@@ -7007,6 +7067,2144 @@
             font-size: 34px;
           }
         }
+
+        /* ── Mobile cards v2 ───────────────────────────────────────────────
+           Um único sistema visual para rankings e listas: cards flutuantes,
+           pôster 9:16, acento da categoria e hierarquia mais limpa. */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) {
+            --mobile-card-h: 170px;
+            --mobile-poster-w: 88px;
+            gap: 10px;
+            padding: 0 10px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) li.anime-item {
+            position: relative;
+            display: grid;
+            grid-template-columns: var(--mobile-poster-w) minmax(0, 1fr);
+            width: 100%;
+            height: var(--mobile-card-h) !important;
+            min-height: var(--mobile-card-h) !important;
+            max-height: var(--mobile-card-h) !important;
+            padding: 7px;
+            gap: 0;
+            overflow: hidden !important;
+            isolation: isolate;
+            border: 1px solid rgba(255,255,255,0.085);
+            border-radius: 18px;
+            background:
+              radial-gradient(120% 150% at 0% 50%, color-mix(in srgb, var(--item-hover-color, #94a3b8) 12%, transparent) 0%, transparent 55%),
+              linear-gradient(125deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012) 58%),
+              rgba(10,10,12,0.94);
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.045),
+              0 10px 28px -22px rgba(0,0,0,0.95);
+            transform: translateZ(0);
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) li.anime-item::after {
+            content: "";
+            position: absolute;
+            inset: 14px auto 14px 0;
+            width: 2px;
+            border-radius: 0 4px 4px 0;
+            background: var(--item-hover-color, #94a3b8);
+            box-shadow: 0 0 12px var(--item-hover-color, #94a3b8);
+            opacity: 0.72;
+            pointer-events: none;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) li.anime-item:active {
+            transform: scale(0.985) translateZ(0);
+            border-color: color-mix(in srgb, var(--item-hover-color, #94a3b8) 44%, rgba(255,255,255,0.08));
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .poster-wrap {
+            position: relative;
+            width: var(--mobile-poster-w) !important;
+            height: 156px !important;
+            min-height: 156px !important;
+            max-height: 156px !important;
+            align-self: center;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 13px;
+            background: #0b0b0d;
+            box-shadow: 0 8px 24px -14px rgba(0,0,0,0.95);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transform: none;
+            filter: saturate(0.96) contrast(1.03);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .meta {
+            position: relative;
+            min-width: 0;
+            padding: 19px 14px 15px 17px;
+            gap: 8px;
+            justify-content: center;
+            overflow: hidden;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) .meta {
+            padding-right: 50px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .title-row {
+            min-width: 0;
+            padding: 0;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .title-anime {
+            font-size: 15.5px;
+            font-weight: 850;
+            line-height: 1.22;
+            letter-spacing: -0.025em;
+            color: rgba(255,255,255,0.96);
+            text-wrap: pretty;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .info-row .info {
+            color: rgba(255,255,255,0.46);
+            font-size: 10.5px;
+            font-weight: 600;
+            line-height: 1.38;
+            letter-spacing: 0.015em;
+            white-space: normal;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            overflow: hidden;
+          }
+
+          /* Ranking em badge de vidro; os três primeiros preservam ouro/prata/bronze. */
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) .meta::before {
+            content: "#" counter(item, decimal-leading-zero);
+            top: 12px;
+            right: 11px;
+            width: auto;
+            min-width: 34px;
+            height: 25px;
+            padding: 0 7px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid color-mix(in srgb, var(--item-hover-color, #94a3b8) 22%, rgba(255,255,255,0.08));
+            border-radius: 9px;
+            background: rgba(255,255,255,0.045);
+            color: color-mix(in srgb, var(--item-hover-color, #cbd5e1) 62%, rgba(255,255,255,0.42));
+            font: 850 10px/1 var(--font-title);
+            letter-spacing: 0.015em;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum" 1;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+            transform: none;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item.rank-gold .meta::before {
+            color: #e4c460;
+            border-color: rgba(212,175,55,0.34);
+            background: rgba(212,175,55,0.10);
+          }
+          ol.ranking.mode-true-characters li.anime-item.rank-silver .meta::before {
+            color: #c5ceda;
+            border-color: rgba(190,200,214,0.30);
+            background: rgba(190,200,214,0.085);
+          }
+          ol.ranking.mode-true-characters li.anime-item.rank-bronze .meta::before {
+            color: #c58b5d;
+            border-color: rgba(176,112,63,0.34);
+            background: rgba(176,112,63,0.10);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) li.anime-item:hover .meta::before {
+            transform: none;
+          }
+
+          ol.ranking.mode-true-characters .rank-wrap {
+            display: none;
+          }
+
+          /* Watching Now: a barra vira o rodapé funcional do conteúdo. */
+          ol.ranking.category-watching .meta {
+            justify-content: center;
+            padding-bottom: 13px;
+          }
+
+          ol.ranking.category-watching .watch-progress {
+            width: 100%;
+            margin-top: 3px;
+            gap: 7px;
+          }
+
+          ol.ranking.category-watching .watch-progress-track {
+            height: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.075);
+          }
+
+          ol.ranking.category-watching .watch-progress-inc,
+          ol.ranking.category-watching .watch-progress-dec {
+            width: 22px;
+            height: 22px;
+            border-color: color-mix(in srgb, var(--item-hover-color, #2dd4bf) 24%, rgba(255,255,255,0.10));
+            background: color-mix(in srgb, var(--item-hover-color, #2dd4bf) 8%, rgba(255,255,255,0.035));
+            font-size: 13px;
+          }
+
+          ol.ranking.category-watching .watch-progress-label {
+            font-size: 9.5px;
+          }
+
+          /* Faixa de sequência integrada ao rodapé do pôster. */
+          ol.ranking.mode-true-characters .announce-strip {
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            height: 18px;
+            border-radius: 7px;
+            background: rgba(5,5,7,0.70);
+            -webkit-mask-image: none;
+            mask-image: none;
+          }
+
+          ol.ranking.mode-true-characters .announce-strip .announce-line {
+            height: 18px;
+            line-height: 18px;
+            padding: 0 10px;
+            font-size: 7.5px;
+            letter-spacing: 0.02em;
+          }
+
+          /* True Characters continua 1:1, mas ganha seu próprio card compacto. */
+          ol.ranking.mode-true-characters.category-trueCharacters {
+            --true-character-poster-w: 108px;
+            --true-character-card-h: 122px;
+            gap: 10px;
+            padding: 0 10px;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters li.anime-item {
+            grid-template-columns: 108px minmax(0, 1fr);
+            width: 100%;
+            height: 122px !important;
+            min-height: 122px !important;
+            max-height: 122px !important;
+            padding: 7px;
+            border: 1px solid rgba(255,255,255,0.085);
+            border-radius: 18px;
+            background:
+              radial-gradient(100% 150% at 0% 50%, color-mix(in srgb, var(--item-hover-color, #a78bfa) 13%, transparent), transparent 58%),
+              linear-gradient(125deg, rgba(255,255,255,0.05), rgba(255,255,255,0.012) 58%),
+              rgba(10,10,12,0.94);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters li.anime-item::after {
+            content: "";
+            position: absolute;
+            inset: 16px auto 16px 0;
+            width: 2px;
+            border-radius: 0 4px 4px 0;
+            background: var(--item-hover-color, #a78bfa);
+            box-shadow: 0 0 12px var(--item-hover-color, #a78bfa);
+            opacity: 0.72;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .poster-wrap {
+            width: 108px !important;
+            height: 108px !important;
+            min-height: 108px !important;
+            max-height: 108px !important;
+            aspect-ratio: 1 / 1;
+            align-self: center;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 13px;
+            box-shadow: 0 8px 22px -14px rgba(0,0,0,0.95);
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .meta {
+            padding: 15px 48px 15px 16px;
+            gap: 6px;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .title-row,
+          ol.ranking.mode-true-characters.category-trueCharacters .info-row {
+            padding-right: 0;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .title-anime {
+            font-size: 15px;
+            line-height: 1.2;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .info-row .info {
+            font-size: 10px;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .meta::before {
+            content: "#" counter(item, decimal-leading-zero);
+            top: 11px;
+            right: 10px;
+            width: auto;
+            min-width: 32px;
+            height: 24px;
+            padding: 0 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid color-mix(in srgb, var(--item-hover-color, #a78bfa) 25%, rgba(255,255,255,0.08));
+            border-radius: 9px;
+            background: color-mix(in srgb, var(--item-hover-color, #a78bfa) 8%, rgba(255,255,255,0.035));
+            color: color-mix(in srgb, var(--item-hover-color, #a78bfa) 62%, rgba(255,255,255,0.46));
+            font: 850 10px/1 var(--font-title);
+            letter-spacing: 0.015em;
+            transform: none;
+          }
+        }
+
+        @media (max-width: 380px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) {
+            --mobile-card-h: 156px;
+            --mobile-poster-w: 80px;
+            padding: 0 8px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .poster-wrap {
+            height: 142px !important;
+            min-height: 142px !important;
+            max-height: 142px !important;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .meta {
+            padding-left: 14px;
+            padding-right: 10px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports
+          ) .meta {
+            padding-right: 45px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .title-anime {
+            font-size: 14px;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters {
+            --true-character-poster-w: 94px;
+            --true-character-card-h: 108px;
+            padding: 0 8px;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters li.anime-item {
+            grid-template-columns: 94px minmax(0, 1fr);
+            height: 108px !important;
+            min-height: 108px !important;
+            max-height: 108px !important;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .poster-wrap {
+            width: 94px !important;
+            height: 94px !important;
+            min-height: 94px !important;
+            max-height: 94px !important;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .meta {
+            padding: 12px 43px 12px 13px;
+          }
+        }
+
+        /* ── Mobile cards v3: cinematic backdrop ──────────────────────────
+           O pôster deixa de ser uma coluna e passa a ocupar o card inteiro.
+           Informações ficam sobre um degradê forte, sem badges ou glow lateral. */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) {
+            --cinema-card-h: 218px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 0 10px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: var(--cinema-card-h) !important;
+            min-height: var(--cinema-card-h) !important;
+            max-height: var(--cinema-card-h) !important;
+            padding: 0;
+            overflow: hidden !important;
+            isolation: isolate;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 17px;
+            background: #101014;
+            box-shadow: 0 13px 30px -24px rgba(0,0,0,0.95);
+            transform: translateZ(0);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            width: auto;
+            border-radius: inherit;
+            background: rgba(255,255,255,0.055);
+            box-shadow: none;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item:active {
+            transform: scale(0.988) translateZ(0);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item:active::after {
+            opacity: 1;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .poster-wrap {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100% !important;
+            max-height: 100% !important;
+            border: 0;
+            border-radius: 0;
+            background: #101014;
+            box-shadow: none;
+            overflow: hidden;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .thumb {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: auto;
+            object-fit: cover;
+            object-position: center 24%;
+            transform: scale(1.015);
+            filter: saturate(0.94) contrast(1.04) brightness(0.84);
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters .thumb {
+            object-position: center 30%;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .anime-item-ambient-shade {
+            z-index: 1;
+            background:
+              linear-gradient(180deg, rgba(5,5,8,0.14) 0%, rgba(5,5,8,0.08) 30%, rgba(5,5,8,0.67) 67%, rgba(5,5,8,0.97) 100%),
+              linear-gradient(90deg, rgba(5,5,8,0.18), transparent 55%, rgba(5,5,8,0.12));
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .meta {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-width: 0;
+            padding: 18px 17px 16px;
+            gap: 5px;
+            overflow: hidden;
+            pointer-events: none;
+          }
+
+          ol.ranking.mode-true-characters.category-watching .meta {
+            padding-bottom: 14px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .title-row,
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .info-row {
+            padding: 0;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .title-anime {
+            margin: 0;
+            max-width: calc(100% - 10px);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 850;
+            line-height: 1.14;
+            letter-spacing: -0.025em;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.95);
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .info-row .info {
+            display: -webkit-box;
+            margin: 0;
+            max-width: calc(100% - 12px);
+            color: rgba(255,255,255,0.66);
+            font-size: 10.5px;
+            font-weight: 600;
+            line-height: 1.35;
+            letter-spacing: 0.015em;
+            white-space: normal;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.95);
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
+            line-clamp: 1;
+            overflow: hidden;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .meta::before {
+            content: "#" counter(item, decimal-leading-zero);
+            position: absolute;
+            top: 13px;
+            left: 15px;
+            right: auto;
+            width: auto;
+            min-width: 0;
+            height: auto;
+            padding: 0;
+            display: block;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            color: rgba(255,255,255,0.82);
+            font: 900 23px/1 var(--font-title);
+            letter-spacing: -0.06em;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.9);
+            transform: none;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item.rank-gold .meta::before {
+            color: #e0c15a;
+            border: 0;
+            background: transparent;
+          }
+          ol.ranking.mode-true-characters li.anime-item.rank-silver .meta::before {
+            color: #d0d6df;
+            border: 0;
+            background: transparent;
+          }
+          ol.ranking.mode-true-characters li.anime-item.rank-bronze .meta::before {
+            color: #c58b5d;
+            border: 0;
+            background: transparent;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item:hover .meta::before {
+            transform: none;
+          }
+
+          ol.ranking.mode-true-characters .rank-wrap {
+            display: none !important;
+          }
+
+          ol.ranking.mode-true-characters .announce-strip {
+            left: auto;
+            right: 12px;
+            bottom: auto;
+            top: 12px;
+            width: min(54%, 185px);
+            height: 24px;
+            padding: 0 2px;
+            border: 1px solid rgba(255,255,255,0.11);
+            border-radius: 8px;
+            background: rgba(7,7,10,0.58);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            -webkit-mask-image: none;
+            mask-image: none;
+          }
+
+          ol.ranking.mode-true-characters .announce-strip .announce-line {
+            height: 24px;
+            line-height: 24px;
+            padding: 0 10px;
+            color: rgba(255,255,255,0.82);
+            font-size: 8px;
+            font-weight: 750;
+          }
+
+          ol.ranking.category-watching .watch-progress {
+            width: 100%;
+            margin-top: 5px;
+            gap: 8px;
+            pointer-events: auto;
+          }
+
+          ol.ranking.category-watching .watch-progress-track {
+            height: 5px;
+            border: 0;
+            background: rgba(255,255,255,0.22);
+            box-shadow: 0 1px 5px rgba(0,0,0,0.7);
+          }
+
+          ol.ranking.category-watching .watch-progress-inc,
+          ol.ranking.category-watching .watch-progress-dec {
+            width: 24px;
+            height: 24px;
+            border: 1px solid rgba(255,255,255,0.20);
+            background: rgba(7,7,10,0.62);
+            color: #fff;
+            font-size: 13px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+          }
+
+          ol.ranking.category-watching .watch-progress-label {
+            color: rgba(255,255,255,0.76);
+            font-size: 9.5px;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.9);
+          }
+
+          ol.ranking.category-watching .watch-progress-label--completed {
+            color: var(--item-hover-color, #2dd4bf);
+          }
+        }
+
+        @media (max-width: 380px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) {
+            --cinema-card-h: 202px;
+            padding: 0 8px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .meta {
+            padding: 16px 15px 14px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .title-anime {
+            font-size: 16.5px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .meta::before {
+            top: 12px;
+            left: 13px;
+            font-size: 21px;
+          }
+        }
+        /* ── Mobile cards v4: search backdrop + rank vertical ───────────── */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .meta::before {
+            content: "#" counter(item, decimal-leading-zero);
+            top: 50%;
+            right: 8px;
+            left: auto;
+            width: 108px;
+            min-width: 108px;
+            height: auto;
+            padding: 0;
+            display: block;
+            text-align: right;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            color: rgba(255,255,255,0.24);
+            font: 900 62px/0.72 var(--font-title);
+            letter-spacing: -0.07em;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum" 1;
+            text-shadow: 0 3px 18px rgba(0,0,0,0.72);
+            transform: translateY(-50%) scaleY(3.15);
+            transform-origin: center center;
+            pointer-events: none;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) li.anime-item:hover .meta::before {
+            transform: translateY(-50%) scaleY(3.15);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .title-row,
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .info-row {
+            position: relative;
+            z-index: 2;
+            width: calc(100% - 82px);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .title-anime,
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .info-row .info {
+            max-width: 100%;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item.rank-gold .meta::before {
+            color: rgba(224,193,90,0.38);
+          }
+          ol.ranking.mode-true-characters li.anime-item.rank-silver .meta::before {
+            color: rgba(208,214,223,0.40);
+          }
+          ol.ranking.mode-true-characters li.anime-item.rank-bronze .meta::before {
+            color: rgba(197,139,93,0.40);
+          }
+
+          /* A imagem da busca já é 16:9; mostra o quadro inteiro no backdrop. */
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .thumb {
+            object-position: center;
+            transform: none;
+          }
+        }
+
+        @media (max-width: 380px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .meta::before {
+            right: 6px;
+            width: 94px;
+            min-width: 94px;
+            font-size: 56px;
+            transform: translateY(-50%) scaleY(3);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) li.anime-item:hover .meta::before {
+            transform: translateY(-50%) scaleY(3);
+          }
+        }
+        /* ── Mobile cards v5: mídia 16:9 + rodapé independente ──────────── */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            overflow: hidden !important;
+            background: #09090c;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .anime-item-ambient,
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .anime-item-ambient-shade {
+            display: none;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .poster-wrap {
+            position: relative;
+            inset: auto;
+            z-index: 1;
+            display: block;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            aspect-ratio: 16 / 9;
+            border: 0;
+            border-radius: 0;
+            overflow: hidden;
+            background: #101014;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .thumb {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transform: none;
+            filter: saturate(0.96) contrast(1.03) brightness(0.93);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .meta {
+            position: relative;
+            inset: auto;
+            z-index: 2;
+            display: flex;
+            min-height: 86px;
+            padding: 15px 17px 14px;
+            justify-content: center;
+            gap: 4px;
+            overflow: hidden;
+            background:
+              linear-gradient(110deg, rgba(255,255,255,0.025), transparent 58%),
+              #09090c;
+            pointer-events: auto;
+          }
+
+          ol.ranking.mode-true-characters.category-watching .meta {
+            min-height: 112px;
+            padding-top: 13px;
+            padding-bottom: 13px;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .title-anime {
+            font-size: 17px;
+            line-height: 1.17;
+            text-shadow: none;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) .info-row .info {
+            color: rgba(255,255,255,0.54);
+            text-shadow: none;
+          }
+
+          /* O rank agora pertence apenas ao rodapé de informações. */
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .meta::before {
+            content: "#" counter(item, decimal-leading-zero);
+            top: 50%;
+            right: 8px;
+            left: auto;
+            width: 78px;
+            min-width: 78px;
+            height: auto;
+            color: rgba(255,255,255,0.18);
+            font: 900 38px/0.72 var(--font-title);
+            text-align: right;
+            text-shadow: none;
+            transform: translateY(-50%) scaleY(2.35);
+            transform-origin: center center;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) li.anime-item:hover .meta::before {
+            transform: translateY(-50%) scaleY(2.35);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .title-row,
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .info-row {
+            width: calc(100% - 67px);
+          }
+
+          ol.ranking.mode-true-characters .announce-strip {
+            top: auto;
+            right: 8px;
+            bottom: 8px;
+          }
+        }
+
+        @media (max-width: 380px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) .meta::before {
+            right: 6px;
+            width: 70px;
+            min-width: 70px;
+            font-size: 34px;
+            transform: translateY(-50%) scaleY(2.25);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-trueCharacters
+          ) li.anime-item:hover .meta::before {
+            transform: translateY(-50%) scaleY(2.25);
+          }
+        }
+        /* Cópia da faixa Next Season posicionada fora do pôster apenas no mobile. */
+        .announce-strip--mobile {
+          display: none !important;
+        }
+
+        /* ── Mobile cards v6: 16:9 forçado + Next Season abaixo ─────────── */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item {
+            grid-template-rows: auto auto auto;
+          }
+
+          /* O li.anime-item aumenta a especificidade para vencer definitivamente
+             a regra antiga de 134px !important aplicada ao .poster-wrap. */
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .poster-wrap {
+            position: relative;
+            inset: auto;
+            display: block;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            aspect-ratio: 16 / 9 !important;
+            align-self: auto;
+            border: 0;
+            border-radius: 0;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .poster-wrap > .thumb {
+            position: absolute;
+            inset: 0;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            object-position: center;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item > .poster-wrap > .announce-strip:not(.announce-strip--mobile) {
+            display: none !important;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item > .announce-strip--mobile {
+            position: relative;
+            inset: auto;
+            z-index: 2;
+            display: flex !important;
+            width: 100%;
+            max-width: none;
+            height: 22px;
+            min-height: 22px;
+            padding: 0;
+            border: 0;
+            border-top: 1px solid rgba(255,255,255,0.055);
+            border-bottom: 1px solid rgba(255,255,255,0.055);
+            border-radius: 0;
+            background: #0d0d11;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            -webkit-mask-image: none;
+            mask-image: none;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item > .announce-strip--mobile .announce-track {
+            margin: 0 auto;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item > .announce-strip--mobile .announce-line {
+            height: 22px;
+            line-height: 22px;
+            padding: 0 14px;
+            color: rgba(255,255,255,0.58);
+            font-size: 8px;
+            font-weight: 750;
+            letter-spacing: 0.025em;
+          }
+
+          /* Calendário: usa o mesmo card do Watching Now no mobile. */
+          ol.ranking.mode-true-characters.release-calendar-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 0 10px;
+          }
+
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto auto;
+            width: 100%;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            padding: 0;
+            gap: 0;
+            overflow: hidden !important;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 17px;
+            background: #09090c;
+            box-shadow: 0 13px 30px -24px rgba(0,0,0,0.95);
+          }
+
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .anime-item-ambient,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .anime-item-ambient-shade,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .rank-wrap {
+            display: none !important;
+          }
+
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .poster-wrap {
+            position: relative;
+            inset: auto;
+            z-index: 1;
+            display: block;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            aspect-ratio: 16 / 9 !important;
+            border: 0;
+            border-radius: 0;
+            overflow: hidden;
+            background: #101014;
+          }
+
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .poster-wrap > .thumb {
+            position: absolute;
+            inset: 0;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            object-position: center;
+            transform: none;
+            filter: saturate(0.96) contrast(1.03) brightness(0.93);
+          }
+
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .meta {
+            position: relative;
+            inset: auto;
+            z-index: 2;
+            display: flex;
+            min-height: 86px;
+            padding: 15px 17px 14px;
+            justify-content: center;
+            gap: 4px;
+            overflow: hidden;
+            background:
+              linear-gradient(110deg, rgba(255,255,255,0.025), transparent 58%),
+              #09090c;
+          }
+
+          ol.ranking.mode-true-characters.release-calendar-list .title-row,
+          ol.ranking.mode-true-characters.release-calendar-list .info-row {
+            width: 100%;
+            padding: 0;
+          }
+
+          ol.ranking.mode-true-characters.release-calendar-list .title-anime {
+            max-width: 100%;
+            color: #fff;
+            font-size: 17px;
+            line-height: 1.17;
+            text-shadow: none;
+          }
+
+          ol.ranking.mode-true-characters.release-calendar-list .info-row .info {
+            max-width: 100%;
+            color: rgba(255,255,255,0.54);
+            font-size: 10.5px;
+            text-shadow: none;
+          }
+        }
+
+        @media (max-width: 380px) {
+          ol.ranking.mode-true-characters.release-calendar-list {
+            padding: 0 8px;
+          }
+        }
+        /* ── Mobile cards v7: wallpaper animado na área de informações ─── */
+        @keyframes mobileInfoBackdropDrift {
+          0%   { transform: scale(1.12) translate3d(-2.5%, -1%, 0); }
+          35%  { transform: scale(1.22) translate3d(2%, 1.5%, 0); }
+          70%  { transform: scale(1.16) translate3d(-1%, 2%, 0); }
+          100% { transform: scale(1.24) translate3d(2.5%, -1.5%, 0); }
+        }
+
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .anime-item-ambient,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .anime-item-ambient {
+            position: absolute;
+            top: auto;
+            right: -24px;
+            bottom: -22px;
+            left: -24px;
+            z-index: 1;
+            display: block !important;
+            width: auto;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            filter: blur(16px) brightness(0.46) saturate(1.08);
+            opacity: 0;
+            transform: scale(1.12);
+            pointer-events: none;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .anime-item-ambient.ready,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .anime-item-ambient.ready {
+            opacity: 0.96;
+            animation: mobileInfoBackdropDrift 9s ease-in-out infinite alternate;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .meta,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .meta {
+            z-index: 3;
+            background:
+              linear-gradient(110deg, rgba(5,5,8,0.72), rgba(5,5,8,0.84) 58%, rgba(5,5,8,0.91)),
+              rgba(5,5,8,0.76);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .meta .title-anime,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .meta .title-anime {
+            text-shadow: 0 2px 10px rgba(0,0,0,0.86);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .meta .info,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .meta .info {
+            color: rgba(255,255,255,0.67);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          ol.ranking.mode-true-characters li.anime-item > .anime-item-ambient.ready {
+            animation: none !important;
+            transform: scale(1.16);
+          }
+        }
+        /* ── Mobile cards v8: blur visível + faixa igual ao desktop ─────── */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item {
+            grid-template-rows: auto auto;
+          }
+
+          /* A cópia externa deixa de ser usada. A faixa original volta para a
+             borda inferior da imagem, exatamente como no desktop. */
+          ol.ranking.mode-true-characters li.anime-item > .announce-strip--mobile {
+            display: none !important;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item > .poster-wrap > .announce-strip:not(.announce-strip--mobile) {
+            position: absolute;
+            top: auto;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 3;
+            display: flex !important;
+            width: auto;
+            max-width: none;
+            height: 16px;
+            min-height: 16px;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: rgba(10,10,10,0.38);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%);
+          }
+
+          ol.ranking.mode-true-characters li.anime-item > .poster-wrap > .announce-strip:not(.announce-strip--mobile) .announce-track {
+            margin: 0;
+          }
+
+          ol.ranking.mode-true-characters li.anime-item > .poster-wrap > .announce-strip:not(.announce-strip--mobile) .announce-line {
+            height: 16px;
+            line-height: 16px;
+            padding: 0 32px;
+            color: rgba(255,255,255,0.82);
+            font-size: 9px;
+            font-weight: 700;
+          }
+
+          /* Torna o wallpaper inferior claramente visível. */
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .anime-item-ambient,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .anime-item-ambient {
+            right: -28px;
+            bottom: -24px;
+            left: -28px;
+            display: block !important;
+            height: 158px;
+            background-size: cover;
+            background-position: center;
+            filter: blur(12px) brightness(0.78) saturate(1.18);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .anime-item-ambient.ready,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .anime-item-ambient.ready {
+            opacity: 1;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-all,
+            .category-romance,
+            .category-isekai,
+            .category-comedy,
+            .category-mecha,
+            .category-sports,
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced,
+            .category-trueCharacters
+          ) li.anime-item > .meta,
+          ol.ranking.mode-true-characters.release-calendar-list li.anime-item > .meta {
+            background: linear-gradient(110deg, rgba(5,5,8,0.38), rgba(5,5,8,0.52) 58%, rgba(5,5,8,0.62));
+          }
+        }
+        /* ── Mobile cards v10: progresso igual ao desktop ──────────────── */
+        @media (max-width: 600px) {
+          ol.ranking.category-watching .watch-progress {
+            width: auto;
+            margin-top: 10px;
+            gap: 10px;
+          }
+
+          ol.ranking.category-watching .watch-progress-track {
+            height: 6px;
+            border: 0;
+            background: rgba(255,255,255,0.08);
+            box-shadow: none;
+          }
+
+          ol.ranking.category-watching .watch-progress-inc,
+          ol.ranking.category-watching .watch-progress-dec {
+            width: 20px;
+            height: 20px;
+            border: 1px solid rgba(255,255,255,0.16);
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            font-size: 13px;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+          }
+
+          ol.ranking.category-watching .watch-progress-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-shadow: none;
+          }
+
+          ol.ranking.category-watching .watch-progress-label--completed {
+            color: var(--item-hover-color, #2dd4bf);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+          }
+
+          ol.ranking.category-watching .watch-progress-label-total {
+            margin-left: 4px;
+            color: var(--low-priority);
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+          }
+        }
+
+        /* ── Mobile cards v11: posições nas listas sem ranking ────────── */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .meta::before {
+            content: counter(item, decimal-leading-zero);
+            top: 50%;
+            right: 8px;
+            left: auto;
+            width: 78px;
+            min-width: 78px;
+            height: auto;
+            color: rgba(255,255,255,0.18);
+            font: 900 38px/0.72 var(--font-title);
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum" 1;
+            text-align: right;
+            text-shadow: none;
+            transform: translateY(-50%) scaleY(2.35);
+            transform-origin: center center;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) li.anime-item:hover .meta::before {
+            transform: translateY(-50%) scaleY(2.35);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .title-row,
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .info-row,
+          ol.ranking.mode-true-characters.category-watching .watch-progress {
+            width: calc(100% - 67px);
+          }
+        }
+
+        @media (max-width: 380px) {
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .meta::before {
+            right: 6px;
+            width: 70px;
+            min-width: 70px;
+            font-size: 34px;
+            transform: translateY(-50%) scaleY(2.25);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) li.anime-item:hover .meta::before {
+            transform: translateY(-50%) scaleY(2.25);
+          }
+        }
+
+        /* ── Cards v12: 01/02 também no desktop, sem Top 3 colorido ───── */
+        ol.ranking.mode-true-characters:is(
+          .category-watching,
+          .category-plan,
+          .category-incomplete,
+          .category-announced
+        ) .meta::before {
+          content: counter(item, decimal-leading-zero);
+          font-variant-numeric: tabular-nums;
+          font-feature-settings: "tnum" 1;
+        }
+
+        /* Nessas listas a ordem é apenas informativa: sem ouro, prata ou bronze. */
+        ol.ranking.mode-true-characters:is(
+          .category-watching,
+          .category-plan,
+          .category-incomplete,
+          .category-announced
+        ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze)::before {
+          display: none;
+        }
+
+        ol.ranking.mode-true-characters:is(
+          .category-watching,
+          .category-plan,
+          .category-incomplete,
+          .category-announced
+        ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze) .meta::before {
+          color: rgba(255,255,255,0.32);
+          text-shadow: none;
+        }
+
+        ol.ranking.mode-true-characters:is(
+          .category-watching,
+          .category-plan,
+          .category-incomplete,
+          .category-announced
+        ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze):hover .meta::before {
+          color: color-mix(in srgb, var(--item-hover-color, #e2e8f0) 70%, transparent);
+        }
+
+        @media (min-width: 601px) {
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .title-row,
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .info-row {
+            padding-right: 72px;
+          }
+        }
+
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze) .meta::before {
+            color: rgba(255,255,255,0.18);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-watching,
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze):hover .meta::before {
+            color: color-mix(in srgb, var(--item-hover-color, #e2e8f0) 70%, transparent);
+          }
+        }
+
+        /* ── Desktop cards v13: números altos de ponta a ponta ─────────── */
+        @media (min-width: 601px) {
+          ol.ranking.mode-true-characters:is(
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) li.anime-item {
+            overflow: hidden !important;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .meta::before {
+            top: 50%;
+            right: 10px;
+            width: 150px;
+            text-align: right;
+            font-size: 96px;
+            line-height: 0.72;
+            letter-spacing: -0.06em;
+            transform: translateY(-50%) scaleY(3.55);
+            transform-origin: center center;
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) li.anime-item:hover .meta::before {
+            transform: translate(-3px, -50%) scaleY(3.55);
+          }
+
+          ol.ranking.mode-true-characters:is(
+            .category-plan,
+            .category-incomplete,
+            .category-announced
+          ) .title-row {
+            padding-right: 102px;
+          }
+        }
+
 </style>
 
     </head>
@@ -7024,7 +9222,7 @@
             <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path><path d="M12 14v3"></path></svg>
           </div>
           <h1 class="site-auth-title">Enter access sequence</h1>
-          <p class="site-auth-description">Enter your 30-digit passkey to open the archive.<br>This device stays trusted for 30 days.</p>
+          <p class="site-auth-description">Enter your 30-digit passkey to open the archive.<br>This device stays trusted for 3 days.</p>
           <p class="site-auth-mobile-label">ENTER PASSWORD</p>
           <div class="site-auth-pin-display" id="siteAuthPinDisplay" aria-hidden="true"></div>
           <input class="site-auth-input" id="siteAuthInput" type="password" inputmode="numeric" maxlength="30" pattern="[0-9]{30}" placeholder="••••••••••••••••••••••••••••••" aria-label="Senha" required autofocus>
@@ -7065,10 +9263,52 @@
           const okKey = document.getElementById('siteAuthOk');
           const AUTH_KEY = 'myhtml_access_until_v1';
           const PASSWORD_HASH = '34d8b1925931d2de3b1f360cb6d68ebb1a639d0b59fdbd526e6c6d9d21cd3fa4';
-          const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+          const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
           let isChecking = false;
           let pinMaskTimer = null;
           let desktopMaskTimer = null;
+          let windowsKeyArmedUntil = 0;
+
+          function lockSiteNow() {
+            try {
+              localStorage.removeItem(AUTH_KEY);
+            } catch (e) {}
+
+            isChecking = false;
+            submit.disabled = false;
+            input.value = '';
+            if (gate) gate.classList.remove('is-unlocking');
+            document.documentElement.classList.remove('site-auth-ok');
+            document.documentElement.classList.add('site-auth-locked');
+            clearAuthError();
+            updateDesktopCounter(false);
+            renderMobilePin(false);
+
+            requestAnimationFrame(() => {
+              if (window.matchMedia('(min-width: 601px)').matches) input.focus();
+            });
+          }
+
+          /* O Windows normalmente captura Win+L antes que o navegador receba
+             o "L". Por isso usamos dois caminhos: a combinação direta, quando
+             ela chega ao site, e a ocultação da página logo após a tecla Win. */
+          window.addEventListener('keydown', function (event) {
+            const key = String(event.key || '').toLowerCase();
+            if (key === 'meta' || key === 'os' || event.code === 'MetaLeft' || event.code === 'MetaRight') {
+              windowsKeyArmedUntil = Date.now() + 2500;
+            }
+
+            if ((event.metaKey || Date.now() <= windowsKeyArmedUntil) && (key === 'l' || event.code === 'KeyL')) {
+              lockSiteNow();
+            }
+          }, true);
+
+          document.addEventListener('visibilitychange', function () {
+            if (document.hidden && Date.now() <= windowsKeyArmedUntil) {
+              lockSiteNow();
+              windowsKeyArmedUntil = 0;
+            }
+          });
 
           function renderMobilePin(revealLast) {
             if (!pinDisplay) return;
@@ -7157,7 +9397,7 @@
                 return;
               }
 
-              localStorage.setItem(AUTH_KEY, String(Date.now() + THIRTY_DAYS_MS));
+              localStorage.setItem(AUTH_KEY, String(Date.now() + THREE_DAYS_MS));
               if (gate) gate.classList.add('is-unlocking');
               setTimeout(() => {
                 document.documentElement.classList.remove('site-auth-locked');
@@ -8939,9 +11179,11 @@
               // abre o data-src original, mantendo resolução e identificação
               // do MyRanks intactas.
               const cardSrc = img.currentSrc || img.src || img.getAttribute('data-src');
-              const src = img.dataset.listMode === 'all'
-                ? (img.getAttribute('data-src') || cardSrc)
-                : cardSrc;
+              // O card mobile usa a imagem horizontal "-search", mas o
+              // posterlightbox precisa continuar usando o pôster original.
+              // Separar as duas fontes também preserva a detecção de MyRanks,
+              // responsável pelo painel completo (studio/ano/notas).
+              const src = img.getAttribute('data-poster-src') || cardSrc;
               if (!src) return;
 
               const titleEl = item.querySelector('.title-anime');
@@ -10555,6 +12797,25 @@
             return `${baseFolder}/${folder}/${filename}`;
           }
 
+          // Imagem horizontal usada pelos resultados da busca. No mobile ela
+          // também vira o backdrop dos cards cinematográficos.
+          function mobileCardSearchThumbSrc(originalPath) {
+            if (!originalPath) return originalPath;
+            const path = String(originalPath);
+            if (path.startsWith('other-images/peakepisodes/') || path.startsWith('other-images/truecharacters/')) return path;
+            const filename = path.split('/').pop();
+            let baseFolder = 'myranks-images';
+            let folder = 'myranks-search';
+            if (path.startsWith('watchingnow-images/watchingnow/')) {
+              baseFolder = 'watchingnow-images';
+              folder = 'watchingnow-search';
+            } else if (path.startsWith('plantowatch-images/plantowatch/')) {
+              baseFolder = 'plantowatch-images';
+              folder = 'plantowatch-search';
+            }
+            return baseFolder + '/' + folder + '/' + filename;
+          }
+
           function createAnimeCard(anime, mode, seasonColor = null, rankIndex = null) {
             if (!anime) return '';
             let remainingInfo = anime.info ? String(anime.info).trim() : '';
@@ -10605,6 +12866,9 @@
                   <div class="announce-strip"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
                     <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
                   </div>` : '';
+            const mobileStripHtml = stripHtml
+              ? stripHtml.replace('class="announce-strip"', 'class="announce-strip announce-strip--mobile"')
+              : '';
             let subClass = '';
             if (mode === 'all') {
               const subCat = getSubCategory(anime.id);
@@ -10631,6 +12895,14 @@
             const crAttr = (isLinkableMode && anime.crunchyroll) ? ` data-crunchyroll-url="${anime.crunchyroll}"` : '';
             const nfAttr = (isLinkableMode && anime.netflix) ? ` data-netflix-url="${anime.netflix}"` : '';
             const navAllAttr = (mode !== 'watching' && mode !== 'plan' && mode !== 'all' && mode !== 'announced-unwatched' && mode !== 'trueCharacters') ? ` data-nav-all="1"` : '';
+
+            const isMobileCard = window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+            const normalCardThumb = (mode === 'announced' || mode === 'announced-unwatched')
+              ? sequelsThumbSrc(anime.img)
+              : anime.img;
+            const cardThumbSrc = isMobileCard
+              ? mobileCardSearchThumbSrc(anime.img)
+              : normalCardThumb;
 
             let progressHtml = '';
             if (mode === 'watching') {
@@ -10778,10 +13050,11 @@
                   ${secondaryRankHtml}
                 </div>
                 <div class="poster-wrap">
-                  <img class="thumb" data-list-mode="${mode}" data-src="${(mode === 'announced' || mode === 'announced-unwatched') ? sequelsThumbSrc(anime.img) : anime.img}" alt="${anime.title}" decoding="async">
+                  <img class="thumb" data-list-mode="${mode}" data-src="${cardThumbSrc}" data-poster-src="${normalCardThumb}" alt="${anime.title}" decoding="async">
                   <div class="poster-fallback" aria-hidden="true"></div>
                   ${stripHtml}
                 </div>
+                ${mobileStripHtml}
                 <div class="meta">
                   <div class="title-row">
                     <h3 class="title-anime">${anime.title}</h3>
@@ -13977,10 +16250,30 @@
       </script>
 
       <script>
-        // Registra o service worker (necessário pro app ser instalável)
+        // Registra e atualiza o service worker sem reutilizar uma cópia antiga.
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
-            navigator.serviceWorker.register('service-worker.js').catch(() => {});
+            const hadController = Boolean(navigator.serviceWorker.controller);
+            let reloadingForNewWorker = false;
+
+            if (hadController) {
+              navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (reloadingForNewWorker) return;
+                reloadingForNewWorker = true;
+                window.location.reload();
+              });
+            }
+
+            navigator.serviceWorker
+              .register('service-worker.js', { updateViaCache: 'none' })
+              .then(async (registration) => {
+                await registration.update();
+                await navigator.serviceWorker.ready;
+                if (typeof window.refreshPwaIconVersion === 'function') {
+                  await window.refreshPwaIconVersion();
+                }
+              })
+              .catch(() => {});
           });
         }
       </script>
