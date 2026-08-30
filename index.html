@@ -9205,6 +9205,44 @@
           }
         }
 
+        /* ── Proteção final de desempenho durante a rolagem ─────────────
+           Fica no fim do CSS para vencer as variações desktop/mobile que
+           aparecem acima. O visual completo volta assim que o scroll para. */
+        body.is-scrolling-ambient .anime-item-ambient,
+        body.is-scrolling-ambient .fav-ep-ambient {
+          filter: none !important;
+          opacity: 0 !important;
+          animation: none !important;
+          transition: none !important;
+          will-change: auto !important;
+        }
+
+        body.is-scrolling-ambient li.anime-item,
+        body.is-scrolling-ambient li.fav-ep-card,
+        body.is-scrolling-ambient .release-calendar-poster,
+        body.is-scrolling-ambient .release-calendar-poster img {
+          transition: none !important;
+        }
+
+        body.is-scrolling-ambient li.anime-item:hover,
+        body.is-scrolling-ambient li.fav-ep-card:hover,
+        body.is-scrolling-ambient .release-calendar-card:hover .release-calendar-poster,
+        body.is-scrolling-ambient .release-calendar-card:hover .release-calendar-poster img {
+          transform: none !important;
+          box-shadow: none !important;
+        }
+
+        body.is-scrolling-ambient .announce-strip,
+        body.is-scrolling-ambient .scroll-fab {
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+        }
+
+        body.is-scrolling-ambient .announce-track,
+        body.is-scrolling-ambient .search-marquee-track {
+          animation-play-state: paused !important;
+        }
+
 </style>
 
     </head>
@@ -12362,10 +12400,9 @@
           // espaçados pelo tempo de rolagem, por isso nunca sofriam disso.
           // Espaçamento pequeno (35ms) não afeta a sensação de carregamento
           // individual — só evita a rajada de ~30 de uma vez.
-          // Três filas paralelas: acelera o carregamento durante a descida sem
-          // voltar à rajada de ~21 decodificações simultâneas que travava o
-          // MyRanks. Cada fila ainda espera sua imagem terminar por completo.
-          const __posterLoadQueueTails = [Promise.resolve(), Promise.resolve(), Promise.resolve()];
+          // Duas filas paralelas mantêm as capas carregando sem provocar três
+          // decodificações grandes ao mesmo tempo durante a rolagem.
+          const __posterLoadQueueTails = [Promise.resolve(), Promise.resolve()];
           let __posterLoadQueueCursor = 0;
           let __posterRenderGeneration = 0;
           const __posterObjectUrls = new Set();
@@ -12423,6 +12460,14 @@
               // fila do render anterior. Antes, posters de uma lista já removida
               // continuavam decodificando enquanto o All Ranks era aberto.
               if (generation === __posterRenderGeneration) {
+                // Se o usuário estiver rolando, espera a página ficar parada
+                // antes de iniciar outra decodificação de imagem. Downloads já
+                // iniciados continuam normalmente; só o trabalho novo é adiado.
+                if (document.body.classList.contains('is-scrolling-ambient')) {
+                  await new Promise(resolve => {
+                    document.addEventListener('myhtml:scroll-idle', resolve, { once: true });
+                  });
+                }
                 // Espera o download E a decodificação terminarem. O código
                 // anterior esperava apenas um tempo fixo, então vários WebPs
                 // grandes acabavam decodificando juntos apesar da fila.
@@ -15867,11 +15912,14 @@
 
           let __scrollSaveTimeout = null;
           function saveScrollPosition() {
-            if (__scrollSaveTimeout) return;
+            // localStorage é síncrono. Gravar a cada 150 ms enquanto a roda do
+            // mouse está em movimento causava pequenas pausas; agora a gravação
+            // acontece somente depois que a rolagem sossega.
+            if (__scrollSaveTimeout) clearTimeout(__scrollSaveTimeout);
             __scrollSaveTimeout = setTimeout(() => {
               saveScrollPositionNow();
               __scrollSaveTimeout = null;
-            }, 150);
+            }, 240);
           }
 
           // Eventos de saída/recarregamento da página: salvam IMEDIATAMENTE (sem
@@ -16189,14 +16237,37 @@
           // para de verdade (debounce), sem precisar de nenhum RAF contínuo.
           (function initAmbientScrollSuppression() {
             let ambientScrollTimeout = null;
+            let ambientScrollFrame = 0;
+
+            function finishAmbientScrolling() {
+              if (ambientScrollFrame) {
+                cancelAnimationFrame(ambientScrollFrame);
+                ambientScrollFrame = 0;
+              }
+              if (ambientScrollTimeout) {
+                clearTimeout(ambientScrollTimeout);
+                ambientScrollTimeout = null;
+              }
+              document.body.classList.remove('is-scrolling-ambient');
+              document.dispatchEvent(new CustomEvent('myhtml:scroll-idle'));
+            }
+
             function markAmbientScrolling() {
-              document.body.classList.add('is-scrolling-ambient');
+              // No máximo uma alteração de classe por frame, mesmo em trackpads
+              // que emitem muitos eventos de scroll no mesmo instante.
+              if (!ambientScrollFrame) {
+                ambientScrollFrame = requestAnimationFrame(() => {
+                  ambientScrollFrame = 0;
+                  document.body.classList.add('is-scrolling-ambient');
+                });
+              }
               if (ambientScrollTimeout) clearTimeout(ambientScrollTimeout);
-              ambientScrollTimeout = setTimeout(() => {
-                document.body.classList.remove('is-scrolling-ambient');
-              }, 160);
+              ambientScrollTimeout = setTimeout(finishAmbientScrolling, 120);
             }
             window.addEventListener('scroll', markAmbientScrolling, { passive: true });
+            if ('onscrollend' in window) {
+              window.addEventListener('scrollend', finishAmbientScrolling, { passive: true });
+            }
           })();
 
           // ── Botão flutuante: topo <-> final da página ──
