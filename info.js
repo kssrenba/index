@@ -583,7 +583,7 @@ const rawAnimeData = [
     img: "myranks-images/myranks/blue-box.webp",
     title: "Blue Box",
     info: "1 temporada: 25 episódios",
-    studio: "Telecom / Animation Film",
+    studio: "Telecom Animation Film",
     airedSeason: "2024-?",
     rewatch: "Yes",
     mal: [{ label: "1ª temporada", episodes: 25, note: 8, malName: "Ao no Hako" }],
@@ -686,6 +686,7 @@ const rawAnimeData = [
     img: "myranks-images/myranks/food-wars.webp",
     title: "Food Wars! Shokugeki no Soma",
     info: "5 temporadas: 86 episódios",
+    malSearch: "Food Wars",
     studio: "J.C. Staff",
     airedSeason: "2015-2020",
     rewatch: "Yes",
@@ -1250,7 +1251,7 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/38101/5-toubun_no_Hanayome",
   },
   {
-    id: "rw-aot",
+    id: "aot",
     img: "watchingnow-images/watchingnow/aot.webp",
     title: "Attack on Titan",
     info: "4 temporadas: 94 episódios",
@@ -1279,10 +1280,10 @@ const rawWatchingData = [
 
   // Summer 2026
   {
-    id: "mushoku-3",
+    id: "mushoku",
     img: "watchingnow-images/watchingnow/mushoku.webp",
     title: "Mushoku Tensei: Jobless Reincarnation",
-    info: "3ª temporada: 14 episódios",
+    info: "3ª temporada I: 14 episódios",
     season: "summer-2026",
     studio: "Studio Bind",
     airedSeason: "2026",
@@ -1294,7 +1295,7 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/59193/Mushoku_Tensei_III__Isekai_Ittara_Honki_Dasu",
   },
   {
-    id: "grand-blue-3",
+    id: "grand-blue",
     img: "watchingnow-images/watchingnow/grand-blue.webp",
     title: "Grand Blue Dreaming",
     info: "3ª temporada: 12 episódios",
@@ -1307,7 +1308,7 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/62542/Grand_Blue_Season_3",
   },
   {
-    id: "opposites-2",
+    id: "opposites",
     img: "watchingnow-images/watchingnow/opposites.webp",
     title: "You and I are Polar Opposites",
     info: "2ª temporada: 13 episódios",
@@ -1432,7 +1433,7 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/62856/Nijusseiki_Denki_Mokuroku__Eureka_Evrika",
   },
   {
-    id: "the-100-girlfriends-3",
+    id: "the-100-girlfriends",
     img: "watchingnow-images/watchingnow/the-100-girlfriends.webp",
     title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
     info: "3ª temporada: 12 episódios",
@@ -1502,7 +1503,7 @@ const rawWatchingData = [
 
   // Spring 2026
   {
-    id: "re-zero-4",
+    id: "re-zero",
     img: "watchingnow-images/watchingnow/re-zero.webp",
     title: "Re:ZERO - Starting Life in Another World",
     malSearch: "Re:ZERO",
@@ -1519,7 +1520,7 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/61316/Re_Zero_kara_Hajimeru_Isekai_Seikatsu_4th_Season",
   },
   {
-    id: "tensei-shitara-slime-4",
+    id: "tensei-shitara-slime",
     img: "watchingnow-images/watchingnow/tensei-shitara-slime.webp",
     title: "That Time I Got Reincarnated as a Slime",
     info: "4ª temporada: 24 episódios",
@@ -1549,7 +1550,7 @@ const rawWatchingData = [
       "https://myanimelist.net/anime/56734/Class_de_2-banme_ni_Kawaii_Onnanoko_to_Tomodachi_ni_Natta",
   },
   {
-    id: "farming-life-2",
+    id: "farming-life",
     img: "watchingnow-images/watchingnow/farming-life.webp",
     title: "Farming Life in Another World",
     info: "2ª temporada: 12 episódios",
@@ -1594,16 +1595,17 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/49052/Ao_Ashi",
   },
   {
-    id: "danmachi-5",
+    id: "danmachi",
     img: "watchingnow-images/watchingnow/danmachi.webp",
     title: "Danmachi: Is It Wrong to Try to Pick Up Girls in a Dungeon",
     malSearch: "Is It Wrong to Try to Pick Up Girls in a Dungeon",
     info: "5ª temporada: 15 episódios",
     season: "on-hold",
     studio: "J.C. Staff",
-    airedSeason: "2024 and 2025",
+    airedSeason: "2024-2025",
     rewatch: "3 First Seasons",
-    seasons: [15],
+    seasons: [13, 12, 12, 22, 15],
+    cours: [null, null, null, [11, 11], null],
     url: "https://www.anime-planet.com/anime/is-it-wrong-to-try-to-pick-up-girls-in-a-dungeon-v",
     crunchyroll:
       "https://www.crunchyroll.com/pt-br/series/G6DQN9KGR/is-it-wrong-to-try-to-pick-up-girls-in-a-dungeon",
@@ -1852,7 +1854,7 @@ const rawReleaseCalendarData = [
 
   // SUNDAY
   {
-    id: "opposites-2",
+    id: "opposites",
     img: "watchingnow-images/watchingnow/opposites.webp",
     title: "You and I are Polar Opposites",
     season: "summer-2026",
@@ -1880,7 +1882,7 @@ const rawReleaseCalendarData = [
     releaseDay: "sunday",
   },
   {
-    id: "the-100-girlfriends-3",
+    id: "the-100-girlfriends",
     img: "watchingnow-images/watchingnow/the-100-girlfriends.webp",
     title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
     season: "summer-2026",
@@ -1889,9 +1891,16 @@ const rawReleaseCalendarData = [
 
   // MONDAY
   {
-    id: "mushoku-3",
+    id: "mushoku",
     img: "watchingnow-images/watchingnow/mushoku.webp",
     title: "Mushoku Tensei: Jobless Reincarnation",
+    season: "summer-2026",
+    releaseDay: "monday",
+  },
+  {
+    id: "grand-blue",
+    img: "watchingnow-images/watchingnow/grand-blue.webp",
+    title: "Grand Blue Dreaming",
     season: "summer-2026",
     releaseDay: "monday",
   },
@@ -1912,13 +1921,6 @@ const rawReleaseCalendarData = [
 
   // TUESDAY
   {
-    id: "grand-blue-3",
-    img: "watchingnow-images/watchingnow/grand-blue.webp",
-    title: "Grand Blue Dreaming",
-    season: "summer-2026",
-    releaseDay: "tuesday",
-  },
-  {
     id: "ghost-in-the-shell",
     img: "watchingnow-images/watchingnow/ghost-in-the-shell.webp",
     title: "The Ghost in the Shell",
@@ -1928,7 +1930,7 @@ const rawReleaseCalendarData = [
 
   // WEDNESDAY
   {
-    id: "re-zero-4",
+    id: "re-zero",
     img: "watchingnow-images/watchingnow/re-zero.webp",
     title: "Re:ZERO - Starting Life in Another World",
     season: "summer-2026",
@@ -1974,7 +1976,7 @@ const rawReleaseCalendarData = [
     releaseDay: "friday",
   },
   {
-    id: "tensei-shitara-slime-4",
+    id: "tensei-shitara-slime",
     img: "watchingnow-images/watchingnow/tensei-shitara-slime.webp",
     title: "That Time I Got Reincarnated as a Slime",
     season: "summer-2026",
@@ -2132,7 +2134,7 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/evangelion.webp",
     title: "Neon Genesis Evangelion",
     info: "1 temporada: 26 episódios <br>1 Filme: 1h27m",
-    studio: "Gainax / Tatsunoko Production / Production I.G",
+    studio: "Gainax Tatsunoko Production Production I.G",
     airedSeason: "1995-1997",
     url: "https://www.anime-planet.com/anime/neon-genesis-evangelion",
     netflix: "https://www.netflix.com/title/81033445",
@@ -2668,22 +2670,28 @@ const trueCharactersData = [
     info: "Frieren: Beyond Journey's End",
   },
   {
-    id: "shizuku",
-    img: "other-images/truecharacters/shizuku.webp",
-    title: "Shizuku Murasaki",
-    info: "Hunter x Hunter",
-  },
-  {
     id: "ryuusui",
     img: "other-images/truecharacters/ryuusui.webp",
     title: "Ryuusui Nanami",
     info: "Dr. Stone",
   },
   {
+    id: "shizuku",
+    img: "other-images/truecharacters/shizuku.webp",
+    title: "Shizuku Murasaki",
+    info: "Hunter x Hunter",
+  },
+  {
     id: "cid",
     img: "other-images/truecharacters/shadow.webp",
     title: "Cid Kagenou",
     info: "The Eminence in Shadow",
+  },
+  {
+    id: "korai",
+    img: "other-images/truecharacters/korai.webp",
+    title: "Korai Hoshiumi",
+    info: "Haikyuu!!",
   },
   {
     id: "chrollo",

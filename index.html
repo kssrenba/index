@@ -12,6 +12,9 @@
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
       <meta name="apple-mobile-web-app-title" content="myhtml">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
       <script>
         // Cria uma versão a partir dos bytes dos ícones. Quando qualquer imagem
         // for trocada mantendo o mesmo nome, o navegador passa a enxergar uma
@@ -70,26 +73,25 @@
           }
 
           window.refreshPwaIconVersion = refreshPwaIconVersion;
-          window.addEventListener('load', refreshPwaIconVersion);
+          window.addEventListener('load', () => {
+            const scheduleRefresh = () => refreshPwaIconVersion();
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(scheduleRefresh, { timeout: 2500 });
+            } else {
+              setTimeout(scheduleRefresh, 1200);
+            }
+          });
+          let lastIconRefreshAt = 0;
           document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') refreshPwaIconVersion();
+            if (document.visibilityState === 'visible' && Date.now() - lastIconRefreshAt > 300000) {
+              lastIconRefreshAt = Date.now();
+              refreshPwaIconVersion();
+            }
           });
         })();
       </script>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
       <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-      <script>
-        // Decide antes do primeiro paint se este navegador ainda está liberado.
-        (function () {
-          const AUTH_KEY = 'myhtml_access_until_v1';
-          let unlocked = false;
-          try {
-            unlocked = Number(localStorage.getItem(AUTH_KEY) || 0) > Date.now();
-          } catch (e) {}
-          document.documentElement.classList.add(unlocked ? 'site-auth-ok' : 'site-auth-locked');
-        })();
-      </script>
-
       <style>
         :root{
           --bg: #030303;
@@ -111,521 +113,6 @@
 
         * { box-sizing: border-box; }
 
-        html.site-auth-locked body > *:not(.site-auth-gate):not(script) {
-          visibility: hidden !important;
-        }
-
-        .site-auth-gate {
-          position: fixed;
-          inset: 0;
-          z-index: 999999;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          background:
-            radial-gradient(ellipse 90% 55% at 50% 0%, rgba(203,213,225,0.17), transparent 65%),
-            #050505;
-          animation: siteAuthGateIn 0.42s ease both;
-          overflow: hidden;
-        }
-
-        .site-auth-desktop-carousel {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-evenly;
-          gap: 18px;
-          opacity: 0.2;
-          filter: blur(7px) saturate(0.7) brightness(0.42);
-          pointer-events: none;
-          mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-          -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-          animation: siteAuthCarouselIn 1.1s ease both;
-        }
-
-        .site-auth-marquee-mobile-fourth { display: none; }
-
-        @keyframes siteAuthCarouselIn {
-          from { opacity: 0; transform: scale(1.025); }
-          to { opacity: 0.34; transform: scale(1); }
-        }
-
-        .site-auth-gate.is-unlocking {
-          pointer-events: none;
-          animation: siteAuthGateOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
-        }
-
-        @keyframes siteAuthGateIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes siteAuthGateOut {
-          from { opacity: 1; transform: scale(1); }
-          to { opacity: 0; transform: scale(1.025); }
-        }
-
-        html.site-auth-ok .site-auth-gate { display: none; }
-
-        .site-auth-box {
-          width: min(560px, 100%);
-          padding: 48px 40px;
-          border: 0;
-          border-radius: 0;
-          background: transparent;
-          box-shadow: none;
-          text-align: center;
-          position: relative;
-          z-index: 1;
-        }
-
-        .site-auth-desktop-mark,
-        .site-auth-desktop-counter { display: none; }
-
-        @media (min-width: 601px) {
-          .site-auth-box {
-            width: min(660px, calc(100vw - 48px));
-            padding: 52px 58px 46px;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 32px;
-            background:
-              linear-gradient(145deg, rgba(255,255,255,0.075), rgba(255,255,255,0.018)),
-              rgba(8,8,10,0.7);
-            box-shadow: 0 38px 100px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.06);
-            backdrop-filter: blur(24px) saturate(1.15);
-            -webkit-backdrop-filter: blur(24px) saturate(1.15);
-            overflow: hidden;
-            animation: siteAuthDesktopPanelIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-          }
-
-          .site-auth-box::before {
-            content: "";
-            position: absolute;
-            top: -120px;
-            left: 50%;
-            width: 360px;
-            height: 230px;
-            transform: translateX(-50%);
-            border-radius: 50%;
-            background: rgba(226,232,240,0.11);
-            filter: blur(60px);
-            pointer-events: none;
-          }
-
-          .site-auth-desktop-mark {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 58px;
-            height: 58px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(255,255,255,0.13);
-            border-radius: 18px;
-            background: rgba(255,255,255,0.055);
-            color: #e2e8f0;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
-          }
-
-          .site-auth-desktop-mark svg {
-            width: 25px;
-            height: 25px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-          }
-
-          .site-auth-title {
-            position: relative;
-            margin-bottom: 12px;
-            font-size: 42px;
-            letter-spacing: -0.035em;
-            text-transform: none;
-          }
-
-          .site-auth-description {
-            position: relative;
-            width: min(410px, 100%);
-            margin: 0 auto 32px;
-            color: rgba(203,213,225,0.62);
-            font-size: 14px;
-          }
-
-          .site-auth-input {
-            position: relative;
-            height: 68px;
-            padding: 0 58px 0 22px;
-            border-color: rgba(255,255,255,0.11);
-            border-radius: 17px;
-            background: rgba(0,0,0,0.28);
-            font-size: 19px;
-            letter-spacing: 0.115em;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
-          }
-
-          .site-auth-input:focus {
-            border-color: rgba(226,232,240,0.42);
-            background: rgba(0,0,0,0.38);
-            box-shadow: 0 0 0 4px rgba(226,232,240,0.045), inset 0 1px 0 rgba(255,255,255,0.035);
-          }
-
-          .site-auth-desktop-counter {
-            position: absolute;
-            right: 78px;
-            bottom: 69px;
-            z-index: 2;
-            display: block;
-            color: rgba(203,213,225,0.38);
-            font: 700 10px/1 var(--font-body);
-            letter-spacing: 0.06em;
-            pointer-events: none;
-          }
-
-          .site-auth-submit { display: none; }
-          .site-auth-error { margin-top: 16px; }
-
-          @keyframes siteAuthDesktopPanelIn {
-            from { opacity: 0; transform: translateY(22px) scale(0.975); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-          }
-        }
-
-        .site-auth-title {
-          margin: 0 0 8px;
-          color: #fff;
-          font: 800 38px/1.15 var(--font-title);
-        }
-
-        .site-auth-description {
-          margin: 0 0 24px;
-          color: #9ca3af;
-          font-size: 15px;
-          line-height: 1.5;
-        }
-
-        .site-auth-input {
-          width: 100%;
-          height: 58px;
-          padding: 0 16px;
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 12px;
-          outline: none;
-          background: rgba(255,255,255,0.045);
-          color: #fff;
-          font: 600 20px/1 var(--font-body);
-          letter-spacing: 0.08em;
-          text-align: center;
-          transition: border-color 0.15s ease, background 0.15s ease;
-        }
-
-        .site-auth-input:focus {
-          border-color: rgba(203,213,225,0.48);
-          background: rgba(255,255,255,0.065);
-        }
-
-        .site-auth-input.is-error { border-color: rgba(248,113,113,0.72); }
-
-        .site-auth-submit {
-          width: 100%;
-          height: 46px;
-          margin-top: 12px;
-          border: 0;
-          border-radius: 12px;
-          background: #e2e8f0;
-          color: #09090b;
-          font: 800 13px/1 var(--font-body);
-          cursor: pointer;
-          transition: transform 0.12s ease, background 0.12s ease;
-        }
-
-        .site-auth-submit:hover { background: #fff; transform: translateY(-1px); }
-        .site-auth-submit:disabled { opacity: 0.55; cursor: wait; transform: none; }
-
-        .site-auth-error {
-          width: fit-content;
-          min-height: 0;
-          margin: 12px auto 0;
-          padding: 0;
-          border: 1px solid transparent;
-          border-radius: 999px;
-          background: transparent;
-          color: #fca5a5;
-          font-size: 12px;
-          line-height: 1.3;
-          opacity: 0;
-          transform: translateY(-5px);
-          transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), padding 0.25s ease, background 0.25s ease, border-color 0.25s ease;
-        }
-
-        .site-auth-error.is-visible {
-          padding: 0;
-          border-color: transparent;
-          background: transparent;
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        .site-auth-keypad { display: none; }
-        .site-auth-mobile-label { display: none; }
-        .site-auth-pin-display { display: none; }
-        .site-auth-desktop-code { display: none; }
-
-        /* Desktop: composição totalmente aberta, sem card/campo tradicional. */
-        @media (min-width: 601px) {
-          .site-auth-desktop-carousel {
-            opacity: 0.2;
-            filter: blur(7px) saturate(0.7) brightness(0.42);
-            mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-            -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-          }
-
-          .site-auth-box {
-            width: min(860px, calc(100vw - 60px));
-            padding: 0;
-            border: 0;
-            border-radius: 0;
-            background: transparent;
-            box-shadow: none;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            overflow: visible;
-            animation: siteAuthSequenceIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-          }
-
-          .site-auth-box::before,
-          .site-auth-desktop-mark,
-          .site-auth-description,
-          .site-auth-desktop-counter,
-          .site-auth-submit { display: none; }
-
-          .site-auth-title {
-            margin: 0 0 34px;
-            color: rgba(255,255,255,0.82);
-            font: 700 14px/1 var(--font-body);
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-          }
-
-          .site-auth-input {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            border: 0;
-            opacity: 0;
-            pointer-events: none;
-          }
-
-          .site-auth-desktop-code {
-            display: grid;
-            grid-template-columns: repeat(15, 1fr);
-            gap: 14px 10px;
-            width: min(790px, calc(100vw - 80px));
-            margin: 0 auto;
-            cursor: text;
-          }
-
-          .site-auth-code-slot {
-            height: 42px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font: 700 19px/1 var(--font-body);
-            transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          }
-
-          .site-auth-code-slot.is-filled {
-            border-color: rgba(255,255,255,0.58);
-          }
-
-          .site-auth-code-slot.is-new {
-            animation: siteAuthSlotFill 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
-          }
-
-          .site-auth-code-slot.is-current {
-            border-color: #fff;
-            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.055));
-          }
-
-          .site-auth-desktop-code.is-error { animation: siteAuthShake 0.34s ease; }
-          .site-auth-error { margin-top: 22px; }
-
-          @keyframes siteAuthSequenceIn {
-            from { opacity: 0; transform: translateY(18px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-
-          @keyframes siteAuthSlotFill {
-            from { opacity: 0.2; transform: translateY(5px) scale(0.88); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-          }
-        }
-
-        @media (max-width: 600px) {
-          .site-auth-desktop-carousel {
-            display: flex;
-            opacity: 0.2;
-            filter: blur(7px) saturate(0.7) brightness(0.42);
-            gap: 10px;
-            mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-            -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-            animation: siteAuthCarouselMobileIn 1.2s ease both;
-          }
-
-          .site-auth-desktop-carousel .search-marquee-track { gap: 8px; }
-          .site-auth-desktop-carousel .search-marquee-poster { width: 92px; height: 130px; border-radius: 10px; }
-          .site-auth-desktop-carousel .search-marquee-poster--wide { width: 231px; height: 130px; }
-          .site-auth-marquee-mobile-fourth { display: block; }
-          .site-auth-gate { padding: 16px; }
-          .site-auth-box { width: 100%; padding: 20px 8px; }
-          .site-auth-title,
-          .site-auth-description,
-          .site-auth-submit { display: none; }
-
-          .site-auth-mobile-label {
-            display: block;
-            margin: 0 0 12px;
-            color: rgba(255,255,255,0.72);
-            font: 700 13px/1 var(--font-body);
-            letter-spacing: 0.18em;
-            animation: siteAuthContentIn 0.7s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both;
-          }
-
-          .site-auth-input {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: 0;
-            opacity: 0;
-            pointer-events: none;
-          }
-
-          .site-auth-input:focus,
-          .site-auth-input.is-error { border: 0; background: transparent; }
-          .site-auth-input::placeholder { color: transparent; }
-
-          .site-auth-pin-display {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2.7px;
-            width: 264px;
-            height: 28px;
-            margin: 0 auto 24px;
-            overflow: hidden;
-            color: #fff;
-            animation: siteAuthContentIn 0.72s 0.14s cubic-bezier(0.16, 1, 0.3, 1) both;
-          }
-
-          .site-auth-pin-char {
-            flex: 0 0 6px;
-            width: 6px;
-            color: #fff;
-            font: 700 13px/1 var(--font-body);
-            text-align: center;
-            animation: siteAuthPinCharIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
-          }
-
-          .site-auth-pin-char.is-dot {
-            font-size: 15px;
-            line-height: 1;
-          }
-
-          .site-auth-pin-display.is-error { animation: siteAuthShake 0.34s ease; }
-
-          .site-auth-keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 72px);
-            justify-content: center;
-            gap: 14px 24px;
-          }
-
-          .site-auth-key {
-            width: 72px;
-            height: 72px;
-            padding: 0;
-            border: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            font: 500 25px/1 var(--font-body);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            user-select: none;
-            -webkit-user-select: none;
-            transform: scale(0.72);
-            opacity: 0;
-            animation: siteAuthKeyIn 0.62s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            transition: background 0.24s ease, transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
-          }
-
-          .site-auth-key:nth-child(1), .site-auth-key:nth-child(2), .site-auth-key:nth-child(3) { animation-delay: 0.08s; }
-          .site-auth-key:nth-child(4), .site-auth-key:nth-child(5), .site-auth-key:nth-child(6) { animation-delay: 0.13s; }
-          .site-auth-key:nth-child(7), .site-auth-key:nth-child(8), .site-auth-key:nth-child(9) { animation-delay: 0.18s; }
-          .site-auth-key:nth-child(10), .site-auth-key:nth-child(11), .site-auth-key:nth-child(12) { animation-delay: 0.23s; }
-          .site-auth-key:active { background: rgba(255,255,255,0.22); transform: scale(0.92); box-shadow: 0 0 0 9px rgba(255,255,255,0.03); }
-          .site-auth-key.is-ready {
-            opacity: 1;
-            transform: scale(1);
-            animation: none;
-          }
-
-          .site-auth-key.is-ready.key-pop {
-            opacity: 1;
-            transform: scale(0.9);
-            background: rgba(255,255,255,0.24);
-            box-shadow: 0 0 0 9px rgba(255,255,255,0.03);
-          }
-          .site-auth-key--action { background: transparent; font-size: 17px; font-weight: 700; }
-          .site-auth-key--delete svg { width: 25px; height: 25px; fill: currentColor; }
-          .site-auth-key--delete.is-held { color: #f87171; transform: scale(0.86); }
-          .site-auth-error { margin-top: 18px; }
-          .site-auth-pin-display.digit-pulse { animation: siteAuthDigitPulse 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
-
-          @keyframes siteAuthContentIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-
-          @keyframes siteAuthKeyIn {
-            to { opacity: 1; transform: scale(1); }
-          }
-
-          @keyframes siteAuthCarouselMobileIn {
-            from { opacity: 0; transform: scale(1.04); }
-            to { opacity: 0.2; transform: scale(1); }
-          }
-
-          @keyframes siteAuthDigitPulse {
-            0% { transform: scale(1); opacity: 1; }
-            45% { transform: scale(1.035); opacity: 0.78; }
-            100% { transform: scale(1); opacity: 1; }
-          }
-
-          @keyframes siteAuthPinCharIn {
-            from { opacity: 0; transform: translateY(4px) scale(0.75); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-          }
-
-          @keyframes siteAuthShake {
-            0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-9px); }
-            40% { transform: translateX(8px); }
-            60% { transform: translateX(-6px); }
-            80% { transform: translateX(4px); }
-          }
-        }
 
         ::selection {
           background: var(--glow-accent);
@@ -2639,6 +2126,37 @@
           display: none;
         }
 
+        /* Desktop: o bloco LINKS ABOUT pertence ao painel de informações.
+          Ele fica em uma linha própria logo abaixo de MAL Score / Studios /
+          Year, em vez de permanecer preso ao rodapé do pôster. */
+        @media (min-width: 761px) {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-watchnow {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info:not(:empty) {
+            display: flex;
+            grid-column: 1 / -1;
+            width: 100%;
+            justify-content: flex-start;
+            margin-top: -18px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info .watch-now-links {
+            width: 100%;
+            min-height: 52px;
+            border: 0;
+            border-top: 1px solid rgba(255,255,255,0.09);
+            border-radius: 0 0 15px 15px;
+            background: rgba(255,255,255,0.055);
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta:has(+ .poster-lightbox-more-info:not(:empty)) {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+          }
+        }
+
         /* ── Metadados (Studio / temporada) ── */
         .rank-meta {
           display: grid;
@@ -2766,6 +2284,28 @@
 
         .rank-mal:empty {
           display: none;
+        }
+
+        /* MyRanks: logo do MyAnimeList acima das notas, sem o antigo "LINKS ABOUT". */
+        .rank-mal-myranks-header {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          width: 100%;
+          margin: 0 0 5px;
+        }
+
+        .rank-mal-myranks-logo {
+          display: inline-flex;
+          align-items: center;
+          width: fit-content;
+          line-height: 1;
+        }
+
+        .rank-mal-myranks-logo .mal-btn-logo {
+          height: 22px;
+          width: auto;
+          max-width: none;
         }
 
         .rank-mal-label {
@@ -3361,6 +2901,23 @@
         @media (min-width: 761px) {
           .rank-mal-row {
             justify-content: space-between;
+          }
+
+          /* Poster lightbox desktop do My Ranks: centraliza verticalmente o
+            texto de temporada/episódios, o pontilhado e a nota na mesma linha.
+            O layout-base usa baseline, que deixava os pontos visualmente na
+            parte inferior em relação a "X temporada". */
+          .poster-lightbox:not(.simple-mode) .rank-mal-row {
+            align-items: center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-mal-align-group {
+            align-items: center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-mal-dots {
+            align-self: center;
+            background-position: left center;
           }
 
           .rank-mal-content {
@@ -4537,7 +4094,7 @@
           "Announced Sequels" também está em Watching Now) — cada metade tem
           sua própria cor, mas o botão inteiro é um único link clicável. */
         .poster-lightbox-list .list-tag-split .list-tag-part + .list-tag-part {
-          margin-left: -2px;
+          margin-left: 0;
         }
 
         /* No hover/focus, em vez da linha sólida (currentColor) normal, o
@@ -4678,7 +4235,8 @@
         }
 
         .poster-lightbox-close,
-        .poster-lightbox-calendar {
+        .poster-lightbox-calendar,
+        .poster-lightbox-sound {
           position: fixed;
           top: 20px;
           width: 40px;
@@ -4706,12 +4264,23 @@
           display: none;
         }
 
-        .poster-lightbox-calendar.visible {
+        .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) {
+          right: 120px;
+        }
+
+        .poster-lightbox-sound {
+          right: 72px;
+          display: none;
+        }
+
+        .poster-lightbox-calendar.visible,
+        .poster-lightbox-sound.visible {
           display: inline-flex;
         }
 
         .poster-lightbox-close:hover,
-        .poster-lightbox-calendar:hover {
+        .poster-lightbox-calendar:hover,
+        .poster-lightbox-sound:hover {
           background: rgba(255,255,255,0.05);
           color: #fff;
           transform: scale(1.02);
@@ -4720,13 +4289,16 @@
         .poster-lightbox-close:focus,
         .poster-lightbox-close:focus-visible,
         .poster-lightbox-calendar:focus,
-        .poster-lightbox-calendar:focus-visible {
+        .poster-lightbox-calendar:focus-visible,
+        .poster-lightbox-sound:focus,
+        .poster-lightbox-sound:focus-visible {
           outline: none;
           box-shadow: none;
         }
 
         .poster-lightbox-close svg,
-        .poster-lightbox-calendar svg {
+        .poster-lightbox-calendar svg,
+        .poster-lightbox-sound svg {
           width: 22px;
           height: 22px;
           stroke: currentColor;
@@ -4737,9 +4309,12 @@
         @media (max-width: 600px) {
           .poster-lightbox { padding: 20px; }
           .poster-lightbox-close,
-          .poster-lightbox-calendar { top: 14px; width: 38px; height: 38px; }
+          .poster-lightbox-calendar,
+          .poster-lightbox-sound { top: 14px; width: 38px; height: 38px; }
           .poster-lightbox-close { right: 14px; }
+          .poster-lightbox-sound { right: 60px; }
           .poster-lightbox-calendar { right: 60px; }
+          .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 106px; }
         }
 
         /* ── Botão flutuante: ir para o topo / ir para o final ── */
@@ -9243,285 +8818,1056 @@
           animation-play-state: paused !important;
         }
 
+        .poster-lightbox-hero-rank { display: none; }
+
+        /* ── Poster lightbox desktop: pôster amplo à esquerda + ficha à direita ── */
+        @media (min-width: 761px) {
+          .poster-lightbox:not(.simple-mode) {
+            padding: 60px;
+            background: rgba(2, 3, 5, 0.72);
+            backdrop-filter: blur(16px) saturate(1.08);
+            -webkit-backdrop-filter: blur(16px) saturate(1.08);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-ambient img {
+            filter: blur(72px) saturate(1.35) brightness(0.38);
+            transform: translate(-50%, -50%) scale(1.18);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-ambient::after {
+            background:
+              linear-gradient(90deg, rgba(1,2,4,0.2) 0%, rgba(1,2,4,0.48) 58%, rgba(1,2,4,0.72) 100%),
+              radial-gradient(ellipse 92% 110% at 32% 48%, transparent 0%, rgba(0,0,0,0.5) 100%);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-figure {
+            width: calc(100vw - 120px);
+            max-width: none;
+            height: calc(100vh - 120px);
+            max-height: none;
+            align-items: stretch;
+            justify-content: center;
+            gap: 14px;
+            padding: 0;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media {
+            /* Um pouco mais larga no desktop, sem voltar ao aspecto quadrado. */
+            width: clamp(380px, calc((100vh - 180px) * 0.71), 610px);
+            height: 100%;
+            min-width: 380px;
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap {
+            flex: 1 1 0;
+            min-height: 0;
+            aspect-ratio: 2 / 3;
+            overflow: hidden;
+            border: 0;
+            border-radius: 18px;
+            background: rgba(5,7,10,0.78);
+            box-shadow: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap::before,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap::after {
+            content: "";
+            position: absolute;
+            z-index: 4;
+            pointer-events: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap::before {
+            inset: 0;
+            border-radius: inherit;
+            background:
+              radial-gradient(circle at 12% 10%, color-mix(in srgb, var(--lb-accent) 20%, transparent), transparent 30%);
+            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lb-accent) 18%, transparent);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap::after {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap > img {
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            border-radius: 0;
+            box-shadow: none;
+            object-fit: cover;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-announce {
+            z-index: 5;
+            background: rgba(10,10,10,0.22);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-announce .announce-line {
+            color: #fff;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.7);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-category {
+            margin: 13px 4px 0;
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-align: left;
+            color: rgba(255,255,255,0.5);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-watchnow {
+            margin-top: 0;
+            min-height: 54px;
+            justify-content: flex-start;
+            padding: 11px 14px;
+            border-color: rgba(255,255,255,0.1);
+            border-radius: 0 0 18px 18px;
+            background: rgba(255,255,255,0.025);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel {
+            flex: 1 1 0;
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            grid-auto-rows: max-content;
+            align-content: start;
+            column-gap: 22px;
+            row-gap: 18px;
+            width: auto;
+            min-width: 0;
+            height: 100%;
+            max-height: none;
+            gap: 18px;
+            padding: 34px 30px 30px;
+            overflow-x: hidden;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            position: relative;
+            isolation: isolate;
+            scrollbar-width: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel::before {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel::after {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank {
+            display: inline-flex;
+            align-items: baseline;
+            align-self: flex-start;
+            min-width: 0;
+            margin: 0;
+            font-family: var(--font-title);
+            font-size: clamp(46px, 4.4vw, 64px);
+            font-weight: 900;
+            line-height: 0.76;
+            letter-spacing: -0.075em;
+            color: color-mix(in srgb, var(--lb-accent) 64%, rgba(255,255,255,0.18));
+            text-shadow: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank::after {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank-hash {
+            margin-right: 1px;
+            font-size: 1em;
+            letter-spacing: -0.075em;
+            opacity: 1;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank-label {
+            font-size: 12px;
+            letter-spacing: 0.14em;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank.rank-gold { color: #d4af37; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank.rank-silver { color: #aeb4bd; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank.rank-bronze { color: #b97a56; }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-title {
+            width: 100%;
+            max-width: none;
+            min-width: 0;
+            margin: 0;
+            align-self: center;
+            font-size: clamp(27px, 2.15vw, 34px);
+            line-height: 1.12;
+            letter-spacing: -0.035em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+            padding-bottom: 0.1em;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-title::after {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-info {
+            margin-top: -8px;
+            color: rgba(255,255,255,0.58);
+            font-size: 13px;
+            letter-spacing: 0.025em;
+            grid-column: 1 / -1;
+            width: 100%;
+            justify-self: start;
+            text-align: left;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list {
+            width: 100%;
+            gap: 9px;
+            padding-bottom: 2px;
+            grid-column: 1 / -1;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-division {
+            min-height: 38px;
+            flex: 1 1 0;
+            min-width: 0;
+            justify-content: center;
+            white-space: nowrap;
+            border: 0;
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 10%, rgba(255,255,255,0.025));
+            padding: 5px 13px 5px 5px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.055), 0 8px 20px rgba(0,0,0,0.14);
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag:hover,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag:focus-visible {
+            border-bottom-color: transparent;
+            background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 16%, rgba(255,255,255,0.035));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 24px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-rank {
+            align-self: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            margin: 0 5px 0 0;
+            padding: 0 8px;
+            border-right: 0;
+            background: transparent;
+            color: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 82%, white 18%);
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: 900;
+            letter-spacing: inherit;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-rank--all {
+            color: rgba(255,255,255,0.78);
+            border-right-color: transparent;
+            background: transparent;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-rank,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-name,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-part {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transform: scaleY(1.35);
+            transform-origin: center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-content {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 5px !important;
+            width: auto !important;
+            height: 100% !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-content .list-tag-rank {
+            position: static !important;
+            inset: auto !important;
+            align-self: center !important;
+            width: auto !important;
+            min-width: 0 !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1 !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-sep {
+            display: none;
+          }
+
+          /* Watching Now + temporada (invertida): o fundo da pill usa a cor de
+             Watching Now e o texto inteiro usa a cor da temporada/divisão. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split {
+            color: var(--tag-color-2, var(--lb-accent));
+            background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 12%, rgba(255,255,255,0.025));
+            justify-content: center;
+            gap: 6px;
+            padding-left: 13px;
+            padding-right: 13px;
+            text-align: center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split .list-tag-part {
+            color: var(--tag-color-2, var(--lb-accent)) !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split .list-tag-part {
+            flex: 0 0 auto;
+            text-align: center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split:hover,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split:focus-visible {
+            background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 18%, rgba(255,255,255,0.035));
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split::after {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
+            border-radius: 15px;
+            border: 0;
+            background: rgba(255,255,255,0.055);
+            box-shadow: none;
+            grid-column: 1 / -1;
+            cursor: default;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta:hover {
+            background: rgba(255,255,255,0.055);
+            box-shadow: none;
+            transform: none;
+            cursor: default;
+          }
+
+          /* Desktop: cada célula do card de informações recebe o próprio
+            hover, sem movimentar ou iluminar o card inteiro. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
+            padding: 0;
+            overflow: hidden;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item {
+            min-height: 68px;
+            padding: 12px;
+            position: relative;
+            isolation: isolate;
+            transition: background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item:hover {
+            background: rgba(255,255,255,0.13) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.18);
+            filter: brightness(1.12);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-more-info .watch-now-links {
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-more-info .watch-now-links:hover {
+            background: rgba(255,255,255,0.13) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.18);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal {
+            border-radius: 15px;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+            grid-column: 1 / -1;
+          }
+
+          /* Todas as listas de temporadas/episódios viram um card. Quando o
+            anime também existe no My Ranks, o mesmo card recebe o cabeçalho
+            com o logo do MyAnimeList; quando não existe, fica somente o fundo
+            envolvendo as temporadas. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal:has(.rank-mal-rows) {
+            padding: 15px 18px 17px;
+            background: rgba(255,255,255,0.055);
+            box-shadow: none;
+            cursor: default;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal:has(.rank-mal-rows):hover {
+            background: rgba(255,255,255,0.09);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 24px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+            cursor: default;
+          }
+
+          /* MyRanks desktop: baixa levemente a linha "X temporada : Y episódios"
+            para ela ficar mais centralizada em relação ao pontilhado. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal:has(.rank-mal-myranks-header) .rank-mal-content {
+            transform: translateY(2px);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal-note,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal-note.tier-05,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal-note.tier-6,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal-note.tier-7,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal-note.tier-8,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal-note.tier-9,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal-note.tier-10 {
+            border: 0;
+            border-radius: 9px;
+            background: color-mix(in srgb, currentColor 10%, rgba(255,255,255,0.025));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.055), 0 8px 20px rgba(0,0,0,0.16);
+            text-shadow: none;
+            cursor: default;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal-note:not(.empty):not(.unwatched):hover {
+            background: color-mix(in srgb, currentColor 16%, rgba(255,255,255,0.035));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.075), 0 10px 24px rgba(0,0,0,0.2);
+            filter: brightness(1.08);
+            transform: translateY(-2px);
+            cursor: default;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal:not(:has(.rank-mal-myranks-header)) {
+            border: 0 !important;
+            outline: 0 !important;
+            background: transparent !important;
+            background-image: none !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-more-info {
+            grid-column: 1 / -1;
+            margin-top: 0;
+          }
+
+          /* Desktop: LINKS ABOUT fica em um cartão próprio, separado da
+             ficha de MAL Score / Studio / Year / Rewatch pelo gap do painel. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-more-info .watch-now-links {
+            min-height: 52px;
+            border: 0;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.055);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta:has(+ .poster-lightbox-more-info:not(:empty)) {
+            border-radius: 15px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-close,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-sound {
+            top: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            color: rgba(255,255,255,0.7);
+            background: rgba(5,7,10,0.28);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-close { right: 24px; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-sound { right: 76px; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar { right: 76px; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 128px; }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-close:hover,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:hover,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-sound:hover {
+            background: rgba(255,255,255,0.1);
+          }
+        }
+
+        @media (min-width: 761px) and (max-width: 1040px) {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-figure {
+            width: calc(100vw - 120px);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media {
+            width: clamp(320px, calc((100vh - 180px) * 0.625), 440px);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap > img {
+            min-height: 0;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel {
+            padding: 28px 24px 26px;
+          }
+        }
+
+        /* ── Poster lightbox mobile: adaptação direta do visual desktop ──
+           Mantém a leitura vertical própria do celular, mas usa a mesma
+           hierarquia visual do PC: pôster em destaque, rank + título, pills
+           de listas, ficha técnica segmentada e card de temporadas/notas. */
+        @media (max-width: 760px) {
+          .poster-lightbox:not(.simple-mode) {
+            align-items: flex-start;
+            padding: 70px 14px 16px;
+            background: rgba(2, 3, 5, 0.72);
+            backdrop-filter: blur(16px) saturate(1.08);
+            -webkit-backdrop-filter: blur(16px) saturate(1.08);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-ambient img {
+            filter: blur(62px) saturate(1.35) brightness(0.38);
+            transform: translate(-50%, -50%) scale(1.2);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-ambient::after {
+            background:
+              linear-gradient(180deg, rgba(1,2,4,0.18) 0%, rgba(1,2,4,0.44) 62%, rgba(1,2,4,0.68) 100%),
+              radial-gradient(ellipse 125% 95% at 50% 30%, transparent 0%, rgba(0,0,0,0.48) 100%);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-figure {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            grid-template-columns: none;
+            grid-template-areas: none;
+            gap: 18px;
+            width: 100%;
+            max-width: 460px;
+            height: calc(100dvh - 86px);
+            max-height: none;
+            margin: 0 auto;
+            padding: 0 4px 28px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-gutter: auto;
+            scrollbar-width: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-figure::-webkit-scrollbar {
+            display: none;
+            width: 0;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media {
+            display: flex;
+            flex: 0 0 auto;
+            flex-direction: column;
+            grid-area: auto;
+            align-self: center;
+            width: min(76vw, calc(46dvh * 0.6667), 320px);
+            height: auto;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap {
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            overflow: hidden;
+            border: 0;
+            border-radius: 18px;
+            background: rgba(5,7,10,0.78);
+            box-shadow: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none;
+            border-radius: inherit;
+            background: radial-gradient(circle at 12% 10%, color-mix(in srgb, var(--lb-accent) 20%, transparent), transparent 30%);
+            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lb-accent) 18%, transparent);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap::after {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-figure .poster-lightbox-media img {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: auto;
+            border-radius: 0;
+            box-shadow: none;
+            object-fit: cover;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-announce {
+            z-index: 5;
+            background: rgba(10,10,10,0.22);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-category {
+            margin: 11px 4px 0;
+            font-size: 10px;
+            letter-spacing: 0.14em;
+            text-align: left;
+            color: rgba(255,255,255,0.5);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            grid-auto-rows: max-content;
+            align-content: start;
+            align-items: center;
+            align-self: stretch;
+            column-gap: 14px;
+            row-gap: 16px;
+            width: 100%;
+            max-height: none;
+            padding: 4px 0 0;
+            overflow: visible;
+            text-align: left;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank {
+            display: inline-flex;
+            align-items: baseline;
+            min-width: 0;
+            margin: 0;
+            font-family: var(--font-title);
+            font-size: clamp(38px, 12vw, 52px);
+            font-weight: 900;
+            line-height: 0.78;
+            letter-spacing: -0.075em;
+            color: color-mix(in srgb, var(--lb-accent) 64%, rgba(255,255,255,0.18));
+            text-shadow: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank-hash {
+            margin-right: 1px;
+            font-size: 1em;
+            opacity: 1;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank-label {
+            font-size: 10px;
+            letter-spacing: 0.14em;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank.rank-gold { color: #d4af37; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank.rank-silver { color: #aeb4bd; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank.rank-bronze { color: #b97a56; }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-title {
+            grid-area: auto;
+            align-self: center;
+            width: 100%;
+            max-width: none;
+            min-width: 0;
+            margin: 0;
+            padding: 0.08em 0;
+            font-size: clamp(22px, 6.8vw, 29px);
+            line-height: 1.1;
+            letter-spacing: -0.035em;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-info {
+            grid-area: auto;
+            grid-column: 1 / -1;
+            width: 100%;
+            max-width: none;
+            margin: -6px 0 0;
+            color: rgba(255,255,255,0.58);
+            font-size: 12px;
+            line-height: 1.45;
+            letter-spacing: 0.025em;
+            text-align: left;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-info-break {
+            display: inline;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-info-break::before {
+            content: " - ";
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list {
+            grid-area: auto;
+            grid-column: 1 / -1;
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+            gap: 8px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            overflow: visible;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-list-track,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-list-group {
+            display: contents;
+            width: auto;
+            animation: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-list-group[aria-hidden="true"] {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-division {
+            min-height: 38px;
+            flex: 1 1 calc(50% - 4px);
+            min-width: 0;
+            justify-content: center;
+            white-space: nowrap;
+            border: 0;
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 10%, rgba(255,255,255,0.025));
+            padding: 5px 11px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.055), 0 8px 20px rgba(0,0,0,0.14);
+            overflow: hidden;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag:active {
+            background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 17%, rgba(255,255,255,0.035));
+            transform: scale(0.985);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-content {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 5px !important;
+            width: auto !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-rank,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-name,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-part {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transform: scaleY(1.24);
+            transform-origin: center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-rank {
+            position: static !important;
+            min-width: 0 !important;
+            width: auto !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            color: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 82%, white 18%);
+            line-height: 1 !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-rank--all {
+            color: rgba(255,255,255,0.78);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-sep {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split {
+            color: var(--tag-color-2, var(--lb-accent));
+            background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 12%, rgba(255,255,255,0.025));
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split::after {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
+            grid-area: auto;
+            grid-column: 1 / -1;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            border: 0;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.055);
+            box-shadow: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item {
+            min-width: 0;
+            min-height: 66px;
+            padding: 11px 7px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-label {
+            font-size: 9px;
+            letter-spacing: 0.07em;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-value {
+            max-width: 100%;
+            font-size: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item:active {
+            background: rgba(255,255,255,0.13);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info {
+            grid-area: auto;
+            grid-column: 1 / -1;
+            display: flex;
+            width: 100%;
+            margin: 0;
+            justify-content: center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info:empty {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info .watch-now-links {
+            min-height: 52px;
+            border: 0;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.055);
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta:has(+ .poster-lightbox-more-info:not(:empty)) {
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal {
+            grid-area: auto;
+            grid-column: 1 / -1;
+            display: flex;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            gap: 11px;
+            border: 0;
+            border-radius: 15px;
+            background: transparent;
+            box-shadow: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal:has(.rank-mal-rows) {
+            padding: 15px 14px 17px;
+            background: rgba(255,255,255,0.055);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal:has(.rank-mal-rows):active {
+            background: rgba(255,255,255,0.09);
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-mal-rows {
+            row-gap: 12px;
+            padding: 0;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-mal-mal-row {
+            margin-bottom: 0;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-mal-myranks-logo .mal-btn-logo {
+            height: 20px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-mal-note,
+          .poster-lightbox:not(.simple-mode) .rank-mal-note.tier-05,
+          .poster-lightbox:not(.simple-mode) .rank-mal-note.tier-6,
+          .poster-lightbox:not(.simple-mode) .rank-mal-note.tier-7,
+          .poster-lightbox:not(.simple-mode) .rank-mal-note.tier-8,
+          .poster-lightbox:not(.simple-mode) .rank-mal-note.tier-9,
+          .poster-lightbox:not(.simple-mode) .rank-mal-note.tier-10 {
+            border: 0;
+            border-radius: 9px;
+            background: color-mix(in srgb, currentColor 10%, rgba(255,255,255,0.025));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.055), 0 8px 20px rgba(0,0,0,0.16);
+            text-shadow: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-close,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-sound {
+            top: 14px;
+            width: 40px;
+            height: 40px;
+            border-radius: 13px;
+            color: rgba(255,255,255,0.74);
+            background: rgba(5,7,10,0.3);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-close { right: 14px; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-sound { right: 62px; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar { right: 62px; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 110px; }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-close:active,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:active,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-sound:active {
+            background: rgba(255,255,255,0.12);
+            transform: scale(0.96);
+          }
+        }
+
+        /* Mobile: pôster à esquerda; posição, nome e episódios à direita. */
+        @media (max-width: 760px) {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-figure {
+            display: grid !important;
+            grid-template-columns: minmax(126px, 41%) minmax(0, 1fr);
+            grid-template-areas:
+              "media title"
+              "media info"
+              "list list"
+              "meta meta"
+              "moreinfo moreinfo"
+              "mal mal";
+            grid-template-rows: repeat(6, max-content);
+            column-gap: 11px;
+            row-gap: 16px;
+            align-items: start;
+            padding-left: 2px;
+            padding-right: 2px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel {
+            display: contents !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media {
+            grid-area: media;
+            align-self: start;
+            width: 100%;
+            max-width: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap {
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            border-radius: 16px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-hero-rank {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-title {
+            grid-area: title;
+            align-self: end;
+            padding: 0 0 1px;
+            font-size: clamp(19px, 5.7vw, 25px);
+            line-height: 1.08;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            max-height: 3.24em;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          /* Filmes e especiais curtos não reservam mais 70% da linha.
+             A caixa encolhe até o fim do texto/episódios e o pontilhado
+             começa logo depois; 70% continua sendo apenas o limite máximo
+             para nomes realmente grandes. */
+          .poster-lightbox:not(.simple-mode) .rank-mal-row.rank-mal-row-break .rank-mal-content {
+            flex: 0 1 auto;
+            width: auto;
+            max-width: 70%;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-info {
+            grid-area: info;
+            align-self: start;
+            margin: 5px 0 0;
+            font-size: 11.5px;
+            line-height: 1.45;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list {
+            grid-area: list;
+          }
+
+          /* Nas tags combinadas, o mobile mostra apenas a informação útil:
+             temporada, "Watching Now" nos não sazonais, ou "On Hold". */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split .list-tag-part {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split::before {
+            content: attr(data-mobile-label);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--tag-color-2, var(--lb-accent));
+            transform: scaleY(1.24);
+            transform-origin: center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
+            grid-area: meta;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info {
+            grid-area: moreinfo;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal {
+            grid-area: mal;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-category {
+            margin-top: 9px;
+            font-size: 9px;
+            text-align: center;
+          }
+        }
+
 </style>
 
     </head>
 
     <body>
-      <div class="site-auth-gate" id="siteAuthGate">
-        <div class="site-auth-desktop-carousel" aria-hidden="true">
-          <div class="search-marquee-row search-marquee-row-right"><div class="search-marquee-track" id="siteAuthMarqueeRight"></div></div>
-          <div class="search-marquee-row search-marquee-row-left"><div class="search-marquee-track" id="siteAuthMarqueeLeft"></div></div>
-          <div class="search-marquee-row search-marquee-row-right"><div class="search-marquee-track" id="siteAuthMarqueeRight2"></div></div>
-          <div class="search-marquee-row search-marquee-row-left site-auth-marquee-mobile-fourth"><div class="search-marquee-track" id="siteAuthMarqueeLeft2"></div></div>
-        </div>
-        <form class="site-auth-box" id="siteAuthForm" autocomplete="off">
-          <div class="site-auth-desktop-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path><path d="M12 14v3"></path></svg>
-          </div>
-          <h1 class="site-auth-title">Enter access sequence</h1>
-          <p class="site-auth-description">Enter your 30-digit passkey to open the archive.<br>This device stays trusted for 3 days.</p>
-          <p class="site-auth-mobile-label">ENTER PASSWORD</p>
-          <div class="site-auth-pin-display" id="siteAuthPinDisplay" aria-hidden="true"></div>
-          <input class="site-auth-input" id="siteAuthInput" type="password" inputmode="numeric" maxlength="30" pattern="[0-9]{30}" placeholder="••••••••••••••••••••••••••••••" aria-label="Senha" required autofocus>
-          <div class="site-auth-desktop-code" id="siteAuthDesktopCode" aria-label="Código de acesso com 30 dígitos"></div>
-          <span class="site-auth-desktop-counter" id="siteAuthDesktopCounter">0 / 30</span>
-          <button class="site-auth-submit" id="siteAuthSubmit" type="submit">ENTER</button>
-          <div class="site-auth-keypad" id="siteAuthKeypad" aria-label="Teclado numérico">
-            <button class="site-auth-key" type="button" data-auth-digit="1">1</button>
-            <button class="site-auth-key" type="button" data-auth-digit="2">2</button>
-            <button class="site-auth-key" type="button" data-auth-digit="3">3</button>
-            <button class="site-auth-key" type="button" data-auth-digit="4">4</button>
-            <button class="site-auth-key" type="button" data-auth-digit="5">5</button>
-            <button class="site-auth-key" type="button" data-auth-digit="6">6</button>
-            <button class="site-auth-key" type="button" data-auth-digit="7">7</button>
-            <button class="site-auth-key" type="button" data-auth-digit="8">8</button>
-            <button class="site-auth-key" type="button" data-auth-digit="9">9</button>
-            <button class="site-auth-key site-auth-key--action site-auth-key--delete" id="siteAuthDelete" type="button" aria-label="Apagar">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.12c.36.53.9.88 1.59.88h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2Zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59Z"></path></svg>
-            </button>
-            <button class="site-auth-key" type="button" data-auth-digit="0">0</button>
-            <button class="site-auth-key site-auth-key--action" id="siteAuthOk" type="button">OK</button>
-          </div>
-          <p class="site-auth-error" id="siteAuthError" aria-live="polite"></p>
-        </form>
-      </div>
-      <script>
-        (function () {
-          const form = document.getElementById('siteAuthForm');
-          const input = document.getElementById('siteAuthInput');
-          const submit = document.getElementById('siteAuthSubmit');
-          const error = document.getElementById('siteAuthError');
-          const gate = document.getElementById('siteAuthGate');
-          const pinDisplay = document.getElementById('siteAuthPinDisplay');
-          const desktopCounter = document.getElementById('siteAuthDesktopCounter');
-          const desktopCode = document.getElementById('siteAuthDesktopCode');
-          const keypad = document.getElementById('siteAuthKeypad');
-          const deleteKey = document.getElementById('siteAuthDelete');
-          const okKey = document.getElementById('siteAuthOk');
-          const AUTH_KEY = 'myhtml_access_until_v1';
-          const PASSWORD_HASH = '34d8b1925931d2de3b1f360cb6d68ebb1a639d0b59fdbd526e6c6d9d21cd3fa4';
-          const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-          let isChecking = false;
-          let pinMaskTimer = null;
-          let desktopMaskTimer = null;
-          let windowsKeyArmedUntil = 0;
-
-          function lockSiteNow() {
-            try {
-              localStorage.removeItem(AUTH_KEY);
-            } catch (e) {}
-
-            isChecking = false;
-            submit.disabled = false;
-            input.value = '';
-            if (gate) gate.classList.remove('is-unlocking');
-            document.documentElement.classList.remove('site-auth-ok');
-            document.documentElement.classList.add('site-auth-locked');
-            clearAuthError();
-            updateDesktopCounter(false);
-            renderMobilePin(false);
-
-            requestAnimationFrame(() => {
-              if (window.matchMedia('(min-width: 601px)').matches) input.focus();
-            });
-          }
-
-          /* O Windows normalmente captura Win+L antes que o navegador receba
-             o "L". Por isso usamos dois caminhos: a combinação direta, quando
-             ela chega ao site, e a ocultação da página logo após a tecla Win. */
-          window.addEventListener('keydown', function (event) {
-            const key = String(event.key || '').toLowerCase();
-            if (key === 'meta' || key === 'os' || event.code === 'MetaLeft' || event.code === 'MetaRight') {
-              windowsKeyArmedUntil = Date.now() + 2500;
-            }
-
-            if ((event.metaKey || Date.now() <= windowsKeyArmedUntil) && (key === 'l' || event.code === 'KeyL')) {
-              lockSiteNow();
-            }
-          }, true);
-
-          document.addEventListener('visibilitychange', function () {
-            if (document.hidden && Date.now() <= windowsKeyArmedUntil) {
-              lockSiteNow();
-              windowsKeyArmedUntil = 0;
-            }
-          });
-
-          function renderMobilePin(revealLast) {
-            if (!pinDisplay) return;
-            const digits = input.value.split('');
-            pinDisplay.innerHTML = digits.map((digit, index) => {
-              const showDigit = revealLast && index === digits.length - 1;
-              return `<span class="site-auth-pin-char${showDigit ? '' : ' is-dot'}">${showDigit ? digit : '•'}</span>`;
-            }).join('');
-            clearTimeout(pinMaskTimer);
-            if (revealLast && digits.length) {
-              pinMaskTimer = setTimeout(() => renderMobilePin(false), 520);
-            }
-          }
-
-          function clearAuthError() {
-            input.classList.remove('is-error');
-            if (pinDisplay) pinDisplay.classList.remove('is-error');
-            if (desktopCode) desktopCode.classList.remove('is-error');
-            error.classList.remove('is-visible');
-            error.textContent = '';
-          }
-
-          function showAuthError(message) {
-            input.classList.remove('is-error');
-            void input.offsetWidth;
-            input.classList.add('is-error');
-            if (pinDisplay) {
-              pinDisplay.classList.remove('is-error');
-              void pinDisplay.offsetWidth;
-              pinDisplay.classList.add('is-error');
-            }
-            if (desktopCode && window.matchMedia('(min-width: 601px)').matches) {
-              desktopCode.classList.remove('is-error');
-              void desktopCode.offsetWidth;
-              desktopCode.classList.add('is-error');
-            }
-            error.textContent = message;
-            error.classList.add('is-visible');
-          }
-
-          function pulseDigits() {
-            const target = window.matchMedia('(max-width: 600px)').matches && pinDisplay ? pinDisplay : input;
-            target.classList.remove('digit-pulse');
-            void target.offsetWidth;
-            target.classList.add('digit-pulse');
-          }
-
-          function updateDesktopCounter(revealLast = false) {
-            if (desktopCounter) desktopCounter.textContent = `${input.value.length} / 30`;
-            if (desktopCode) {
-              const length = input.value.length;
-              desktopCode.innerHTML = Array.from({ length: 30 }, (_, index) => {
-                const filled = index < length;
-                const current = index === length && length < 30;
-                const newest = filled && index === length - 1;
-                const showDigit = revealLast && newest;
-                return `<span class="site-auth-code-slot${filled ? ' is-filled' : ''}${newest ? ' is-new' : ''}${current ? ' is-current' : ''}">${filled ? (showDigit ? input.value[index] : '•') : ''}</span>`;
-              }).join('');
-              clearTimeout(desktopMaskTimer);
-              if (revealLast && length) desktopMaskTimer = setTimeout(() => updateDesktopCounter(false), 520);
-            }
-          }
-
-          if (desktopCode) desktopCode.addEventListener('click', () => input.focus());
-          updateDesktopCounter();
-
-          async function sha256(value) {
-            const bytes = new TextEncoder().encode(value);
-            const hash = await crypto.subtle.digest('SHA-256', bytes);
-            return Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('');
-          }
-
-          form.addEventListener('submit', async function (event) {
-            event.preventDefault();
-            if (isChecking) return;
-            isChecking = true;
-            const value = input.value.replace(/\s+/g, '');
-            clearAuthError();
-            submit.disabled = true;
-
-            try {
-              const matches = value.length === 30 && await sha256(value) === PASSWORD_HASH;
-              if (!matches) {
-                showAuthError('That password doesn’t match. Try again');
-                input.select();
-                return;
-              }
-
-              localStorage.setItem(AUTH_KEY, String(Date.now() + THREE_DAYS_MS));
-              if (gate) gate.classList.add('is-unlocking');
-              setTimeout(() => {
-                document.documentElement.classList.remove('site-auth-locked');
-                document.documentElement.classList.add('site-auth-ok');
-                input.value = '';
-              }, 280);
-            } catch (e) {
-              showAuthError('Couldn’t verify the password. Please try again.');
-            } finally {
-              isChecking = false;
-              submit.disabled = false;
-            }
-          });
-
-          input.addEventListener('input', function () {
-            input.value = input.value.replace(/\D/g, '').slice(0, 30);
-            updateDesktopCounter(true);
-            clearAuthError();
-            pulseDigits();
-            if (input.value.length === 30) form.requestSubmit();
-          });
-
-          if (window.matchMedia('(max-width: 600px)').matches) {
-            input.readOnly = true;
-            input.removeAttribute('autofocus');
-          }
-
-          if (keypad) {
-            keypad.querySelectorAll('[data-auth-digit]').forEach(key => {
-              key.addEventListener('animationend', function (event) {
-                if (event.animationName === 'siteAuthKeyIn') key.classList.add('is-ready');
-              }, { once: true });
-              key.addEventListener('click', function () {
-                if (input.value.length >= 30) return;
-                input.value += key.getAttribute('data-auth-digit');
-                updateDesktopCounter();
-                clearAuthError();
-                renderMobilePin(true);
-                pulseDigits();
-                key.classList.add('key-pop');
-                setTimeout(() => key.classList.remove('key-pop'), 120);
-                if (input.value.length === 30) form.requestSubmit();
-              });
-            });
-          }
-
-          if (deleteKey) {
-            let holdTimer = null;
-            let clearedByHold = false;
-
-            deleteKey.addEventListener('pointerdown', function (event) {
-              event.preventDefault();
-              clearedByHold = false;
-              clearTimeout(holdTimer);
-              holdTimer = setTimeout(() => {
-                input.value = '';
-                updateDesktopCounter();
-                clearAuthError();
-                renderMobilePin(false);
-                pulseDigits();
-                deleteKey.classList.add('is-held');
-                clearedByHold = true;
-              }, 520);
-            });
-
-            deleteKey.addEventListener('pointerup', function () {
-              clearTimeout(holdTimer);
-              deleteKey.classList.remove('is-held');
-              if (!clearedByHold) input.value = input.value.slice(0, -1);
-              updateDesktopCounter();
-              clearAuthError();
-              renderMobilePin(false);
-              pulseDigits();
-            });
-
-            deleteKey.addEventListener('pointercancel', function () {
-              clearTimeout(holdTimer);
-              deleteKey.classList.remove('is-held');
-            });
-
-            deleteKey.addEventListener('click', event => event.preventDefault());
-          }
-
-          if (okKey) okKey.addEventListener('click', () => form.requestSubmit());
-        })();
-      </script>
       <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
       <aside class="category-drawer" id="categoryDrawer" aria-hidden="true">
@@ -9862,6 +10208,18 @@
             <path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path>
           </svg>
         </button>
+        <button type="button" class="poster-lightbox-sound" id="posterLightboxSound" aria-label="Silenciar efeitos sonoros" title="Silenciar efeitos sonoros (M)" aria-pressed="false">
+          <svg class="poster-lightbox-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+            <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+            <path d="M18 6a8.5 8.5 0 0 1 0 12"></path>
+          </svg>
+          <svg class="poster-lightbox-sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+            <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+            <path d="m16 9 5 5"></path>
+            <path d="m21 9-5 5"></path>
+          </svg>
+        </button>
         <button type="button" class="poster-lightbox-close" id="posterLightboxClose" aria-label="Fechar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M18 6 6 18"></path>
@@ -9881,11 +10239,12 @@
           <div id="posterLightboxSimpleCategory" class="poster-lightbox-simple-category"></div>
           <div id="posterLightboxSimpleLink" class="poster-lightbox-simple-link"></div>
           <div class="poster-lightbox-panel">
+            <div id="posterLightboxHeroRank" class="poster-lightbox-hero-rank" aria-hidden="true"></div>
             <figcaption id="posterLightboxTitle" class="poster-lightbox-title"></figcaption>
             <div id="posterLightboxInfo" class="poster-lightbox-info"></div>
             <div id="posterLightboxList" class="poster-lightbox-list"></div>
-            <div id="posterLightboxMoreInfo" class="poster-lightbox-more-info"></div>
             <div id="posterLightboxMeta" class="rank-meta"></div>
+            <div id="posterLightboxMoreInfo" class="poster-lightbox-more-info"></div>
             <div id="posterLightboxMal" class="rank-mal"></div>
             <!-- Sistema de notas (estrelas) desativado do site por enquanto.
                 O código continua funcionando por baixo (JS intacto), só não
@@ -9994,6 +10353,7 @@
             const lightbox = document.getElementById('posterLightbox');
             const lightboxAmbient = document.getElementById('posterLightboxAmbient');
             const lightboxImg = document.getElementById('posterLightboxImg');
+            const lightboxHeroRank = document.getElementById('posterLightboxHeroRank');
             const lightboxTitle = document.getElementById('posterLightboxTitle');
             const lightboxList = document.getElementById('posterLightboxList');
             const lightboxAnnounce = document.getElementById('posterLightboxAnnounce');
@@ -10008,6 +10368,7 @@
             const lightboxSimpleCaption = document.getElementById('posterLightboxSimpleCaption');
             const lightboxSimpleLink = document.getElementById('posterLightboxSimpleLink');
             const calendarBtn = document.getElementById('posterLightboxCalendar');
+            const soundBtn = document.getElementById('posterLightboxSound');
             const closeBtn = document.getElementById('posterLightboxClose');
             if (!lightbox || !lightboxImg || !closeBtn) return;
 
@@ -10065,6 +10426,44 @@
             const onePieceSound = new Audio('assets/sound-effects/luffy-haki.mp3');
             onePieceSound.loop = false;
             const ONE_PIECE_IDS = ['one-piece'];
+
+            // ── Controle global e persistente dos efeitos do poster lightbox ──
+            const POSTER_SOUND_MUTED_KEY = 'posterLightboxSoundMuted';
+            const posterSoundEffects = [rezeroSound, jjkSound, aotSound, onePieceSound];
+            let posterSoundMuted = false;
+            try {
+              posterSoundMuted = localStorage.getItem(POSTER_SOUND_MUTED_KEY) === 'true';
+            } catch (e) {}
+
+            function itemHasPosterSound(item) {
+              if (!item || !item.id) return false;
+              return REZERO_IDS.includes(item.id)
+                || JJK_IDS.includes(item.id)
+                || AOT_IDS.includes(item.id)
+                || ONE_PIECE_IDS.includes(item.id);
+            }
+
+            function updatePosterSoundButton() {
+              posterSoundEffects.forEach(audio => { audio.muted = posterSoundMuted; });
+              if (!soundBtn) return;
+              const soundOnIcon = soundBtn.querySelector('.poster-lightbox-sound-on');
+              const soundOffIcon = soundBtn.querySelector('.poster-lightbox-sound-off');
+              if (soundOnIcon) soundOnIcon.style.display = posterSoundMuted ? 'none' : '';
+              if (soundOffIcon) soundOffIcon.style.display = posterSoundMuted ? '' : 'none';
+              soundBtn.setAttribute('aria-pressed', posterSoundMuted ? 'true' : 'false');
+              soundBtn.setAttribute('aria-label', posterSoundMuted ? 'Ativar efeitos sonoros' : 'Silenciar efeitos sonoros');
+              soundBtn.title = posterSoundMuted ? 'Ativar efeitos sonoros (M)' : 'Silenciar efeitos sonoros (M)';
+            }
+
+            function togglePosterSound() {
+              posterSoundMuted = !posterSoundMuted;
+              try {
+                localStorage.setItem(POSTER_SOUND_MUTED_KEY, String(posterSoundMuted));
+              } catch (e) {}
+              updatePosterSoundButton();
+            }
+
+            updatePosterSoundButton();
 
             // ── Fade-out suave para os sound effects (usado ao fechar o lightbox) ──
             const _audioFadeTimers = new WeakMap();
@@ -10566,7 +10965,7 @@
                     buildNetflixButtonHtml(netflixUrl),
                     buildWatchNowMalButtonHtml(watchNowMalUrl),
                   ].filter(Boolean)
-                : [buildMalLinksAboutButtonHtml(buildMalProfileSearchUrl(item))].filter(Boolean);
+                : [];
               let watchNowButtonsHtml = '';
               if (allWatchNowBtnsHtml.length) {
                 const [firstWatchNowBtnHtml, ...restWatchNowBtnsHtml] = allWatchNowBtnsHtml;
@@ -10794,21 +11193,45 @@
                 rowsHtml = rowEntries.map(r => r.html).join('');
               }
 
-              // No "Watching Now", troca o link do logo do MAL (que aponta pra
-              // lista pessoal filtrada) pelos botões de Anime-Planet/
-              // Crunchyroll/MAL do próprio card, que já cumprem esse papel de
-              // acesso rápido — evita repetir dois blocos de link do MAL.
+              // No Watching Now/Plan to Watch, o logo do MyAnimeList aparece
+              // no bloco de temporadas somente quando o anime também possui
+              // uma entrada real no My Ranks. Entradas montadas apenas pelo
+              // fallback de "seasons" recebem o mesmo fundo, mas sem o logo.
               if (isWatchingNow) {
-                lightboxMal.innerHTML = `<div class="rank-mal-rows">${rowsHtml}</div>`;
+                const hasMyRanksEntry = !!(item && Array.isArray(item.mal) && item.mal.length);
+                let watchingMyRanksHeaderHtml = '';
+                if (hasMyRanksEntry) {
+                  const watchingMyRanksMalUrl = buildMalProfileSearchUrl(item);
+                  const watchingMalNameCount = entries.reduce((count, entry) => {
+                    const name = entry && typeof entry.malName === 'string' ? entry.malName.trim() : '';
+                    return count + (name ? 1 : 0);
+                  }, 0);
+                  const watchingToggleAllHtml = watchingMalNameCount > 1
+                    ? `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar todos os nomes das temporadas no MyAnimeList" title="Mostrar todos os nomes">${MAL_NAME_ARROW_SVG}</button>`
+                    : '';
+                  watchingMyRanksHeaderHtml = watchingMyRanksMalUrl
+                    ? `<div class="rank-mal-myranks-header"><a class="rank-mal-label rank-mal-label--mal rank-mal-myranks-logo" href="${watchingMyRanksMalUrl}" target="_blank" rel="noopener" aria-label="Abrir no MyAnimeList"><img class="mal-btn-logo" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async"></a>${watchingToggleAllHtml}</div>`
+                    : '';
+                }
+                lightboxMal.innerHTML = `${watchingMyRanksHeaderHtml}<div class="rank-mal-rows">${rowsHtml}</div>`;
                 return;
               }
 
-              // O botão "LINKS ABOUT" do MyAnimeList já foi montado lá em
-              // cima (ver "allWatchNowBtnsHtml") e enviado pras cópias
-              // embaixo da imagem (desktop) / acima do Studio (mobile) — ver
-              // "lightboxMediaWatchNow"/"lightboxMoreInfo". Aqui no painel
-              // sobra só as notas por temporada.
-              lightboxMal.innerHTML = `<div class="rank-mal-rows">${rowsHtml}</div>`;
+              // No myranks, o antigo "LINKS ABOUT" some. O logo do
+              // MyAnimeList fica diretamente acima das notas por temporada e
+              // continua clicável, levando para a lista pessoal filtrada pelo anime.
+              const myRanksMalUrl = buildMalProfileSearchUrl(item);
+              const malNameCount = entries.reduce((count, entry) => {
+                const name = entry && typeof entry.malName === 'string' ? entry.malName.trim() : '';
+                return count + (name ? 1 : 0);
+              }, 0);
+              const toggleAllMalNamesHtml = malNameCount > 1
+                ? `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar todos os nomes das temporadas no MyAnimeList" title="Mostrar todos os nomes">${MAL_NAME_ARROW_SVG}</button>`
+                : '';
+              const myRanksMalHeaderHtml = myRanksMalUrl
+                ? `<div class="rank-mal-myranks-header"><a class="rank-mal-label rank-mal-label--mal rank-mal-myranks-logo" href="${myRanksMalUrl}" target="_blank" rel="noopener" aria-label="Abrir no MyAnimeList"><img class="mal-btn-logo" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async"></a>${toggleAllMalNamesHtml}</div>`
+                : '';
+              lightboxMal.innerHTML = `${myRanksMalHeaderHtml}<div class="rank-mal-rows">${rowsHtml}</div>`;
             }
 
             function loadAllRatings() {
@@ -11160,9 +11583,26 @@
                   tags.push({ key, label, color: CATEGORY_HOVER_COLOR[key] });
                 }
               });
-              // "Watching Now" sempre aparece primeiro entre as tags, quando
-              // presente — as demais mantêm a ordem em que foram adicionadas.
-              tags.sort((a, b) => (a.key === 'watching' ? -1 : 0) - (b.key === 'watching' ? -1 : 0));
+              // Ordem fixa das tags no poster lightbox:
+              // All Animes -> rankings secundários -> Peak Episodes ->
+              // Watching Now -> Announced Sequels -> Incomplete.
+              // Plan to Watch fica depois dessas categorias, caso também exista.
+              const LIGHTBOX_TAG_ORDER = {
+                all: 0,
+                romance: 10,
+                isekai: 10,
+                sports: 10,
+                mecha: 10,
+                comedy: 10,
+                favEpisodes: 20,
+                watching: 30,
+                announced: 40,
+                incomplete: 50,
+                plan: 60
+              };
+              tags.sort((a, b) =>
+                (LIGHTBOX_TAG_ORDER[a.key] ?? 999) - (LIGHTBOX_TAG_ORDER[b.key] ?? 999)
+              );
               return tags;
             }
 
@@ -11262,6 +11702,22 @@
               lightbox.classList.toggle('plan-to-watch-mode', isPlanToWatch);
               lightbox.classList.remove('plan-to-watch-carousel');
 
+              const lightboxDivision = getDivisionInfo(item);
+              const lightboxAccent = (lightboxDivision && lightboxDivision.color)
+                || CATEGORY_HOVER_COLOR[currentCategory]
+                || '#cbd5e1';
+              lightbox.style.setProperty('--lb-accent', lightboxAccent);
+              lightbox.style.setProperty('--lb-poster', `url("${String(src).replace(/"/g, '\\"')}")`);
+              if (lightboxHeroRank) {
+                // Watching Now / Plan to Watch / Incomplete / Announced usam apenas
+                // a posição (01, 02, 03...), igual aos cards: sem # e sem Top 3 colorido.
+                const plainNumberRank = ['watching', 'plan', 'incomplete', 'announced'].includes(currentCategory);
+                lightboxHeroRank.className = `poster-lightbox-hero-rank${plainNumberRank ? '' : searchRankBadgeClass(rankPos)}`;
+                lightboxHeroRank.innerHTML = rankPos != null
+                  ? `${plainNumberRank ? '' : '<span class="poster-lightbox-hero-rank-hash">#</span>'}<span>${String(rankPos).padStart(2, '0')}</span>`
+                  : `<span class="poster-lightbox-hero-rank-label">${escapeHtml(CATEGORY_LABEL[currentCategory] || 'ANIME')}</span>`;
+              }
+
               if (lightboxSimpleLink) {
                 lightboxSimpleLink.innerHTML = '';
               }
@@ -11276,9 +11732,20 @@
                 if (lightboxMediaCategory) lightboxMediaCategory.innerHTML = '';
               }
               if (lightboxSimpleCaption) {
+                const plainNumberRank = ['watching', 'plan', 'incomplete', 'announced'].includes(currentCategory);
                 lightboxSimpleCaption.innerHTML =
-                  (rankPos != null ? `<span class="poster-lightbox-rank">#${rankPos}</span>` : '') +
+                  (rankPos != null ? `<span class="poster-lightbox-rank">${plainNumberRank ? '' : '#'}${String(rankPos).padStart(2, '0')}</span>` : '') +
                   `<span class="poster-lightbox-simple-title">${escapeHtml(title)}</span>`;
+              }
+
+              // O botão de volume só existe visualmente nos pôsteres que têm
+              // efeito sonoro. O estado mudo, porém, é compartilhado por todos.
+              if (soundBtn) {
+                const hasSoundEffect = itemHasPosterSound(item);
+                soundBtn.classList.toggle('visible', hasSoundEffect);
+                soundBtn.setAttribute('aria-hidden', hasSoundEffect ? 'false' : 'true');
+                soundBtn.tabIndex = hasSoundEffect ? 0 : -1;
+                updatePosterSoundButton();
               }
 
               const wasRezero = currentItem && REZERO_IDS.includes(currentItem.id);
@@ -11378,8 +11845,21 @@
                 // botão "Watching Now: <divisão>" (cada metade com sua cor),
                 // que leva direto pro card correspondente.
                 const isUnwatchedDivision = division && (division.text === ANNOUNCED_GROUP_LABELS.watching.text || division.text === ANNOUNCED_GROUP_LABELS.planning.text);
-                let watchingEntry = null;
-                if (isUnwatchedDivision) {
+
+                // Se o mesmo ID também existe em Watching Now, a tag "Watching Now"
+                // sempre carrega junto a temporada real dessa entrada, inclusive
+                // quando o lightbox foi aberto pelo MyRanks. Assim, em vez de só
+                // "WATCHING NOW", aparece por exemplo
+                // "WATCHING NOW: SUMMER SEASON 2026", com o mesmo visual usado
+                // no próprio poster lightbox do Watching Now.
+                const watchingTag = tags.find(t => t.key === 'watching');
+                let watchingEntry = watchingTag
+                  ? watchingData.find(a => a.id === item.id)
+                  : null;
+
+                // Mantém o fallback por título no caso especial de Announced
+                // Sequels, onde entradas antigas podem não compartilhar o ID.
+                if (!watchingEntry && isUnwatchedDivision) {
                   watchingEntry = watchingData.find(a => a.id === item.id)
                     || watchingData.find(a => a.title === title);
                 }
@@ -11387,42 +11867,65 @@
                 let mergedWatchingTagHtml = '';
                 let effectiveTags = tags;
                 if (watchingEntry) {
-                  // A tag "watching" avulsa (se existir) vira redundante — a
-                  // versão combinada abaixo já cobre essa informação.
                   effectiveTags = tags.filter(t => t.key !== 'watching');
                   const seasonKey = watchingEntry.season || null;
                   const seasonLabel = seasonKey
                     ? (WATCHING_SEASON_LABELS[seasonKey] || { text: seasonKey, color: 'var(--muted)' })
                     : WATCHING_NO_SEASON_LABEL;
-                  const watchingColor = CATEGORY_HOVER_COLOR.watching || 'var(--glow-accent)';
+                  const watchingColor = (watchingTag && watchingTag.color) || CATEGORY_HOVER_COLOR.watching || 'var(--glow-accent)';
                   const seasonColor = seasonLabel.color || 'var(--glow-accent)';
-                  mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(watchingEntry.id)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-part" style="color:${watchingColor}">Watching Now:</span><span class="list-tag-part" style="color:${seasonColor}">${escapeHtml(seasonLabel.text)}</span></button>`;
-                } else {
-                  // Quando o próprio item já é o card do "Watching Now" (aberto
-                  // direto dessa lista) e tem uma divisão de temporada acima
-                  // dele (ex: "Spring Season 2026"), funde a tag "Watching Now"
-                  // com essa divisão no mesmo estilo usado acima — vira um
-                  // único botão "Watching Now: <temporada>", igual ao efeito do
-                  // "Announced Sequels", em vez de duas tags separadas.
-                  const watchingTag = tags.find(t => t.key === 'watching');
-                  if (watchingTag && division && !hideDivision) {
-                    effectiveTags = tags.filter(t => t.key !== 'watching');
-                    const watchingColor = watchingTag.color || CATEGORY_HOVER_COLOR.watching || 'var(--glow-accent)';
-                    const seasonColor = division.color || 'var(--glow-accent)';
-                    mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(item.id)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-part" style="color:${watchingColor}">Watching Now:</span><span class="list-tag-part" style="color:${seasonColor}">${escapeHtml(division.text)}</span></button>`;
-                  }
+                  const mobileWatchingLabel = !seasonKey || String(seasonLabel.text).trim().toLowerCase() === 'non-seasonal anime'
+                    ? 'Watching Now'
+                    : seasonLabel.text;
+                  mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(watchingEntry.id)}" data-mobile-label="${escapeHtml(mobileWatchingLabel)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-part">Watching Now:</span><span class="list-tag-part">${escapeHtml(seasonLabel.text)}</span></button>`;
+                } else if (watchingTag && division && !hideDivision) {
+                  // Fallback para o card aberto diretamente em Watching Now caso
+                  // a entrada não seja encontrada no array por algum motivo.
+                  effectiveTags = tags.filter(t => t.key !== 'watching');
+                  const watchingColor = watchingTag.color || CATEGORY_HOVER_COLOR.watching || 'var(--glow-accent)';
+                  const seasonColor = division.color || 'var(--glow-accent)';
+                  const divisionText = String(division.text || '').trim();
+                  const mobileWatchingLabel = divisionText.toLowerCase() === 'non-seasonal anime'
+                    ? 'Watching Now'
+                    : divisionText;
+                  mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(item.id)}" data-mobile-label="${escapeHtml(mobileWatchingLabel)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-part">Watching Now:</span><span class="list-tag-part">${escapeHtml(division.text)}</span></button>`;
                 }
 
-                const restTagsHtml = effectiveTags
-                  .map(t => `<button type="button" class="list-tag" data-mode="${t.key}" data-target-id="${escapeHtml(t.targetId || item.id)}" style="--tag-color:${t.color || 'var(--glow-accent)'}">${t.position != null ? `<span class="list-tag-rank${t.key === 'all' ? ' list-tag-rank--all' : ''}">#${t.position}</span>` : ''}${escapeHtml(t.label)}</button>`)
-                  .join('<span class="list-sep"></span>');
+                const tagToHtml = t => `<button type="button" class="list-tag" data-mode="${t.key}" data-target-id="${escapeHtml(t.targetId || item.id)}" style="--tag-color:${t.color || 'var(--glow-accent)'}"><span class="list-tag-content">${t.position != null ? `<span class="list-tag-rank${t.key === 'all' ? ' list-tag-rank--all' : ''}">#${t.position}</span>` : ''}<span class="list-tag-name">${escapeHtml(t.label)}</span></span></button>`;
 
-                const tagsHtml = mergedWatchingTagHtml
-                  ? mergedWatchingTagHtml + (restTagsHtml ? '<span class="list-sep"></span>' + restTagsHtml : '')
-                  : restTagsHtml;
+                // O Watching Now mesclado com a temporada precisa respeitar a mesma
+                // hierarquia das outras tags, em vez de ser forçado para o início.
+                // Esta tabela fica local a este bloco porque LIGHTBOX_TAG_ORDER,
+                // usado na coleta das tags, pertence ao escopo daquela função.
+                const renderedLightboxTagOrder = {
+                  all: 0,
+                  romance: 10,
+                  isekai: 10,
+                  sports: 10,
+                  mecha: 10,
+                  comedy: 10,
+                  favEpisodes: 20,
+                  watching: 30,
+                  announced: 40,
+                  incomplete: 50,
+                  plan: 60
+                };
+                const watchingOrder = renderedLightboxTagOrder.watching;
+                const beforeWatching = effectiveTags.filter(t =>
+                  (renderedLightboxTagOrder[t.key] ?? 999) < watchingOrder
+                );
+                const afterWatching = effectiveTags.filter(t =>
+                  (renderedLightboxTagOrder[t.key] ?? 999) >= watchingOrder
+                );
+                const orderedTagParts = [
+                  ...beforeWatching.map(tagToHtml),
+                  ...(mergedWatchingTagHtml ? [mergedWatchingTagHtml] : []),
+                  ...afterWatching.map(tagToHtml)
+                ];
+                const tagsHtml = orderedTagParts.join('<span class="list-sep"></span>');
 
                 const divisionHtml = (division && !hideDivision && !isUnwatchedDivision && !watchingEntry && !mergedWatchingTagHtml)
-                  ? `<span class="list-sep"></span><span class="list-division">${escapeHtml(division.text)}</span>`
+                  ? `<span class="list-sep"></span><span class="list-division"><span class="list-tag-name">${escapeHtml(division.text)}</span></span>`
                   : '';
 
                 lightboxList.classList.remove('no-division');
@@ -11559,6 +12062,11 @@
               watchNowExtraOpen = false;
               lightbox.classList.remove('open');
               lightbox.setAttribute('aria-hidden', 'true');
+              if (soundBtn) {
+                soundBtn.classList.remove('visible');
+                soundBtn.setAttribute('aria-hidden', 'true');
+                soundBtn.tabIndex = -1;
+              }
               unlockBodyScroll();
               setTimeout(() => {
                 lightboxImg.src = '';
@@ -11624,6 +12132,14 @@
 
               openLightbox(item);
             }, true);
+
+            if (soundBtn) {
+              soundBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                togglePosterSound();
+              });
+            }
 
             if (calendarBtn) {
               calendarBtn.addEventListener('click', function(e) {
@@ -11762,6 +12278,14 @@
             }
 
             function handleWatchNowAreaClick(e) {
+              // No mobile, o logo acima das notas é apenas identificação
+              // visual do MyAnimeList e nunca abre um site externo.
+              const myRanksMalLogo = e.target.closest('a.rank-mal-myranks-logo');
+              if (myRanksMalLogo && window.matchMedia('(max-width: 760px)').matches) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+              }
               // Setinha ao lado do logo do MyAnimeList: abre/fecha todas as
               // linhas de nome real de uma vez (ver "toggleAllMalRealnameRows").
               const toggleAllBtn = e.target.closest('.rank-mal-toggle-all');
@@ -11872,7 +12396,11 @@
             document.addEventListener('keydown', function(e) {
               if (!lightbox.classList.contains('open')) return;
 
-              if (e.key === 'Escape') {
+              if ((e.key === 'm' || e.key === 'M') && soundBtn && soundBtn.classList.contains('visible')) {
+                e.preventDefault();
+                e.stopPropagation();
+                togglePosterSound();
+              } else if (e.key === 'Escape') {
                 if (lightboxZoom && lightboxZoom.classList.contains('open')) {
                   closeImageZoom();
                 } else {
@@ -12262,7 +12790,15 @@
             if (a.studio) meta.studio = a.studio;
             if (a.airedSeason) meta.season = a.airedSeason;
             if (a.rewatch) meta.rewatch = a.rewatch;
-            if (Object.keys(meta).length) ANIME_STATIC_META[a.id] = meta;
+            if (Object.keys(meta).length) {
+              // O mesmo anime pode existir no MyRanks e no Watching Now.
+              // Mescla os metadados para que a entrada do Watching Now não
+              // apague o "rewatch" já informado no MyRanks/info.js.
+              ANIME_STATIC_META[a.id] = {
+                ...(ANIME_STATIC_META[a.id] || {}),
+                ...meta
+              };
+            }
           });
 
           // Mapa id -> título, usado por renderMeta() para checar se um anime do
@@ -12368,7 +12904,7 @@
                     observer.unobserve(entry.target);
                   }
                 });
-              }, { rootMargin: '80px 0px', threshold: 0.01 })
+              }, { rootMargin: '500px 0px', threshold: 0.01 })
             : null;
 
           // Pausa o wallpaper borrado (.anime-item-ambient) dos cards que estão
@@ -14477,7 +15013,7 @@
                   const isWide = i % 3 === 1;
                   const cls = isWide ? 'search-marquee-poster search-marquee-poster--wide' : 'search-marquee-poster';
                   const src = isWide ? marqueeThumbSrc(a.img) : a.img;
-                  return `<img class="${cls}" src="${src}" alt="" loading="eager" decoding="sync">`;
+                  return `<img class="${cls}" src="${src}" alt="" loading="lazy" decoding="async" fetchpriority="low">`;
                 })
                 .join('');
             }
@@ -15654,17 +16190,17 @@
             }
           });
 
-          // ── Clique no "+" da barra de progresso (Watching Now) ──
-          // Salva o novo valor no localStorage e atualiza só aquele card na tela,
-          // sem re-renderizar a lista inteira (evita perder a posição do scroll).
-          document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.watch-progress-inc');
-            if (!btn || btn.disabled) return;
-            e.preventDefault();
-            e.stopPropagation();
+          // ── +/- da barra de progresso (Watching Now) ──
+          // Clique rápido continua alterando 1 episódio. Ao SEGURAR o botão,
+          // começa a repetir depois de um pequeno atraso e acelera gradualmente.
+          // A atualização continua sendo feita só naquele card, sem re-renderizar
+          // a lista inteira, para manter o scroll e a resposta instantânea.
+          function changeWatchProgress(btn, direction) {
+            if (!btn || btn.disabled) return false;
 
             const animeId = btn.getAttribute('data-anime-id');
-            if (!animeId) return;
+            if (!animeId) return false;
+
             const totRaw = btn.getAttribute('data-tot');
             const tot = totRaw !== null ? parseInt(totRaw, 10) : null;
             const isIndeterminate = tot === null || !Number.isFinite(tot);
@@ -15672,62 +16208,15 @@
             const anime = watchingData.find(a => a.id === animeId);
             const base = anime ? parseWatchProgress(anime) : null;
             const baseCur = base ? base.cur : 0;
-
             const override = getWatchProgressOverride(animeId);
             const current = override !== null ? override : baseCur;
-            const next = isIndeterminate ? current + 1 : Math.min(tot, current + 1);
 
-            setWatchProgressOverride(animeId, next);
+            const next = direction > 0
+              ? (isIndeterminate ? current + 1 : Math.min(tot, current + 1))
+              : Math.max(0, current - 1);
 
-            const card = btn.closest('.anime-item');
-            if (card) {
-              const label = card.querySelector('.watch-progress-label');
-              const decBtn = card.querySelector('.watch-progress-dec');
-              if (isIndeterminate) {
-                if (label) label.textContent = `${next}/-`;
-              } else {
-                const fill = card.querySelector('.watch-progress-fill');
-                const pct = Math.max(0, Math.min(100, (next / tot) * 100));
-                if (fill) fill.style.width = pct + '%';
-                const isCompleted = next >= tot;
-                if (label) {
-                  if (isCompleted) {
-                    label.textContent = 'COMPLETED';
-                  } else {
-                    const seasonRel = anime ? getSeasonRelativeProgress(anime, next) : null;
-                    label.innerHTML = seasonRel
-                      ? `${seasonRel.withinCur}/${seasonRel.seasonTot}<span class="watch-progress-label-total">${next}/${tot}</span>`
-                      : `${next}/${tot}`;
-                  }
-                  label.classList.toggle('watch-progress-label--completed', isCompleted);
-                }
-                if (isCompleted) btn.disabled = true;
-              }
-              if (decBtn) decBtn.disabled = next <= 0;
-            }
-          });
-
-          // ── Clique no "-" da barra de progresso (Watching Now) ──
-          // Salva o novo valor no Supabase e atualiza só aquele card na tela.
-          document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.watch-progress-dec');
-            if (!btn || btn.disabled) return;
-            e.preventDefault();
-            e.stopPropagation();
-
-            const animeId = btn.getAttribute('data-anime-id');
-            if (!animeId) return;
-            const totRaw = btn.getAttribute('data-tot');
-            const tot = totRaw !== null ? parseInt(totRaw, 10) : null;
-            const isIndeterminate = tot === null || !Number.isFinite(tot);
-
-            const anime = watchingData.find(a => a.id === animeId);
-            const base = anime ? parseWatchProgress(anime) : null;
-            const baseCur = base ? base.cur : 0;
-
-            const override = getWatchProgressOverride(animeId);
-            const current = override !== null ? override : baseCur;
-            const next = Math.max(0, current - 1);
+            // Já chegou no limite: não há mais nada para alterar.
+            if (next === current) return false;
 
             setWatchProgressOverride(animeId, next);
 
@@ -15735,12 +16224,15 @@
             if (card) {
               const label = card.querySelector('.watch-progress-label');
               const incBtn = card.querySelector('.watch-progress-inc');
+              const decBtn = card.querySelector('.watch-progress-dec');
+
               if (isIndeterminate) {
                 if (label) label.textContent = `${next}/-`;
               } else {
                 const fill = card.querySelector('.watch-progress-fill');
                 const pct = Math.max(0, Math.min(100, (next / tot) * 100));
                 if (fill) fill.style.width = pct + '%';
+
                 const isCompleted = next >= tot;
                 if (label) {
                   if (isCompleted) {
@@ -15753,10 +16245,113 @@
                   }
                   label.classList.toggle('watch-progress-label--completed', isCompleted);
                 }
+
                 if (incBtn) incBtn.disabled = isCompleted;
               }
-              if (next <= 0) btn.disabled = true;
+
+              if (decBtn) decBtn.disabled = next <= 0;
             }
+
+            return true;
+          }
+
+          // Clique normal = +/- 1 episódio.
+          // Quando houve repetição por hold, o click gerado ao soltar é ignorado
+          // para não acrescentar mais um episódio acidentalmente.
+          document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.watch-progress-inc, .watch-progress-dec');
+            if (!btn) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (btn.dataset.holdConsumed === '1') {
+              delete btn.dataset.holdConsumed;
+              return;
+            }
+
+            changeWatchProgress(btn, btn.classList.contains('watch-progress-inc') ? 1 : -1);
+          });
+
+          // Segurar = repetição acelerada.
+          // 0–420 ms: ainda conta como clique normal.
+          // Depois disso começa em ~125 ms por episódio e acelera até ~42 ms.
+          let watchProgressHold = null;
+
+          function stopWatchProgressHold() {
+            if (!watchProgressHold) return;
+            clearTimeout(watchProgressHold.startTimer);
+            clearTimeout(watchProgressHold.repeatTimer);
+
+            if (watchProgressHold.didRepeat && watchProgressHold.btn) {
+              watchProgressHold.btn.dataset.holdConsumed = '1';
+              // Segurança: caso o navegador não gere click depois do pointerup,
+              // remove a flag sozinho para não engolir um clique futuro.
+              const heldBtn = watchProgressHold.btn;
+              setTimeout(() => {
+                if (heldBtn.dataset.holdConsumed === '1') delete heldBtn.dataset.holdConsumed;
+              }, 500);
+            }
+
+            watchProgressHold = null;
+          }
+
+          function scheduleWatchProgressRepeat() {
+            if (!watchProgressHold) return;
+
+            const state = watchProgressHold;
+            if (!state.btn.isConnected || state.btn.disabled) {
+              stopWatchProgressHold();
+              return;
+            }
+
+            const changed = changeWatchProgress(state.btn, state.direction);
+            if (!changed) {
+              stopWatchProgressHold();
+              return;
+            }
+
+            state.didRepeat = true;
+            state.repeatCount += 1;
+
+            // Aceleração progressiva: 125ms -> 42ms conforme continua segurando.
+            const delay = Math.max(42, 125 - state.repeatCount * 7);
+            state.repeatTimer = setTimeout(scheduleWatchProgressRepeat, delay);
+          }
+
+          document.addEventListener('pointerdown', (e) => {
+            const btn = e.target.closest('.watch-progress-inc, .watch-progress-dec');
+            if (!btn || btn.disabled) return;
+
+            // Só botão principal do mouse; touch/pen também entram normalmente.
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+            stopWatchProgressHold();
+
+            watchProgressHold = {
+              btn,
+              pointerId: e.pointerId,
+              direction: btn.classList.contains('watch-progress-inc') ? 1 : -1,
+              didRepeat: false,
+              repeatCount: 0,
+              startTimer: null,
+              repeatTimer: null,
+            };
+
+            // Captura o pointer para continuar recebendo o pointerup mesmo se o
+            // cursor/dedo sair alguns pixels do botão enquanto ele está segurado.
+            try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+
+            watchProgressHold.startTimer = setTimeout(() => {
+              if (!watchProgressHold || watchProgressHold.btn !== btn) return;
+              scheduleWatchProgressRepeat();
+            }, 420);
+          }, { passive: true });
+
+          document.addEventListener('pointerup', stopWatchProgressHold, true);
+          document.addEventListener('pointercancel', stopWatchProgressHold, true);
+          window.addEventListener('blur', stopWatchProgressHold);
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState !== 'visible') stopWatchProgressHold();
           });
 
           document.addEventListener('keydown', (e) => {
@@ -16201,13 +16796,26 @@
           setupFirstVisitButtonState();
           createDrawerController();
           initSearch();
-          initSearchMarquee();
-          await loadWatchProgressOverrides();
           render();
           initReleaseCalendar();
           updatePageTexts();
           restoreScrollPosition();
           restoreDrawerState();
+
+          // O conteúdo principal aparece primeiro. Carrosséis decorativos e a
+          // sincronização do progresso começam depois, sem bloquear o primeiro
+          // render nem disputar a conexão com os pôsteres visíveis.
+          const startDeferredStartupWork = () => {
+            initSearchMarquee();
+            loadWatchProgressOverrides().then(() => {
+              if (currentCategory === 'watching') render();
+            });
+          };
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(startDeferredStartupWork, { timeout: 900 });
+          } else {
+            setTimeout(startDeferredStartupWork, 180);
+          }
 
           // ── Desliga o wallpaper borrado dos cards (.anime-item-ambient) durante
           // rolagem ativa (ver a regra "body.is-scrolling-ambient" no CSS) —
@@ -16322,9 +16930,6 @@
               .then(async (registration) => {
                 await registration.update();
                 await navigator.serviceWorker.ready;
-                if (typeof window.refreshPwaIconVersion === 'function') {
-                  await window.refreshPwaIconVersion();
-                }
               })
               .catch(() => {});
           });
