@@ -14164,15 +14164,18 @@
           }
 
           function renderAnnouncedList(data) {
-            const watchingIdSet = new Set(watchingData.map(a => a.id));
             const watchedList = [];
             const watchingList = [];
             const planningList = [];
 
             data.forEach(anime => {
-              if (watchingIdSet.has(anime.id)) {
+              // Classifica pela origem real do objeto, não apenas pelo ID.
+              // Um anime pode ter o mesmo ID no MyRanks e no Watching Now
+              // (como DanMachi): a entrada de 4 temporadas pertence ao
+              // MyRanks, enquanto a de 5ª temporada pertence ao Watching Now.
+              if (watchingData.includes(anime)) {
                 watchingList.push(anime);
-              } else if (planIds.has(anime.id)) {
+              } else if (planToWatchData.includes(anime)) {
                 planningList.push(anime);
               } else {
                 watchedList.push(anime);
