@@ -3983,14 +3983,13 @@
         .poster-lightbox-info:empty { display: none; }
 
         /* Separador entre linhas de "poster-lightbox-info" (ex: temporadas/episódios
-          e Filme(s)): no PC fica inline, mantendo tudo na mesma linha; só no
-          lightbox mobile (regra específica mais abaixo) ele vira quebra de linha. */
+          e Filme(s)): mantém cada informação em uma linha, sem hífen. */
         .poster-lightbox-info-break {
-          display: inline;
+          display: block;
         }
 
         .poster-lightbox-info-break::before {
-          content: " - ";
+          content: "";
         }
 
         .poster-lightbox-rank {
@@ -9516,11 +9515,11 @@
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-info-break {
-            display: inline;
+            display: block;
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-info-break::before {
-            content: " - ";
+            content: "";
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list {
@@ -9560,6 +9559,19 @@
             padding: 5px 11px;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.055), 0 8px 20px rgba(0,0,0,0.14);
             overflow: hidden;
+          }
+
+          /* Com exatamente 3 tags de ranking no mobile, "All Animes" ocupa
+             a primeira linha inteira. As outras duas ficam lado a lado,
+             dividindo igualmente a linha de baixo. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list.has-three-ranking-tags .list-tag {
+            flex: 1 1 calc(50% - 4px);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list.has-three-ranking-tags .list-tag-mobile-wide {
+            order: -1;
+            flex-basis: 100%;
+            width: 100%;
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag:active {
@@ -10743,7 +10755,7 @@
             // Base da URL da sua lista pessoal no MyAnimeList. Cada card do
             // lightbox do "All Animes" usa essa base + o título do anime (via
             // "?s=") pra abrir a lista já filtrada por aquele anime específico.
-            const MAL_PROFILE_LIST_BASE_URL = 'https://myanimelist.net/animelist/ptbr';
+            const MAL_PROFILE_LIST_BASE_URL = 'https://myanimelist.net/animelist/kssrenba';
 
             function buildMalProfileSearchUrl(item) {
               if (!item) return MAL_PROFILE_LIST_BASE_URL;
@@ -11943,6 +11955,34 @@
                 lightboxList.innerHTML = listContent
                   ? `<div class="poster-lightbox-list-track"><div class="poster-lightbox-list-group">${listContent}</div><div class="poster-lightbox-list-group" aria-hidden="true">${listContent}</div></div>`
                   : '';
+
+                // Mobile: quando existem exatamente 3 tags de ranking,
+                // "All Animes" fica sempre sozinha em cima e as outras duas
+                // dividem a linha inferior. A classe só ganha efeito dentro
+                // do media query mobile, então o desktop permanece intacto.
+                lightboxList.classList.remove('has-three-ranking-tags');
+                lightboxList.querySelectorAll('.list-tag-mobile-wide').forEach(tag => {
+                  tag.classList.remove('list-tag-mobile-wide');
+                });
+
+                const primaryTagGroup = lightboxList.querySelector('.poster-lightbox-list-group:not([aria-hidden="true"])');
+                const primaryRankingTags = primaryTagGroup
+                  ? Array.from(primaryTagGroup.querySelectorAll(':scope > .list-tag'))
+                  : [];
+
+                if (primaryRankingTags.length === 3) {
+                  const allAnimesTagIndex = primaryRankingTags.findIndex(tag => tag.dataset.mode === 'all');
+
+                  if (allAnimesTagIndex !== -1) {
+                    lightboxList.classList.add('has-three-ranking-tags');
+                    lightboxList.querySelectorAll('.poster-lightbox-list-group').forEach(group => {
+                      const groupTags = Array.from(group.querySelectorAll(':scope > .list-tag'));
+                      if (groupTags[allAnimesTagIndex]) {
+                        groupTags[allAnimesTagIndex].classList.add('list-tag-mobile-wide');
+                      }
+                    });
+                  }
+                }
               }
               if (lightboxAnnounce) {
                 const ns = nextSeasonMap[item.id];
