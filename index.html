@@ -3417,6 +3417,12 @@
         @media (max-width: 760px) {
           .poster-lightbox {
             align-items: flex-start;
+            /* No celular, blur de tela inteira + fade atrasavam o primeiro
+              frame perceptível do modal. O wallpaper ambient continua dando
+              profundidade, mas a camada principal abre imediatamente. */
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            transition: none;
           }
 
           .poster-lightbox-figure {
@@ -3428,6 +3434,7 @@
             overflow-x: hidden;
             width: 100%;
             margin-top: 76px;
+            transition: none;
           }
 
           .poster-lightbox img {
@@ -10360,6 +10367,59 @@
             }
           }
 
+          // Cache dos pôsteres verticais usados pelo poster lightbox. No mobile
+          // os cards exibem thumbs horizontais leves; sem este aquecimento, o
+          // arquivo vertical só começava a baixar depois do clique.
+          const __lightboxPosterCache = new Map();
+
+          function preloadLightboxPoster(src, priority = 'auto') {
+            const cleanSrc = String(src || '').trim();
+            if (!cleanSrc) return Promise.resolve(false);
+
+            const cached = __lightboxPosterCache.get(cleanSrc);
+            if (cached) {
+              if (priority === 'high' && cached.image && 'fetchPriority' in cached.image) {
+                cached.image.fetchPriority = 'high';
+              }
+              return cached.promise;
+            }
+
+            const image = new Image();
+            image.decoding = 'async';
+            if ('fetchPriority' in image) image.fetchPriority = priority;
+
+            const entry = { image, loaded: false, promise: null };
+            let settlePreload;
+            entry.promise = new Promise(resolve => {
+              settlePreload = resolve;
+              image.onload = () => {
+                entry.loaded = true;
+                resolve(true);
+              };
+              image.onerror = () => resolve(false);
+            });
+            __lightboxPosterCache.set(cleanSrc, entry);
+            image.src = cleanSrc;
+
+            if (image.complete && image.naturalWidth > 0) {
+              entry.loaded = true;
+              queueMicrotask(() => settlePreload(true));
+            }
+            return entry.promise;
+          }
+
+          // Começa o download no pointerdown/touchstart, antes do evento click.
+          // Mesmo quando ainda não der tempo de concluir, isso elimina uma parte
+          // importante da latência de abertura em conexões móveis.
+          document.addEventListener('pointerdown', (event) => {
+            if (!window.matchMedia('(max-width: 760px)').matches) return;
+            const item = event.target.closest('.anime-item');
+            if (!item) return;
+            const img = item.querySelector('.poster-wrap img.thumb');
+            const src = img && img.getAttribute('data-poster-src');
+            if (src) preloadLightboxPoster(src, 'high');
+          }, { capture: true, passive: true });
+
           // ── Lightbox: amplia a imagem do card ao clicar nela ──
           (function initPosterLightbox() {
             const lightbox = document.getElementById('posterLightbox');
@@ -10418,6 +10478,8 @@
 
             let lastFocused = null;
             let currentItem = null;
+            let pendingItem = null;
+            let lightboxRenderToken = 0;
 
             // ── Som especial ao abrir o poster-lightbox do Re:ZERO ──
             const rezeroSound = new Audio('assets/sound-effects/rdb-rezero.mp3');
@@ -11650,6 +11712,59 @@
               }
             }
 
+            function primeLightboxVisual(item, forcedPosterSrc, forcedTitle) {
+              if (!item) return null;
+              const cardImg = item.querySelector('.poster-wrap img.thumb');
+              if (!cardImg) return null;
+
+              const posterSrc = forcedPosterSrc
+                || cardImg.getAttribute('data-poster-src')
+                || cardImg.currentSrc
+                || cardImg.src
+                || cardImg.getAttribute('data-src');
+              const previewSrc = cardImg.currentSrc || cardImg.src || cardImg.getAttribute('data-src');
+              const titleEl = item.querySelector('.title-anime');
+              const title = forcedTitle != null
+                ? forcedTitle
+                : (titleEl ? titleEl.textContent : (cardImg.alt || ''));
+              const cached = __lightboxPosterCache.get(posterSrc);
+              const instantSrc = (cached && cached.loaded) || !previewSrc
+                ? posterSrc
+                : previewSrc;
+
+              if (instantSrc) lightboxImg.src = instantSrc;
+              lightboxImg.alt = title;
+              if (lightboxTitle) lightboxTitle.textContent = title;
+              return { posterSrc, instantSrc, title, cardImg };
+            }
+
+            function setLightboxPosterInstantly(item, posterSrc, title) {
+              // Se o original já estiver pronto, usa-o direto. Caso contrário,
+              // mostra imediatamente a thumb que já está na tela e troca pelo
+              // pôster vertical assim que ele terminar, sem quadro vazio.
+              const primed = primeLightboxVisual(item, posterSrc, title);
+              if (!primed) return;
+              updateAmbientFromPoster(primed.instantSrc || posterSrc);
+
+              preloadLightboxPoster(posterSrc, 'high').then(loaded => {
+                if (!loaded || currentItem !== item || !lightbox.classList.contains('open')) return;
+                lightboxImg.src = posterSrc;
+                updateAmbientFromPoster(posterSrc);
+              });
+
+              // Aquece também os vizinhos imediatos do carrossel. Assim as setas
+              // e o swipe trocam de pôster sem aguardar rede/decodificação.
+              const visibleItems = getVisibleItems();
+              const index = visibleItems.indexOf(item);
+              [-2, -1, 1, 2].forEach(offset => {
+                if (index < 0 || !visibleItems.length) return;
+                const neighbor = visibleItems[(index + offset + visibleItems.length) % visibleItems.length];
+                const neighborImg = neighbor && neighbor.querySelector('.poster-wrap img.thumb');
+                const neighborSrc = neighborImg && neighborImg.getAttribute('data-poster-src');
+                if (neighborSrc) preloadLightboxPoster(neighborSrc, offset === -1 || offset === 1 ? 'high' : 'auto');
+              });
+            }
+
             // Mesma lógica de ouro/prata/bronze usada na busca (ver
             // searchRankBadgeClass no drawer de busca) — duplicada aqui pois
             // aquela função vive numa IIFE separada e não é visível neste
@@ -11831,9 +11946,7 @@
                 calendarBtn.tabIndex = isInCalendar ? 0 : -1;
               }
 
-              lightboxImg.src = src;
-              lightboxImg.alt = title;
-              updateAmbientFromPoster(src);
+              setLightboxPosterInstantly(item, src, title);
               if (lightboxTitle) {
                 lightboxTitle.innerHTML = escapeHtml(title);
               }
@@ -12019,13 +12132,29 @@
             // animação/fade por cima. Zero delay.
             function swapItem(nextItem) {
               closeImageZoom();
-              showItem(nextItem);
+              if (!window.matchMedia(MOBILE_QUERY).matches) {
+                showItem(nextItem);
+                return;
+              }
+
+              // Atualiza imagem e título já no evento do toque. Os blocos mais
+              // pesados de metadados entram dois frames depois, deixando o
+              // navegador pintar a troca antes de fazer esse trabalho.
+              primeLightboxVisual(nextItem);
+              pendingItem = nextItem;
+              const token = ++lightboxRenderToken;
+              requestAnimationFrame(() => requestAnimationFrame(() => {
+                if (token !== lightboxRenderToken || pendingItem !== nextItem || !lightbox.classList.contains('open')) return;
+                showItem(nextItem);
+                pendingItem = null;
+              }));
             }
 
             function navigate(step) {
               const items = getVisibleItems();
-              if (!items.length || !currentItem) return;
-              const idx = items.indexOf(currentItem);
+              const activeItem = pendingItem || currentItem;
+              if (!items.length || !activeItem) return;
+              const idx = items.indexOf(activeItem);
               if (idx === -1) return;
               const nextIdx = (idx + step + items.length) % items.length;
               swapItem(items[nextIdx]);
@@ -12071,15 +12200,32 @@
             }
 
             function openLightbox(item) {
-              showItem(item);
+              const isMobile = window.matchMedia(MOBILE_QUERY).matches;
+              if (isMobile) {
+                primeLightboxVisual(item);
+                pendingItem = item;
+              } else {
+                showItem(item);
+              }
               lightbox.classList.add('open');
               lightbox.setAttribute('aria-hidden', 'false');
               lockBodyScroll();
               lastFocused = document.activeElement;
               closeBtn.focus();
+
+              if (isMobile) {
+                const token = ++lightboxRenderToken;
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                  if (token !== lightboxRenderToken || pendingItem !== item || !lightbox.classList.contains('open')) return;
+                  showItem(item);
+                  pendingItem = null;
+                }));
+              }
             }
 
-            function closeLightbox() {
+            function closeLightbox(skipScrollRestore) {
+              lightboxRenderToken++;
+              pendingItem = null;
               if (currentItem && REZERO_IDS.includes(currentItem.id)) {
                 fadeOutAudio(rezeroSound);
               }
@@ -12107,7 +12253,7 @@
                 soundBtn.setAttribute('aria-hidden', 'true');
                 soundBtn.tabIndex = -1;
               }
-              unlockBodyScroll();
+              unlockBodyScroll(skipScrollRestore);
               setTimeout(() => {
                 lightboxImg.src = '';
                 if (lightboxTitle) lightboxTitle.textContent = '';
@@ -12189,7 +12335,7 @@
                 const animeId = calendarBtn.dataset.animeId || '';
                 if (!animeId) return;
 
-                closeLightbox();
+                closeLightbox(true);
 
                 // O calendário já expõe sua função de abertura globalmente.
                 // Mantém o scroll durante a troca e, depois do render, leva
@@ -12232,7 +12378,7 @@
                 e.stopPropagation();
                 const targetId = btn.getAttribute('data-target-id');
                 const targetMode = btn.getAttribute('data-mode');
-                closeLightbox();
+                closeLightbox(true);
                 if (typeof navigateToAnimeInCategory === 'function') {
                   navigateToAnimeInCategory(targetId, targetMode);
                 }
@@ -12978,7 +13124,12 @@
           // individual — só evita a rajada de ~30 de uma vez.
           // Duas filas paralelas mantêm as capas carregando sem provocar três
           // decodificações grandes ao mesmo tempo durante a rolagem.
-          const __posterLoadQueueTails = [Promise.resolve(), Promise.resolve()];
+          const __mobilePosterLoading = window.matchMedia('(max-width: 760px)').matches;
+          const __posterLoadLaneCount = __mobilePosterLoading ? 6 : 2;
+          const __posterLoadQueueTails = Array.from(
+            { length: __posterLoadLaneCount },
+            () => Promise.resolve()
+          );
           let __posterLoadQueueCursor = 0;
           let __posterRenderGeneration = 0;
           const __posterObjectUrls = new Set();
@@ -13039,7 +13190,7 @@
                 // Se o usuário estiver rolando, espera a página ficar parada
                 // antes de iniciar outra decodificação de imagem. Downloads já
                 // iniciados continuam normalmente; só o trabalho novo é adiado.
-                if (document.body.classList.contains('is-scrolling-ambient')) {
+                if (!__mobilePosterLoading && document.body.classList.contains('is-scrolling-ambient')) {
                   await new Promise(resolve => {
                     document.addEventListener('myhtml:scroll-idle', resolve, { once: true });
                   });
@@ -13049,7 +13200,9 @@
                 // grandes acabavam decodificando juntos apesar da fila.
                 await task();
               }
-              await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 24)));
+              await new Promise(resolve => requestAnimationFrame(() => {
+                setTimeout(resolve, __mobilePosterLoading ? 4 : 24);
+              }));
             };
             const lane = __posterLoadQueueCursor++ % __posterLoadQueueTails.length;
             __posterLoadQueueTails[lane] = __posterLoadQueueTails[lane].then(run, run);
@@ -13083,6 +13236,23 @@
               wrap.classList.remove('has-fallback');
               img.style.display = 'block';
               img.classList.add('loaded');
+
+              // Depois que a thumb visível termina, aquece em segundo plano o
+              // pôster vertical correspondente. Limita aos cards próximos para
+              // não baixar centenas de originais de uma vez.
+              if (__mobilePosterLoading) {
+                const fullPosterSrc = img.getAttribute('data-poster-src');
+                const cardRect = wrap.getBoundingClientRect();
+                const closeToViewport = cardRect.bottom >= -240 && cardRect.top <= window.innerHeight + 240;
+                if (fullPosterSrc && fullPosterSrc !== (img.currentSrc || img.src) && closeToViewport) {
+                  const warmPoster = () => preloadLightboxPoster(fullPosterSrc, 'auto');
+                  if ('requestIdleCallback' in window) {
+                    requestIdleCallback(warmPoster, { timeout: 650 });
+                  } else {
+                    setTimeout(warmPoster, 80);
+                  }
+                }
+              }
               if (ambient) {
                 // Usa a imagem atualmente carregada (img.src), não a "src" original
                 // capturada no primeiro load — senão, quando o carrossel troca a
@@ -13126,13 +13296,17 @@
                 // CPU decodificando-os no fundo: devolve ao observer para serem
                 // carregados quando realmente voltarem a aparecer.
                 const rect = wrap.getBoundingClientRect();
-                const nearViewport = rect.bottom >= -120 && rect.top <= window.innerHeight + 120;
+                const loadMargin = __mobilePosterLoading ? 600 : 120;
+                const nearViewport = rect.bottom >= -loadMargin && rect.top <= window.innerHeight + loadMargin;
                 if (!nearViewport) {
                   delete img.dataset.loadStarted;
                   if (posterObserver) posterObserver.observe(wrap);
                   return;
                 }
 
+                if ('fetchPriority' in img) {
+                  img.fetchPriority = rect.bottom >= 0 && rect.top <= window.innerHeight ? 'high' : 'auto';
+                }
                 img.src = src;
                 if (typeof img.decode === 'function') {
                   try { await img.decode(); } catch (e) {}
@@ -14888,14 +15062,27 @@
               bodyEl.style.scrollBehavior = prevBodyBehavior;
             };
 
-            const isLandedOnTarget = () => {
+            const targetCenterOffset = () => {
               const rect = targetEl.getBoundingClientRect();
               const viewportH = window.innerHeight || document.documentElement.clientHeight;
-              const centerY = rect.top + rect.height / 2;
-              return centerY > 0 && centerY < viewportH;
+              return (rect.top + rect.height / 2) - (viewportH / 2);
             };
 
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Não basta o card estar apenas visível: no mobile isso podia deixar
+            // o anime encostado no topo/rodapé da tela e parecer que o salto foi
+            // para o item errado. Considera concluído somente quando o CENTRO do
+            // card coincide com o centro útil da tela (com pequena tolerância).
+            const isLandedOnTarget = () => Math.abs(targetCenterOffset()) <= 18;
+
+            const centerTarget = (behavior) => {
+              const delta = targetCenterOffset();
+              window.scrollTo({
+                top: Math.max(0, (window.scrollY || window.pageYOffset || 0) + delta),
+                behavior,
+              });
+            };
+
+            centerTarget('smooth');
 
             // Assim como em restoreScrollPosition(), uma checagem única não basta
             // aqui: clicar num resultado de busca pode trocar de categoria E
@@ -14921,7 +15108,7 @@
                 return;
               }
               if (!isLandedOnTarget()) {
-                targetEl.scrollIntoView({ behavior: 'auto', block: 'center' });
+                centerTarget('auto');
               } else if (__landAttempts > 3) {
                 // Já estabilizado por algumas checagens seguidas: encerra cedo.
                 clearInterval(__landIntervalId);
@@ -14943,7 +15130,7 @@
               const __onImgDone = () => {
                 __remaining--;
                 if (document.body.contains(targetEl) && !isLandedOnTarget()) {
-                  targetEl.scrollIntoView({ behavior: 'auto', block: 'center' });
+                  centerTarget('auto');
                 }
                 if (__remaining <= 0) {
                   clearInterval(__landIntervalId);
