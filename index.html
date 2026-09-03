@@ -1779,9 +1779,35 @@
           height: 140px;
           position: relative;
           overflow: hidden;
-          background: var(--surface);
+          /* Placeholder leve no estilo das vitrines da Steam: enquanto a capa
+             real está sendo buscada/decodificada, o card nunca fica preto. */
+          background:
+            linear-gradient(
+              105deg,
+              rgba(255,255,255,0.035) 18%,
+              rgba(255,255,255,0.10) 38%,
+              rgba(255,255,255,0.035) 58%
+            ),
+            var(--surface);
+          background-size: 240% 100%, 100% 100%;
+          animation: poster-placeholder-sweep 1.65s ease-in-out infinite;
           display: block;
           flex-shrink: 0;
+        }
+
+        @keyframes poster-placeholder-sweep {
+          0%   { background-position: 115% 0, 0 0; }
+          100% { background-position: -115% 0, 0 0; }
+        }
+
+        .poster-wrap.poster-loaded,
+        .poster-wrap.has-fallback {
+          animation: none;
+          background: var(--surface);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .poster-wrap { animation: none; }
         }
 
         .thumb {
@@ -10367,6 +10393,18 @@
             }
           }
 
+          // Uma navegação intencional (busca/tag/calendário) vai definir uma
+          // posição nova logo em seguida. Garante que nenhuma trava residual do
+          // drawer ou lightbox continue segurando o body em fixed.
+          function releaseBodyScrollForNavigation() {
+            __scrollLockCount = 0;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+          }
+
           // Cache dos pôsteres verticais usados pelo poster lightbox. No mobile
           // os cards exibem thumbs horizontais leves; sem este aquecimento, o
           // arquivo vertical só começava a baixar depois do clique.
@@ -12344,20 +12382,21 @@
                   window.__setReleaseCalendarMode(true, { keepScroll: true });
                 }
 
-                requestAnimationFrame(() => {
-                  requestAnimationFrame(() => {
-                    const target = document.getElementById(`calendar-${animeId}`);
-                    if (!target) return;
+                // No mobile, a retirada do position:fixed do lightbox e a
+                // montagem do calendário podem terminar em frames diferentes.
+                // Procura o card novamente pelo ID e usa o salto estabilizado;
+                // no desktop preserva exatamente o comportamento anterior.
+                const jumpToCalendarCard = (attemptsLeft) => {
+                  const target = document.getElementById(`calendar-${animeId}`);
+                  if (!target) {
+                    if (attemptsLeft > 0) setTimeout(() => jumpToCalendarCard(attemptsLeft - 1), 70);
+                    return;
+                  }
 
-                    target.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'center',
-                    });
+                  scrollToElement(target);
+                };
 
-                    target.classList.add('highlight-active');
-                    setTimeout(() => target.classList.remove('highlight-active'), 1400);
-                  });
-                });
+                requestAnimationFrame(() => requestAnimationFrame(() => jumpToCalendarCard(8)));
               });
             }
 
@@ -13082,6 +13121,19 @@
             return words.map(word => word[0]).join('').toUpperCase() || 'ANIME';
           }
 
+          const __mobilePosterLoading = window.matchMedia('(max-width: 760px)').matches;
+
+          // Antecipa aproximadamente 2,5 telas abaixo do usuário. A margem
+          // anterior era maior no observer, mas o carregamento real era barrado
+          // de novo a apenas 120px no desktop; por isso os cards ainda chegavam
+          // pretos durante a rolagem. Usamos margens assimétricas porque, ao
+          // descer, é mais útil investir conexão nos próximos cards.
+          const __posterAheadMargin = Math.max(
+            __mobilePosterLoading ? 1800 : 2400,
+            Math.round(window.innerHeight * (__mobilePosterLoading ? 2.2 : 2.6))
+          );
+          const __posterBehindMargin = __mobilePosterLoading ? 700 : 900;
+
           const posterObserver = ('IntersectionObserver' in window)
             ? new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
@@ -13090,7 +13142,10 @@
                     observer.unobserve(entry.target);
                   }
                 });
-              }, { rootMargin: '500px 0px', threshold: 0.01 })
+              }, {
+                rootMargin: `${__posterBehindMargin}px 0px ${__posterAheadMargin}px 0px`,
+                threshold: 0
+              })
             : null;
 
           // Pausa o wallpaper borrado (.anime-item-ambient) dos cards que estão
@@ -13124,8 +13179,7 @@
           // individual — só evita a rajada de ~30 de uma vez.
           // Duas filas paralelas mantêm as capas carregando sem provocar três
           // decodificações grandes ao mesmo tempo durante a rolagem.
-          const __mobilePosterLoading = window.matchMedia('(max-width: 760px)').matches;
-          const __posterLoadLaneCount = __mobilePosterLoading ? 6 : 2;
+          const __posterLoadLaneCount = __mobilePosterLoading ? 6 : 4;
           const __posterLoadQueueTails = Array.from(
             { length: __posterLoadLaneCount },
             () => Promise.resolve()
@@ -13187,17 +13241,9 @@
               // fila do render anterior. Antes, posters de uma lista já removida
               // continuavam decodificando enquanto o All Ranks era aberto.
               if (generation === __posterRenderGeneration) {
-                // Se o usuário estiver rolando, espera a página ficar parada
-                // antes de iniciar outra decodificação de imagem. Downloads já
-                // iniciados continuam normalmente; só o trabalho novo é adiado.
-                if (!__mobilePosterLoading && document.body.classList.contains('is-scrolling-ambient')) {
-                  await new Promise(resolve => {
-                    document.addEventListener('myhtml:scroll-idle', resolve, { once: true });
-                  });
-                }
-                // Espera o download E a decodificação terminarem. O código
-                // anterior esperava apenas um tempo fixo, então vários WebPs
-                // grandes acabavam decodificando juntos apesar da fila.
+                // O download continua mesmo durante a rolagem. Pausar aqui era
+                // justamente o que deixava os próximos cards sem imagem. As
+                // pistas paralelas limitam quantas decodificações rodam juntas.
                 await task();
               }
               await new Promise(resolve => requestAnimationFrame(() => {
@@ -13234,6 +13280,7 @@
               }
 
               wrap.classList.remove('has-fallback');
+              wrap.classList.add('poster-loaded');
               img.style.display = 'block';
               img.classList.add('loaded');
 
@@ -13282,6 +13329,7 @@
             img.addEventListener('error', () => {
               if (!wrap.isConnected || posterGeneration !== __posterRenderGeneration) return;
               wrap.classList.add('has-fallback');
+              wrap.classList.remove('poster-loaded');
               fallback.textContent = makeFallbackLabel(title);
               img.style.display = 'none';
             });
@@ -13296,8 +13344,8 @@
                 // CPU decodificando-os no fundo: devolve ao observer para serem
                 // carregados quando realmente voltarem a aparecer.
                 const rect = wrap.getBoundingClientRect();
-                const loadMargin = __mobilePosterLoading ? 600 : 120;
-                const nearViewport = rect.bottom >= -loadMargin && rect.top <= window.innerHeight + loadMargin;
+                const nearViewport = rect.bottom >= -__posterBehindMargin
+                  && rect.top <= window.innerHeight + __posterAheadMargin;
                 if (!nearViewport) {
                   delete img.dataset.loadStarted;
                   if (posterObserver) posterObserver.observe(wrap);
@@ -13305,8 +13353,14 @@
                 }
 
                 if ('fetchPriority' in img) {
-                  img.fetchPriority = rect.bottom >= 0 && rect.top <= window.innerHeight ? 'high' : 'auto';
+                  img.fetchPriority = rect.bottom >= -120
+                    && rect.top <= window.innerHeight * 1.35
+                    ? 'high'
+                    : 'auto';
                 }
+                // O próprio lazy-load nativo não deve atrasar uma imagem que o
+                // nosso preloader já classificou como próxima da viewport.
+                img.loading = 'eager';
                 img.src = src;
                 if (typeof img.decode === 'function') {
                   try { await img.decode(); } catch (e) {}
@@ -15038,7 +15092,119 @@
             });
           }
 
+          let __mobileTargetScrollToken = 0;
+          let __mobileOriginalScrollBehavior = null;
+
+          function scrollToElementMobile(targetId) {
+            if (!targetId) return;
+
+            const token = ++__mobileTargetScrollToken;
+            const htmlEl = document.documentElement;
+            const bodyEl = document.body;
+
+            // Guarda os valores originais somente no começo da primeira
+            // navegação. Se outro clique substituir o anterior, ele reaproveita
+            // o mesmo estado e apenas o salto mais recente pode restaurá-lo.
+            if (!__mobileOriginalScrollBehavior) {
+              __mobileOriginalScrollBehavior = {
+                html: htmlEl.style.scrollBehavior,
+                body: bodyEl.style.scrollBehavior,
+              };
+            }
+            htmlEl.style.scrollBehavior = 'auto';
+            bodyEl.style.scrollBehavior = 'auto';
+
+            let highlighted = false;
+
+            const centerCurrentTarget = () => {
+              if (token !== __mobileTargetScrollToken) return false;
+
+              // Busca de novo em TODA correção. O render do progresso, a troca
+              // de categoria ou o calendário podem substituir o elemento no
+              // DOM depois do primeiro scroll; usar a referência antiga era a
+              // principal causa do salto parar no começo da lista no celular.
+              const currentTarget = document.getElementById(targetId);
+              if (!currentTarget || !currentTarget.isConnected) return false;
+              if (bodyEl.style.position === 'fixed') {
+                releaseBodyScrollForNavigation();
+              }
+
+              const style = getComputedStyle(currentTarget);
+              if (style.display === 'none' || style.visibility === 'hidden') return false;
+
+              const rect = currentTarget.getBoundingClientRect();
+              if (!rect.height) return false;
+
+              const visualViewport = window.visualViewport;
+              const viewportCenter = visualViewport
+                ? visualViewport.offsetTop + visualViewport.height / 2
+                : (window.innerHeight || htmlEl.clientHeight) / 2;
+              const delta = rect.top + rect.height / 2 - viewportCenter;
+              const currentY = window.scrollY || window.pageYOffset || 0;
+              // Em alguns navegadores mobile, html.scrollHeight ainda retorna
+              // só a altura da tela logo após o body sair de position:fixed,
+              // mesmo com a lista inteira já renderizada. Como o valor anterior
+              // era usado para limitar o destino, ele virava maxY=0 e prendia o
+              // salto exatamente no card 01 (o comportamento visto no vídeo).
+              const fullScrollHeight = Math.max(
+                htmlEl.scrollHeight || 0,
+                bodyEl.scrollHeight || 0,
+                document.scrollingElement ? document.scrollingElement.scrollHeight || 0 : 0
+              );
+              const maxY = Math.max(0, fullScrollHeight - (visualViewport ? visualViewport.height : window.innerHeight));
+              const destination = Math.max(0, Math.min(maxY, currentY + delta));
+
+              // Os dois caminhos juntos cobrem Chrome/Android e Safari/iOS,
+              // inclusive logo depois de liberar um body que estava fixed.
+              currentTarget.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' });
+              // Se a altura total ainda estiver temporariamente incorreta, não
+              // desfaz o scrollIntoView nativo mandando a página de volta a 0.
+              if (maxY > 0) {
+                if (document.scrollingElement) document.scrollingElement.scrollTop = destination;
+                window.scrollTo({ top: destination, left: 0, behavior: 'auto' });
+              }
+
+              if (!highlighted) {
+                highlighted = true;
+                document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));
+                currentTarget.classList.add('highlight-active');
+                setTimeout(() => {
+                  const latestTarget = document.getElementById(targetId);
+                  if (latestTarget) latestTarget.classList.remove('highlight-active');
+                }, 3000);
+              }
+              return true;
+            };
+
+            // A primeira tentativa acontece já; as seguintes cobrem o fim da
+            // animação do drawer/lightbox, expansão de "Mostrar Tudo", carga de
+            // imagens e qualquer render tardio que troque o próprio card.
+            const correctionDelays = [0, 40, 100, 180, 320, 520, 800, 1200, 1700];
+            correctionDelays.forEach((delay, index) => {
+              setTimeout(() => {
+                if (token !== __mobileTargetScrollToken) return;
+                requestAnimationFrame(() => {
+                  if (token !== __mobileTargetScrollToken) return;
+                  centerCurrentTarget();
+
+                  if (index === correctionDelays.length - 1 && __mobileOriginalScrollBehavior) {
+                    htmlEl.style.scrollBehavior = __mobileOriginalScrollBehavior.html;
+                    bodyEl.style.scrollBehavior = __mobileOriginalScrollBehavior.body;
+                    __mobileOriginalScrollBehavior = null;
+                  }
+                });
+              }, delay);
+            });
+          }
+
           function scrollToElement(targetEl) {
+            // Busca, tags e calendário usam o mesmo caminho estável em qualquer
+            // tela. Passar o ID permite sobreviver a re-renders da lista.
+            if (targetEl && targetEl.id) {
+              scrollToElementMobile(targetEl && targetEl.id);
+              return;
+            }
+
             // No mobile, o clique num resultado de busca costuma disparar várias
             // mudanças de layout ao mesmo tempo (fecha o drawer = tira o
             // position:fixed do body, às vezes troca de categoria = re-renderiza
@@ -15162,6 +15328,33 @@
           function navigateToAnimeInCategory(targetId, targetCategory) {
             if (!targetId || !targetCategory) return;
 
+            // Se a busca ou uma tag for usada enquanto o calendário está
+            // aberto, fecha primeiro esse modo. O calendário aplica
+            // display:none ao #rankingContainer; sem desligá-lo, a categoria
+            // mudava corretamente, mas a lista do anime continuava invisível.
+            if (window.__isReleaseCalendarMode && window.__isReleaseCalendarMode()) {
+              window.__setReleaseCalendarMode(false, { keepScroll: true });
+            }
+
+            releaseBodyScrollForNavigation();
+
+            // Encontra somente o card da lista principal. Usar apenas
+            // document.getElementById podia selecionar uma cópia temporária de
+            // outro componente quando o drawer/calendário ainda estava saindo.
+            const findMainListTarget = () => {
+              const rankingList = document.getElementById('animeRankingList');
+              if (!rankingList) return null;
+              return Array.from(rankingList.querySelectorAll('.anime-item'))
+                .find(item => item.id === targetId) || null;
+            };
+
+            const forceRevealMainList = () => {
+              const rankingList = document.getElementById('animeRankingList');
+              if (!rankingList) return;
+              rankingList.querySelectorAll('.anime-item.hidden-item, .season-header.hidden-item')
+                .forEach(item => item.classList.remove('hidden-item'));
+            };
+
             // Tenta achar o card algumas vezes antes de desistir: no mobile,
             // trocar de categoria (render() inteiro) e fechar o drawer podem
             // competir pelo mesmo frame, e o card às vezes ainda não está no DOM
@@ -15170,17 +15363,28 @@
             // por um tempinho cobre esse caso sem atrasar o caminho normal (acha
             // de primeira na grande maioria das vezes).
             const findAndJump = (attemptsLeft) => {
-              const targetEl = document.getElementById(targetId);
+              const targetEl = findMainListTarget();
               if (!targetEl) {
                 if (attemptsLeft > 0) setTimeout(() => findAndJump(attemptsLeft - 1), 80);
                 return;
               }
               if (typeof window.triggerExpand === 'function') {
                 window.triggerExpand().then(() => {
-                  setTimeout(() => scrollToElement(targetEl), 60);
+                  // Garantia adicional: mesmo que o estado interno do botão
+                  // "Mostrar Tudo" ainda esteja sendo atualizado, nenhum card
+                  // continua display:none antes de medirmos a posição.
+                  forceRevealMainList();
+                  releaseBodyScrollForNavigation();
+                  requestAnimationFrame(() => requestAnimationFrame(() => {
+                    scrollToElementMobile(targetId);
+                  }));
                 });
               } else {
-                scrollToElement(targetEl);
+                forceRevealMainList();
+                releaseBodyScrollForNavigation();
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                  scrollToElementMobile(targetId);
+                }));
               }
             };
 
@@ -16996,23 +17200,10 @@
 
               setCalendarMode(false, { keepScroll: true });
 
-              if (currentCategory !== 'watching') {
-                currentCategory = 'watching';
-                render();
-              }
-
-              requestAnimationFrame(() => {
-                const target = document.getElementById(animeId);
-                if (!target) return;
-
-                target.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'center',
-                });
-
-                target.classList.add('highlight-active');
-                setTimeout(() => target.classList.remove('highlight-active'), 1400);
-              });
+              // Reaproveita o mesmo fluxo robusto da busca e das tags. Ele
+              // expande a Watching Now se necessário, encontra o card real e
+              // continua corrigindo a posição enquanto o calendário fecha.
+              navigateToAnimeInCategory(animeId, 'watching');
             });
 
             window.__refreshReleaseCalendar = renderReleaseCalendar;

@@ -72,7 +72,7 @@ const rawAnimeData = [
     info: "1 temporada: 1172 episódios",
     studio: "Toei Animation",
     airedSeason: "1999-?",
-    rewatch: "Impossible",
+    rewatch: "The One Piece",
     mal: [
       { label: "1 temporada", episodes: 1172, note: 10, malName: "One Piece" },
       { label: "Film: Z", episodes: "1h47m", note: 7, malName: "One Piece Film: Z " },
@@ -1236,6 +1236,19 @@ const rawAnimeData = [
 const rawWatchingData = [
   // Non-Seasonal Anime
   {
+    id: "kingdom",
+    img: "watchingnow-images/watchingnow/kingdom.webp",
+    title: "Kingdom",
+    info: "6 temporadas: 155 episódios",
+    season: null,
+    studio: "Studio Pierrot / Studio Signpost",
+    airedSeason: "2012",
+    seasons: [38, 39, 26, 26, 13, 13],
+    url: "https://www.anime-planet.com/anime/kingdom",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRWE89KMR/kingdom",
+    malUrl: "https://myanimelist.net/anime/12031/Kingdom",
+  },
+  {
     id: "tqq",
     img: "watchingnow-images/watchingnow/tqq.webp",
     title: "The Quintessential Quintuplets",
@@ -1371,7 +1384,7 @@ const rawWatchingData = [
     studio: "Doga Kobo",
     airedSeason: "2026",
     seasons: [11],
-    url: "https://www.anime-planet.com/anime/though-i-am-an-inept-villainess",
+    url: "https://www.anime-planet.com/anime/though-i-am-an-inept-villainess-tale-of-the-butterfly-rat-body-swap-in-the-maiden-court",
     crunchyroll:
       "https://www.crunchyroll.com/pt-br/series/GT00371881/though-i-am-an-inept-villainess",
     malUrl: "https://myanimelist.net/anime/61240/Futsutsuka_na_Akujo_dewa_Gozaimasu_ga__Suuguu_Chouso_Torikae_Den",
@@ -1490,10 +1503,11 @@ const rawWatchingData = [
     id: "overshadowed-to-overpowered",
     img: "watchingnow-images/watchingnow/overshadowed-to-overpowered.webp",
     title: "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-    info: "NaN episódios - Progress: -/-",
+    info: "12 episódios",
     season: "summer-2026",
     studio: "EMT Squared",
     airedSeason: "2026",
+    seasons: [12],
     url: "https://www.anime-planet.com/anime/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage",
     crunchyroll:
       "https://www.crunchyroll.com/pt-br/series/GT00378115/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage",
@@ -2813,8 +2827,9 @@ const nextSeasonMap = {
   "ramparts-of-ice": { info: "2nd Season in Oct 2026" },
   "aoashi": { info: "2nd Season in Oct 2026" },
   "lom": { info: "2nd Season in 2027" },
-  "chainsaw-man": { info: "2nd Season in Production" },
   "sentenced-hero": { info: "2nd Season in Production" },
+  "chainsaw-man": { info: "2nd Season in Production" },
+  "kingdom": { info: "7th Season Announced" },
   "fate-strange-fake": { info: "2nd Season Announced" },
   "konosuba": { info: "4th Season Confirmed" },
   "spice-and-wolf": { info: "2nd Season Announced" },
