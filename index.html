@@ -705,13 +705,15 @@
         .search-result-info {
           position: relative;
           z-index: 2;
-          padding: 8px 10px 10px;
+          padding: 15px 88px 14px 17px;
           border-radius: 0 0 10px 10px;
-          min-height: 46px;
+          min-height: 86px;
           background: transparent;
           display: flex;
           flex-direction: column;
+          justify-content: center;
           gap: 1px;
+          overflow: hidden;
         }
 
         .search-result-title {
@@ -741,19 +743,53 @@
         }
 
         .search-result-rank {
-          display: inline-block;
-          margin-right: 6px;
-          font-family: var(--font-title);
-          font-weight: 900;
-          font-size: 13px;
-          color: rgba(255,255,255,0.5);
-          letter-spacing: -0.01em;
-          vertical-align: middle;
+          position: absolute;
+          top: 50%;
+          right: 8px;
+          z-index: 0;
+          display: block;
+          width: 78px;
+          min-width: 78px;
+          color: rgba(255,255,255,0.18);
+          font: 900 38px/0.72 var(--font-title);
+          letter-spacing: -0.07em;
+          font-variant-numeric: tabular-nums;
+          font-feature-settings: "tnum" 1;
+          text-align: right;
+          text-shadow: none;
+          transform: translateY(-50%) scaleY(2.35);
+          transform-origin: center center;
+          pointer-events: none;
         }
 
         .search-result-rank.rank-gold { color: #d4af37; }
         .search-result-rank.rank-silver { color: #b8bcc2; }
         .search-result-rank.rank-bronze { color: #b0703f; }
+
+        .search-result-rank.rank-plain {
+          color: rgba(255,255,255,0.18);
+        }
+
+        .search-result-title,
+        .search-result-meta,
+        .search-result-progress {
+          position: relative;
+          z-index: 1;
+        }
+
+        @media (max-width: 380px) {
+          .search-result-info {
+            padding-right: 80px;
+          }
+
+          .search-result-rank {
+            right: 6px;
+            width: 70px;
+            min-width: 70px;
+            font-size: 34px;
+            transform: translateY(-50%) scaleY(2.25);
+          }
+        }
 
         .search-result-title mark {
           background: transparent;
@@ -2152,34 +2188,39 @@
           display: none;
         }
 
-        /* Desktop: o bloco LINKS ABOUT pertence ao painel de informações.
-          Ele fica em uma linha própria logo abaixo de MAL Score / Studios /
-          Year, em vez de permanecer preso ao rodapé do pôster. */
+        /* Desktop: LINKS ABOUT fica embaixo da imagem do pôster.
+          A cópia do painel permanece apenas para o layout mobile. */
         @media (min-width: 761px) {
-          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-watchnow {
-            display: none;
-          }
-
-          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info:not(:empty) {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-watchnow:not(:empty) {
             display: flex;
-            grid-column: 1 / -1;
             width: 100%;
-            justify-content: flex-start;
-            margin-top: -18px;
           }
 
-          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info .watch-now-links {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links {
             width: 100%;
             min-height: 52px;
-            border: 0;
-            border-top: 1px solid rgba(255,255,255,0.09);
-            border-radius: 0 0 15px 15px;
-            background: rgba(255,255,255,0.055);
           }
 
-          .poster-lightbox:not(.simple-mode) .rank-meta:has(+ .poster-lightbox-more-info:not(:empty)) {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
+          /* Watching Now desktop: remove o cartão externo e mantém apenas o
+             bloco dos links, com a mesma largura exata do pôster. */
+          .poster-lightbox.watching-now-mode:not(.simple-mode) .poster-lightbox-media-watchnow {
+            margin-top: 14px;
+            min-height: 0;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+          }
+
+          .poster-lightbox.watching-now-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links {
+            justify-content: safe center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info {
+            display: none !important;
           }
         }
 
@@ -2852,6 +2893,7 @@
           display: flex;
           align-items: center;
           gap: 6px;
+          margin-bottom: -3px;
         }
 
         /* Setinha ao lado do logo do MyAnimeList: abre/fecha de uma vez só
@@ -3099,7 +3141,7 @@
         .rank-mal-realname-row {
           justify-content: flex-start;
           padding-top: 0;
-          margin-top: -10px;
+          margin-top: -5px;
         }
 
         .rank-mal-realname {
@@ -3734,6 +3776,7 @@
             border-top-left-radius: 0;
             border-top-right-radius: 0;
             border-top: none;
+            margin-top: -15px;
           }
 
           .poster-lightbox:not(.simple-mode) .rank-mal {
@@ -3762,7 +3805,7 @@
             logo abaixo dele. Cancela parte do gap com margem negativa,
             voltando pros ~8px de antes só aqui. */
           .poster-lightbox:not(.simple-mode) .rank-mal-mal-row {
-            margin-bottom: -8px;
+            margin-bottom: -11px;
           }
 
           /* Notas por temporada/filme/especial: no mobile, mesmo layout de
@@ -3785,7 +3828,7 @@
             perto com uma margem negativa maior que a padrão (-4px), mas sem
             exagerar (senão gruda demais no texto da temporada acima). */
           .poster-lightbox:not(.simple-mode) .rank-mal-realname-row {
-            margin-top: -7px;
+            margin-top: -2px;
           }
 
           /* Quando o card só tem UMA linha alinhável (ex: One Piece, que só
@@ -3800,7 +3843,7 @@
             ".rank-mal-rows", sem grupo), usa uma margem bem maior pra
             compensar o gap de 16px e manter a mesma proximidade visual. */
           .poster-lightbox:not(.simple-mode) .rank-mal-rows > .rank-mal-realname-row {
-            margin-top: -17px;
+            margin-top: -12px;
           }
 
           .poster-lightbox:not(.simple-mode) .rank-mal-align-group {
@@ -4014,6 +4057,129 @@
         }
 
         .poster-lightbox-info:empty { display: none; }
+
+        /* ── Sinopse do poster lightbox ──
+           O texto vem do campo opcional "synopsis" do anime no info.js.
+           Sem esse campo, o bloco inteiro permanece escondido. */
+        .poster-lightbox-synopsis {
+          grid-column: 1 / -1;
+          width: 100%;
+          min-width: 0;
+          padding: 15px 17px 14px;
+          border-radius: 14px;
+          background: rgba(255,255,255,0.045);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.035), 0 10px 26px rgba(0,0,0,0.14);
+          position: relative;
+          z-index: 1;
+          transform: translateZ(0);
+          transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .poster-lightbox-synopsis:hover {
+          transform: translateY(-2px) translateZ(0);
+          border-color: rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.09);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 24px rgba(0,0,0,0.2);
+        }
+
+        .poster-lightbox-synopsis:empty {
+          display: none;
+        }
+
+        .poster-lightbox-synopsis-label {
+          display: block;
+          margin-bottom: 8px;
+          font-family: var(--font-title);
+          font-weight: 600;
+          font-size: 11px;
+          line-height: normal;
+          letter-spacing: 0.08em;
+          text-align: left;
+          text-transform: uppercase;
+          color: var(--muted);
+        }
+
+        .poster-lightbox-synopsis-text {
+          display: -webkit-box;
+          margin: 0;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 4;
+          line-clamp: 4;
+          font-family: "Inter", sans-serif;
+          font-size: 12.5px;
+          font-weight: 400;
+          line-height: 1.62;
+          color: rgba(255,255,255,0.64);
+          text-align: justify;
+          text-justify: inter-word;
+          hyphens: auto;
+        }
+
+        .poster-lightbox-synopsis.expanded .poster-lightbox-synopsis-text {
+          display: block;
+          overflow: visible;
+          -webkit-line-clamp: unset;
+          line-clamp: unset;
+        }
+
+        .poster-lightbox-synopsis-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          width: fit-content;
+          min-height: 22px;
+          margin: 9px auto 0;
+          padding: 2px 3px;
+          border: 0;
+          border-radius: 0;
+          background: none;
+          box-shadow: none;
+          font-family: var(--font-title);
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--muted);
+          cursor: pointer;
+          transition: color 0.15s ease, transform 0.18s ease;
+        }
+
+        .poster-lightbox-synopsis-toggle:hover,
+        .poster-lightbox-synopsis-toggle:focus-visible {
+          color: var(--text);
+          text-shadow: none;
+        }
+
+        .poster-lightbox-synopsis-toggle:active {
+          transform: translateY(0) scale(0.96);
+        }
+
+        .poster-lightbox-synopsis-toggle svg {
+          width: 12px;
+          height: 12px;
+          flex: 0 0 12px;
+          stroke-width: 2;
+          transition: color 0.15s ease, transform 0.35s ease;
+        }
+
+        .poster-lightbox-synopsis.expanded .poster-lightbox-synopsis-toggle svg {
+          transform: rotate(180deg);
+        }
+
+        @media (max-width: 760px) {
+          .poster-lightbox-synopsis-toggle {
+            font-size: 10px;
+            letter-spacing: 0.06em;
+          }
+
+          .poster-lightbox-synopsis-toggle svg {
+            width: 10px;
+            height: 10px;
+            flex-basis: 10px;
+          }
+        }
 
         /* Separador entre linhas de "poster-lightbox-info" (ex: temporadas/episódios
           e Filme(s)): mantém cada informação em uma linha, sem hífen. */
@@ -9305,22 +9471,23 @@
             text-shadow: none !important;
           }
 
+          /* Desktop: a cópia de LINKS ABOUT do painel fica escondida;
+             o bloco visível fica diretamente embaixo da imagem. */
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-more-info {
-            grid-column: 1 / -1;
-            margin-top: 0;
+            display: none !important;
           }
 
-          /* Desktop: LINKS ABOUT fica em um cartão próprio, separado da
-             ficha de MAL Score / Studio / Year / Rewatch pelo gap do painel. */
-          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-more-info .watch-now-links {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links {
             min-height: 52px;
             border: 0;
             border-radius: 15px;
             background: rgba(255,255,255,0.055);
+            transition: background 0.2s ease, box-shadow 0.2s ease;
           }
 
-          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta:has(+ .poster-lightbox-more-info:not(:empty)) {
-            border-radius: 15px;
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links:hover {
+            background: rgba(255,255,255,0.13) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.18);
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-close,
@@ -9741,13 +9908,21 @@
             background: rgba(255,255,255,0.09);
           }
 
+          /* Quando todas as temporadas estão como "unwatched", a área de
+             notas fica solta no lightbox mobile, sem o cartão ao fundo. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal.all-unwatched:has(.rank-mal-rows),
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal.all-unwatched:has(.rank-mal-rows):active {
+            background: transparent;
+            box-shadow: none;
+          }
+
           .poster-lightbox:not(.simple-mode) .rank-mal-rows {
             row-gap: 12px;
             padding: 0;
           }
 
           .poster-lightbox:not(.simple-mode) .rank-mal-mal-row {
-            margin-bottom: 0;
+            margin-bottom: -3px;
           }
 
           .poster-lightbox:not(.simple-mode) .rank-mal-myranks-logo .mal-btn-logo {
@@ -9804,9 +9979,10 @@
               "media info"
               "list list"
               "meta meta"
+              "synopsis synopsis"
               "moreinfo moreinfo"
               "mal mal";
-            grid-template-rows: repeat(6, max-content);
+            grid-template-rows: repeat(7, max-content);
             column-gap: 11px;
             row-gap: 16px;
             align-items: start;
@@ -9871,6 +10047,31 @@
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list {
             grid-area: list;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-synopsis {
+            grid-area: synopsis;
+            padding: 14px 15px 13px;
+            border: 0;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.055);
+            box-shadow: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-synopsis:hover {
+            transform: translateY(-2px) translateZ(0) !important;
+            background: rgba(255,255,255,0.09) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 24px rgba(0,0,0,0.2) !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-synopsis:active {
+            transform: translateY(0) scale(0.99);
+            background: color-mix(in srgb, var(--lb-accent) 13%, rgba(255,255,255,0.075));
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-synopsis-text {
+            font-size: 12px;
+            line-height: 1.6;
           }
 
           /* Nas tags combinadas, o mobile mostra apenas a informação útil:
@@ -10289,6 +10490,7 @@
             <div id="posterLightboxInfo" class="poster-lightbox-info"></div>
             <div id="posterLightboxList" class="poster-lightbox-list"></div>
             <div id="posterLightboxMeta" class="rank-meta"></div>
+            <section id="posterLightboxSynopsis" class="poster-lightbox-synopsis" aria-label="Sinopse"></section>
             <div id="posterLightboxMoreInfo" class="poster-lightbox-more-info"></div>
             <div id="posterLightboxMal" class="rank-mal"></div>
             <!-- Sistema de notas (estrelas) desativado do site por enquanto.
@@ -10466,6 +10668,7 @@
             const lightboxHeroRank = document.getElementById('posterLightboxHeroRank');
             const lightboxTitle = document.getElementById('posterLightboxTitle');
             const lightboxList = document.getElementById('posterLightboxList');
+            const lightboxSynopsis = document.getElementById('posterLightboxSynopsis');
             const lightboxAnnounce = document.getElementById('posterLightboxAnnounce');
             const lightboxRatings = document.getElementById('posterLightboxRatings');
             const lightboxMeta = document.getElementById('posterLightboxMeta');
@@ -10481,6 +10684,51 @@
             const soundBtn = document.getElementById('posterLightboxSound');
             const closeBtn = document.getElementById('posterLightboxClose');
             if (!lightbox || !lightboxImg || !closeBtn) return;
+
+            function findSynopsisSource(item, title) {
+              const animeId = item.getAttribute('data-calendar-target') || item.id || '';
+              const pools = [animeData, watchingData, planToWatchData];
+              for (const pool of pools) {
+                const byId = pool.find(anime => anime && anime.id === animeId && anime.synopsis);
+                if (byId) return byId;
+              }
+              for (const pool of pools) {
+                const byTitle = pool.find(anime => anime && anime.title === title && anime.synopsis);
+                if (byTitle) return byTitle;
+              }
+              return null;
+            }
+
+            function renderSynopsis(item, title) {
+              if (!lightboxSynopsis) return;
+              const source = findSynopsisSource(item, title);
+              const synopsis = source && source.synopsis
+                ? String(source.synopsis).trim()
+                : '';
+
+              lightboxSynopsis.classList.remove('expanded');
+              if (!synopsis) {
+                lightboxSynopsis.innerHTML = '';
+                return;
+              }
+
+              const canExpand = synopsis.length > 185;
+              lightboxSynopsis.innerHTML = `
+                <span class="poster-lightbox-synopsis-label">SINOPSE</span>
+                <p class="poster-lightbox-synopsis-text">${escapeHtml(synopsis)}</p>
+                ${canExpand ? `<button type="button" class="poster-lightbox-synopsis-toggle" aria-expanded="false">Mostrar mais<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>` : ''}
+              `;
+            }
+
+            if (lightboxSynopsis) {
+              lightboxSynopsis.addEventListener('click', function(e) {
+                const toggle = e.target.closest('.poster-lightbox-synopsis-toggle');
+                if (!toggle) return;
+                const expanded = lightboxSynopsis.classList.toggle('expanded');
+                toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+                toggle.firstChild.nodeValue = expanded ? 'Mostrar menos' : 'Mostrar mais';
+              });
+            }
 
             // ── Zoom da imagem no mobile: toca no pôster pequeno e ele aparece
             // ampliado, centralizado, por cima de tudo. Só liga no mobile
@@ -11035,6 +11283,8 @@
             function renderMalScores(animeId, isWatchingNow, animePlanetUrl, crunchyrollUrl, watchNowMalUrl, netflixUrl) {
               if (!lightboxMal) return;
 
+              lightboxMal.classList.remove('all-unwatched');
+
               // Limpa a cópia embaixo da imagem a cada render; quem preenche
               // de novo (quando houver) é o final desta função — ver
               // "lightboxMediaWatchNow" mais abaixo.
@@ -11110,10 +11360,9 @@
               // a de dentro do painel no desktop; ver ".poster-lightbox-media-
               // watchnow" e ".rank-mal .watch-now-links").
               if (lightboxMediaWatchNow) lightboxMediaWatchNow.innerHTML = watchNowLinksHtml;
-              // Cópia extra pra aparecer ACIMA do bloco Studio/Lançamento no
-              // mobile (ver grid-area "moreinfo" no CSS) — o "watch-now-links"
-              // não fica mais dentro de "lightboxMal" no mobile, é essa cópia
-              // separada que aparece lá em cima agora.
+              // Cópia extra usada no mobile (ver grid-area "moreinfo" no CSS).
+              // No desktop essa cópia fica escondida, pois LINKS ABOUT aparece
+              // diretamente embaixo da imagem pelo "lightboxMediaWatchNow".
               if (lightboxMoreInfo) lightboxMoreInfo.innerHTML = watchNowLinksHtml;
 
               // No "Watching Now", as notas por temporada (bloco abaixo) só
@@ -11194,6 +11443,12 @@
                   }
                 }
               }
+
+              const ratedEntries = entries.filter(entry => !entry.spacer);
+              lightboxMal.classList.toggle(
+                'all-unwatched',
+                ratedEntries.length > 0 && ratedEntries.every(entry => entry.unwatched)
+              );
 
               const MAL_NAME_ARROW_SVG = `<svg class="rank-mal-name-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>`;
 
@@ -11864,6 +12119,7 @@
               const netflixUrl = item.getAttribute('data-netflix-url');
               const watchNowMalUrl = item.getAttribute('data-watchnow-mal-url');
               lightbox.classList.toggle('simple-mode', !(isMyRanks || isRichPanel));
+              lightbox.classList.toggle('watching-now-mode', isWatchingNow);
               lightbox.classList.toggle('plan-to-watch-mode', isPlanToWatch);
               lightbox.classList.remove('plan-to-watch-carousel');
 
@@ -11988,6 +12244,7 @@
               if (lightboxTitle) {
                 lightboxTitle.innerHTML = escapeHtml(title);
               }
+              renderSynopsis(item, title);
               if (lightboxList) {
                 const division = getDivisionInfo(item);
                 const tags = getMembershipTags(item.id);
@@ -12296,6 +12553,7 @@
                 lightboxImg.src = '';
                 if (lightboxTitle) lightboxTitle.textContent = '';
                 if (lightboxInfo) lightboxInfo.textContent = '';
+                if (lightboxSynopsis) lightboxSynopsis.innerHTML = '';
                 lightbox.classList.remove('simple-mode');
                 if (calendarBtn) {
                   calendarBtn.classList.remove('visible');
@@ -15573,6 +15831,48 @@
               });
             }
 
+            // Posições usadas no canto direito dos cards da busca. Mantemos o
+            // próprio objeto como chave para diferenciar animes que aparecem em
+            // mais de uma lista com o mesmo id.
+            const searchSourceRankMaps = {
+              watching: new Map(watchingData.map((anime, idx) => [anime, idx + 1])),
+              plan: new Map(planToWatchData.map((anime, idx) => [anime, idx + 1]))
+            };
+            const searchCategoryRankMaps = new Map();
+            [
+              'romance', 'isekai', 'sports', 'comedy', 'mecha',
+              'incomplete', 'announced'
+            ].forEach(category => {
+              searchCategoryRankMaps.set(
+                category,
+                new Map(getFilteredData(category).map((anime, idx) => [anime, idx + 1]))
+              );
+            });
+
+            function buildSearchRankHtml(entry) {
+              let rank = null;
+              let usesHash = true;
+
+              if (entry.tag === 'favep') {
+                rank = entry.anime.peakRank;
+              } else if (entry.tag === 'trueCharacters') {
+                rank = trueCharRankById.get(entry.anime.id);
+              } else if (entry.forcedCategory && searchCategoryRankMaps.has(entry.forcedCategory)) {
+                rank = searchCategoryRankMaps.get(entry.forcedCategory).get(entry.anime);
+                usesHash = !['incomplete', 'announced'].includes(entry.forcedCategory);
+              } else if (entry.tag === 'watching' || entry.tag === 'plan') {
+                rank = searchSourceRankMaps[entry.tag].get(entry.anime);
+                usesHash = false;
+              } else {
+                rank = globalRankById.get(entry.anime.id);
+              }
+
+              if (rank == null) return '';
+              const rankText = String(rank).padStart(2, '0');
+              const colorClass = usesHash ? searchRankBadgeClass(rank) : ' rank-plain';
+              return `<span class="search-result-rank${colorClass}">${usesHash ? '#' : ''}${rankText}</span>`;
+            }
+
             function normalize(str) {
               return String(str || '')
                 .normalize('NFD')
@@ -15998,12 +16298,8 @@
                           })()}
                         </div>
                         <div class="search-result-info">
-                          <span class="search-result-title">${entry.tag === 'favep'
-                            ? `<span class="search-result-rank${searchRankBadgeClass(entry.anime.peakRank)}">#${entry.anime.peakRank}</span>`
-                            : entry.tag === 'trueCharacters'
-                              ? (trueCharRankById.has(entry.anime.id) ? `<span class="search-result-rank${searchRankBadgeClass(trueCharRankById.get(entry.anime.id))}">#${trueCharRankById.get(entry.anime.id)}</span>` : '')
-                              : (entry.tag !== 'watching' && entry.tag !== 'plan' && globalRankById.has(entry.anime.id) ? `<span class="search-result-rank${searchRankBadgeClass(globalRankById.get(entry.anime.id))}">#${globalRankById.get(entry.anime.id)}</span>` : '')
-                          }${highlightTitle(entry.anime.title, query)}</span>
+                          ${buildSearchRankHtml(entry)}
+                          <span class="search-result-title">${highlightTitle(entry.anime.title, query)}</span>
                           ${(() => {
                             if (entry.tag === 'favep') {
                               return entry.anime.subtitle ? `<span class="search-result-meta">${entry.anime.subtitle}</span>` : '';
