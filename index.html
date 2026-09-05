@@ -9890,7 +9890,8 @@
             grid-column: 1 / -1;
             display: flex;
             width: 100%;
-            margin: 0;
+            /* Aproxima o bloco do MyAnimeList da sinopse no mobile. */
+            margin: -10px 0 0;
             padding: 0;
             gap: 11px;
             border: 0;
@@ -12427,22 +12428,13 @@
             // animação/fade por cima. Zero delay.
             function swapItem(nextItem) {
               closeImageZoom();
-              if (!window.matchMedia(MOBILE_QUERY).matches) {
-                showItem(nextItem);
-                return;
-              }
-
-              // Atualiza imagem e título já no evento do toque. Os blocos mais
-              // pesados de metadados entram dois frames depois, deixando o
-              // navegador pintar a troca antes de fazer esse trabalho.
-              primeLightboxVisual(nextItem);
-              pendingItem = nextItem;
-              const token = ++lightboxRenderToken;
-              requestAnimationFrame(() => requestAnimationFrame(() => {
-                if (token !== lightboxRenderToken || pendingItem !== nextItem || !lightbox.classList.contains('open')) return;
-                showItem(nextItem);
-                pendingItem = null;
-              }));
+              // A troca precisa acontecer no próprio evento do clique/toque.
+              // Esperar frames aqui deixava o lightbox aparentemente travado,
+              // principalmente no mobile, quando o usuário passava rápido
+              // pelas setas ou pelo swipe.
+              pendingItem = null;
+              ++lightboxRenderToken;
+              showItem(nextItem);
             }
 
             function navigate(step) {
@@ -12495,27 +12487,14 @@
             }
 
             function openLightbox(item) {
-              const isMobile = window.matchMedia(MOBILE_QUERY).matches;
-              if (isMobile) {
-                primeLightboxVisual(item);
-                pendingItem = item;
-              } else {
-                showItem(item);
-              }
+              // Renderiza a imagem e os dados antes de abrir a camada, evitando
+              // qualquer quadro vazio ou atraso perceptível na abertura.
+              showItem(item);
               lightbox.classList.add('open');
               lightbox.setAttribute('aria-hidden', 'false');
               lockBodyScroll();
               lastFocused = document.activeElement;
               closeBtn.focus();
-
-              if (isMobile) {
-                const token = ++lightboxRenderToken;
-                requestAnimationFrame(() => requestAnimationFrame(() => {
-                  if (token !== lightboxRenderToken || pendingItem !== item || !lightbox.classList.contains('open')) return;
-                  showItem(item);
-                  pendingItem = null;
-                }));
-              }
             }
 
             function closeLightbox(skipScrollRestore) {
@@ -13663,6 +13642,14 @@
                 ambientVisibilityObserver.observe(item);
               });
             }
+
+            // Aquece os pôsteres verticais do lightbox assim que os cards
+            // entram no DOM. Dessa forma, ao abrir/trocar, o navegador usa a
+            // imagem já baixada no cache em vez de iniciar o download no clique.
+            root.querySelectorAll('.anime-item img[data-poster-src]').forEach(img => {
+              const src = img.getAttribute('data-poster-src');
+              if (src) preloadLightboxPoster(src, 'auto');
+            });
           }
 
           // Cores de hover por categoria (mesmas cores usadas nos botões do drawer)
