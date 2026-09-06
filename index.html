@@ -2375,6 +2375,12 @@
           max-width: none;
         }
 
+        @media (min-width: 761px) {
+          .rank-mal-myranks-logo .mal-btn-logo {
+            height: 21px;
+          }
+        }
+
         .rank-mal-label {
           font-family: var(--font-title);
           font-weight: 600;
@@ -2911,8 +2917,8 @@
         }
 
         .rank-mal-toggle-all .rank-mal-name-arrow {
-          width: 9px;
-          height: 9px;
+          width: 12px;
+          height: 12px;
           stroke: var(--muted);
           transition: transform 0.2s ease, stroke 0.18s ease;
         }
@@ -3278,8 +3284,8 @@
         }
 
         /* ── Temporada não assistida (entry.unwatched = true) ──
-          Risca o nome/episódios da temporada e troca a nota por "-/-",
-          indicando visualmente que aquela parte ainda não foi vista. */
+          Mantém nome/episódios discretos e troca a nota por "-/-",
+          sem riscar o texto. */
         .rank-mal-row.unwatched .rank-mal-dots {
           background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1.1px, transparent 1.3px);
         }
@@ -3287,10 +3293,6 @@
         .rank-mal-row.unwatched .rank-mal-season,
         .rank-mal-row.unwatched .rank-mal-eps {
           color: rgba(255,255,255,0.25);
-          text-decoration: line-through;
-          text-decoration-color: rgba(255,255,255,0.25);
-          text-decoration-thickness: 1px;
-          text-decoration-skip-ink: none;
         }
 
         .rank-mal-note.unwatched {
@@ -4086,17 +4088,53 @@
           display: none;
         }
 
+        .poster-lightbox-synopsis-header {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          margin: 0 0 8px;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: var(--muted);
+          cursor: default;
+        }
+
+        button.poster-lightbox-synopsis-header {
+          cursor: pointer;
+          transition: color 0.15s ease, transform 0.18s ease;
+        }
+
+        button.poster-lightbox-synopsis-header:hover,
+        button.poster-lightbox-synopsis-header:focus-visible {
+          color: var(--text);
+        }
+
+        button.poster-lightbox-synopsis-header:active {
+          transform: scale(0.97);
+        }
+
         .poster-lightbox-synopsis-label {
           display: block;
-          margin-bottom: 8px;
           font-family: var(--font-title);
           font-weight: 600;
-          font-size: 11px;
-          line-height: normal;
-          letter-spacing: 0.08em;
+          font-size: 22px;
+          line-height: 1;
+          letter-spacing: 0.01em;
           text-align: left;
           text-transform: uppercase;
-          color: var(--muted);
+        }
+
+        .poster-lightbox-synopsis-header svg {
+          width: 13px;
+          height: 13px;
+          flex: 0 0 13px;
+          stroke-width: 2;
+          transition: transform 0.35s ease;
+        }
+
+        .poster-lightbox-synopsis.expanded .poster-lightbox-synopsis-header svg {
+          transform: rotate(180deg);
         }
 
         .poster-lightbox-synopsis-text {
@@ -4123,61 +4161,15 @@
           line-clamp: unset;
         }
 
-        .poster-lightbox-synopsis-toggle {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 5px;
-          width: fit-content;
-          min-height: 22px;
-          margin: 9px auto 0;
-          padding: 2px 3px;
-          border: 0;
-          border-radius: 0;
-          background: none;
-          box-shadow: none;
-          font-family: var(--font-title);
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: var(--muted);
-          cursor: pointer;
-          transition: color 0.15s ease, transform 0.18s ease;
-        }
-
-        .poster-lightbox-synopsis-toggle:hover,
-        .poster-lightbox-synopsis-toggle:focus-visible {
-          color: var(--text);
-          text-shadow: none;
-        }
-
-        .poster-lightbox-synopsis-toggle:active {
-          transform: translateY(0) scale(0.96);
-        }
-
-        .poster-lightbox-synopsis-toggle svg {
-          width: 12px;
-          height: 12px;
-          flex: 0 0 12px;
-          stroke-width: 2;
-          transition: color 0.15s ease, transform 0.35s ease;
-        }
-
-        .poster-lightbox-synopsis.expanded .poster-lightbox-synopsis-toggle svg {
-          transform: rotate(180deg);
-        }
-
         @media (max-width: 760px) {
-          .poster-lightbox-synopsis-toggle {
-            font-size: 10px;
-            letter-spacing: 0.06em;
+          .poster-lightbox-synopsis-label {
+            font-size: 18px;
           }
 
-          .poster-lightbox-synopsis-toggle svg {
-            width: 10px;
-            height: 10px;
-            flex-basis: 10px;
+          .poster-lightbox-synopsis-header svg {
+            width: 12px;
+            height: 12px;
+            flex-basis: 12px;
           }
         }
 
@@ -9142,7 +9134,9 @@
             height: 100%;
             max-height: none;
             gap: 18px;
-            padding: 34px 30px 30px;
+            /* Ao chegar ao fim da rolagem, a última temporada encosta no
+               mesmo limite inferior do pôster, sem uma faixa vazia extra. */
+            padding: 34px 30px 0;
             overflow-x: hidden;
             border: 0;
             border-radius: 0;
@@ -9875,6 +9869,9 @@
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info .watch-now-links {
             min-height: 52px;
+            /* No layout atual a sinopse fica logo acima deste card. Remove o
+               deslocamento negativo antigo para preservar o respiro do grid. */
+            margin-top: 0;
             border: 0;
             border-radius: 15px;
             background: rgba(255,255,255,0.055);
@@ -10714,20 +10711,22 @@
               }
 
               const canExpand = synopsis.length > 185;
+              const synopsisHeading = canExpand
+                ? `<button type="button" class="poster-lightbox-synopsis-header" aria-expanded="false" aria-label="Mostrar sinopse completa"><span class="poster-lightbox-synopsis-label">SINOPSE</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>`
+                : `<div class="poster-lightbox-synopsis-header"><span class="poster-lightbox-synopsis-label">SINOPSE</span></div>`;
               lightboxSynopsis.innerHTML = `
-                <span class="poster-lightbox-synopsis-label">SINOPSE</span>
+                ${synopsisHeading}
                 <p class="poster-lightbox-synopsis-text">${escapeHtml(synopsis)}</p>
-                ${canExpand ? `<button type="button" class="poster-lightbox-synopsis-toggle" aria-expanded="false">Mostrar mais<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>` : ''}
               `;
             }
 
             if (lightboxSynopsis) {
               lightboxSynopsis.addEventListener('click', function(e) {
-                const toggle = e.target.closest('.poster-lightbox-synopsis-toggle');
-                if (!toggle) return;
+                const toggle = e.target.closest('.poster-lightbox-synopsis-header');
+                if (!toggle || !toggle.matches('button')) return;
                 const expanded = lightboxSynopsis.classList.toggle('expanded');
                 toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-                toggle.firstChild.nodeValue = expanded ? 'Mostrar menos' : 'Mostrar mais';
+                toggle.setAttribute('aria-label', expanded ? 'Recolher sinopse' : 'Mostrar sinopse completa');
               });
             }
 
@@ -11457,6 +11456,10 @@
                 if (entry.spacer) {
                   return {
                     alignable: false,
+                    // O spacer também separa os grupos de colunas. Sem isso,
+                    // uma temporada anterior pode herdar a largura do nome
+                    // exibido depois do divisor (ex.: "Hunter x Hunter (1999)").
+                    groupBreak: true,
                     html: `
                   <div class="rank-mal-row rank-mal-row-break">
                     <span class="rank-mal-spacer"></span>
@@ -11536,13 +11539,12 @@
               });
 
 
-              // Agrupa TODAS as linhas (o card inteiro) em um único
-              // .rank-mal-align-group, para que a coluna de episódios fique
-              // sempre alinhada na mesma posição, mesmo quando uma linha
-              // "irregular" (filme, especial, spacer) aparece no meio. Linhas
-              // não-alinháveis recebem a classe "rank-mal-row-break", que as
-              // faz ocupar a largura inteira do grid (grid-column: 1 / -1) em
-              // vez de participar do alinhamento de colunas.
+              // Agrupa as linhas em blocos de alinhamento. Um spacer inicia um
+              // bloco novo: ele é um divisor visual e não deve fazer o ":" da
+              // temporada anterior acompanhar nomes que vêm depois dele.
+              // Linhas não-alinháveis recebem a classe "rank-mal-row-break",
+              // ocupando a largura inteira do grid em vez de participar das
+              // colunas.
               //
               // O limiar é ">= 1" (não ">= 2"): mesmo com só UMA linha
               // alinhável (ex: One Piece, que só tem "1 temporada" — o resto
@@ -11553,13 +11555,17 @@
               // row-gap de 6px do grid, deixando TODAS as linhas do card
               // (não só a do nome real) visivelmente mais espaçadas que em
               // cards com 2+ temporadas.
-              const alignableCount = rowEntries.filter(r => r.alignable).length;
-              let rowsHtml;
-              if (alignableCount >= 1) {
-                rowsHtml = `<div class="rank-mal-align-group">${rowEntries.map(r => r.html).join('')}</div>`;
-              } else {
-                rowsHtml = rowEntries.map(r => r.html).join('');
-              }
+              const rowGroups = [[]];
+              rowEntries.forEach(row => {
+                rowGroups[rowGroups.length - 1].push(row);
+                if (row.groupBreak) rowGroups.push([]);
+              });
+              const rowsHtml = rowGroups
+                .filter(group => group.length)
+                .map(group => group.some(row => row.alignable)
+                  ? `<div class="rank-mal-align-group">${group.map(row => row.html).join('')}</div>`
+                  : group.map(row => row.html).join(''))
+                .join('');
 
               // No Watching Now/Plan to Watch, o logo do MyAnimeList aparece
               // no bloco de temporadas somente quando o anime também possui
@@ -11578,7 +11584,7 @@
                     ? `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar todos os nomes das temporadas no MyAnimeList" title="Mostrar todos os nomes">${MAL_NAME_ARROW_SVG}</button>`
                     : '';
                   watchingMyRanksHeaderHtml = watchingMyRanksMalUrl
-                    ? `<div class="rank-mal-myranks-header"><a class="rank-mal-label rank-mal-label--mal rank-mal-myranks-logo" href="${watchingMyRanksMalUrl}" target="_blank" rel="noopener" aria-label="Abrir no MyAnimeList"><img class="mal-btn-logo" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async"></a>${watchingToggleAllHtml}</div>`
+                    ? `<div class="rank-mal-myranks-header"><a class="rank-mal-label rank-mal-label--mal rank-mal-myranks-logo" href="${watchingMyRanksMalUrl}" target="_blank" rel="noopener" aria-label="Abrir no MyAnimeList"><img class="mal-btn-logo" style="height: 21px; width: auto;" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async"></a>${watchingToggleAllHtml}</div>`
                     : '';
                 }
                 lightboxMal.innerHTML = `${watchingMyRanksHeaderHtml}<div class="rank-mal-rows">${rowsHtml}</div>`;
@@ -11597,7 +11603,7 @@
                 ? `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar todos os nomes das temporadas no MyAnimeList" title="Mostrar todos os nomes">${MAL_NAME_ARROW_SVG}</button>`
                 : '';
               const myRanksMalHeaderHtml = myRanksMalUrl
-                ? `<div class="rank-mal-myranks-header"><a class="rank-mal-label rank-mal-label--mal rank-mal-myranks-logo" href="${myRanksMalUrl}" target="_blank" rel="noopener" aria-label="Abrir no MyAnimeList"><img class="mal-btn-logo" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async"></a>${toggleAllMalNamesHtml}</div>`
+                ? `<div class="rank-mal-myranks-header"><a class="rank-mal-label rank-mal-label--mal rank-mal-myranks-logo" href="${myRanksMalUrl}" target="_blank" rel="noopener" aria-label="Abrir no MyAnimeList"><img class="mal-btn-logo" style="height: 21px; width: auto;" src="assets/credits-webp/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async"></a>${toggleAllMalNamesHtml}</div>`
                 : '';
               lightboxMal.innerHTML = `${myRanksMalHeaderHtml}<div class="rank-mal-rows">${rowsHtml}</div>`;
             }
@@ -12412,7 +12418,14 @@
                     .replace(/[-–:]?\s*Progress:\s*(?:\d+|-)\s*\/\s*(?:\d+|-)\s*/gi, '')
                     .trim();
                   const infoLines = cleanedInfo.split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
-                  lightboxInfo.innerHTML = infoLines.join('<span class="poster-lightbox-info-break"></span>');
+                  lightboxInfo.innerHTML = infoLines.map((line, index) => {
+                    if (index === 0) return line;
+                    const isMovieLine = /(?:^|\s)(?:\d+\s+)?Filmes?\b/i.test(line);
+                    const keepOnDesktopLine = isMovieLine && window.matchMedia('(min-width: 761px)').matches;
+                    return keepOnDesktopLine
+                      ? ` - ${line}`
+                      : `<span class="poster-lightbox-info-break"></span>${line}`;
+                  }).join('');
                 } else {
                   lightboxInfo.innerHTML = '';
                 }
