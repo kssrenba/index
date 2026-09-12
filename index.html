@@ -4563,6 +4563,12 @@
             display: none !important;
           }
 
+          /* No Watching Now, o calendário fica no quinto atalho do dock
+             inferior e não ocupa espaço no header. */
+          body.mobile-watching-mode #calendarBtn {
+            display: none !important;
+          }
+
           .mobile-bottom-nav {
             position: fixed;
             left: 0;
@@ -13434,7 +13440,7 @@
         <button type="button" class="mobile-nav-btn" data-mobile-mode="watching" style="--nav-color:#2dd4bf" aria-label="Abrir Watching Now">
           <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
         </button>
-        <button type="button" class="mobile-nav-btn" data-mobile-mode="plan" style="--nav-color:#f59e0b" aria-label="Abrir Plan to Watch">
+        <button type="button" class="mobile-nav-btn" id="mobilePlanCalendarBtn" data-mobile-mode="plan" style="--nav-color:#f59e0b" aria-label="Abrir Plan to Watch">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 15 2 2 4-4"></path></svg>
         </button>
       </nav>
@@ -18090,8 +18096,13 @@
           function updatePageTexts() {
             const calendarBtn = document.getElementById('calendarBtn');
             if (calendarBtn) {
-              calendarBtn.hidden = currentCategory !== 'watching';
+              const isMobileViewport = window.matchMedia
+                && window.matchMedia('(max-width: 600px)').matches;
+              // No mobile, o calendário aparece somente no último botão do
+              // menu inferior. No desktop, continua no header do Watching Now.
+              calendarBtn.hidden = currentCategory !== 'watching' || isMobileViewport;
             }
+            document.body.classList.toggle('mobile-watching-mode', currentCategory === 'watching');
 
             if (currentCategory === 'all') pageTitle.innerText = "ranking of all the anime I've watched";
             else if (currentCategory === 'romance') pageTitle.innerText = "romance anime ranking";
@@ -18113,6 +18124,35 @@
 
           function updateMobileBottomNav() {
             if (!mobileBottomNavButtons.length) return;
+            const planCalendarButton = document.getElementById('mobilePlanCalendarBtn');
+            const calendarMode = typeof window.__isReleaseCalendarMode === 'function'
+              ? window.__isReleaseCalendarMode()
+              : false;
+
+            if (planCalendarButton) {
+              const isWatching = currentCategory === 'watching';
+              const calendarIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path></svg>';
+              const planIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 15 2 2 4-4"></path></svg>';
+
+              if (isWatching) {
+                planCalendarButton.removeAttribute('data-mobile-mode');
+                planCalendarButton.setAttribute('data-mobile-action', 'calendar');
+                planCalendarButton.style.setProperty('--nav-color', '#2dd4bf');
+                planCalendarButton.setAttribute('aria-label', calendarMode ? 'Fechar calendário de lançamentos' : 'Abrir calendário de lançamentos');
+                planCalendarButton.innerHTML = calendarMode
+                  ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>'
+                  : calendarIcon;
+                planCalendarButton.classList.toggle('active', calendarMode);
+              } else {
+                planCalendarButton.removeAttribute('data-mobile-action');
+                planCalendarButton.setAttribute('data-mobile-mode', 'plan');
+                planCalendarButton.style.setProperty('--nav-color', '#f59e0b');
+                planCalendarButton.setAttribute('aria-label', 'Abrir Plan to Watch');
+                planCalendarButton.innerHTML = planIcon;
+                planCalendarButton.classList.remove('active');
+              }
+            }
+
             const activePanel = document.querySelector('#categoryDrawer .drawer-panel.active');
             const activeTab = activePanel ? activePanel.getAttribute('data-panel') : '';
             let sideActiveButton = null;
@@ -18126,6 +18166,8 @@
                   ? (isDrawerOpen && activeTab === 'search')
                   : action === 'menu'
                     ? (isDrawerOpen && activeTab !== 'search')
+                    : action === 'calendar'
+                      ? (!isDrawerOpen && currentCategory === 'watching' && calendarMode)
                     : false;
 
               button.classList.toggle('active', active);
@@ -18528,6 +18570,12 @@
                   } else {
                     openDrawer('search', { focus: true });
                   }
+                  return;
+                }
+
+                if (action === 'calendar') {
+                  const calendarBtn = document.getElementById('calendarBtn');
+                  if (calendarBtn && currentCategory === 'watching') calendarBtn.click();
                   return;
                 }
 
@@ -21554,9 +21602,15 @@
               document.body.classList.toggle('release-calendar-mode', calendarMode);
               calendarBtn.classList.toggle('active', calendarMode);
               calendarBtn.setAttribute('aria-pressed', calendarMode ? 'true' : 'false');
-              calendarBtn.setAttribute('title', calendarMode ? 'Close release calendar' : 'Release calendar');
-              calendarBtn.setAttribute('aria-label', calendarMode ? 'Close release calendar' : 'Release calendar');
+              const calendarTooltip = calendarMode ? 'Fechar' : 'Calendário de lançamentos';
+              calendarBtn.setAttribute('data-tooltip', calendarTooltip);
+              calendarBtn.setAttribute('title', calendarTooltip);
+              calendarBtn.setAttribute('aria-label', calendarTooltip);
               calendarBtn.innerHTML = calendarMode ? closeIconSvg : calendarIconSvg;
+
+              // Mantém o quinto atalho do menu inferior sincronizado com o
+              // estado do calendário quando ele é aberto ou fechado.
+              if (typeof updateMobileBottomNav === 'function') updateMobileBottomNav();
 
               calendarView.hidden = !calendarMode;
               calendarView.setAttribute('aria-hidden', calendarMode ? 'false' : 'true');
