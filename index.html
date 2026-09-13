@@ -2936,9 +2936,8 @@
           transform: rotate(180deg);
         }
 
-        /* Controle sempre visível ao lado do logo MyAnimeList. Esta regra
-           vence qualquer estilo genérico de botão/tooltip que tente apagá-lo. */
-        .poster-lightbox .rank-mal-myranks-header > .rank-mal-toggle-all[data-tooltip] {
+        /* Controle sempre visível ao lado do logo MyAnimeList. */
+        .poster-lightbox .rank-mal-myranks-header > .rank-mal-toggle-all {
           position: relative !important;
           inset: auto !important;
           display: inline-flex !important;
@@ -2958,19 +2957,6 @@
           height: 17px;
           stroke: currentColor !important;
           stroke-width: 2.8;
-        }
-
-        /* Tooltip exclusivo da seta do MAL: abre horizontalmente para não
-           cobrir o logo nem a primeira linha da lista. */
-        .poster-lightbox .rank-mal-myranks-header > .rank-mal-toggle-all[data-tooltip]::after {
-          left: calc(100% + 8px);
-          top: 50%;
-          bottom: auto;
-          transform: translate(3px, -50%) scale(0.98);
-        }
-
-        .poster-lightbox .rank-mal-myranks-header > .rank-mal-toggle-all[data-tooltip]:hover::after {
-          transform: translate(0, -50%) scale(1);
         }
 
         .rank-mal-rows {
@@ -14627,7 +14613,7 @@
                   // A seta é um controle fixo do cabeçalho do MAL: aparece em
                   // todos os cards, mesmo quando este anime ainda não possui
                   // malName cadastrado em alguma temporada.
-                  const watchingToggleAllHtml = `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar todos os nomes das temporadas no MyAnimeList" data-tooltip="Mostrar todos os nomes">${MAL_NAME_ARROW_SVG}</button>`;
+                  const watchingToggleAllHtml = `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar todos os nomes das temporadas no MyAnimeList">${MAL_NAME_ARROW_SVG}</button>`;
                   watchingMyRanksHeaderHtml = watchingMyRanksMalUrl
                     ? `<div class="rank-mal-myranks-header"><a class="rank-mal-label rank-mal-label--mal rank-mal-myranks-logo" href="${watchingMyRanksMalUrl}" target="_blank" rel="noopener" aria-label="Abrir no MyAnimeList"><img class="mal-btn-logo" style="height: 21px; width: auto;" src="assets/logos/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async"></a>${watchingToggleAllHtml}</div>`
                     : '';
@@ -14645,7 +14631,7 @@
                 return count + (name ? 1 : 0);
               }, 0);
               // Mesmo comportamento no Global Ranking e nas demais listas.
-              const toggleAllMalNamesHtml = `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar todos os nomes das temporadas no MyAnimeList" data-tooltip="Mostrar todos os nomes">${MAL_NAME_ARROW_SVG}</button>`;
+              const toggleAllMalNamesHtml = `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar todos os nomes das temporadas no MyAnimeList">${MAL_NAME_ARROW_SVG}</button>`;
               const myRanksMalHeaderHtml = myRanksMalUrl
                 ? `<div class="rank-mal-myranks-header"><a class="rank-mal-label rank-mal-label--mal rank-mal-myranks-logo" href="${myRanksMalUrl}" target="_blank" rel="noopener" aria-label="Abrir no MyAnimeList"><img class="mal-btn-logo" style="height: 21px; width: auto;" src="assets/logos/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async"></a>${toggleAllMalNamesHtml}</div>`
                 : '';
