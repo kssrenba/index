@@ -2365,6 +2365,10 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/i-want-to-eat-your-pancreas",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/36098/Kimi_no_Suizou_wo_Tabetai",
+
+    mal: [
+      { label: "Filme", episodes: "1h48m", malName: "Kimi no Suizou wo Tabetai", unwatched: true  },
+    ],  
   },
   {
     id: "fate-zero",
@@ -2376,6 +2380,11 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/fate-zero",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRJQ04Z3Y/fatezero",
     malUrl: "https://myanimelist.net/anime/10087/Fate_Zero",
+
+    mal: [
+      { label: "1ª temporada", episodes: 13, malName: "Fate/Zero", unwatched: true  },
+      { label: "2ª temporada", episodes: 12, malName: "Fate/Zero 2nd Season", unwatched: true  },
+    ],  
   },
   {
     id: "fate-heavens-feel",
@@ -2388,6 +2397,12 @@ const rawPlanToWatchData = [
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GXJHM39V0/fatestay-night-heavens-feel",
     malUrl:
       "https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower",
+
+    mal: [
+      { label: "Movie: Heaven's Feel - I. Presage Flower", episodes: "2h00m", malName: "Fate/stay night Movie: Heaven's Feel - I. Presage Flower", unwatched: true  },
+      { label: "Movie: Heaven's Feel - II. Lost Butterfly", episodes: "1h57m", malName: "Fate/stay night Movie: Heaven's Feel - II. Lost Butterfly", unwatched: true  },
+      { label: "Movie: Heaven's Feel - III. Spring Song", episodes: "2h02m", malName: "Fate/stay night Movie: Heaven's Feel - III. Spring Song", unwatched: true  },
+    ],  
   },
   {
     id: "chainsaw-man",
@@ -2399,6 +2414,11 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/chainsaw-man",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GVDHX8QNW/chainsaw-man",
     malUrl: "https://myanimelist.net/anime/44511/Chainsaw_Man",
+
+    mal: [
+      { label: "1 temporada", episodes: 12, malName: "Chainsaw Man", unwatched: true  },
+      { label: "Movie: Reze Arc", episodes: "1h39m", malName: "Chainsaw Man Movie: Reze-hen", unwatched: true  },
+    ],  
   },
   {
     id: "cowboy-bebop",
@@ -2410,6 +2430,11 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/cowboy-bebop",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYVNXMVP6/cowboy-bebop",
     malUrl: "https://myanimelist.net/anime/1/Cowboy_Bebop",
+
+    mal: [
+      { label: "1 temporada", episodes: 26, malName: "Cowboy Bebop", unwatched: true  },
+      { label: "Cowbot Bebop: The Movie", episodes: "1h55m", malName: "Cowboy Bebop: Tengoku no Tobira", unwatched: true  },
+    ],  
   },
   {
     id: "your-name",
@@ -2421,6 +2446,10 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/your-name",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/32281/Kimi_no_Na_wa",
+
+    mal: [
+      { label: "Filme", episodes: "1h50m", malName: "Kimi no Na wa.", unwatched: true  },
+    ],  
   },
   {
     id: "heavenly-delusion",
@@ -2831,8 +2860,8 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/41468/Burn_the_Witch",
   },
   {
-    id: "twisted-wonderland-heartslabyul",
-    img: "plantowatch-images/plantowatch/twisted-wonderland-heartslabyul.webp",
+    id: "disney-twisted-worderland",
+    img: "plantowatch-images/plantowatch/disney-twisted-worderland.webp",
     title: "Disney: Twisted-Wonderland The Animation - Episode of Heartslabyul",
     info: "1 temporada: 8 episódios",
     studio: "Yumeta Company / Graphinica",
@@ -2842,8 +2871,8 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime.php?q=Disney%20Twisted-Wonderland%20The%20Animation",
   },
   {
-    id: "dragon-raja-blazing-dawn",
-    img: "plantowatch-images/plantowatch/dragon-raja-blazing-dawn.webp",
+    id: "dragon-raja",
+    img: "plantowatch-images/plantowatch/dragon-raja.webp",
     title: "Dragon Raja: The Blazing Dawn",
     info: "1 temporada: 16 episódios",
     studio: "Garden Culture",
@@ -2853,8 +2882,8 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/44408/Long_Zu",
   },
   {
-    id: "dusk-beyond-the-end-of-the-world",
-    img: "plantowatch-images/plantowatch/dusk-beyond-the-end-of-the-world.webp",
+    id: "dusk-beyond",
+    img: "plantowatch-images/plantowatch/dusk-beyond.webp",
     title: "Dusk Beyond the End of the World",
     info: "13 episódios",
     studio: "P.A. Works",
