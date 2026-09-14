@@ -2,10 +2,12 @@
 // Versões e caches pertencem apenas ao diretório deste site no GitHub Pages.
 const SCOPE_URL = new URL(self.registration.scope);
 const CACHE_PREFIX = 'myhtml-' + encodeURIComponent(SCOPE_URL.pathname) + '-';
-const APP_CACHE = CACHE_PREFIX + 'app-v4';
-const IMAGE_CACHE = CACHE_PREFIX + 'images-v4';
+const APP_CACHE = CACHE_PREFIX + 'app-v5';
+const IMAGE_CACHE = CACHE_PREFIX + 'images-v5';
 const MAX_IMAGES = 400;
-const IMAGE_RECHECK_MS = 6 * 60 * 60 * 1000;
+// Capas podem ser trocadas mantendo o mesmo nome de arquivo. Revalida em até
+// cinco minutos, em vez de manter uma versão antiga por seis horas.
+const IMAGE_RECHECK_MS = 5 * 60 * 1000;
 const checkedImages = new Map();
 const pendingFetches = new Map();
 let imageWrites = 0;
@@ -72,7 +74,10 @@ function cachedResponse(event, cacheName, image = false) {
     }
     const network = refresh(request, cacheName);
     network.then(finishMaintenance, finishMaintenance);
-    if (cached && !forced) return cached;
+    // HTML, JS e CSS sempre tentam a rede primeiro: assim um deploy novo no
+    // GitHub Pages aparece já no próximo carregamento. Imagens continuam
+    // cache-first entre as revalidações para preservar a navegação rápida.
+    if (cached && !forced && image) return cached;
     try {
       const response = await network;
       return response.ok || !cached ? response : cached;
