@@ -2078,6 +2078,15 @@
           transform: scale(1);
         }
 
+        /* True Characters usa artes 1:1; ao ampliar no mobile, preserva o
+           enquadramento quadrado em vez do formato vertical dos pôsteres. */
+        .poster-lightbox-zoom.true-character-zoom img {
+          width: min(88vw, 520px);
+          height: min(88vw, 520px);
+          aspect-ratio: 1 / 1;
+          object-fit: cover;
+        }
+
         @media (max-width: 760px) {
           .poster-lightbox-image-wrap {
             cursor: zoom-in;
@@ -5266,6 +5275,11 @@
           line-height: 1.16;
           color: #fff;
           text-wrap: balance;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          overflow: hidden;
         }
 
         ol.ranking.mode-true-characters .title-anime::before { content: none; }
@@ -5302,25 +5316,18 @@
         /* A obra de origem vira uma assinatura do personagem, em vez de uma
            segunda linha apagada. */
         ol.ranking.mode-true-characters.category-trueCharacters .info-row {
-          display: inline-flex;
+          display: block;
           align-items: center;
-          width: fit-content;
+          width: 100%;
           max-width: 100%;
           min-width: 0;
-          padding: 5px 9px 5px 0;
-          border-radius: 0 8px 8px 0;
-          background: linear-gradient(90deg, color-mix(in srgb, var(--item-hover-color, #f472b6) 13%, transparent), transparent);
+          padding: 0;
+          border-radius: 0;
+          background: none;
         }
 
         ol.ranking.mode-true-characters.category-trueCharacters .info-row::before {
-          content: "FROM";
-          flex: 0 0 auto;
-          margin-right: 8px;
-          padding-left: 8px;
-          border-left: 2px solid color-mix(in srgb, var(--item-hover-color, #f472b6) 80%, #fff);
-          color: color-mix(in srgb, var(--item-hover-color, #f472b6) 72%, #fff);
-          font: 800 8px/1 var(--font-title);
-          letter-spacing: 0.12em;
+          content: none;
         }
 
         ol.ranking.mode-true-characters.category-trueCharacters .info-row .info {
@@ -5329,6 +5336,20 @@
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.01em;
+          white-space: normal;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          overflow: hidden;
+          text-overflow: clip;
+        }
+
+        /* A origem recebe o espaço que o nome do personagem não usar:
+           nome em 1 linha → obra em até 2; nome em 2 → obra em 1. */
+        ol.ranking.mode-true-characters.category-trueCharacters li.true-character-name-two-lines .info-row .info {
+          -webkit-line-clamp: 1;
+          line-clamp: 1;
         }
 
         @media (max-width: 1100px) {
@@ -13601,33 +13622,25 @@
             bottom: calc(94px + env(safe-area-inset-bottom, 0px)) !important;
           }
         }
-/* Mantém a assinatura da obra visível também nos layouts responsivos. */
+/* Origem do personagem: sem o rótulo "FROM" e com linhas distribuídas
+   conforme a altura que o nome do personagem ocupa. */
 ol.ranking.mode-true-characters.category-trueCharacters .info-row {
-  display: inline-flex !important;
-  align-items: center !important;
-  width: fit-content !important;
+  display: block !important;
+  width: 220px !important;
   max-width: 100% !important;
   min-width: 0 !important;
-  padding: 5px 9px 5px 0 !important;
-  border-radius: 0 8px 8px 0 !important;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--item-hover-color, #f472b6) 13%, transparent), transparent) !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
 }
 
 ol.ranking.mode-true-characters.category-trueCharacters .info-row::before {
-  content: "FROM" !important;
-  display: block !important;
-  flex: 0 0 auto;
-  margin-right: 8px;
-  padding-left: 8px;
-  border-left: 2px solid color-mix(in srgb, var(--item-hover-color, #f472b6) 80%, #fff);
-  color: color-mix(in srgb, var(--item-hover-color, #f472b6) 72%, #fff);
-  font: 800 8px/1 var(--font-title);
-  letter-spacing: 0.12em;
+  content: none !important;
 }
 
 ol.ranking.mode-true-characters.category-trueCharacters .info-row .info {
-  display: block !important;
-  width: auto !important;
+  display: -webkit-box !important;
+  width: 100% !important;
   min-width: 0 !important;
   max-width: 100% !important;
   overflow: hidden;
@@ -13636,8 +13649,11 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row .info {
   font-weight: 700 !important;
   letter-spacing: 0.01em;
   line-height: 1.2;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  white-space: normal !important;
+  text-overflow: clip;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 /* Deixa uma margem clara entre o nome da obra e o ranking gigante. */
@@ -13648,14 +13664,18 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row {
 }
 
 ol.ranking.mode-true-characters.category-trueCharacters .info-row .info {
-  flex: 1 1 0;
   min-width: 0 !important;
   cursor: pointer;
 }
 
+ol.ranking.mode-true-characters.category-trueCharacters li.true-character-name-two-lines .info-row .info {
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+}
+
 /* A obra de origem fica limpa no repouso e ganha realce discreto no hover. */
 ol.ranking.mode-true-characters.category-trueCharacters .info-row {
-  padding: 4px 7px !important;
+  padding: 0 !important;
   background: transparent !important;
   border-radius: 6px !important;
   transition: background-color .16s ease, transform .16s ease;
@@ -14340,16 +14360,25 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               lightboxZoom.setAttribute('aria-hidden', 'true');
             }
 
+            // Reutilizado pelos cards de True Characters: no mobile, tocar
+            // somente na imagem mostra a mesma ampliação fullscreen do
+            // pôster dentro do posterlightbox.
+            window.__openPosterImageZoom = function(src, alt = '', isTrueCharacter = false) {
+              if (!window.matchMedia(MOBILE_QUERY).matches || !lightboxZoom || !lightboxZoomImg || !src) return;
+              lightboxZoomImg.src = src;
+              lightboxZoomImg.alt = alt;
+              lightboxZoom.classList.toggle('true-character-zoom', isTrueCharacter);
+              lightboxZoom.classList.add('open');
+              lightboxZoom.setAttribute('aria-hidden', 'false');
+            };
+
             if (lightboxImageWrap && lightboxZoom && lightboxZoomImg) {
               lightboxImageWrap.addEventListener('click', function(e) {
                 if (!window.matchMedia(MOBILE_QUERY).matches) return;
                 if (!lightboxImg.src) return;
                 e.preventDefault();
                 e.stopPropagation();
-                lightboxZoomImg.src = lightboxImg.src;
-                lightboxZoomImg.alt = lightboxImg.alt;
-                lightboxZoom.classList.add('open');
-                lightboxZoom.setAttribute('aria-hidden', 'false');
+                window.__openPosterImageZoom(lightboxImg.src, lightboxImg.alt);
               });
 
               lightboxZoom.addEventListener('click', function(e) {
@@ -18869,8 +18898,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           }
 
           function showTrueCharacterAnimePreview(sourceCard) {
-            if (currentCategory !== 'trueCharacters'
-                || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            if (currentCategory !== 'trueCharacters') return;
 
             const anime = findAllAnimeForCharacter(sourceCard.dataset.characterOrigin);
             if (!anime) return;
@@ -18926,6 +18954,20 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           }
 
           document.addEventListener('click', event => {
+            // Mobile: tocar apenas na imagem do True Character a amplia em
+            // tela cheia. O texto da obra continua reservado ao lightbox.
+            const characterPoster = event.target.closest('ol.category-trueCharacters li.anime-item[data-character-origin] .poster-wrap');
+            if (characterPoster && window.matchMedia('(max-width: 760px)').matches) {
+              const image = characterPoster.querySelector('img.thumb');
+              const src = image && (image.currentSrc || image.src || image.dataset.posterSrc || image.dataset.src);
+              if (src && typeof window.__openPosterImageZoom === 'function') {
+                event.preventDefault();
+                event.stopPropagation();
+                window.__openPosterImageZoom(src, image.alt || '', true);
+                return;
+              }
+            }
+
             // No True Characters, só o nome da obra de origem abre o
             // posterlightbox. O restante do card fica apenas informativo.
             const originName = event.target.closest('ol.category-trueCharacters li.anime-item[data-character-origin] .info-row .info');
@@ -20021,6 +20063,32 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
           const __listDomCache = new Map();
           const __rankingInitialRenderLimit = 30;
+
+          function balanceTrueCharacterCardLines(root = document) {
+            root.querySelectorAll('ol.category-trueCharacters li.anime-item').forEach(card => {
+              const characterName = card.querySelector('.title-anime');
+              if (!characterName) return;
+
+              // Mede o nome sem depender do tamanho fixo da fonte. Acima de
+              // uma linha, a obra fica limitada a uma; caso contrário, pode
+              // usar as duas linhas que sobraram.
+              card.classList.remove('true-character-name-two-lines');
+              const styles = getComputedStyle(characterName);
+              const lineHeight = parseFloat(styles.lineHeight);
+              const usesTwoLines = Number.isFinite(lineHeight)
+                && characterName.getBoundingClientRect().height > lineHeight * 1.45;
+              card.classList.toggle('true-character-name-two-lines', usesTwoLines);
+            });
+          }
+
+          let __trueCharacterBalanceResizeTO = null;
+          window.addEventListener('resize', () => {
+            clearTimeout(__trueCharacterBalanceResizeTO);
+            __trueCharacterBalanceResizeTO = setTimeout(() => {
+              balanceTrueCharacterCardLines(document);
+            }, 100);
+          }, { passive: true });
+
           function render() {
             if (__cancelScrollRestore) __cancelScrollRestore();
             __posterRenderGeneration++;
@@ -20074,6 +20142,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             loadMoreContainer.style.display = 'flex';
             initLoadMore();
             initPosterImages(list);
+            balanceTrueCharacterCardLines(list);
             if (!reused) {
               attachInternalLinks();
               attachCardClicks();
@@ -20253,6 +20322,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               attachCardClicks();
               initPosterImages(list);
               initAnnounceStrips();
+              balanceTrueCharacterCardLines(list);
             }
 
             function updateVisibility(animate = false) {

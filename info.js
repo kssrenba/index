@@ -3198,6 +3198,18 @@ const trueCharactersData = [
     info: "That Time I Got Reincarnated as a Slime",
   },
   {
+    id: "echidna",
+    img: "other-images/truecharacters/echidna.webp",
+    title: "Echidna",
+    info: "Re:ZERO - Starting Life in Another World",
+  },
+  {
+    id: "diablo",
+    img: "other-images/truecharacters/diablo.webp",
+    title: "Diablo",
+    info: "That Time I Got Reincarnated as a Slime",
+  },
+  {
     id: "cc",
     img: "other-images/truecharacters/cc.webp",
     title: "C.C.",
@@ -3209,12 +3221,7 @@ const trueCharactersData = [
     title: "Shuuji Taira",
     info: "You and I are Polar Opposites",
   },
-  {
-    id: "echidna",
-    img: "other-images/truecharacters/echidna.webp",
-    title: "Echidna",
-    info: "Re:ZERO - Starting Life in Another World",
-  },
+
   {
     id: "bakugo",
     img: "other-images/truecharacters/bakugo.webp",
