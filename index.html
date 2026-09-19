@@ -5080,6 +5080,14 @@
             background 0.3s ease;
         }
 
+        /* No True Characters, cada linha deve manter exatamente a mesma
+           altura: conteúdo ou imagem nunca podem esticar um card isolado. */
+        ol.ranking.mode-true-characters.category-trueCharacters li.anime-item {
+          height: var(--true-character-card-h);
+          min-height: var(--true-character-card-h);
+          max-height: var(--true-character-card-h);
+        }
+
         ol.ranking.mode-true-characters li.anime-item::before {
           content: none;
         }
@@ -5289,6 +5297,38 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+
+        /* A obra de origem vira uma assinatura do personagem, em vez de uma
+           segunda linha apagada. */
+        ol.ranking.mode-true-characters.category-trueCharacters .info-row {
+          display: inline-flex;
+          align-items: center;
+          width: fit-content;
+          max-width: 100%;
+          min-width: 0;
+          padding: 5px 9px 5px 0;
+          border-radius: 0 8px 8px 0;
+          background: linear-gradient(90deg, color-mix(in srgb, var(--item-hover-color, #f472b6) 13%, transparent), transparent);
+        }
+
+        ol.ranking.mode-true-characters.category-trueCharacters .info-row::before {
+          content: "FROM";
+          flex: 0 0 auto;
+          margin-right: 8px;
+          padding-left: 8px;
+          border-left: 2px solid color-mix(in srgb, var(--item-hover-color, #f472b6) 80%, #fff);
+          color: color-mix(in srgb, var(--item-hover-color, #f472b6) 72%, #fff);
+          font: 800 8px/1 var(--font-title);
+          letter-spacing: 0.12em;
+        }
+
+        ol.ranking.mode-true-characters.category-trueCharacters .info-row .info {
+          min-width: 0;
+          color: rgba(255,255,255,0.78);
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.01em;
         }
 
         @media (max-width: 1100px) {
@@ -12897,6 +12937,124 @@
           filter: none !important;
           transition: transform 0.3s ease;
         }
+
+        /* Preview do anime de origem ao clicar em um True Character.
+           Continua usando o card real do All Anime, mas recebe um visual
+           próprio e compacto para não parecer uma segunda lista inteira. */
+        .true-character-anime-preview {
+          --true-character-preview-height: 176px;
+          position: fixed;
+          z-index: 10020;
+          width: auto;
+          max-width: none;
+          padding: 0;
+          border: 1px solid rgba(255,255,255,0.13);
+          border-radius: 18px;
+          background: transparent;
+          box-shadow: 0 22px 50px rgba(0, 0, 0, 0.66), inset 0 1px 0 rgba(255,255,255,0.05);
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transform: translateY(10px) scale(0.985);
+          transform-origin: center bottom;
+          transition: opacity 120ms ease, transform 160ms ease, visibility 0s linear 160ms;
+        }
+
+        .true-character-anime-preview.is-visible {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0) scale(1);
+          transition-delay: 0s;
+        }
+
+        .true-character-anime-preview ol.ranking {
+          display: block;
+          width: 100%;
+          contain: none;
+        }
+
+        .true-character-anime-preview ol.ranking.mode-true-characters.category-all > li.anime-item {
+          --true-character-poster-w: 128px;
+          width: 100%;
+          height: var(--true-character-preview-height) !important;
+          min-height: var(--true-character-preview-height) !important;
+          max-height: var(--true-character-preview-height) !important;
+          content-visibility: visible;
+          contain: layout style paint;
+          cursor: default !important;
+          border: 0;
+          border-radius: 17px;
+          background: linear-gradient(120deg, rgba(255,255,255,0.055), rgba(255,255,255,0.008) 60%), rgba(9,9,12,0.96);
+        }
+
+        .true-character-anime-preview ol.category-all li.anime-item .poster-wrap {
+          height: var(--true-character-preview-height) !important;
+          min-height: var(--true-character-preview-height) !important;
+          max-height: var(--true-character-preview-height) !important;
+        }
+
+        .true-character-anime-preview ol.category-all .meta::before {
+          content: "#" counter(item, decimal-leading-zero);
+          top: 18px;
+          right: 18px;
+          z-index: 3;
+          width: auto;
+          padding: 6px 8px 5px;
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 8px;
+          background: rgba(8,8,10,0.48);
+          color: rgba(255,255,255,0.74);
+          font: 800 13px/1 var(--font-title);
+          letter-spacing: -0.035em;
+          transform: none !important;
+          backdrop-filter: blur(8px);
+        }
+
+        .true-character-anime-preview ol.category-all .title-anime {
+          font-size: 17px;
+          line-height: 1.12;
+        }
+
+        .true-character-anime-preview ol.category-all .meta {
+          gap: 7px;
+          padding: 26px 70px 22px 20px;
+        }
+
+        .true-character-anime-preview ol.category-all .title-row {
+          padding-top: 0;
+        }
+
+        .true-character-anime-preview ol.category-all .title-row::before {
+          content: "ORIGIN ANIME";
+          display: block;
+          margin-bottom: 8px;
+          color: rgba(255,255,255,0.40);
+          font: 800 9px/1 var(--font-title);
+          letter-spacing: 0.14em;
+        }
+
+        .true-character-anime-preview ol.category-all .info-row .info {
+          font-size: 11px;
+        }
+
+        /* As capas verticais do All Anime usam cover. Na prévia, ancora o
+           recorte embaixo para não esconder a parte inferior da arte. */
+        .true-character-anime-preview ol.category-all .poster-wrap .thumb {
+          object-position: center bottom !important;
+        }
+
+        .true-character-anime-preview li.anime-item:hover {
+          transform: none;
+        }
+
+        .true-character-anime-preview li.anime-item:hover .meta::before {
+          transform: none !important;
+        }
+
+        @media (hover: none), (pointer: coarse), (max-width: 760px) {
+          .true-character-anime-preview { display: none !important; }
+        }
+
         .poster-wrap:not(.poster-loaded):not(.has-fallback) { animation: none !important; }
         @media (max-width: 600px) {
           ol.ranking.mode-true-characters li.anime-item {
@@ -13443,6 +13601,80 @@
             bottom: calc(94px + env(safe-area-inset-bottom, 0px)) !important;
           }
         }
+/* Mantém a assinatura da obra visível também nos layouts responsivos. */
+ol.ranking.mode-true-characters.category-trueCharacters .info-row {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  padding: 5px 9px 5px 0 !important;
+  border-radius: 0 8px 8px 0 !important;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--item-hover-color, #f472b6) 13%, transparent), transparent) !important;
+}
+
+ol.ranking.mode-true-characters.category-trueCharacters .info-row::before {
+  content: "FROM" !important;
+  display: block !important;
+  flex: 0 0 auto;
+  margin-right: 8px;
+  padding-left: 8px;
+  border-left: 2px solid color-mix(in srgb, var(--item-hover-color, #f472b6) 80%, #fff);
+  color: color-mix(in srgb, var(--item-hover-color, #f472b6) 72%, #fff);
+  font: 800 8px/1 var(--font-title);
+  letter-spacing: 0.12em;
+}
+
+ol.ranking.mode-true-characters.category-trueCharacters .info-row .info {
+  display: block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.78) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Deixa uma margem clara entre o nome da obra e o ranking gigante. */
+ol.ranking.mode-true-characters.category-trueCharacters .info-row {
+  box-sizing: border-box;
+  width: 220px !important;
+  max-width: 220px !important;
+}
+
+ol.ranking.mode-true-characters.category-trueCharacters .info-row .info {
+  flex: 1 1 0;
+  min-width: 0 !important;
+  cursor: pointer;
+}
+
+/* A obra de origem fica limpa no repouso e ganha realce discreto no hover. */
+ol.ranking.mode-true-characters.category-trueCharacters .info-row {
+  padding: 4px 7px !important;
+  background: transparent !important;
+  border-radius: 6px !important;
+  transition: background-color .16s ease, transform .16s ease;
+}
+
+ol.ranking.mode-true-characters.category-trueCharacters .info-row::before {
+  padding-left: 0;
+  border-left: 0;
+  color: rgba(255, 255, 255, .58);
+}
+
+ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover {
+  background: rgba(255, 255, 255, .09) !important;
+  transform: translateX(2px);
+}
+
+ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
+  color: #fff !important;
+}
 </style>
 
     </head>
@@ -16673,6 +16905,10 @@
               closeBtn.focus();
             }
 
+            // API interna usada por contextos que representam um anime fora da
+            // lista principal, como True Characters.
+            window.__openPosterLightboxForAnime = openLightbox;
+
             function closeLightbox(skipScrollRestore) {
               lightboxRenderToken++;
               pendingItem = null;
@@ -18314,6 +18550,17 @@
             return baseFolder + '/' + folder + '/' + filename;
           }
 
+          // As imagens de True Characters normalmente são substituídas mantendo
+          // o mesmo nome de arquivo. Um identificador por carregamento evita que
+          // o navegador/PWA reutilize a versão antiga após apenas atualizar a página.
+          const trueCharacterImageRevision = Date.now().toString(36);
+          function freshTrueCharacterImageSrc(originalPath) {
+            if (!originalPath) return originalPath;
+            const path = String(originalPath);
+            if (!path.startsWith('other-images/truecharacters/')) return path;
+            return path + (path.includes('?') ? '&' : '?') + 'v=' + trueCharacterImageRevision;
+          }
+
           function createAnimeCard(anime, mode, seasonColor = null, rankIndex = null) {
             if (!anime) return '';
             let remainingInfo = anime.info ? String(anime.info).trim() : '';
@@ -18398,11 +18645,19 @@
             const normalCardThumb = (mode === 'announced' || mode === 'announced-unwatched')
               ? sequelsThumbSrc(anime.img)
               : anime.img;
-            const cardThumbSrc = isMobileCard
+            let cardThumbSrc = isMobileCard
               ? mobileCardSearchThumbSrc(anime.img)
               : normalCardThumb;
+            if (mode === 'trueCharacters') cardThumbSrc = freshTrueCharacterImageSrc(cardThumbSrc);
             const ambientInlineStyle = mode === 'trueCharacters' && cardThumbSrc
               ? ` style="background-image:url('${String(cardThumbSrc).replace(/["'<>]/g, c => ({ '"': '%22', "'": '%27', '<': '%3C', '>': '%3E' })[c])}')"`
+              : '';
+            const characterOriginAttr = mode === 'trueCharacters' && anime.info
+              ? ` data-character-origin="${String(anime.info)
+                  .replace(/&/g, '&amp;')
+                  .replace(/"/g, '&quot;')
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')}"`
               : '';
 
             let progressHtml = '';
@@ -18543,7 +18798,7 @@
             }
 
             return `
-              <li class="anime-item${subClass}${topRankClass}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${nfAttr}${navAllAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}${mode === 'plan' ? ' data-plan-to-watch="1"' : ''}${mode === 'announced-unwatched' ? ' data-rich-panel="1"' : ''}>
+              <li class="anime-item${subClass}${topRankClass}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${nfAttr}${navAllAttr}${characterOriginAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}${mode === 'plan' ? ' data-plan-to-watch="1"' : ''}${mode === 'announced-unwatched' ? ' data-rich-panel="1"' : ''}>
                 <div class="anime-item-ambient" aria-hidden="true"${ambientInlineStyle}></div>
                 <div class="anime-item-ambient-shade" aria-hidden="true"></div>
                 <div class="rank-wrap">
@@ -18569,6 +18824,133 @@
               </li>
             `;
           }
+
+          // ── True Characters → preview do card correspondente no All Anime ──
+          const trueCharacterAnimePreview = document.createElement('aside');
+          trueCharacterAnimePreview.className = 'true-character-anime-preview';
+          trueCharacterAnimePreview.setAttribute('aria-hidden', 'true');
+          document.body.appendChild(trueCharacterAnimePreview);
+
+          let activeTrueCharacterPreviewCard = null;
+
+          function normalizeAnimeLookupTitle(value) {
+            return String(value || '')
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .toLowerCase()
+              .replace(/&/g, ' and ')
+              .replace(/\b(?:season|part)\s+\d+\b/g, ' ')
+              .replace(/\(\s*\d{4}\s*\)/g, ' ')
+              .replace(/[^a-z0-9]+/g, ' ')
+              .trim();
+          }
+
+          function findAllAnimeForCharacter(originTitle) {
+            const wanted = normalizeAnimeLookupTitle(originTitle);
+            if (!wanted) return null;
+
+            const available = animeData.filter(anime => !planIds.has(anime.id));
+            return available.find(anime => normalizeAnimeLookupTitle(anime.title) === wanted)
+              || available.find(anime => {
+                const title = normalizeAnimeLookupTitle(anime.title);
+                return title.startsWith(wanted + ' ') || wanted.startsWith(title + ' ');
+              })
+              || null;
+          }
+
+          function positionTrueCharacterPreview(sourceCard) {
+            const cardRect = sourceCard.getBoundingClientRect();
+            // A prévia substitui visualmente o card clicado. Assim ela fica
+            // associada ao personagem sem criar espaços vazios na grade.
+            trueCharacterAnimePreview.style.width = Math.round(cardRect.width) + 'px';
+            trueCharacterAnimePreview.style.setProperty('--true-character-preview-height', Math.round(cardRect.height) + 'px');
+            trueCharacterAnimePreview.style.left = Math.round(cardRect.left) + 'px';
+            trueCharacterAnimePreview.style.top = Math.round(cardRect.top) + 'px';
+          }
+
+          function showTrueCharacterAnimePreview(sourceCard) {
+            if (currentCategory !== 'trueCharacters'
+                || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+            const anime = findAllAnimeForCharacter(sourceCard.dataset.characterOrigin);
+            if (!anime) return;
+
+            // True Characters abre a obra de origem no posterlightbox normal
+            // do site. Isso preserva o clique, mas elimina a prévia flutuante
+            // que competia visualmente com a própria grade.
+            const rankIndex = Math.max(0, (globalRankMap[anime.id] || 1) - 1);
+            const holder = document.createElement('ol');
+            holder.className = 'ranking mode-true-characters category-all';
+            holder.innerHTML = createAnimeCard(anime, 'all', null, rankIndex);
+            const originItem = holder.querySelector('li.anime-item');
+            if (originItem && typeof window.__openPosterLightboxForAnime === 'function') {
+              originItem.dataset.lightboxRank = String(rankIndex + 1);
+              window.__openPosterLightboxForAnime(originItem);
+            }
+            return;
+
+            const cardMarkup = createAnimeCard(anime, 'all', null, rankIndex);
+            trueCharacterAnimePreview.innerHTML = `
+              <ol class="ranking mode-true-characters category-all" style="counter-reset:item ${rankIndex}">
+                ${cardMarkup}
+              </ol>`;
+
+            const previewCard = trueCharacterAnimePreview.querySelector('li.anime-item');
+            const previewImage = trueCharacterAnimePreview.querySelector('img.thumb');
+            if (previewCard) {
+              previewCard.removeAttribute('id');
+              previewCard.removeAttribute('data-nav-all');
+            }
+            if (previewImage) {
+              const previewWrap = previewImage.closest('.poster-wrap');
+              if (previewWrap) startLoadingPoster(previewWrap, true);
+            }
+
+            if (activeTrueCharacterPreviewCard && activeTrueCharacterPreviewCard !== sourceCard) {
+              activeTrueCharacterPreviewCard.setAttribute('aria-expanded', 'false');
+            }
+            activeTrueCharacterPreviewCard = sourceCard;
+            sourceCard.setAttribute('aria-expanded', 'true');
+            trueCharacterAnimePreview.classList.add('is-visible');
+            trueCharacterAnimePreview.setAttribute('aria-hidden', 'false');
+            requestAnimationFrame(() => positionTrueCharacterPreview(sourceCard));
+          }
+
+          function hideTrueCharacterAnimePreview() {
+            if (activeTrueCharacterPreviewCard) {
+              activeTrueCharacterPreviewCard.setAttribute('aria-expanded', 'false');
+            }
+            activeTrueCharacterPreviewCard = null;
+            trueCharacterAnimePreview.classList.remove('is-visible');
+            trueCharacterAnimePreview.setAttribute('aria-hidden', 'true');
+          }
+
+          document.addEventListener('click', event => {
+            // No True Characters, só o nome da obra de origem abre o
+            // posterlightbox. O restante do card fica apenas informativo.
+            const originName = event.target.closest('ol.category-trueCharacters li.anime-item[data-character-origin] .info-row .info');
+            if (originName) {
+              const card = originName.closest('li.anime-item[data-character-origin]');
+              if (card) showTrueCharacterAnimePreview(card);
+              return;
+            }
+            if (activeTrueCharacterPreviewCard) hideTrueCharacterAnimePreview();
+          });
+
+          document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && activeTrueCharacterPreviewCard) {
+              hideTrueCharacterAnimePreview();
+            }
+          });
+
+          window.addEventListener('scroll', hideTrueCharacterAnimePreview, { passive: true });
+          // A página pode rolar pela janela ou por um contêiner interno.
+          // O capture detecta ambos; wheel/touchmove fecham imediatamente,
+          // antes mesmo de o navegador aplicar o deslocamento visual.
+          document.addEventListener('scroll', hideTrueCharacterAnimePreview, { passive: true, capture: true });
+          document.addEventListener('wheel', hideTrueCharacterAnimePreview, { passive: true, capture: true });
+          document.addEventListener('touchmove', hideTrueCharacterAnimePreview, { passive: true, capture: true });
+          window.addEventListener('resize', hideTrueCharacterAnimePreview, { passive: true });
 
           function updatePageTexts() {
             const calendarBtn = document.getElementById('calendarBtn');
@@ -19709,10 +20091,15 @@
               const animePlanetUrl = item.getAttribute('data-anime-planet-url');
               const isWatchingCard = !!animePlanetUrl;
               const canNavAll = item.hasAttribute('data-nav-all');
+              const isTrueCharacterCard = item.hasAttribute('data-character-origin');
 
-              item.style.cursor = isWatchingCard
-                ? 'pointer'
-                : (canNavAll ? 'pointer' : 'default');
+              item.style.cursor = isWatchingCard || canNavAll ? 'pointer' : 'default';
+              if (isTrueCharacterCard) {
+                item.removeAttribute('role');
+                item.removeAttribute('tabindex');
+                item.removeAttribute('aria-haspopup');
+                item.removeAttribute('aria-expanded');
+              }
               
               item.addEventListener('click', function(e) {
                 if (e.target.closest('a') || e.target.closest('.watch-progress-inc') || e.target.closest('.watch-progress-dec')) return;
