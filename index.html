@@ -263,15 +263,15 @@
 
         /* ── Drawer de busca (agora vive como aba dentro do drawer único) ── */
         .search-drawer-input-wrap {
-          padding: 10px 0 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          padding: 3px 0 7px;
+          background: transparent;
+          border-top: none;
+          border-bottom: 1px solid rgba(255,255,255,0.075);
           flex: 0 0 auto;
           position: relative;
         }
 
-        /* Barra de pesquisa "foda": cartão de vidro com brilho interno sutil e,
-          quando focada, um anel neon giratório na borda (gradiente cônico
-          mascarado só na linha do contorno) + glow externo em camadas. */
+        /* Campo compacto, com o mesmo acabamento discreto do drawer. */
         .search-drawer-input-wrap.dropdown-open {
           padding-bottom: 0;
           border-bottom-color: transparent;
@@ -281,17 +281,16 @@
           display: flex;
           align-items: center;
           gap: 10px;
-          background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
-          backdrop-filter: blur(40px) saturate(1.1);
-          -webkit-backdrop-filter: blur(40px) saturate(1.1);
-          border: 1px solid rgba(255,255,255,0.09);
+          min-height: 40px;
+          background: rgba(255,255,255,0.025);
+          border: none;
           border-radius: 0;
-          padding: 7px 14px;
+          padding: 5px 19px;
           height: auto;
           position: relative;
           isolation: isolate;
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 3px rgba(0,0,0,0.25);
-          transition: border-color 0.35s ease, background 0.4s ease, box-shadow 0.35s ease, transform 0.35s ease;
+          box-shadow: none;
+          transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
         }
 
         @property --search-ring-angle {
@@ -316,13 +315,13 @@
         }
 
         .search-box-drawer:focus-within {
-          border-color: rgba(255,255,255,0.09);
-          background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 3px rgba(0,0,0,0.25);
+          border-color: transparent;
+          background: rgba(255,255,255,0.05);
+          box-shadow: none;
         }
 
         .search-box-drawer.has-value {
-          border-color: rgba(255,255,255,0.09);
+          border-color: transparent;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -338,10 +337,25 @@
           transition: color 0.2s ease, transform 0.2s ease;
         }
 
+        .search-icon-shell {
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex: 0 0 20px;
+        }
+
+        .search-box-drawer .search-icon-shell svg {
+          width: 19px;
+          height: 19px;
+          color: rgba(255,255,255,0.72);
+        }
+
         .search-box-drawer:focus-within svg,
         .search-box-drawer.has-value svg {
-          color: var(--glow-accent);
-          transform: scale(1.05);
+          color: var(--text);
+          transform: none;
         }
 
         /* Wrapper que segura o input e o texto-fantasma da sugestão "/all",
@@ -351,6 +365,7 @@
           position: relative;
           flex: 1;
           min-width: 0;
+          height: 40px;
           display: flex;
           align-items: center;
         }
@@ -365,14 +380,18 @@
           outline: none;
           color: var(--text);
           font-family: var(--font-title);
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 600;
           letter-spacing: -0.01em;
+          padding: 0;
+          line-height: normal;
+          transform: scaleY(1.16);
+          transform-origin: left center;
         }
 
         .search-box-drawer input::placeholder {
-          color: var(--muted);
-          font-weight: 400;
+          color: rgba(255,255,255,0.5);
+          font-weight: 500;
           letter-spacing: -0.005em;
         }
 
@@ -396,6 +415,8 @@
           font-size: 16px;
           font-weight: 600;
           letter-spacing: -0.01em;
+          transform: scaleY(1.16);
+          transform-origin: left center;
         }
 
         .search-box-drawer.slash-mode input {
@@ -432,16 +453,24 @@
           de pesquisa tivesse "esticado" pra baixo pra mostrar os comandos. */
         .search-drawer-input-wrap.dropdown-open .search-box-drawer {
           border-bottom-color: transparent;
+          border-radius: 0;
           box-shadow: none;
-          background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+          background: rgba(255,255,255,0.025);
         }
 
         .slash-command-list {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.55) 100%);
-          backdrop-filter: blur(40px) saturate(1.1);
-          -webkit-backdrop-filter: blur(40px) saturate(1.1);
+          /* Usa as mesmas cores dinâmicas do drawer atual. Assim a lista de
+            comandos acompanha a categoria aberta, sem os posters vazarem. */
+          background: linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--current-cat-color, #cbd5e1) 7%, #100f0d) 0%,
+            color-mix(in srgb, var(--current-cat-color, #cbd5e1) 5%, #0d0c0b) 52%,
+            color-mix(in srgb, var(--current-cat-color, #cbd5e1) 4%, #0a0a09) 100%
+          );
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
           border: none;
           border-radius: 0;
           z-index: 30;
@@ -474,10 +503,11 @@
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 10px 16px;
+          min-height: 62px;
+          padding: 11px 20px;
           cursor: pointer;
           font-family: var(--font-title);
-          transition: background 0.18s ease;
+          transition: background 0.18s ease, padding-left 0.18s ease;
         }
 
         .slash-command-item + .slash-command-item {
@@ -486,24 +516,20 @@
 
         /* Filete vertical de acento que acende no hover/active. */
         .slash-command-item::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 4px;
-          bottom: 4px;
-          width: 2.5px;
-          border-radius: 0 2px 2px 0;
-          background: var(--cmd-color, var(--glow-accent));
-          box-shadow: 0 0 10px color-mix(in srgb, var(--cmd-color, var(--glow-accent)) 70%, transparent);
-          opacity: 0;
-          transform: scaleY(0.35);
-          transform-origin: center;
-          transition: opacity 0.18s ease, transform 0.18s ease;
+          display: none;
         }
 
         .slash-command-item:hover,
         .slash-command-item.active {
-          background: color-mix(in srgb, var(--cmd-color, var(--glow-accent)) 12%, transparent);
+          background: color-mix(in srgb, var(--cmd-color, var(--glow-accent)) 10%, rgba(255,255,255,0.025));
+          padding-left: 20px;
+        }
+
+        .slash-command-item:hover::before,
+        .slash-command-item.active::before {
+          opacity: 1;
+          transform: translateY(-50%) scaleY(1);
+          box-shadow: 0 0 12px color-mix(in srgb, var(--cmd-color, var(--glow-accent)) 72%, transparent);
         }
 
         .slash-command-item .cmd-text {
@@ -511,15 +537,44 @@
           min-width: 0;
           display: flex;
           flex-direction: column;
-          gap: 1px;
+          gap: 2px;
+        }
+
+        .slash-command-item .cmd-icon {
+          width: 22px;
+          height: 22px;
+          flex: 0 0 22px;
+          color: var(--cmd-color, var(--glow-accent));
+          opacity: 1;
+          filter: none;
+          transition: color 0.15s ease;
+        }
+
+        .slash-command-item:hover .cmd-icon,
+        .slash-command-item.active .cmd-icon {
+          opacity: 1;
+          transform: none;
+          filter: none;
+        }
+
+        .slash-command-item .cmd-index {
+          display: none;
+        }
+
+        .slash-command-item:hover .cmd-index,
+        .slash-command-item.active .cmd-index {
+          color: var(--cmd-color, var(--glow-accent));
+          opacity: 1;
+          transform: translateX(-2px);
         }
 
         .slash-command-item .cmd-name {
-          font-size: 13.5px;
-          font-weight: 700;
+          font-size: 14px;
+          font-weight: 800;
           color: var(--text);
-          letter-spacing: -0.005em;
-          transition: color 0.18s ease;
+          letter-spacing: -0.015em;
+          line-height: 1.1;
+          transition: color 0.18s ease, transform 0.18s ease;
         }
 
         /* Parte do nome que já foi digitada (ex: "/inco" de "/incomplete")
@@ -533,40 +588,51 @@
         }
 
         .slash-command-item .cmd-desc {
-          font-size: 11px;
-          font-weight: 500;
-          color: var(--muted);
-          letter-spacing: 0.01em;
+          font-size: 10.5px;
+          font-weight: 600;
+          color: color-mix(in srgb, var(--muted) 88%, white);
+          letter-spacing: 0;
+          line-height: 1.15;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
+        .slash-command-item:hover .cmd-name,
+        .slash-command-item.active .cmd-name {
+          transform: translateX(1px);
+        }
+
         .search-clear-btn {
-          background: rgba(255,255,255,0.06);
+          background: transparent;
           border: none;
-          border-radius: 50%;
-          width: 22px;
-          height: 22px;
+          border-radius: 8px;
+          width: 32px;
+          height: 32px;
           padding: 0;
           display: none;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          flex: 0 0 22px;
-          transition: background 0.15s ease;
+          flex: 0 0 32px;
+          color: #cbd5e1;
+          transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
         }
 
-        .search-clear-btn:hover { background: rgba(255,255,255,0.14); }
+        .search-clear-btn:hover {
+          background: rgba(255,255,255,0.05);
+          color: #fff;
+          transform: scale(1.02);
+        }
 
         .search-clear-btn svg {
-          width: 11px;
-          height: 11px;
-          color: var(--muted);
+          width: 17px;
+          height: 17px;
+          color: currentColor;
           cursor: pointer;
         }
 
-        .search-box-drawer.has-value .search-clear-btn { display: none; }
+        .search-box-drawer.has-value .search-clear-btn { display: flex; }
 
         .search-drawer-results {
           position: absolute;
@@ -1227,6 +1293,13 @@
           overflow-y: auto;
           padding: 0 0 18px;
           flex: 1;
+        }
+
+        /* A busca já administra o próprio scroll. Sem o padding final do
+          conteúdo do drawer, o fundo da lista chega até o rodapé. */
+        .drawer-content:has(.drawer-panel.search-panel-live.active) {
+          padding-bottom: 0;
+          overflow: hidden;
         }
 
         .drawer-section {
@@ -13720,6 +13793,23 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         </div>
 
         <div class="drawer-tabs" role="tablist">
+          <button class="drawer-tab active" data-tab="ranks" role="tab" aria-selected="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 21h8"></path>
+              <path d="M12 17v4"></path>
+              <path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"></path>
+              <path d="M17 5h2.5a1 1 0 0 1 1 1v1a3 3 0 0 1-3 3"></path>
+              <path d="M7 5H4.5a1 1 0 0 0-1 1v1a3 3 0 0 0 3 3"></path>
+            </svg>
+            MyRanks
+          </button>
+          <button class="drawer-tab" data-tab="search" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5"></circle>
+              <path d="m16 16 4 4"></path>
+            </svg>
+            Search
+          </button>
           <button class="drawer-tab" data-tab="lists" role="tab" aria-selected="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -13731,23 +13821,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             </svg>
             MyLists
           </button>
-          <button class="drawer-tab" data-tab="search" role="tab" aria-selected="false">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.3-4.3"></path>
-            </svg>
-            Search
-          </button>
-          <button class="drawer-tab active" data-tab="ranks" role="tab" aria-selected="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M8 21h8"></path>
-              <path d="M12 17v4"></path>
-              <path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"></path>
-              <path d="M17 5h2.5a1 1 0 0 1 1 1v1a3 3 0 0 1-3 3"></path>
-              <path d="M7 5H4.5a1 1 0 0 0-1 1v1a3 3 0 0 0 3 3"></path>
-            </svg>
-            MyRanks
-          </button>
         </div>
 
         <div class="drawer-content">
@@ -13757,7 +13830,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               <div class="drawer-grid">
                 <button class="drawer-item" data-mode="all" role="menuitem" style="--cat-color: #e2e8f0;">
                   <span class="drawer-item-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5Z"></path><path d="m2 17 10 5 10-5"></path><path d="m2 12 10 5 10-5"></path></svg>
                   </span>
                   <span class="drawer-item-text">
                     <span class="label">All Animes</span>
@@ -13769,7 +13842,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 </button>
                 <button class="drawer-item" data-mode="romance" role="menuitem" style="--cat-color: #f472b6;">
                   <span class="drawer-item-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.7-4.35-9.3-8.2C1 10 1.6 6.6 4.4 5.2 6.6 4.1 9 4.9 12 8c3-3.1 5.4-3.9 7.6-2.8 2.8 1.4 3.4 4.8 1.7 7.6C18.7 16.65 12 21 12 21Z"></path></svg>
                   </span>
                   <span class="drawer-item-text">
                     <span class="label">Romance Anime</span>
@@ -13811,7 +13884,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 </button>
                 <button class="drawer-item" data-mode="sports" role="menuitem" style="--cat-color: #facc15;">
                   <span class="drawer-item-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"></path><path d="M7 4H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4"></path><path d="M17 4h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"></path></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18M3 12h18M6 6l12 12M18 6 6 18"></path></svg>
                   </span>
                   <span class="drawer-item-text">
                     <span class="label">Sport Anime</span>
@@ -13843,7 +13916,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               <div class="drawer-grid">
                 <button class="drawer-item" data-mode="watching" role="menuitem" style="--cat-color: #2dd4bf;">
                   <span class="drawer-item-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M10 8.5v7l6-3.5-6-3.5Z"></path></svg>
                   </span>
                   <span class="drawer-item-text">
                     <span class="label">Watching Now</span>
@@ -13855,7 +13928,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 </button>
                 <button class="drawer-item" data-mode="plan" role="menuitem" style="--cat-color: #f59e0b;">
                   <span class="drawer-item-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 15 2 2 4-4"></path></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16Z"></path></svg>
                   </span>
                   <span class="drawer-item-text">
                     <span class="label">Plan to Watch</span>
@@ -13928,20 +14001,16 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           <div class="drawer-panel search-panel-live" data-panel="search">
             <div class="search-drawer-input-wrap">
               <div class="search-box-drawer" id="searchBoxDrawer">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.3-4.3"></path>
-                </svg>
+                <span class="search-icon-shell" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                  </svg>
+                </span>
                 <div class="search-input-ghost-wrap">
                   <span class="search-ghost-hint" id="searchGhostHint" aria-hidden="true"></span>
-                  <input type="text" id="searchDrawerInput" placeholder="forward slash to filter the search" autocomplete="off" autocapitalize="off" spellcheck="false">
+                  <input type="text" id="searchDrawerInput" placeholder="search anime, character or list" autocomplete="off" autocapitalize="off" spellcheck="false">
                 </div>
-                <button class="search-clear-btn" id="searchDrawerClearBtn" type="button" aria-label="Limpar busca">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M18 6 6 18"></path>
-                    <path d="M6 6l12 12"></path>
-                  </svg>
-                </button>
               </div>
             </div>
 
@@ -19141,9 +19210,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           const drawerTitleEl = document.getElementById('drawerTitleEl');
 
           const DRAWER_TAB_TITLES = {
-            ranks: 'And Who Decided That?',
-            lists: 'Your Darkness Swallowed up My Sun',
-            search: 'And Who Decided That?'
+            ranks: 'per aspera ad astra',
+            search: 'vince te ipsum',
+            lists: 'age quod agis',
           };
 
           // Os ícones do header (filtro, busca) controlam o MESMO
@@ -21814,18 +21883,18 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             // consistente com a cor usada no drawer de filtros.
             const SLASH_COMMAND_STYLE = {
               '/all':         { color: '#e2e8f0', icon: '<path d="M12 2 2 7l10 5 10-5-10-5Z"></path><path d="m2 17 10 5 10-5"></path><path d="m2 12 10 5 10-5"></path>' },
-              '/ranking':     { color: '#7d8698', icon: '<path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"></path><path d="M17 5h2.5a1 1 0 0 1 1 1v1a3 3 0 0 1-3 3"></path><path d="M7 5H4.5a1 1 0 0 0-1 1v1a3 3 0 0 0 3 3"></path>' },
+              '/ranking':     { color: '#f8fafc', icon: '<path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"></path><path d="M17 5h2.5a1 1 0 0 1 1 1v1a3 3 0 0 1-3 3"></path><path d="M7 5H4.5a1 1 0 0 0-1 1v1a3 3 0 0 0 3 3"></path>' },
               '/watching':    { color: '#2dd4bf', icon: '<circle cx="12" cy="12" r="10"></circle><path d="M10 8.5v7l6-3.5-6-3.5Z"></path>' },
               '/planwatch':   { color: '#f59e0b', icon: '<path d="M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16Z"></path>' },
               '/romance':     { color: CATEGORY_HOVER_COLOR.romance, icon: '<path d="M12 21s-6.7-4.35-9.3-8.2C1 10 1.6 6.6 4.4 5.2 6.6 4.1 9 4.9 12 8c3-3.1 5.4-3.9 7.6-2.8 2.8 1.4 3.4 4.8 1.7 7.6C18.7 16.65 12 21 12 21Z"></path>' },
-              '/isekai':      { color: CATEGORY_HOVER_COLOR.isekai, icon: '<path d="M12 2 2 7l10 5 10-5-10-5Z"></path><path d="m2 12 10 5 10-5"></path><path d="m2 17 10 5 10-5"></path><circle cx="12" cy="7" r="1.5"></circle>' },
+              '/isekai':      { color: CATEGORY_HOVER_COLOR.isekai, icon: '<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 16h5v5"></path>' },
               '/sport':       { color: CATEGORY_HOVER_COLOR.sports, icon: '<circle cx="12" cy="12" r="9"></circle><path d="M12 3v18M3 12h18M6 6l12 12M18 6 6 18"></path>' },
               '/comedy':      { color: CATEGORY_HOVER_COLOR.comedy, icon: '<circle cx="12" cy="12" r="9"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line>' },
-              '/mecha':       { color: CATEGORY_HOVER_COLOR.mecha, icon: '<rect x="5" y="7" width="14" height="12" rx="2"></rect><path d="M9 7V4h6v3M9 12h.01M15 12h.01M9 16h6"></path>' },
-              '/incomplete':  { color: CATEGORY_HOVER_COLOR.incomplete, icon: '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>' },
-              '/announced':   { color: CATEGORY_HOVER_COLOR.announced, icon: '<path d="M4 12a8 8 0 0 1 14.9-4"></path><path d="M18.9 4v4h-4"></path><path d="M20 12a8 8 0 0 1-14.9 4"></path><path d="M5.1 20v-4h4"></path>' },
-              '/episodes':        { color: CATEGORY_HOVER_COLOR.favEpisodes, icon: '<path d="m12 2 2.9 6.26L21 9.27l-4.5 4.38L17.8 21 12 17.77 6.2 21l1.3-7.35L3 9.27l6.1-1.01L12 2Z"></path>' },
-              '/characters':      { color: CATEGORY_HOVER_COLOR.trueCharacters, icon: '<circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>' }
+              '/mecha':       { color: CATEGORY_HOVER_COLOR.mecha, icon: '<path d="M12 8V4H8"></path><rect x="4" y="8" width="16" height="12" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path>' },
+              '/incomplete':  { color: CATEGORY_HOVER_COLOR.incomplete, icon: '<circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path>' },
+              '/announced':   { color: CATEGORY_HOVER_COLOR.announced, icon: '<rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>' },
+              '/episodes':    { color: CATEGORY_HOVER_COLOR.favEpisodes, icon: '<rect x="2.5" y="5" width="19" height="13" rx="2"></rect><path d="M8 21h8"></path><path d="M12 18v3"></path>' },
+              '/characters':  { color: CATEGORY_HOVER_COLOR.trueCharacters, icon: '<path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="8" r="5"></circle>' }
             };
             const slashCommandListEl = document.getElementById('slashCommandList');
             const searchDrawerInputWrapEl = document.querySelector('.search-drawer-input-wrap');
@@ -21869,6 +21938,10 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
             function renderSlashCommandItemHtml(c, typed) {
               const style = SLASH_COMMAND_STYLE[c] || {};
+              const allGradient = c === '/all'
+                ? '<defs><linearGradient id="cmd-all-static-rgb" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff4d6d"></stop><stop offset="34%" stop-color="#facc15"></stop><stop offset="67%" stop-color="#2dd4bf"></stop><stop offset="100%" stop-color="#a78bfa"></stop></linearGradient></defs>'
+                : '';
+              const iconStroke = c === '/all' ? 'url(#cmd-all-static-rgb)' : 'currentColor';
               // Divide o nome do comando em duas partes: o que o usuário já
               // digitou (ex: "/inco") e o resto (ex: "mplete"). Só a parte já
               // digitada ganha a cor do comando.
@@ -21878,6 +21951,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               const nameHtml = `<span class="cmd-name-typed">${typedPart}</span>${restPart}`;
               return `
                 <div class="slash-command-item" data-cmd="${c}" role="option" style="--cmd-color: ${style.color || ''}">
+                  <svg class="cmd-icon" viewBox="0 0 24 24" fill="none" stroke="${iconStroke}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${allGradient}${style.icon || ''}</svg>
                   <span class="cmd-text">
                     <span class="cmd-name">${nameHtml}</span>
                     <span class="cmd-desc">${SLASH_COMMAND_DESCRIPTIONS[c] || ''}</span>
@@ -22028,11 +22102,23 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
               if (e.key === 'ArrowDown') {
                 e.preventDefault();
+                if (currentMatches.length) {
+                  activeIndex = activeIndex < 0
+                    ? 0
+                    : Math.min(activeIndex + 1, currentMatches.length - 1);
+                  setActiveResult(activeIndex);
+                  return;
+                }
                 moveSearchHistory(1);
                 return;
               }
               if (e.key === 'ArrowUp') {
                 e.preventDefault();
+                if (currentMatches.length && activeIndex >= 0) {
+                  activeIndex = Math.max(activeIndex - 1, 0);
+                  setActiveResult(activeIndex);
+                  return;
+                }
                 moveSearchHistory(-1);
                 return;
               }
@@ -22046,7 +22132,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               }
             });
 
-            searchClearBtn.addEventListener('click', (e) => {
+            searchClearBtn?.addEventListener('click', (e) => {
               e.preventDefault();
               searchInput.value = '';
               searchBoxDrawer.classList.remove('has-value');
@@ -22822,7 +22908,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         if ('serviceWorker' in navigator) {
           window.addEventListener('DOMContentLoaded', () => {
             navigator.serviceWorker
-              .register('service-worker.js', { updateViaCache: 'none' })
+              // A versão na URL força o navegador a instalar esta revisão do
+              // worker, inclusive para quem ainda tem um cache antigo ativo.
+              .register('service-worker.js?v=image-refresh-v2', { updateViaCache: 'none' })
               // register já faz a verificação de atualização, sem recarregar a tela.
               .then(() => navigator.serviceWorker.ready)
               .catch(() => {});
