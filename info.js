@@ -478,7 +478,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Seihantai na Kimi to Boku" },
-      { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Seihantai na Kimi to Boku 2nd Season" },
+      { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Seihantai na Kimi to Boku 2nd Season" },
     ],
   },
 {
@@ -1379,7 +1379,7 @@ const rawWatchingData = [
     season: "summer-2026",
     studio: "Lapin Track",
     airedSeason: "2026",
-    seasons: [12, 12],
+    seasons: [12, 13],
     url: "https://www.anime-planet.com/anime/you-and-i-are-polar-opposites-2nd-season",
     crunchyroll:
       "https://www.crunchyroll.com/pt-br/series/GT00365624/you-and-i-are-polar-opposites",
