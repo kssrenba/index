@@ -142,23 +142,6 @@ const rawAnimeData = [
     ],
   },
 {
-    id: "re-zero",
-    img: "myranks-images/myranks/re-zero.webp",
-    title: "Re:ZERO - Starting Life in Another World",
-    malSearch: "Re:Zero",
-    info: "3 temporadas: 66 episódios",
-    studio: "White Fox",
-    airedSeason: "2016-?",
-    rewatch: "Only Season 1",
-    mal: [
-      { label: "1ª temporada", episodes: 25, note: 9, malName: "Re:Zero kara Hajimeru Isekai Seikatsu" },
-      { label: "2ª temporada I", episodes: 13, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season" },
-      { label: "2ª temporada II", episodes: 12, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season Part 2" },
-      { label: "3ª temporada", episodes: 16, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 3rd Season" },
-      { label: "4ª temporada", episodes: 19, unwatched: true, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season" },
-    ],
-  },
-{
     id: "haikyuu",
     img: "myranks-images/myranks/haikyuu.webp",
     title: "Haikyuu!!",
@@ -180,7 +163,6 @@ const rawAnimeData = [
       },
     ],
   },
-
 {
     id: "mushoku",
     img: "myranks-images/myranks/mushoku.webp",
@@ -224,6 +206,23 @@ const rawAnimeData = [
       { spacer: true, text: "Filler Cannon" },
       { label: "Eris the Goblin Slayer", episodes: "Special", malName: "Mushoku Tensei: Isekai Ittara Honki Dasu - Eris no Goblin Toubatsu", unwatched: true },
       
+    ],
+  },
+{
+    id: "re-zero",
+    img: "myranks-images/myranks/re-zero.webp",
+    title: "Re:ZERO - Starting Life in Another World",
+    malSearch: "Re:Zero",
+    info: "3 temporadas: 66 episódios",
+    studio: "White Fox",
+    airedSeason: "2016-?",
+    rewatch: "Only Season 1",
+    mal: [
+      { label: "1ª temporada", episodes: 25, note: 9, malName: "Re:Zero kara Hajimeru Isekai Seikatsu" },
+      { label: "2ª temporada I", episodes: 13, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season" },
+      { label: "2ª temporada II", episodes: 12, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season Part 2" },
+      { label: "3ª temporada", episodes: 16, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 3rd Season" },
+      { label: "4ª temporada", episodes: 19, unwatched: true, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season" },
     ],
   },
 {
@@ -3225,11 +3224,18 @@ const trueCharactersData = [
     info: "Re:ZERO - Starting Life in Another World",
   },
   {
+    id: "eris",
+    img: "other-images/truecharacters/eris.webp",
+    title: "Eris Greyrat",
+    info: "Mushoku Tensei: Jobless Reincarnation",
+  },
+  {
     id: "diablo",
     img: "other-images/truecharacters/diablo.webp",
     title: "Diablo",
     info: "That Time I Got Reincarnated as a Slime",
   },
+
   {
     id: "cc",
     img: "other-images/truecharacters/cc.webp",
@@ -3242,7 +3248,12 @@ const trueCharactersData = [
     title: "Shuuji Taira",
     info: "You and I are Polar Opposites",
   },
-
+  {
+    id: "shaula",
+    img: "other-images/truecharacters/shaula.webp",
+    title: "Shaula",
+    info: "Re:ZERO - Starting Life in Another World",
+  },
   {
     id: "bakugo",
     img: "other-images/truecharacters/bakugo.webp",
@@ -3256,10 +3267,10 @@ const trueCharactersData = [
     info: "Dr. Stone",
   },
   {
-    id: "shaula",
-    img: "other-images/truecharacters/shaula.webp",
-    title: "Shaula",
-    info: "Re:ZERO - Starting Life in Another World",
+    id: "rudeus",
+    img: "other-images/truecharacters/rudeus.webp",
+    title: "Rudeus Greyrat",
+    info: "Mushoku Tensei: Jobless Reincarnation",
   },
   {
     id: "capella",
@@ -3278,12 +3289,6 @@ const trueCharactersData = [
     img: "other-images/truecharacters/shizuku.webp",
     title: "Shizuku Murasaki",
     info: "Hunter x Hunter",
-  },
-  {
-    id: "rudeus",
-    img: "other-images/truecharacters/rudeus.webp",
-    title: "Rudeus Greyrat",
-    info: "Mushoku Tensei: Jobless Reincarnation",
   },
   {
     id: "hana",
