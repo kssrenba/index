@@ -2331,7 +2331,8 @@
           /* Watching Now desktop: remove o cartão externo e mantém apenas o
              bloco dos links, com a mesma largura exata do pôster. */
           .poster-lightbox.watching-now-mode:not(.simple-mode) .poster-lightbox-media-watchnow,
-          .poster-lightbox.plan-to-watch-mode:not(.simple-mode) .poster-lightbox-media-watchnow {
+          .poster-lightbox.plan-to-watch-mode:not(.simple-mode) .poster-lightbox-media-watchnow,
+          .poster-lightbox.announced-mode:not(.simple-mode) .poster-lightbox-media-watchnow {
             margin-top: 14px;
             min-height: 0;
             padding: 0;
@@ -2344,7 +2345,8 @@
           }
 
           .poster-lightbox.watching-now-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links,
-          .poster-lightbox.plan-to-watch-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links {
+          .poster-lightbox.plan-to-watch-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links,
+          .poster-lightbox.announced-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links {
             justify-content: safe center;
           }
 
@@ -14755,7 +14757,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 // pra sempre extrair os nomes individuais. A partir daí, o
                 // separador de exibição segue uma regra fixa: 2 estúdios usam
                 // " and " (ex: "Studio 1 and Studio 2"); 3 ou mais usam vírgula
-                // (ex: "Studio 1, Studio 2, Studio 3").
+                // e "and" antes do último (ex: "Studio 1, Studio 2 and Studio 3").
                 const studioParts = field.key === 'studio'
                   ? rawValue.split(/[\/,]/).map(s => s.trim()).filter(Boolean)
                   : [];
@@ -14763,7 +14765,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 const studioSeparator = studioParts.length >= 3 ? ', ' : ' and\u00A0';
                 const displayValueHtml = isMultiStudio
                   ? (studioParts.length >= 3
-                      ? studioParts.slice(0, -1).map(s => escapeHtml(s)).join(studioSeparator) + ' ' + escapeHtml(studioParts[studioParts.length - 1])
+                      ? studioParts.slice(0, -1).map(s => escapeHtml(s)).join(studioSeparator) + ' and ' + escapeHtml(studioParts[studioParts.length - 1])
                       : studioParts.map(s => escapeHtml(s)).join(studioSeparator))
                   : escapeHtml(rawValue);
                 const labelText = isMultiStudio ? field.label + 's' : field.label;
@@ -16425,8 +16427,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               });
               // Ordem fixa das tags no poster lightbox:
               // All Animes -> rankings secundários -> Peak Episodes ->
-              // Watching Now -> Announced Sequels -> Incomplete.
-              // Plan to Watch fica depois dessas categorias, caso também exista.
+              // Watching Now -> Plan to Watch -> Announced Sequels -> Incomplete.
               const LIGHTBOX_TAG_ORDER = {
                 all: 0,
                 romance: 10,
@@ -16436,9 +16437,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 comedy: 10,
                 favEpisodes: 20,
                 watching: 30,
-                announced: 40,
-                incomplete: 50,
-                plan: 60
+                plan: 40,
+                announced: 50,
+                incomplete: 60
               };
               tags.sort((a, b) =>
                 (LIGHTBOX_TAG_ORDER[a.key] ?? 999) - (LIGHTBOX_TAG_ORDER[b.key] ?? 999)
@@ -16594,6 +16595,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               lightbox.classList.toggle('simple-mode', !(isMyRanks || isRichPanel));
               lightbox.classList.toggle('watching-now-mode', isWatchingNow);
               lightbox.classList.toggle('plan-to-watch-mode', isPlanToWatch);
+              lightbox.classList.toggle('announced-mode', currentCategory === 'announced');
               lightbox.classList.remove('plan-to-watch-carousel');
 
               const lightboxDivision = getDivisionInfo(item);
@@ -16798,9 +16800,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   comedy: 10,
                   favEpisodes: 20,
                   watching: 30,
-                  announced: 40,
-                  incomplete: 50,
-                  plan: 60
+                  plan: 40,
+                  announced: 50,
+                  incomplete: 60
                 };
                 const watchingOrder = renderedLightboxTagOrder.watching;
                 const beforeWatching = effectiveTags.filter(t =>

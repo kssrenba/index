@@ -286,6 +286,20 @@ const rawAnimeData = [
     ],
   },
 {
+    id: "grand-blue",
+    img: "myranks-images/myranks/grand-blue.webp",
+    title: "Grand Blue Dreaming",
+    info: "3 temporadas: 36 episódios",
+    studio: "Zero-G, Liber, Saber Works",
+    airedSeason: "2018-?",
+    rewatch: "First 2 Seasons",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 8, malName: "Grand Blue" },
+      { label: "2ª temporada", episodes: 12, note: 8, malName: "Grand Blue Season 2" },
+      { label: "3ª temporada", episodes: 12, note: 8, malName: "Grand Blue Season 3" },
+    ],
+  },
+{
     id: "cote",
     img: "myranks-images/myranks/cote.webp",
     title: "Classroom of the Elite",
@@ -321,20 +335,6 @@ const rawAnimeData = [
       { label: "Movie 4: You're Next", episodes: "1h50m", note: 7, malName: "Boku no Hero Academia the Movie 4: You're Next " },
       { label: "8ª temporada", episodes: 11, note: 9, malName: "Boku no Hero Academia: Final Season" },
       { label: "Episode 171: More", episodes: "TV Special", note: 7, malName: "	Boku no Hero Academia: More " },
-    ],
-  },
-{
-    id: "grand-blue",
-    img: "myranks-images/myranks/grand-blue.webp",
-    title: "Grand Blue Dreaming",
-    info: "2 temporadas: 24 episódios",
-    studio: "Zero-G",
-    airedSeason: "2018-?",
-    rewatch: "First 2 Seasons",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 8, malName: "Grand Blue" },
-      { label: "2ª temporada", episodes: 12, note: 8, malName: "Grand Blue Season 2" },
-      { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Grand Blue Season 3" },
     ],
   },
 {
@@ -1358,19 +1358,6 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/59193/Mushoku_Tensei_III__Isekai_Ittara_Honki_Dasu",
   },
   {
-    id: "grand-blue",
-    img: "watchingnow-images/watchingnow/grand-blue.webp",
-    title: "Grand Blue Dreaming",
-    info: "3ª temporada: 12 episódios",
-    season: "summer-2026",
-    studio: " Zero-G / Saber Works",
-    airedSeason: "2026",
-    seasons: [12, 12, 12],
-    url: "https://www.anime-planet.com/anime/grand-blue-season-3",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN94W/grand-blue-dreaming",
-    malUrl: "https://myanimelist.net/anime/62542/Grand_Blue_Season_3",
-  },
-  {
     id: "opposites",
     img: "watchingnow-images/watchingnow/opposites.webp",
     title: "You and I are Polar Opposites",
@@ -1981,13 +1968,6 @@ const rawReleaseCalendarData = [
   },
 
   // MONDAY
-  {
-    id: "grand-blue",
-    img: "watchingnow-images/watchingnow/grand-blue.webp",
-    title: "Grand Blue Dreaming",
-    season: "summer-2026",
-    releaseDay: "monday",
-  },
   {
     id: "love-unseen",
     img: "watchingnow-images/watchingnow/love-unseen.webp",
@@ -3434,6 +3414,7 @@ const nextSeasonMap = {
   "opm": { info: "3rd Season Part 2 in 2027" },
   "midnight-heart": { info: "Season 2 in 2027" },
   "the-worlds-finest-assassin": { info: "2nd Season in 2027" },
+  "grand-blue": { info: "4th Season Confirmed" },
   "jjk": { info: "4th Season Announced" },
   "oshi-no-ko": { info: "4th Season Announced" },
   "solo-leveling": { info: "Two Sequels Announced" },
@@ -3447,13 +3428,12 @@ const nextSeasonMap = {
   "danmachi": { info: "Season 6 Announced" },
   "i-got-a-cheat-skill": { info: "Season 2 in Production" },
 
+  "kingdom": { info: "7th Season Announced" },
   "black-clover": { info: "2nd Season in Oct 2026" },
   "ramparts-of-ice": { info: "2nd Season in Oct 2026" },
   "aoashi": { info: "2nd Season in Oct 2026" },
-  "lom": { info: "2nd Season in 2027" },
   "sentenced-hero": { info: "2nd Season in Production" },
   "chainsaw-man": { info: "2nd Season in Production" },
-  "kingdom": { info: "7th Season Announced" },
   "fate-strange-fake": { info: "2nd Season Announced" },
   "konosuba": { info: "4th Season Confirmed" },
   "spice-and-wolf": { info: "2nd Season Announced" },
