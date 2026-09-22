@@ -3212,16 +3212,16 @@ const trueCharactersData = [
     info: "Re:ZERO - Starting Life in Another World",
   },
   {
+    id: "robin",
+    img: "other-images/truecharacters/robin.webp",
+    title: "Nico Robin",
+    info: "One Piece",
+  },
+  {
     id: "veldora",
     img: "other-images/truecharacters/veldora.webp",
     title: "Veldora Tempest",
     info: "That Time I Got Reincarnated as a Slime",
-  },
-  {
-    id: "echidna",
-    img: "other-images/truecharacters/echidna.webp",
-    title: "Echidna",
-    info: "Re:ZERO - Starting Life in Another World",
   },
   {
     id: "eris",
@@ -3230,12 +3230,23 @@ const trueCharactersData = [
     info: "Mushoku Tensei: Jobless Reincarnation",
   },
   {
+    id: "echidna",
+    img: "other-images/truecharacters/echidna.webp",
+    title: "Echidna",
+    info: "Re:ZERO - Starting Life in Another World",
+  },
+  {
     id: "diablo",
     img: "other-images/truecharacters/diablo.webp",
     title: "Diablo",
     info: "That Time I Got Reincarnated as a Slime",
   },
-
+  {
+    id: "kallen",
+    img: "other-images/truecharacters/kallen.webp",
+    title: "Kallen Stadtfeld",
+    info: "Code Geass: Lelouch of the Rebellion",
+  },
   {
     id: "cc",
     img: "other-images/truecharacters/cc.webp",
