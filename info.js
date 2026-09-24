@@ -581,7 +581,7 @@ const rawAnimeData = [
     id: "kingdom",
     img: "myranks-images/myranks/kingdom.webp",
     title: "Kingdom",
-    info: "(~) 1ª temporada: 38 episódios",
+    info: "(~) 2 temporadas: 77 episódios",
     studios: [
       { season: "S1-S2", name: "Studio Pierrot" },
       { season: "S3-S6", name: "Studio Pierrot and Signpost" },
@@ -590,7 +590,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 38, note: 8, malName: "Kingdom" },
-      { label: "2ª temporada", episodes: 39, unwatched: true, malName: "Kingdom 2nd Season" },
+      { label: "2ª temporada", episodes: 39, note: 7, malName: "Kingdom 2nd Season" },
       { label: "3ª temporada", episodes: 26, unwatched: true, malName: "Kingdom 3rd Season" },
       { label: "4ª temporada", episodes: 26, unwatched: true, malName: "Kingdom 4th Season" },
       { label: "5ª temporada", episodes: 13, unwatched: true, malName: "Kingdom 5th Season" },
