@@ -857,7 +857,7 @@
           }
 
           .search-result-rank {
-            right: 6px;
+            right: 0;
             width: 70px;
             min-width: 70px;
             font-size: 34px;
@@ -2416,6 +2416,92 @@
           -webkit-box-orient: vertical;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+
+        /* Quando cada temporada tem um estúdio diferente, cada linha lê como
+           uma frase curta: “MADHOUSE · 1ª temporada”. Assim, o nome do
+           estúdio continua sendo a informação principal. */
+        .rank-meta-item--studios {
+          min-width: 0;
+        }
+
+        .rank-meta-studio-list {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 5px;
+          width: 100%;
+          min-width: 0;
+        }
+
+        .rank-meta-studio-row {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 6px;
+          min-width: 0;
+          max-width: 100%;
+          line-height: 1.15;
+        }
+
+        .rank-meta-studio-season {
+          order: 0;
+          flex: 0 1 auto;
+          font-family: "Inter", sans-serif;
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0;
+          text-transform: none;
+          color: var(--muted);
+          white-space: nowrap;
+        }
+
+        .rank-meta-studio-name {
+          flex: 0 1 auto;
+          min-width: auto;
+          font-size: 14.5px;
+          font-weight: 600;
+          white-space: nowrap;
+        }
+
+        @media (max-width: 600px) {
+          .rank-meta-studio-row {
+            flex-wrap: wrap;
+            row-gap: 1px;
+          }
+
+          .rank-meta-studio-season {
+            font-size: 10.5px;
+          }
+        }
+
+        /* Desktop usa a mesma âncora do mobile: MORE fica no canto do
+           próprio bloco, nunca encostado no texto do último estúdio. */
+        @media (min-width: 601px) {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) {
+            position: relative;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
+            position: static;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(3))::after {
+            right: 0;
+            bottom: 10px;
+            z-index: 1;
+          }
+        }
+
+        /* O indicador é preso ao card inteiro de metadados — não à coluna
+           estreita de Studios — para realmente alcançar o canto da direita. */
+        .poster-lightbox:not(.simple-mode) .rank-meta {
+          position: relative;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded),
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
+          position: static !important;
         }
 
         /* Nota ao vivo do MyAnimeList (ver updateLiveMalScore/renderMeta):
@@ -10156,6 +10242,7 @@
             width: 100%;
             margin: 0;
             padding: 0;
+            height: 80px;
             overflow: hidden;
             border: 0;
             border-radius: 15px;
@@ -10165,7 +10252,7 @@
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item {
             min-width: 0;
-            min-height: 66px;
+            min-height: 80px;
             padding: 11px 7px;
           }
 
@@ -10183,6 +10270,35 @@
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item:active {
             background: rgba(255,255,255,0.13);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
+            position: relative;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta.is-meta-expanded {
+            height: 80px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--rewatch .rank-meta-value {
+            width: 100%;
+            text-align: justify;
+            text-align-last: center;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta.is-meta-expanded .rank-meta-item.is-meta-expanded {
+            position: absolute;
+            z-index: 2;
+            top: 0;
+            left: 0;
+            width: 100%;
+            box-sizing: border-box;
+            height: 80px;
+            min-height: 0;
+            padding-inline: 7px;
+            background: color-mix(in srgb, var(--lb-accent, #e2e8f0) 16%, rgba(20,22,25,0.98));
+            box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+            cursor: pointer;
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-more-info {
@@ -13399,19 +13515,20 @@
             flex: 0 0 auto;
             align-self: center;
             width: auto;
-            margin: 0;
+            margin: 0 8px 0 0;
             padding: 0;
             gap: 6px;
           }
 
           header.page-header .calendar-toggle-btn {
-            width: 38px !important;
-            min-width: 38px !important;
-            height: 38px;
-            border-radius: 11px;
-            border-color: color-mix(in srgb, var(--current-cat-color, #e2e8f0) 27%, rgba(255,255,255,0.1));
-            background: color-mix(in srgb, var(--current-cat-color, #e2e8f0) 10%, rgba(255,255,255,0.035));
-            color: color-mix(in srgb, var(--current-cat-color, #e2e8f0) 72%, #fff);
+            width: 44px !important;
+            min-width: 44px !important;
+            height: 44px;
+            border: 0;
+            border-radius: 14px;
+            background: transparent;
+            color: var(--muted);
+            box-shadow: none;
           }
         }
 
@@ -13770,7 +13887,235 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover {
 ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
   color: #fff !important;
 }
-</style>
+
+        /* ── Studio / Rewatch: 2 linhas + expansão por clique (desktop e mobile) ── */
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studio,
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch {
+          min-width: 0;
+          cursor: pointer;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studio .rank-meta-value,
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch .rank-meta-value {
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studio .rank-meta-value--clamp,
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch .rank-meta-value--clamp {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* Studios separados por temporada: apenas as duas primeiras linhas
+           ficam visíveis no estado fechado. */
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          overflow: hidden;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row:nth-child(n+3) {
+          display: none;
+        }
+
+        /* Desktop fechado: junta as temporadas na mesma linha sempre que a
+           largura da coluna permitir. Cada bloco continua indivisível, então
+           o hífen nunca fica sozinho no fim da linha. O mobile mantém a
+           apresentação original abaixo. */
+        @media (min-width: 601px) {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            column-gap: 0;
+            row-gap: 5px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row + .rank-meta-studio-row::before {
+            content: "–";
+            /* À direita, o flex já aplica 6px de gap até "S4"; portanto
+               deixamos só 6px à esquerda para os dois lados ficarem iguais. */
+            margin: 0 0 0 6px;
+            color: var(--muted);
+            font-weight: 500;
+          }
+        }
+
+        /* No mobile o card fechado mostra somente o primeiro estúdio; o
+           indicador MORE entra assim que houver outro para revelar. */
+        @media (max-width: 600px) {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) {
+            position: relative;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
+            position: static;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row:nth-child(n+2) {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2))::after {
+            content: "MORE";
+            position: absolute;
+            right: 6px;
+            bottom: 10px;
+            z-index: 1;
+            color: var(--muted);
+            font: 700 8px/1 "Inter", sans-serif;
+            letter-spacing: 0.12em;
+            background: transparent;
+            border: 0;
+          }
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(3))::after {
+          content: "MORE";
+          position: absolute;
+          right: 0;
+          bottom: 1px;
+          padding-left: 0;
+          color: var(--muted);
+          font: 700 8px/1 "Inter", sans-serif;
+          letter-spacing: 0.12em;
+          /* Indicador textual discreto, sem caixinha nem borda — funciona
+             igualmente no desktop e no mobile. */
+          background: transparent;
+          border: 0;
+        }
+
+        /* Ao expandir, remove qualquer clamp/corte. */
+        .poster-lightbox:not(.simple-mode) .rank-meta-item.is-meta-expanded .rank-meta-value--clamp {
+          display: block;
+          -webkit-line-clamp: unset;
+          overflow: visible;
+          text-overflow: clip;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios.is-meta-expanded .rank-meta-studio-list {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-content: center;
+          gap: 4px 0;
+          width: 100%;
+          max-width: 100%;
+          max-height: 37px;
+          overflow: hidden;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios.is-meta-expanded .rank-meta-studio-row {
+          display: flex;
+          flex: 0 0 auto;
+          flex-wrap: nowrap;
+          white-space: nowrap;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios.is-meta-expanded .rank-meta-studio-row:not(:last-child)::after {
+          content: " – ";
+          margin: 0 7px;
+          color: var(--muted);
+          font-weight: 500;
+        }
+
+        /* No estado aberto, o rótulo fica na posição normal e as temporadas
+           seguem na mesma linha, quebrando somente quando for necessário. */
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios.is-meta-expanded {
+          user-select: text;
+          cursor: text !important;
+        }
+
+        /* Durante a expansão, só o item aberto continua visível. Assim Year,
+           Studio ou Rewatch não aparecem por baixo nem recebem hover. */
+        .poster-lightbox:not(.simple-mode) .rank-meta.is-meta-expanded .rank-meta-item:not(.is-meta-expanded) {
+          visibility: hidden;
+          pointer-events: none;
+        }
+
+        /* Desktop: mesma mecânica de expansão já usada no mobile.
+           O bloco mantém sua altura normal; somente o conteúdo selecionado
+           ocupa temporariamente as três colunas. */
+        @media (min-width: 761px) {
+          .poster-lightbox:not(.simple-mode) .rank-meta {
+            position: relative;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta.is-meta-expanded {
+            overflow: hidden;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta.is-meta-expanded .rank-meta-item.is-meta-expanded {
+            position: absolute;
+            z-index: 5;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            padding-inline: 18px;
+            border-right: 0;
+            background: color-mix(in srgb, var(--lb-accent, #e2e8f0) 13%, rgba(20,22,25,0.98));
+            cursor: pointer;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta.is-meta-expanded .rank-meta-item.is-meta-expanded .rank-meta-value {
+            max-width: min(920px, 94%);
+          }
+        }
+
+        /* MORE pertence à coluna Studios: fica no canto direito dela e não
+           acompanha Year/Rewatch nem depende de hover para aparecer. */
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list::after {
+          content: none !important;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) {
+          position: relative !important;
+        }
+
+        @media (min-width: 601px) {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded):has(.rank-meta-studio-row:nth-child(3))::after {
+            content: "MORE";
+            position: absolute;
+            right: 8px;
+            bottom: 10px;
+            z-index: 20;
+            display: block;
+            opacity: 1 !important;
+            pointer-events: none;
+            color: var(--muted);
+            font: 700 8px/1 "Inter", sans-serif;
+            letter-spacing: 0.12em;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded):has(.rank-meta-studio-row:nth-child(2))::after {
+            content: "MORE";
+            position: absolute;
+            right: 8px;
+            bottom: 10px;
+            z-index: 20;
+            display: block;
+            opacity: 1 !important;
+            pointer-events: none;
+            color: var(--muted);
+            font: 700 8px/1 "Inter", sans-serif;
+            letter-spacing: 0.12em;
+          }
+        }
+
+      </style>
 
     </head>
 
@@ -14106,10 +14451,10 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
       <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Navegação principal mobile">
         <button type="button" class="mobile-nav-btn" data-mobile-mode="all" style="--nav-color:#e2e8f0" aria-label="Abrir All Ranking">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5Z"></path><path d="m2 17 10 5 10-5"></path><path d="m2 12 10 5 10-5"></path></svg>
         </button>
         <button type="button" class="mobile-nav-btn" data-mobile-action="search" style="--nav-color:#ffffff" aria-label="Abrir busca">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
         </button>
         <button type="button" class="mobile-nav-btn mobile-nav-btn--menu" data-mobile-action="menu" aria-label="Abrir menu de listas" aria-expanded="false" aria-controls="categoryDrawer">
           <span class="mobile-nav-menu-icon">
@@ -14117,10 +14462,10 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           </span>
         </button>
         <button type="button" class="mobile-nav-btn" data-mobile-mode="watching" style="--nav-color:#2dd4bf" aria-label="Abrir Watching Now">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M10 8.5v7l6-3.5-6-3.5Z"></path></svg>
         </button>
         <button type="button" class="mobile-nav-btn" id="mobilePlanCalendarBtn" data-mobile-mode="plan" style="--nav-color:#f59e0b" aria-label="Abrir Plan to Watch">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 15 2 2 4-4"></path></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16Z"></path></svg>
         </button>
       </nav>
 
@@ -14403,6 +14748,32 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const calendarBtn = document.getElementById('posterLightboxCalendar');
             const randomPlanBtn = document.getElementById('randomPlanBtn');
             const soundBtn = document.getElementById('posterLightboxSound');
+
+            if (lightboxMeta) {
+              lightboxMeta.addEventListener('click', (event) => {
+                // Arrastar para selecionar/copiar não deve fechar o campo aberto.
+                if (window.getSelection?.().toString()) return;
+
+                const expandableItem = event.target.closest('.rank-meta-item--studio, .rank-meta-item--rewatch');
+                const expandedItem = lightboxMeta.querySelector('.rank-meta-item.is-meta-expanded');
+
+                if (!expandableItem) {
+                  lightboxMeta.classList.remove('is-meta-expanded');
+                  expandedItem?.classList.remove('is-meta-expanded');
+                  return;
+                }
+
+                if (expandedItem === expandableItem) {
+                  lightboxMeta.classList.remove('is-meta-expanded');
+                  expandableItem.classList.remove('is-meta-expanded');
+                  return;
+                }
+
+                expandedItem?.classList.remove('is-meta-expanded');
+                expandableItem.classList.add('is-meta-expanded');
+                lightboxMeta.classList.add('is-meta-expanded');
+              });
+            }
             const compareBtn = document.getElementById('posterLightboxCompare');
             const searchBtn = document.getElementById('posterLightboxSearch');
             const closeBtn = document.getElementById('posterLightboxClose');
@@ -14708,6 +15079,36 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               return { ...staticMeta, ...(all[animeId] || {}) };
             }
 
+            // Formato opcional no info.js para animes com estúdios diferentes
+            // por temporada:
+            // studios: [
+            //   { season: '1ª temporada', name: 'MADHOUSE' },
+            //   { season: '2ª e 3ª temporadas', name: 'J.C. Staff' }
+            // ]
+            // Também aceita um objeto { '1ª temporada': 'MADHOUSE' }.
+            // O campo antigo "studio" continua sendo usado normalmente nos
+            // animes que têm um único estúdio (ou a mesma equipe em todas).
+            function normalizeStudioEntries(studios) {
+              if (Array.isArray(studios)) {
+                return studios.map(entry => {
+                  if (typeof entry === 'string') {
+                    const [season, ...name] = entry.split(':');
+                    return { season: season.trim(), name: name.join(':').trim() };
+                  }
+                  return {
+                    season: String(entry && (entry.season || entry.label || '')).trim(),
+                    name: String(entry && (entry.name || entry.studio || entry.value || '')).trim()
+                  };
+                }).filter(entry => entry.season && entry.name);
+              }
+              if (studios && typeof studios === 'object') {
+                return Object.entries(studios)
+                  .map(([season, name]) => ({ season: String(season).trim(), name: String(name).trim() }))
+                  .filter(entry => entry.season && entry.name);
+              }
+              return [];
+            }
+
             function renderMeta(animeId, isWatchingNow, malUrl, allowLiveScore) {
               if (!lightboxMeta) return;
               // Somente leitura: os valores vêm direto do rawAnimeData (studio, airedSeason, rewatch).
@@ -14742,6 +15143,20 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 }
                 let rawValue = metaObj[field.key] || '';
                 const isEmpty = !rawValue;
+                const studioEntries = field.key === 'studio' ? normalizeStudioEntries(metaObj.studios) : [];
+                if (studioEntries.length) {
+                  return `
+                    <div class="rank-meta-item rank-meta-item--studio rank-meta-item--studios">
+                      <span class="rank-meta-label">Studios</span>
+                      <span class="rank-meta-value rank-meta-studio-list" data-field="studio">
+                        ${studioEntries.map(entry => `
+                          <span class="rank-meta-studio-row">
+                            <span class="rank-meta-studio-season">${escapeHtml(entry.season)}</span>
+                            <span class="rank-meta-studio-name">${escapeHtml(entry.name)}</span>
+                          </span>`).join('')}
+                      </span>
+                    </div>`;
+                }
                 // O "!" no final de "season" é só um marcador interno e não deve
                 // aparecer pro usuário no campo de Lançamento.
                 if (field.key === 'season') {
@@ -14769,9 +15184,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                       : studioParts.map(s => escapeHtml(s)).join(studioSeparator))
                   : escapeHtml(rawValue);
                 const labelText = isMultiStudio ? field.label + 's' : field.label;
-                const clampClass = field.key === 'studio' ? ' rank-meta-value--clamp' : '';
+                const clampClass = (field.key === 'studio' || field.key === 'rewatch') ? ' rank-meta-value--clamp' : '';
                 return `
-                  <div class="rank-meta-item">
+                  <div class="rank-meta-item rank-meta-item--${field.key}">
                     <span class="rank-meta-label">${labelText}</span>
                     <span class="rank-meta-value${isEmpty ? ' empty' : ''}${clampClass}"
                           data-field="${field.key}">${isEmpty ? escapeHtml(field.placeholder) : displayValueHtml}</span>
@@ -14779,6 +15194,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               }).join('');
 
               lightboxMeta.innerHTML = fieldsHtml;
+              lightboxMeta.classList.remove('is-meta-expanded');
 
               if (malId) {
                 const scoreEl = lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
@@ -17943,6 +18359,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           [...animeData, ...watchingData, ...planToWatchData].forEach(a => {
             const meta = {};
             if (a.studio) meta.studio = a.studio;
+            if (a.studios) meta.studios = a.studios;
             if (a.airedSeason) meta.season = a.airedSeason;
             if (a.rewatch) meta.rewatch = a.rewatch;
             if (Object.keys(meta).length) {
@@ -19099,7 +19516,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const planCalendarButton = document.getElementById('mobilePlanCalendarBtn');
 
             if (planCalendarButton) {
-              const planIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="m9 15 2 2 4-4"></path></svg>';
+              const planIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16Z"></path></svg>';
               // O quinto botão é sempre Plan to Watch; o calendário fica no header.
               planCalendarButton.removeAttribute('data-mobile-action');
               planCalendarButton.setAttribute('data-mobile-mode', 'plan');

@@ -272,7 +272,10 @@ const rawAnimeData = [
     img: "myranks-images/myranks/aot.webp",
     title: "Attack on Titan",
     info: "4 temporadas: 89 episódios",
-    studio: "Wit Studio/MAPPA",
+    studios: [
+      { season: "S1-S3", name: "Wit Studio" },
+      { season: "S4", name: "MAPPA" },
+     ],
     airedSeason: "2013-2022",
     rewatch: "First 3 Seasons",
     mal: [
@@ -290,7 +293,11 @@ const rawAnimeData = [
     img: "myranks-images/myranks/grand-blue.webp",
     title: "Grand Blue Dreaming",
     info: "3 temporadas: 36 episódios",
-    studio: "Zero-G, Liber, Saber Works",
+    studios: [
+      { season: "S1", name: "Zero-G" },
+      { season: "S2", name: "Zero-G and Liber" },
+      { season: "S3", name: "Zero-G and Saber Works" }
+     ],
     airedSeason: "2018-?",
     rewatch: "First 2 Seasons",
     mal: [
@@ -342,7 +349,11 @@ const rawAnimeData = [
     img: "myranks-images/myranks/opm.webp",
     title: "One-Punch Man",
     info: "3 temporadas: 36 episódios",
-    studio: "MADHOUSE / J.C. Staff",
+    studio: "MADHOUSE/J.C. Staff",
+      studios: [
+        { season: "S1", name: "MADHOUSE" },
+        { season: "S2-S3", name: "J.C. Staff" }
+      ],
     airedSeason: "2015-?",
     rewatch: "2 Times (Season 3 Never)",
     mal: [
@@ -449,7 +460,10 @@ const rawAnimeData = [
     img: "myranks-images/myranks/vinland-saga.webp",
     title: "Vinland Saga",
     info: "2 temporadas: 48 episódios",
-    studio: "Wit Studio / MAPPA",
+    studios: [
+      { season: "S1", name: "Wit Studio" },
+      { season: "S2", name: "MAPPA" },
+     ],
     airedSeason: "2019-2023",
     rewatch: "Season 1",
     mal: [
@@ -568,7 +582,10 @@ const rawAnimeData = [
     img: "myranks-images/myranks/kingdom.webp",
     title: "Kingdom",
     info: "(~) 1ª temporada: 38 episódios",
-    studio: "Studio Pierrot",
+    studios: [
+      { season: "S1-S2", name: "Studio Pierrot" },
+      { season: "S3-S6", name: "Studio Pierrot and Signpost" },
+     ],
     airedSeason: "2012",
     rewatch: "No",
     mal: [
@@ -761,7 +778,10 @@ const rawAnimeData = [
     title: "Tsukimichi -Moonlit Fantasy-",
     malSearch: "tsukimichi",
     info: "2 temporadas: 37 episódios",
-    studio: "C2C / J.C. Staff",
+    studios: [
+      { season: "S1", name: "C2C" },
+      { season: "S2", name: "J.C. Staff" },
+     ],
     airedSeason: "2021-?",
     rewatch: "No",
     mal: [
@@ -887,7 +907,10 @@ const rawAnimeData = [
     img: "myranks-images/myranks/nanatsu-no-taizai.webp",
     title: "The Seven Deadly Sins: Nanatsu no Taizai",
     info: "4 temporadas: 100 episódios <br>3 Filmes: 3h50m",
-    studio: "A-1 Pictures / Studio Deen",
+    studios: [
+      { season: "S1-S2", name: "A-1 Pictures" },
+      { season: "S3-S4", name: "Studio Deen" },
+     ],
     airedSeason: "2014-2021",
     rewatch: "2 First Seasons",
     mal: [
@@ -1098,7 +1121,7 @@ const rawAnimeData = [
     img: "myranks-images/myranks/masamune-kuns-revenge.webp",
     title: "Masamune-kun's Revenge",
     info: "(~) 1ª temporada: 12 episódios",
-    studio: "Silver Link / Studio Blanc",
+    studio: "SILVER LINK",
     airedSeason: "2017-?",
     rewatch: "No",
     mal: [
@@ -1156,8 +1179,9 @@ const rawAnimeData = [
     id: "magi-sinbad",
     img: "myranks-images/myranks/magi-adventure-of-sinbad.webp",
     title: "Magi: Adventure of Sinbad",
+    malSearch: "Magi: Adventure of Sinb",
     info: "13 episódios",
-    studio: "A-1 Pictures / Sanzigen",
+    studio: "Lay-duce",
     airedSeason: "2016",
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Magi: Sinbad no Bouken" }],
@@ -2711,7 +2735,7 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/greatest-demon-lord.webp",
     title: "The Greatest Demon Lord Is Reborn as a Typical Nobody",
     info: "12 episódios",
-    studio: "SILVER LINK. / BLADE",
+    studio: "SILVER LINK / BLADE",
     airedSeason: "2022",
     url: "https://www.anime-planet.com/anime/the-greatest-demon-lord-is-reborn-as-a-typical-nobody",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GKEH2G4KD/the-greatest-demon-lord-is-reborn-as-a-typical-nobody",
