@@ -412,7 +412,10 @@
           white-space: pre;
           overflow: visible;
           font-family: var(--font-title);
-          font-size: 16px;
+          /* Mantém as métricas idênticas às do input: o texto-fantasma fica
+            sobre a seleção nativa, então qualquer diferença de largura deixa
+            o fundo de seleção desalinhado no fim do comando. */
+          font-size: 15px;
           font-weight: 600;
           letter-spacing: -0.01em;
           transform: scaleY(1.16);
@@ -870,6 +873,38 @@
           color: var(--acc, currentColor);
           font-weight: 900;
           text-decoration: none;
+        }
+
+        .search-result-card-inner:has(.search-result-next-season) .search-result-info {
+          border-radius: 0;
+        }
+
+        .search-result-next-season {
+          position: relative !important;
+          inset: auto !important;
+          display: flex;
+          width: 100%;
+          height: 22px;
+          min-height: 22px;
+          flex: 0 0 22px;
+          margin: 0;
+          padding: 0;
+          border: 0;
+          border-radius: 0 0 10px 10px;
+          background: rgba(22,22,26,0.48);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.11);
+          -webkit-mask-image: none;
+          mask-image: none;
+          backdrop-filter: blur(8px) saturate(135%);
+          -webkit-backdrop-filter: blur(8px) saturate(135%);
+          z-index: 2;
+        }
+
+        .search-result-next-season .announce-line {
+          height: 22px;
+          line-height: 22px;
+          padding: 0 12px;
+          font-size: 10px;
         }
 
         .search-result-arrow { display: none; }
@@ -4982,7 +5017,7 @@
           min-width: 0;
         }
 
-        /* ── Faixa de anúncio (nova temp./filme) sobre a imagem ── */
+        /* ── Faixa de anúncio (nova temp./filme) ── */
         .announce-strip {
           position: absolute;
           left: 0;
@@ -4996,9 +5031,10 @@
           pointer-events: none;
           z-index: 3;
 
-          background: rgba(10,10,10,0.38);
-          backdrop-filter: blur(6px);
-          -webkit-backdrop-filter: blur(6px);
+          background: rgba(22,22,26,0.34);
+          backdrop-filter: blur(8px) saturate(135%);
+          -webkit-backdrop-filter: blur(8px) saturate(135%);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
           -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%);
           mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%);
         }
@@ -5025,6 +5061,50 @@
           line-height: 16px;
           height: 16px;
           padding: 0 32px;
+        }
+
+        /* Next Season fica na área de informações do card, abaixo do texto,
+           ocupando a largura disponível até a marca de posição (#X). */
+        .announce-strip--meta {
+          left: var(--meta-pad-x, 24px);
+          right: 112px;
+          bottom: 0;
+          height: 22px;
+          justify-content: flex-start;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 7px;
+          background: rgba(8,8,11,0.56);
+          -webkit-mask-image: none;
+          mask-image: none;
+          backdrop-filter: blur(5px);
+          -webkit-backdrop-filter: blur(5px);
+        }
+
+        .announce-strip--meta .announce-line {
+          height: 22px;
+          line-height: 22px;
+          padding: 0 10px;
+          font-size: 9px;
+        }
+
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters li.anime-item.has-next-season .meta {
+            min-height: 108px;
+            padding-bottom: 38px;
+          }
+
+          .announce-strip--meta {
+            left: 14px;
+            right: 68px;
+            bottom: 8px;
+            height: 20px;
+          }
+
+          .announce-strip--meta .announce-line {
+            height: 20px;
+            line-height: 20px;
+            font-size: 8px;
+          }
         }
 
         .pause-icon {
@@ -11454,23 +11534,6 @@
 
         /* Durante o scroll, os fundos desfocados e as transições de cada card
            forçam repinturas caras. Eles voltam assim que a rolagem termina. */
-        .anime-compare-candidates.is-scrolling .anime-compare-candidate,
-        .anime-compare-candidates.is-scrolling .anime-compare-candidate::before,
-        .anime-compare-candidates.is-scrolling .anime-compare-candidate::after,
-        .anime-compare-candidates.is-scrolling .anime-compare-candidate img {
-          transition: none !important;
-        }
-
-        .anime-compare-candidates.is-scrolling .anime-compare-candidate::before {
-          opacity: 0 !important;
-          filter: none !important;
-        }
-
-        .anime-compare-candidates.is-scrolling .anime-compare-candidate img {
-          transform: none !important;
-          filter: none !important;
-        }
-
         .anime-compare-picker.is-scrolling {
           backdrop-filter: none;
           -webkit-backdrop-filter: none;
@@ -12932,13 +12995,14 @@
           }
         }
 
-        /* Mantém o Anime Comparator visível, porém indisponível também no desktop. */
+        /* O comparador fica ativo no desktop; somente o celular mantém o
+           atalho visível e desabilitado. */
         @media (min-width: 761px) {
           .poster-lightbox-compare {
             display: inline-flex !important;
-            opacity: 0.32 !important;
-            cursor: not-allowed !important;
-            pointer-events: none !important;
+            opacity: 1 !important;
+            cursor: pointer !important;
+            pointer-events: auto !important;
           }
         }
 
@@ -14115,6 +14179,596 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           }
         }
 
+        /* Next Season fica na área do nome/informações, ocupando toda a largura; o #X fica por cima. */
+        ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta {
+          position: absolute;
+          top: auto;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0;
+          width: auto;
+          height: 20px;
+          min-height: 20px;
+          padding: 0;
+          justify-content: center;
+          border: 0;
+          border-radius: 0;
+          background: rgba(10,10,10,0.38);
+          -webkit-mask-image: none;
+          mask-image: none;
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          z-index: 3 !important;
+        }
+
+        /* Mantém o fundo da faixa contínuo, mas deixa livre a área do # e do número. */
+        ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta::after {
+          content: "";
+          position: absolute;
+          z-index: 2;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 92px;
+          background: rgba(10,10,10,0.38);
+          pointer-events: none;
+        }
+
+        /* Mantém o número acima da faixa tanto parado quanto no hover. */
+        ol.ranking.mode-true-characters .meta::before {
+          z-index: 5 !important;
+        }
+
+        ol.ranking.mode-true-characters li.anime-item:hover .meta::before {
+          z-index: 5 !important;
+        }
+
+        ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta .announce-line {
+          height: 20px;
+          line-height: 20px;
+          padding: 0 32px;
+          font-size: 10px;
+        }
+
+        /* Listas e calendário sem #X/01/02 podem usar toda a linha de informações. */
+        ol.ranking:is(.category-watching, .category-plan, .category-incomplete, .category-announced, .release-calendar-list)
+          .meta > .announce-strip.announce-strip--meta {
+          right: 0 !important;
+        }
+
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters li.anime-item.has-next-season .meta {
+            min-height: 108px;
+            padding-bottom: 38px;
+          }
+
+          ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta {
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0;
+            height: 18px;
+            min-height: 18px;
+          }
+
+          ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta::after {
+            width: 72px;
+          }
+
+          ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta .announce-line {
+            height: 18px;
+            line-height: 18px;
+            font-size: 9px;
+            padding: 0 6px;
+          }
+
+          ol.ranking:is(.category-watching, .category-plan, .category-incomplete, .category-announced, .release-calendar-list)
+            .meta > .announce-strip.announce-strip--meta {
+            right: 0 !important;
+          }
+        }
+
+        /* Os resultados do Anime Comparator usam as mesmas regras de card e
+           hover do Search do Drawer; apenas a grade e o conteúdo variam. */
+        .anime-compare-view.choosing .anime-compare-candidate.search-result-item {
+          display: block;
+          width: 100%;
+          min-width: 0;
+          min-height: 0;
+          height: max-content !important;
+          padding: 0;
+          overflow: visible;
+          border: 0;
+          border-radius: 10px;
+          color: var(--text);
+          background: #141414;
+          box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+          font: inherit;
+          text-align: left;
+          transform: none;
+          transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease !important;
+        }
+
+        .anime-compare-view.choosing .anime-compare-candidate.search-result-item:hover,
+        .anime-compare-view.choosing .anime-compare-candidate.search-result-item.active {
+          background: #141414;
+          transform: translateY(-1px);
+          box-shadow: 0 8px 16px rgba(0,0,0,0.45), 0 0 0 1.5px color-mix(in srgb, var(--acc, #e2e8f0) 65%, transparent);
+        }
+
+        .anime-compare-view.choosing .anime-compare-candidate.search-result-item::before,
+        .anime-compare-view.choosing .anime-compare-candidate.search-result-item::after {
+          content: none !important;
+          display: none !important;
+        }
+
+        .anime-compare-view.choosing .anime-compare-candidate .search-result-card-inner {
+          position: relative;
+          display: grid !important;
+          grid-template-rows: auto 86px;
+          width: 100%;
+          height: auto !important;
+          padding: 0;
+          overflow: hidden;
+          border-radius: 10px;
+        }
+
+        .anime-compare-view.choosing .anime-compare-candidate .search-result-thumb-wrap {
+          position: relative;
+          z-index: 2;
+          display: block;
+          width: 100%;
+          height: auto !important;
+          padding-top: 0 !important;
+          aspect-ratio: 16 / 9;
+          overflow: hidden;
+          border-radius: 10px 10px 0 0;
+          background: #1c1c1c;
+        }
+
+        .anime-compare-view.choosing .anime-compare-candidate img.search-result-thumb {
+          position: absolute;
+          inset: 0;
+          display: block;
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          border-radius: 0;
+          object-fit: cover;
+          box-shadow: none;
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        .anime-compare-view.choosing .anime-compare-candidate:hover img.search-result-thumb {
+          transform: scale(1.03);
+        }
+
+        .anime-compare-view.choosing .anime-compare-candidate .search-result-info {
+          position: relative !important;
+          z-index: 2;
+          display: flex;
+          width: 100%;
+          height: 86px;
+          min-height: 86px;
+          padding: 15px 88px 14px 17px;
+          flex-direction: column;
+          justify-content: center;
+          gap: 1px;
+          overflow: hidden;
+          border-radius: 0 0 10px 10px;
+          background: transparent;
+        }
+
+        /* A barra do comparador reaproveita o mesmo acabamento do Search do Drawer. */
+        .anime-compare-view.choosing .anime-compare-search-wrap.search-box-drawer {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          height: auto;
+          min-height: 40px;
+          margin-bottom: 17px;
+          padding: 5px 19px;
+          border: 0;
+          border-radius: 0;
+          background: rgba(255,255,255,0.025);
+          box-shadow: none;
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+          isolation: isolate;
+          transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .anime-compare-view.choosing .anime-compare-search-wrap.search-box-drawer::before {
+          content: '';
+          position: absolute;
+          inset: -1px;
+          border-radius: inherit;
+          padding: 1px;
+          background: var(--glow-accent);
+          -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          opacity: 0;
+          transition: opacity 0.35s ease;
+          pointer-events: none;
+        }
+
+        .anime-compare-view.choosing .anime-compare-search-wrap.search-box-drawer:focus-within {
+          border-color: transparent;
+          background: rgba(255,255,255,0.05);
+          box-shadow: none;
+        }
+
+        .anime-compare-view.choosing .anime-compare-search-wrap.search-box-drawer:focus-within::before {
+          opacity: 0.85;
+        }
+
+        .anime-compare-view.choosing .anime-compare-search-wrap .search-icon-shell {
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex: 0 0 20px;
+        }
+
+        .anime-compare-view.choosing .anime-compare-search-wrap .search-icon-shell svg {
+          position: static;
+          width: 19px;
+          height: 19px;
+          color: rgba(255,255,255,0.72);
+          stroke-width: 2;
+          transform: none;
+          transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .anime-compare-view.choosing .anime-compare-search-wrap:focus-within .search-icon-shell svg,
+        .anime-compare-view.choosing .anime-compare-search-wrap.has-value .search-icon-shell svg {
+          color: var(--text);
+          transform: none;
+        }
+
+        .anime-compare-view.choosing .anime-compare-search-wrap input.anime-compare-search {
+          position: relative;
+          z-index: 1;
+          flex: 1;
+          width: auto;
+          min-width: 0;
+          height: 40px;
+          padding: 0;
+          border: 0;
+          border-radius: 0;
+          outline: none;
+          color: var(--text);
+          background: transparent;
+          box-shadow: none;
+          font-family: var(--font-title);
+          font-size: 15px;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+          line-height: normal;
+          transform: scaleY(1.16);
+          transform-origin: left center;
+        }
+
+        .anime-compare-view.choosing .anime-compare-search-wrap input.anime-compare-search:focus {
+          border: 0;
+          background: transparent;
+          box-shadow: none;
+        }
+
+        .anime-compare-view.choosing .anime-compare-search-wrap input.anime-compare-search::placeholder {
+          color: rgba(255,255,255,0.5);
+          font-weight: 500;
+          letter-spacing: -0.005em;
+        }
+
+        /* Resultado do duelo: cartões compactos, placar destacado e uma tabela
+           única para comparar cada categoria sem mosaicos altos e vazios. */
+        .anime-compare-view:not(.choosing) .anime-compare-selected {
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr) !important;
+          align-items: center;
+          gap: 16px !important;
+          margin: 0 0 18px !important;
+        }
+
+        .anime-compare-view:not(.choosing) .anime-compare-slot {
+          display: grid !important;
+          grid-template-columns: 78px minmax(0, 1fr) !important;
+          align-items: center;
+          min-height: 118px !important;
+          padding: 10px !important;
+          border: 1px solid color-mix(in srgb, var(--compare-accent, #e2e8f0) 18%, rgba(255,255,255,0.06)) !important;
+          border-radius: 16px !important;
+          background: color-mix(in srgb, var(--compare-accent, #e2e8f0) 7%, rgba(15,17,21,0.9)) !important;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.045), 0 12px 30px -24px rgba(0,0,0,0.9);
+        }
+
+        .anime-compare-view:not(.choosing) .anime-compare-slot img {
+          width: 78px !important;
+          height: 96px !important;
+          border-radius: 11px !important;
+          object-fit: cover;
+          box-shadow: 0 8px 18px rgba(0,0,0,0.28);
+        }
+
+        .anime-compare-view:not(.choosing) .anime-compare-slot-copy {
+          min-width: 0;
+          padding: 8px 12px !important;
+        }
+
+        .anime-compare-view:not(.choosing) .anime-compare-slot-name {
+          display: -webkit-box !important;
+          overflow: hidden;
+          font-size: clamp(15px, 1.5vw, 21px) !important;
+          line-height: 1.12 !important;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2 !important;
+        }
+
+        .anime-compare-view:not(.choosing) .anime-compare-slot-episodes {
+          display: block;
+          margin-top: 7px;
+          color: rgba(255,255,255,0.5);
+          font-size: 11px;
+        }
+
+        .anime-compare-view:not(.choosing) .anime-compare-vs {
+          position: static !important;
+          width: 42px !important;
+          height: 42px !important;
+          border: 1px solid rgba(255,255,255,0.09);
+          border-radius: 50% !important;
+          color: rgba(255,255,255,0.72) !important;
+          background: rgba(255,255,255,0.045) !important;
+          box-shadow: none !important;
+          font-size: 11px;
+          letter-spacing: 0.04em;
+        }
+
+        .anime-compare-view:not(.choosing) .anime-compare-summary {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+          min-height: 0 !important;
+          margin: 0 0 16px !important;
+          padding: 15px 18px !important;
+          border: 1px solid color-mix(in srgb, var(--compare-accent, #e2e8f0) 20%, rgba(255,255,255,0.07)) !important;
+          border-radius: 15px !important;
+          background: linear-gradient(110deg, color-mix(in srgb, var(--compare-accent, #e2e8f0) 11%, rgba(18,20,24,0.94)), rgba(15,17,21,0.92)) !important;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.045);
+        }
+
+        .anime-compare-view:not(.choosing) .anime-compare-summary::before { content: none !important; }
+        .anime-compare-view:not(.choosing) .anime-compare-summary > * { position: relative; z-index: 1; }
+        .anime-compare-view:not(.choosing) .anime-compare-summary-label {
+          display: block;
+          color: rgba(255,255,255,0.48);
+          font-size: 9px;
+          font-weight: 850;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-summary-winner {
+          display: block;
+          margin-top: 4px;
+          color: #fff;
+          font-size: clamp(15px, 1.5vw, 20px) !important;
+          line-height: 1.15;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-scoreboard {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-score-side {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 64px;
+          padding: 7px 10px;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 10px;
+          background: rgba(0,0,0,0.18);
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-score-side strong {
+          margin: 0;
+          font-size: 18px;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-score-side small {
+          color: rgba(255,255,255,0.42);
+          font-size: 8px;
+          font-weight: 800;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-score-separator {
+          color: rgba(255,255,255,0.35);
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .anime-compare-view:not(.choosing) .anime-compare-stats-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: 0;
+          overflow: hidden;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 15px;
+          background: rgba(13,15,18,0.76);
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-stats-grid::before {
+          content: 'Comparação por categoria';
+          display: block;
+          padding: 13px 16px 11px;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          color: rgba(255,255,255,0.56);
+          font-size: 9px;
+          font-weight: 900;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-stat {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(140px, 0.62fr) minmax(0, 1fr);
+          align-items: center;
+          min-height: 58px !important;
+          padding: 5px 12px !important;
+          border: 0;
+          border-bottom: 1px solid rgba(255,255,255,0.055);
+          border-radius: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+          transform: none !important;
+          transition: background 0.16s ease;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-stat:last-child { border-bottom: 0; }
+        .anime-compare-view:not(.choosing) .anime-compare-stat:hover {
+          background: rgba(255,255,255,0.035) !important;
+          transform: none !important;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-label {
+          grid-column: 2;
+          grid-row: 1;
+          margin: 0 !important;
+          color: rgba(255,255,255,0.42) !important;
+          font-size: 9px !important;
+          font-weight: 850;
+          letter-spacing: 0.07em;
+          line-height: 1.2;
+          text-align: center;
+          text-transform: uppercase;
+          transform: none;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-duel { display: contents; }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-divider { display: none; }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-value {
+          min-height: 40px;
+          padding: 7px 12px;
+          border-radius: 9px;
+          color: rgba(255,255,255,0.65);
+          text-align: center;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-value:first-child { grid-column: 1; grid-row: 1; }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-value:last-child { grid-column: 3; grid-row: 1; }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-value small { display: none; }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-value strong { font-size: 12px; line-height: 1.25; }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-value.winner {
+          color: #fff;
+          background: color-mix(in srgb, var(--compare-accent, #e2e8f0) 10%, rgba(255,255,255,0.035));
+          box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--compare-accent, #e2e8f0) 16%, transparent);
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-stat-value.winner::after { display: none; }
+
+        .anime-compare-view:not(.choosing) .anime-compare-notes {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+          margin-top: 12px !important;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-note-card {
+          min-width: 0;
+          padding: 13px 15px !important;
+          border: 1px solid rgba(255,255,255,0.065) !important;
+          border-radius: 13px !important;
+          background: rgba(255,255,255,0.025) !important;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-note-title {
+          margin-bottom: 9px;
+          color: rgba(255,255,255,0.5);
+          font-size: 9px;
+          letter-spacing: 0.1em;
+        }
+        .anime-compare-view:not(.choosing) .anime-compare-note-line { font-size: 11px; }
+        .anime-compare-view:not(.choosing) .anime-compare-note-line strong { font-size: 11px; }
+
+        @media (max-width: 760px) {
+          .anime-compare-view:not(.choosing) .anime-compare-selected {
+            grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr) !important;
+            gap: 7px !important;
+          }
+          .anime-compare-view:not(.choosing) .anime-compare-slot {
+            grid-template-columns: 48px minmax(0, 1fr) !important;
+            min-height: 76px !important;
+            padding: 6px !important;
+            border-radius: 11px !important;
+          }
+          .anime-compare-view:not(.choosing) .anime-compare-slot img {
+            width: 48px !important;
+            height: 64px !important;
+            border-radius: 7px !important;
+          }
+          .anime-compare-view:not(.choosing) .anime-compare-slot-copy { padding: 4px 6px !important; }
+          .anime-compare-view:not(.choosing) .anime-compare-slot-name { font-size: 11px !important; }
+          .anime-compare-view:not(.choosing) .anime-compare-slot-episodes { margin-top: 4px; font-size: 8px; }
+          .anime-compare-view:not(.choosing) .anime-compare-vs { width: 30px !important; height: 30px !important; font-size: 9px; }
+          .anime-compare-view:not(.choosing) .anime-compare-summary { align-items: flex-start; gap: 8px; padding: 12px !important; }
+          .anime-compare-view:not(.choosing) .anime-compare-summary-winner { max-width: 48vw; font-size: 13px !important; }
+          .anime-compare-view:not(.choosing) .anime-compare-scoreboard { gap: 4px; }
+          .anime-compare-view:not(.choosing) .anime-compare-score-side { flex-direction: column-reverse; gap: 2px; min-width: 40px; padding: 6px; }
+          .anime-compare-view:not(.choosing) .anime-compare-score-side strong { font-size: 15px; }
+          .anime-compare-view:not(.choosing) .anime-compare-score-side small { font-size: 6px; }
+          .anime-compare-view:not(.choosing) .anime-compare-stat {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 0 6px;
+            padding: 7px 8px !important;
+          }
+          .anime-compare-view:not(.choosing) .anime-compare-stat-label { grid-column: 1 / -1; grid-row: 1; padding: 3px 0 5px; }
+          .anime-compare-view:not(.choosing) .anime-compare-stat-value:first-child { grid-column: 1; grid-row: 2; }
+          .anime-compare-view:not(.choosing) .anime-compare-stat-value:last-child { grid-column: 2; grid-row: 2; }
+          .anime-compare-view:not(.choosing) .anime-compare-stat-value small { display: block; margin-bottom: 3px; font-size: 6px; }
+          .anime-compare-view:not(.choosing) .anime-compare-notes { grid-template-columns: 1fr; }
+        }
+
+        /* No Drawer, a caixa não usa contorno branco ao focar. O campo do
+           comparador segue o mesmo padrão visual, inclusive com foco ativo. */
+        .anime-compare-view.choosing .anime-compare-search-wrap.search-box-drawer::before,
+        .anime-compare-view.choosing .anime-compare-search-wrap.search-box-drawer:focus-within::before {
+          display: none !important;
+          content: none !important;
+          opacity: 0 !important;
+        }
+        .anime-compare-view.choosing .anime-compare-search-wrap.search-box-drawer,
+        .anime-compare-view.choosing .anime-compare-search-wrap.search-box-drawer:focus-within {
+          border: 0 !important;
+        }
+
+        /* Ajustes finais: fundo uniforme no Next Season mobile, Comparator
+           desativado em todas as telas e tooltips somente em dispositivos com hover. */
+        .poster-lightbox-compare {
+          opacity: 0.32 !important;
+          cursor: not-allowed !important;
+          pointer-events: auto !important;
+        }
+        .poster-lightbox-compare:hover {
+          background: transparent !important;
+          color: #cbd5e1 !important;
+          transform: none !important;
+        }
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta::after {
+            display: none !important;
+          }
+        }
+        @media (max-width: 760px), (hover: none), (pointer: coarse) {
+          [data-tooltip]::before,
+          [data-tooltip]::after {
+            display: none !important;
+            content: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+          }
+        }
+        @media (min-width: 761px) {
+          header.page-header .header-controls {
+            transform: translateX(-20px);
+          }
+        }
+
       </style>
 
     </head>
@@ -14498,7 +15152,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             <path d="m21 9-5 5"></path>
           </svg>
         </button>
-        <button type="button" class="poster-lightbox-compare" id="posterLightboxCompare" aria-label="Anime Comparator indisponível" data-tooltip="Anime Comparator indisponível" aria-disabled="true" disabled>
+        <button type="button" class="poster-lightbox-compare" id="posterLightboxCompare" aria-label="Anime Comparator desativado" aria-disabled="true" disabled data-tooltip="Anime Comparator">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M7 7h11"></path>
             <path d="m15 4 3 3-3 3"></path>
@@ -14576,12 +15230,14 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
           <section class="anime-compare-picker" id="animeComparePicker" aria-label="Escolher segundo anime">
             <h3 class="anime-compare-picker-title">Escolha o segundo anime</h3>
-            <div class="anime-compare-search-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="11" cy="11" r="7"></circle>
-                <path d="m20 20-3.5-3.5"></path>
-              </svg>
-              <input type="text" class="anime-compare-search" id="animeCompareSearch" placeholder="Pesquisar anime para comparar..." autocomplete="off" spellcheck="false">
+            <div class="anime-compare-search-wrap search-box-drawer">
+              <span class="search-icon-shell" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </svg>
+              </span>
+              <input type="text" class="anime-compare-search" id="animeCompareSearch" placeholder="search anime to compare" autocomplete="off" spellcheck="false">
             </div>
             <div class="anime-compare-preview-blur search-preview-blur" id="animeComparePreviewBlur" aria-hidden="true">
               <div class="search-marquee-row search-marquee-row-right">
@@ -14783,6 +15439,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const compareSelectedEl = document.getElementById('animeCompareSelected');
             const comparePickerEl = document.getElementById('animeComparePicker');
             const compareSearchEl = document.getElementById('animeCompareSearch');
+            const compareSearchWrapEl = compareSearchEl && compareSearchEl.closest('.anime-compare-search-wrap');
             const compareCandidatesEl = document.getElementById('animeCompareCandidates');
             const compareResultEl = document.getElementById('animeCompareResult');
             const lightboxFigure = lightbox && lightbox.querySelector('.poster-lightbox-figure');
@@ -16633,7 +17290,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               if (secondWins > firstWins) winnerText = compareSecond.title;
               compareResultEl.innerHTML = `
                 <div class="anime-compare-summary">
-                  <div class="anime-compare-winner-watermarks" aria-hidden="true"><span>WINNER</span><span>WINNER</span><span>WINNER</span><span>WINNER</span></div>
                   <div>
                     <span class="anime-compare-summary-label">Vencedor em mais categorias</span>
                     <strong class="anime-compare-summary-winner">${escapeHtml(winnerText)}</strong>
@@ -16676,6 +17332,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               if (compareResultEl) compareResultEl.hidden = true;
               if (compareChangeBtn) compareChangeBtn.hidden = true;
               if (compareSearchEl) compareSearchEl.value = '';
+              if (compareSearchWrapEl) compareSearchWrapEl.classList.remove('has-value');
               renderCompareCandidates();
               setTimeout(() => compareSearchEl && compareSearchEl.focus(), 30);
             }
@@ -16698,9 +17355,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             }
 
             function openAnimeCompareFromCurrent() {
-              // O comparador é uma experiência de desktop: além de ocultar o
-              // atalho no CSS, impede qualquer abertura acidental no celular.
-              if (window.matchMedia('(max-width: 760px)').matches) return;
+              // O comparador é uma experiência de desktop; o filtro por toque
+              // impede a abertura acidental no celular.
+              if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
               if (!currentItem || !compareView) return;
               const source = getCompareSourceByItem(currentItem);
               compareFirst = buildCompareEntry(source);
@@ -17593,7 +18250,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               compareBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                openAnimeCompareFromCurrent();
               });
             }
 
@@ -17623,6 +18279,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               let compareSearchTimer = 0;
               let compareSearchFrame = 0;
               compareSearchEl.addEventListener('input', function() {
+                if (compareSearchWrapEl) compareSearchWrapEl.classList.toggle('has-value', !!compareSearchEl.value);
                 window.clearTimeout(compareSearchTimer);
                 window.cancelAnimationFrame(compareSearchFrame);
                 // Evita recalcular a busca tolerante e reconstruir o grid a
@@ -19125,12 +19782,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const isMulti = nsLines.length > 1;
 
             const stripHtml = ns ? `
-                  <div class="announce-strip"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
+                  <div class="announce-strip announce-strip--meta"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
                     <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
                   </div>` : '';
-            const mobileStripHtml = stripHtml
-              ? stripHtml.replace('class="announce-strip"', 'class="announce-strip announce-strip--mobile"')
-              : '';
             let subClass = '';
             if (mode === 'all') {
               const subCat = getSubCategory(anime.id);
@@ -19315,7 +19969,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             }
 
             return `
-              <li class="anime-item${subClass}${topRankClass}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${nfAttr}${navAllAttr}${characterOriginAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}${mode === 'plan' ? ' data-plan-to-watch="1"' : ''}${mode === 'announced-unwatched' ? ' data-rich-panel="1"' : ''}>
+              <li class="anime-item${subClass}${topRankClass}${ns ? ' has-next-season' : ''}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${nfAttr}${navAllAttr}${characterOriginAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}${mode === 'plan' ? ' data-plan-to-watch="1"' : ''}${mode === 'announced-unwatched' ? ' data-rich-panel="1"' : ''}>
                 <div class="anime-item-ambient" aria-hidden="true"${ambientInlineStyle}></div>
                 <div class="anime-item-ambient-shade" aria-hidden="true"></div>
                 <div class="rank-wrap">
@@ -19325,9 +19979,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 <div class="poster-wrap">
                   <img class="thumb" data-list-mode="${mode}" data-src="${cardThumbSrc}" data-poster-src="${normalCardThumb}" alt="${anime.title}" decoding="async">
                   <div class="poster-fallback" aria-hidden="true"></div>
-                  ${stripHtml}
                 </div>
-                ${mobileStripHtml}
                 <div class="meta">
                   <div class="title-row">
                     <h3 class="title-anime">${anime.title}</h3>
@@ -19337,6 +19989,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                     <p class="info">${remainingInfo}</p>
                   </div>` : ''}
                   ${progressHtml}
+                  ${stripHtml}
                 </div>
               </li>
             `;
@@ -19550,14 +20203,18 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               if (active && action !== 'menu') sideActiveButton = button;
             });
 
-            // Os quatro atalhos laterais pintam o dock inteiro com sua cor;
-            // o botão central continua neutro, pois ele representa o menu.
+            // O dock acompanha a cor da categoria atual também nas listas
+            // abertas pelo drawer, que não têm um atalho lateral próprio.
             if (mobileBottomNavEl) {
+              const categoryItem = drawerItems.find(item => item.getAttribute('data-mode') === currentCategory);
               const accent = sideActiveButton
                 ? (sideActiveButton.style.getPropertyValue('--nav-color').trim() || '#e2e8f0')
-                : '';
-              mobileBottomNavEl.classList.toggle('has-side-active', !!sideActiveButton);
-              if (accent) mobileBottomNavEl.style.setProperty('--mobile-nav-accent', accent);
+                : !isDrawerOpen
+                  ? (categoryItem?.style.getPropertyValue('--cat-color').trim() || CATEGORY_HOVER_COLOR[currentCategory] || '#e2e8f0')
+                  : '';
+              const hasAccent = !!accent;
+              mobileBottomNavEl.classList.toggle('has-side-active', hasAccent);
+              if (hasAccent) mobileBottomNavEl.style.setProperty('--mobile-nav-accent', accent);
               else mobileBottomNavEl.style.removeProperty('--mobile-nav-accent');
             }
           }
@@ -20230,7 +20887,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           // ── Card diferenciado da lista "Peak Episodes" ──
           // "rank" aqui já vem calculado com empate considerado (ex: 1, 1, 3 —
           // ver renderFavoriteEpisodesList), não é mais o índice puro do array.
-          function createFavoriteEpisodeCard(ep, rank = null) {
+          function createFavoriteEpisodeCard(ep, rank = null, dataIndex = null) {
             if (!ep) return '';
 
             const topRankClass = rank === 1 ? ' rank-gold'
@@ -20318,7 +20975,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               : '';
 
             return `
-              <li class="fav-ep-card${topRankClass}" id="${ep.id || ''}"${galleryAttr} style="--item-hover-color: #3b82f6;">
+              <li class="fav-ep-card${topRankClass}" id="${ep.id || ''}" data-fav-ep-index="${dataIndex == null ? '' : dataIndex}"${galleryAttr} style="--item-hover-color: #3b82f6;">
                 <div class="fav-ep-ambient" aria-hidden="true"></div>
                 <div class="fav-ep-ambient-shade" aria-hidden="true"></div>
                 <div class="fav-ep-media">
@@ -20376,7 +21033,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               </li>`;
             }
             const ranks = computeFavEpisodeRanks(data);
-            return data.map((ep, idx) => createFavoriteEpisodeCard(ep, ranks[idx])).join('');
+            return data.map((ep, idx) => createFavoriteEpisodeCard(ep, ranks[idx], idx)).join('');
           }
 
 
@@ -21452,7 +22109,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 searchText: `${ep.anime || ''} ${ep.episodeLabel || ''}`,
                 img: ep.img,
                 images: Array.isArray(ep.images) && ep.images.length ? ep.images : (ep.img ? [ep.img] : []),
-                peakRank: favEpRanks[idx] != null ? favEpRanks[idx] : (idx + 1)
+                peakRank: favEpRanks[idx] != null ? favEpRanks[idx] : (idx + 1),
+                favEpIndex: idx
               }));
               addToIndex(favEpSearchData, 'favep');
             }
@@ -21974,20 +22632,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                         <div class="search-result-ambient-shade" aria-hidden="true"></div>
                         <div class="search-result-thumb-wrap">
                           <img class="search-result-thumb" data-src="${searchThumbSrc(entry.tag === 'favep' ? getFavEpThumb(entry.anime) : entry.anime.img)}" alt="" loading="lazy">
-                          ${(() => {
-                            // No card de Peak Episodes (favep) não mostramos a faixa de
-                            // "nova temporada anunciada" — ela não faz sentido nesse
-                            // contexto (o card é sobre um episódio específico, não sobre
-                            // o anime como um todo).
-                            if (entry.tag === 'favep') return '';
-                            const ns = nextSeasonMap[entry.anime.id];
-                            if (!ns) return '';
-                            const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
-                            const isMulti = nsLines.length > 1;
-                            return `<div class="announce-strip"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
-                                      <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
-                                    </div>`;
-                          })()}
+
                         </div>
                         <div class="search-result-info">
                           ${buildSearchRankHtml(entry)}
@@ -22007,6 +22652,20 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                             return metaHtml + buildSearchProgressHtml(entry.anime, acc);
                           })()}
                         </div>
+                          ${(() => {
+                            // No card de Peak Episodes (favep) não mostramos a faixa de
+                            // "nova temporada anunciada" — ela não faz sentido nesse
+                            // contexto (o card é sobre um episódio específico, não sobre
+                            // o anime como um todo).
+                            if (entry.tag === 'favep') return '';
+                            const ns = nextSeasonMap[entry.anime.id];
+                            if (!ns) return '';
+                            const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
+                            const isMulti = nsLines.length > 1;
+                            return `<div class="announce-strip search-result-next-season"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
+                                      <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
+                                    </div>`;
+                          })()}
                       </div>
                       <svg class="search-result-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
                     </div>`;
@@ -22164,6 +22823,38 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               }
             }
 
+            function navigateToFavoriteEpisode(index) {
+              if (!Number.isInteger(index) || index < 0) return;
+              releaseBodyScrollForNavigation();
+              if (currentCategory !== 'favEpisodes') {
+                currentCategory = 'favEpisodes';
+                render();
+              }
+              const reveal = typeof window.triggerExpand === 'function'
+                ? Promise.resolve(window.triggerExpand())
+                : Promise.resolve();
+              reveal.then(() => {
+                const attempts = 18;
+                const findAndScroll = (left) => {
+                  const list = document.getElementById('animeRankingList');
+                  const card = list && list.querySelector(`.fav-ep-card[data-fav-ep-index="${index}"]`);
+                  if (card) {
+                    card.classList.remove('hidden-item');
+                    releaseBodyScrollForNavigation();
+                    requestAnimationFrame(() => {
+                      card.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' });
+                      document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));
+                      card.classList.add('highlight-active');
+                      setTimeout(() => card.classList.remove('highlight-active'), 3000);
+                    });
+                    return;
+                  }
+                  if (left > 0) setTimeout(() => findAndScroll(left - 1), 80);
+                };
+                findAndScroll(attempts);
+              });
+            }
+
             function selectResult(idx) {
               const entry = currentMatches[idx];
               if (!entry) return;
@@ -22180,7 +22871,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               updateGhostHint();
               hideSlashCommandList();
 
-              navigateToAnimeInCategory(targetId, targetCategory);
+              if (entry.tag === 'favep') navigateToFavoriteEpisode(entry.anime.favEpIndex);
+              else navigateToAnimeInCategory(targetId, targetCategory);
             }
 
             // Sugestão sutil dos comandos de barra: enquanto o usuário digita algo
@@ -22802,16 +23494,16 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           // Ctrl+F (ou Cmd+F no Mac) abre a busca do site em vez do "find" nativo do navegador.
           document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key === 'f' || e.key === 'F')) {
-              // Com qualquer poster lightbox aberto, não intercepta o atalho e
-              // não abre o drawer de busca do site.
-              const posterLightboxOpen = document.getElementById('posterLightbox')?.classList.contains('open');
-              const favEpLightboxOpen = document.getElementById('favEpLightbox')?.classList.contains('open');
-              if (posterLightboxOpen || favEpLightboxOpen) {
-                e.preventDefault();
-                return;
-              }
-
               e.preventDefault();
+              e.stopPropagation();
+              const posterLightbox = document.getElementById('posterLightbox');
+              const favEpLightbox = document.getElementById('favEpLightbox');
+              if (posterLightbox?.classList.contains('open')) {
+                document.getElementById('posterLightboxClose')?.click();
+              }
+              if (favEpLightbox?.classList.contains('open')) {
+                document.getElementById('favEpLightboxClose')?.click();
+              }
               openDrawer('search', { focus: true });
             }
           });
@@ -22886,7 +23578,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               // No desktop a troca de listas é exclusivamente pelas setas do
               // teclado, mesmo em trackpads ou telas que emulem touch.
               if (!mobileSwipeOnly()) { swiping = false; return; }
-              if (e.target.closest('.category-drawer') || e.target.closest('.filter-wrapper') || e.target.closest('.fav-ep-media')) return;
+              swiping = false;
+              if (e.target.closest('.category-drawer') || e.target.closest('.filter-wrapper') || e.target.closest('.fav-ep-media') || e.target.closest('.poster-lightbox-zoom.open')) return;
               const lightboxEl = document.getElementById('posterLightbox');
               if (lightboxEl && lightboxEl.classList.contains('open')) return;
               const favEpLightboxEl = document.getElementById('favEpLightbox');
