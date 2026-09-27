@@ -2479,6 +2479,21 @@
           line-height: 1.15;
         }
 
+        /* O separador é posicionado no espaço entre os estúdios, sem alterar a quebra de linha. */
+        .rank-meta-studio-row.has-inline-studio-separator {
+          position: relative;
+        }
+
+        .rank-meta-studio-row.has-inline-studio-separator::before {
+          content: "–";
+          position: absolute;
+          left: -13px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--muted);
+          font-weight: 500;
+        }
+
         .rank-meta-studio-season {
           order: 0;
           flex: 0 1 auto;
@@ -5047,8 +5062,8 @@
         }
 
         @keyframes announce-marquee {
-          from { transform: translateX(0); }
-          to   { transform: translateX(var(--marquee-distance, -50%)); }
+          from { transform: translateX(var(--announce-rank-offset, 0px)); }
+          to   { transform: translateX(calc(var(--announce-rank-offset, 0px) + var(--marquee-distance, -50%))); }
         }
 
         .announce-strip .announce-line {
@@ -5087,6 +5102,23 @@
           font-size: 9px;
         }
 
+        /* Uma única chamada fica centralizada no espaço livre entre o pôster e o rank. */
+        .announce-strip--meta .announce-track {
+          --announce-rank-offset: -56px;
+        }
+
+        .announce-strip--meta:not([data-lines]) .announce-track {
+          width: 100%;
+          justify-content: center;
+          transform: translateX(var(--announce-rank-offset));
+        }
+
+        .announce-strip--meta:not([data-lines]) .announce-line {
+          width: 100%;
+          box-sizing: border-box;
+          text-align: center;
+        }
+
         @media (max-width: 600px) {
           ol.ranking.mode-true-characters li.anime-item.has-next-season .meta {
             min-height: 108px;
@@ -5098,6 +5130,10 @@
             right: 68px;
             bottom: 8px;
             height: 20px;
+          }
+
+          .announce-strip--meta .announce-track {
+            --announce-rank-offset: -36px;
           }
 
           .announce-strip--meta .announce-line {
@@ -5119,7 +5155,9 @@
         .rewatch-icon {
           color: #38bdf8;
           display: inline-block;
-          font-size: 0.85em;
+          font-size: 0.76em;
+          font-weight: 900;
+          letter-spacing: 0.02em;
           vertical-align: 1px;
           line-height: 1;
           margin-right: 1px;
@@ -13975,18 +14013,16 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           text-overflow: ellipsis;
         }
 
-        /* Studios separados por temporada: apenas as duas primeiras linhas
-           ficam visíveis no estado fechado. */
+        /* Studios separados por temporada: o limite é de duas linhas visuais,
+           não de duas temporadas. Assim, uma terceira temporada pode ocupar
+           a segunda linha quando ainda houver espaço. */
         .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
           position: relative;
           display: flex;
           flex-direction: column;
           gap: 5px;
+          max-height: 42px;
           overflow: hidden;
-        }
-
-        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row:nth-child(n+3) {
-          display: none;
         }
 
         /* Desktop fechado: junta as temporadas na mesma linha sempre que a
@@ -13999,22 +14035,13 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             flex-wrap: wrap;
             justify-content: center;
             align-content: center;
-            column-gap: 0;
+            column-gap: 18px;
             row-gap: 5px;
-          }
-
-          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row + .rank-meta-studio-row::before {
-            content: "–";
-            /* À direita, o flex já aplica 6px de gap até "S4"; portanto
-               deixamos só 6px à esquerda para os dois lados ficarem iguais. */
-            margin: 0 0 0 6px;
-            color: var(--muted);
-            font-weight: 500;
           }
         }
 
-        /* No mobile o card fechado mostra somente o primeiro estúdio; o
-           indicador MORE entra assim que houver outro para revelar. */
+        /* O indicador MORE é ativado pelo JavaScript somente quando o limite
+           de duas linhas realmente esconde parte da lista. */
         @media (max-width: 600px) {
           .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) {
             position: relative;
@@ -14024,11 +14051,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             position: static;
           }
 
-          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row:nth-child(n+2) {
-            display: none;
-          }
-
-          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2))::after {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded).has-hidden-studio-rows::after {
             content: "MORE";
             position: absolute;
             right: 6px;
@@ -14042,7 +14065,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           }
         }
 
-        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(3))::after {
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded).has-hidden-studio-rows::after {
           content: "MORE";
           position: absolute;
           right: 0;
@@ -14071,7 +14094,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           flex-wrap: wrap;
           justify-content: center;
           align-content: center;
-          gap: 4px 0;
+          gap: 4px 18px;
           width: 100%;
           max-width: 100%;
           max-height: 37px;
@@ -14085,12 +14108,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           white-space: nowrap;
         }
 
-        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios.is-meta-expanded .rank-meta-studio-row:not(:last-child)::after {
-          content: " – ";
-          margin: 0 7px;
-          color: var(--muted);
-          font-weight: 500;
-        }
 
         /* No estado aberto, o rótulo fica na posição normal e as temporadas
            seguem na mesma linha, quebrando somente quando for necessário. */
@@ -14148,7 +14165,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         }
 
         @media (min-width: 601px) {
-          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded):has(.rank-meta-studio-row:nth-child(3))::after {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded).has-hidden-studio-rows::after {
             content: "MORE";
             position: absolute;
             right: 8px;
@@ -14164,7 +14181,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         }
 
         @media (max-width: 600px) {
-          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded):has(.rank-meta-studio-row:nth-child(2))::after {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded).has-hidden-studio-rows::after {
             content: "MORE";
             position: absolute;
             right: 8px;
@@ -14214,13 +14231,25 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           pointer-events: none;
         }
 
-        /* Mantém o número acima da faixa tanto parado quanto no hover. */
+        /* Isola as camadas do bloco: a faixa fica atrás e o rank é pintado por último. */
+        ol.ranking.mode-true-characters .meta {
+          isolation: isolate;
+        }
+
+        ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta {
+          z-index: 1 !important;
+        }
+
         ol.ranking.mode-true-characters .meta::before {
-          z-index: 5 !important;
+          z-index: 20 !important;
+        }
+
+        ol.ranking.mode-true-characters .rank-wrap {
+          z-index: 21 !important;
         }
 
         ol.ranking.mode-true-characters li.anime-item:hover .meta::before {
-          z-index: 5 !important;
+          z-index: 20 !important;
         }
 
         ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta .announce-line {
@@ -14230,8 +14259,36 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           font-size: 10px;
         }
 
-        /* Listas e calendário sem #X/01/02 podem usar toda a linha de informações. */
-        ol.ranking:is(.category-watching, .category-plan, .category-incomplete, .category-announced, .release-calendar-list)
+        /* Watching Now: usa toda a faixa e centraliza o anúncio; o rank fica acima dela. */
+        ol.ranking.category-watching .meta > .announce-strip.announce-strip--meta {
+          left: 0 !important;
+          right: 0 !important;
+          justify-content: center;
+        }
+
+        ol.ranking.category-watching .meta > .announce-strip.announce-strip--meta .announce-track {
+          --announce-rank-offset: 0px;
+        }
+
+        ol.ranking.category-watching .meta > .announce-strip.announce-strip--meta:not([data-lines]) .announce-track {
+          width: 100%;
+          justify-content: center;
+          transform: none;
+        }
+
+        ol.ranking.category-watching .meta > .announce-strip.announce-strip--meta:not([data-lines]) .announce-line {
+          width: 100%;
+          box-sizing: border-box;
+          text-align: center;
+        }
+
+        /* Remove a máscara reservada ao rank: neste modo o rank já fica por cima. */
+        ol.ranking.category-watching .meta > .announce-strip.announce-strip--meta::after {
+          display: none !important;
+        }
+
+        /* Outras listas e calendário sem #X/01/02 também podem usar toda a faixa. */
+        ol.ranking:is(.category-plan, .category-incomplete, .category-announced, .release-calendar-list)
           .meta > .announce-strip.announce-strip--meta {
           right: 0 !important;
         }
@@ -15045,7 +15102,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               <div class="subtitle" aria-live="polite">
                 <div class="subtitle-left">
                   <span class="subtitle-main">
-                    <span><span class="pause-icon">⏸</span> more to watch - <span class="rewatch-icon">↻</span> plan to rewatch or rewatching</span>
+                    <span><span class="pause-icon">⏸</span> more to watch - <span class="rewatch-icon">RW</span> plan to rewatch or rewatching</span>
                   </span>
                 </div>
               </div>
@@ -15208,7 +15265,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               <h2 class="anime-compare-title" id="animeCompareTitle">anime comparator</h2>
               <div class="anime-compare-subtitle subtitle">
                 <div class="subtitle-left">
-                  <span class="subtitle-main"><span><span class="pause-icon">⏸</span> more to watch - <span class="rewatch-icon">↻</span> plan to rewatch or rewatching</span></span>
+                  <span class="subtitle-main"><span><span class="pause-icon">⏸</span> more to watch - <span class="rewatch-icon">RW</span> plan to rewatch or rewatching</span></span>
                 </div>
               </div>
             </div>
@@ -15405,6 +15462,32 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const randomPlanBtn = document.getElementById('randomPlanBtn');
             const soundBtn = document.getElementById('posterLightboxSound');
 
+            function updateStudioSeparators(list) {
+              if (!list) return;
+              const studioItem = list.closest('.rank-meta-item--studios');
+              const hasHiddenRows = list.scrollHeight > list.clientHeight + 1;
+              studioItem?.classList.toggle('has-hidden-studio-rows', hasHiddenRows);
+              const rows = Array.from(list.querySelectorAll('.rank-meta-studio-row'))
+                .filter(row => getComputedStyle(row).display !== 'none');
+              let previousCenterY = null;
+              rows.forEach(row => {
+                const rect = row.getBoundingClientRect();
+                const centerY = rect.top + rect.height / 2;
+                const sharesLineWithPrevious = previousCenterY !== null && Math.abs(centerY - previousCenterY) < 3;
+                row.classList.toggle('has-inline-studio-separator', sharesLineWithPrevious);
+                previousCenterY = centerY;
+              });
+            }
+
+            const studioSeparatorResizeObserver = typeof ResizeObserver === 'function'
+              ? new ResizeObserver(entries => entries.forEach(entry => updateStudioSeparators(entry.target)))
+              : null;
+
+            function refreshStudioSeparators() {
+              lightboxMeta?.querySelectorAll('.rank-meta-studio-list').forEach(list => updateStudioSeparators(list));
+            }
+            window.addEventListener('resize', () => requestAnimationFrame(refreshStudioSeparators), { passive: true });
+
             if (lightboxMeta) {
               lightboxMeta.addEventListener('click', (event) => {
                 // Arrastar para selecionar/copiar não deve fechar o campo aberto.
@@ -15416,18 +15499,21 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 if (!expandableItem) {
                   lightboxMeta.classList.remove('is-meta-expanded');
                   expandedItem?.classList.remove('is-meta-expanded');
+                  requestAnimationFrame(refreshStudioSeparators);
                   return;
                 }
 
                 if (expandedItem === expandableItem) {
                   lightboxMeta.classList.remove('is-meta-expanded');
                   expandableItem.classList.remove('is-meta-expanded');
+                  requestAnimationFrame(refreshStudioSeparators);
                   return;
                 }
 
                 expandedItem?.classList.remove('is-meta-expanded');
                 expandableItem.classList.add('is-meta-expanded');
                 lightboxMeta.classList.add('is-meta-expanded');
+                requestAnimationFrame(refreshStudioSeparators);
               });
             }
             const compareBtn = document.getElementById('posterLightboxCompare');
@@ -15850,8 +15936,14 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   </div>`;
               }).join('');
 
+              studioSeparatorResizeObserver?.disconnect();
               lightboxMeta.innerHTML = fieldsHtml;
               lightboxMeta.classList.remove('is-meta-expanded');
+              const studioList = lightboxMeta.querySelector('.rank-meta-studio-list');
+              if (studioList) {
+                studioSeparatorResizeObserver?.observe(studioList);
+                requestAnimationFrame(() => updateStudioSeparators(studioList));
+              }
 
               if (malId) {
                 const scoreEl = lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
