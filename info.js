@@ -83,8 +83,8 @@ const rawAnimeData = [
       { label: "Film: Red", episodes: "1h56m", note: 9, malName: "One Piece Film: Red " },
 
       { spacer: true, text: "One Filler", watched: true},
-      { label: "TV SPECIAL: Fan Letter", episodes: "24m", note: 8, malName: "One Piece Fan Letter " },
-      { label: "TV SPECIAL: Heroines", episodes: "23m", note: 7, malName: "One Piece: Heroines " },
+      { label: "TV Special: Fan Letter", episodes: "24m", note: 8, malName: "One Piece Fan Letter " },
+      { label: "TV Special: Heroines", episodes: "23m", note: 7, malName: "One Piece: Heroines " },
       {
         label: "ONA: Monsters: 103 Mercies Dragon Damnation", episodes: "25m", note: 7, malName: "Monsters: 103 Mercies Dragon Damnation",},
     ],
@@ -167,7 +167,7 @@ const rawAnimeData = [
     id: "mushoku",
     img: "myranks-images/myranks/mushoku.webp",
     title: "Mushoku Tensei: Jobless Reincarnation",
-    info: "2 temporadas: 47 episódios",
+    info: "3 temporadas: 61 episódios",
     studio: "Studio Bind",
     airedSeason: "2021-?",
     rewatch: "First 2 Seasons",
@@ -197,9 +197,9 @@ const rawAnimeData = [
         malName: "Mushoku Tensei II: Isekai Ittara Honki Dasu Part 2 ",
       },
       {
-        label: "3ª temporada",
+        label: "3ª temporada I",
         episodes: 14,
-        unwatched: true,
+        note: 8,
         malName: "Mushoku Tensei III: Isekai Ittara Honki Dasu",
       },
 
@@ -281,7 +281,7 @@ const rawAnimeData = [
     mal: [
       { label: "1ª temporada", episodes: 38, note: 8, malName: "Kingdom" },
       { label: "2ª temporada", episodes: 39, note: 7, malName: "Kingdom 2nd Season" },
-      { label: "3ª temporada", episodes: 26, note: 10, malName: "Kingdom 3rd Season" },
+      { label: "3ª temporada", episodes: 26, note: 9, malName: "Kingdom 3rd Season" },
       { label: "4ª temporada", episodes: 26, unwatched: true, malName: "Kingdom 4th Season" },
       { label: "5ª temporada", episodes: 13, unwatched: true, malName: "Kingdom 5th Season" },
       { label: "6ª temporada", episodes: 13, unwatched: true, malName: "Kingdom 6th Season" },
@@ -353,15 +353,18 @@ const rawAnimeData = [
       { label: "1ª temporada", episodes: 13, note: 7, malName: "Boku no Hero Academia   " },
       { label: "2ª temporada", episodes: 25, note: 8, malName: "Boku no Hero Academia 2nd Season" },
       { label: "3ª temporada", episodes: 25, note: 6, malName: "Boku no Hero Academia 3rd Season" },
-      { label: "Movie 1: Two Heroes ", episodes: "1h36m", note: 6, malName: "Boku no Hero Academia the Movie 1: Futari no Hero " },
       { label: "4ª temporada", episodes: 25, note: 6, malName: "Boku no Hero Academia 4th Season" },
-      { label: "Movie 2:  Heroes Rising", episodes: "1h44m", note: 6, malName: "Boku no Hero Academia the Movie 2: Heroes Rising " },
       { label: "5ª temporada", episodes: 25, note: 7, malName: "Boku no Hero Academia 5th Season" },
       { label: "6ª temporada", episodes: 25, note: 8, malName: "Boku no Hero Academia 6th Season" },
       { label: "7ª temporada", episodes: 21, note: 8, malName: "Boku no Hero Academia 7th Season" },
-      { label: "Movie 4: You're Next", episodes: "1h50m", note: 7, malName: "Boku no Hero Academia the Movie 4: You're Next " },
       { label: "8ª temporada", episodes: 11, note: 9, malName: "Boku no Hero Academia: Final Season" },
-      { label: "Episode 171: More", episodes: "TV Special", note: 7, malName: "	Boku no Hero Academia: More " },
+      { label: "TV Special: MHA More", episodes: "23m", note: 7, malName: "Boku no Hero Academia: More" },
+
+      { spacer: true, text: "MHA Movies", watched: true},
+      { label: "Movie 1: Two Heroes ", episodes: "1h36m", note: 6, malName: "Boku no Hero Academia the Movie 1: Futari no Hero" },
+      { label: "Movie 2: Heroes Rising", episodes: "1h44m", note: 6, malName: "Boku no Hero Academia the Movie 2: Heroes Rising" },
+      { label: "Movie 3: World Heroes Mission", episodes: "1h44m", unwatched: true, malName: "Boku no Hero Academia the Movie 3: World Heroes' Mission" },
+      { label: "Movie 4: You're Next", episodes: "1h50m", note: 7, malName: "Boku no Hero Academia the Movie 4: You're Next" },
     ],
   },
 {
@@ -684,16 +687,6 @@ const rawAnimeData = [
     ],
   },
 {
-    id: "makeine",
-    img: "myranks-images/myranks/makeine.webp",
-    title: "Makeine: Too Many Losing Heroines!",
-    info: "1 temporada: 12 episódios",
-    studio: "A-1 Pictures",
-    airedSeason: "2024-?",
-    rewatch: "Not Yet",
-    mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Make Heroine ga Oosugiru!" }],
-  },
-{
     id: "zom-100",
     img: "myranks-images/myranks/zom-100.webp",
     title: "Zom 100: Bucket List of the Dead",
@@ -761,6 +754,16 @@ const rawAnimeData = [
     airedSeason: "2025-?",
     rewatch: "No",
     mal: [{ label: "1ª temporada", episodes: 13, note: 7, malName: "Chitose-kun wa Ramune Bin no Naka" }],
+  },
+{
+    id: "makeine",
+    img: "myranks-images/myranks/makeine.webp",
+    title: "Makeine: Too Many Losing Heroines!",
+    info: "1 temporada: 12 episódios",
+    studio: "A-1 Pictures",
+    airedSeason: "2024-?",
+    rewatch: "Not Yet",
+    mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Make Heroine ga Oosugiru!" }],
   },
 {
     id: "tsukimichi",
@@ -1143,7 +1146,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [
       { label: "1 temporada", episodes: 13, note: 5, malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta" },
-      { label: "TV SPECIAL: Real World", episodes: "47m", malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta (TV Special)", unwatched: true },
+      { label: "TV Special: Real World", episodes: "47m", malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta (TV Special)", unwatched: true },
     ],
   },
 {
@@ -1315,21 +1318,6 @@ const rawWatchingData = [
   },
 
   // Summer 2026
-  {
-    id: "mushoku",
-    img: "watchingnow-images/watchingnow/mushoku.webp",
-    title: "Mushoku Tensei: Jobless Reincarnation",
-    info: "3ª temporada I: 14 episódios",
-    season: "summer-2026",
-    studio: "Studio Bind",
-    airedSeason: "2026",
-    seasons: [23, 24, 14],
-    cours: [[11, 12], [12, 12], null],
-    url: "https://www.anime-planet.com/anime/mushoku-tensei-jobless-reincarnation-3rd-season",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/G24H1N3MP/mushoku-tensei-jobless-reincarnation",
-    malUrl: "https://myanimelist.net/anime/59193/Mushoku_Tensei_III__Isekai_Ittara_Honki_Dasu",
-  },
   {
     id: "opposites",
     img: "watchingnow-images/watchingnow/opposites.webp",
@@ -1927,13 +1915,6 @@ const rawReleaseCalendarData = [
 
   // SUNDAY
   {
-    id: "mushoku",
-    img: "watchingnow-images/watchingnow/mushoku.webp",
-    title: "Mushoku Tensei: Jobless Reincarnation",
-    season: "summer-2026",
-    releaseDay: "sunday",
-  },
-  {
     id: "opposites",
     img: "watchingnow-images/watchingnow/opposites.webp",
     title: "You and I are Polar Opposites",
@@ -2143,7 +2124,7 @@ const rawPlanToWatchData = [
     id: "dxd",
     img: "plantowatch-images/plantowatch/dxd.webp",
     title: "High School DxD",
-    info: "4 temporadas: 48 episódios", // OVAs: 1h34m <br> TV SPECIAL: 24m
+    info: "4 temporadas: 48 episódios", // OVAs: 1h34m <br> TV Special: 24m
     studio: "TNK / Passione",
     airedSeason: "2012-2018",
     url: "https://www.anime-planet.com/anime/high-school-dxd",
@@ -2157,7 +2138,7 @@ const rawPlanToWatchData = [
       { label: "High School DxD New OVA", episodes: "24m", malName: "High School DxD New: Oppai, Tsutsumimasu!", unwatched: true  },
       { label: "3ª temporada: BorN", episodes: 12, malName: "High School DxD BorN", unwatched: true  },
       { label: "High School DxD Born OVA", episodes: "24m", malName: "High School DxD BorN: Yomigaeranai Fushichou", unwatched: true  },
-      { label: "Holiness Behind the Gym", episodes: "TV SPECIAL", malName: "High School DxD Hero: Taiikukan-ura no Holy", unwatched: true  },
+      { label: "Holiness Behind the Gym", episodes: "TV Special", malName: "High School DxD Hero: Taiikukan-ura no Holy", unwatched: true  },
       { label: "4ª temporada: Hero", episodes: 12, malName: "High School DxD Hero", unwatched: true  },
     ],
   },
@@ -2231,7 +2212,7 @@ const rawPlanToWatchData = [
 
     mal: [
       { label: "1ª temporada", episodes: 13, malName: "Grisaia no Kajitsu", unwatched: true },
-      { label: "The Labyrinth of Grisaia:  The Cocoon of Caprice 0", episodes: "TV SPECIAL", malName: "Grisaia no Meikyuu: Caprice no Mayu 0", unwatched: true },
+      { label: "The Labyrinth of Grisaia:  The Cocoon of Caprice 0", episodes: "TV Special", malName: "Grisaia no Meikyuu: Caprice no Mayu 0", unwatched: true },
       { label: "2ª temporada", episodes: 10, malName: "Grisaia no Rakuen", unwatched: true },
       { label: "Movie: Phantom Trigger", episodes: "49m", malName: "Grisaia: Phantom Trigger The Animation", unwatched: true },
       { label: "Movie 2: Phantom Trigger Stargazer", episodes: "1h0m", malName: "Grisaia: Phantom Trigger The Animation - Stargazer", unwatched: true },
@@ -3411,6 +3392,7 @@ const nextSeasonMap = {
 
   "tensei-shitara-slime": { info: "Season 4 Part 2 in Summer 2027" },
   
+  "mushoku": { info: "Season 3 Part 2 in 2027" },
   "haikyuu": { info: "New Movie in 2027" },
   "dan-da-dan": { info: "Season 3 in 2027" },
   "roshidere": { info: "Season 2 in 2027" },
