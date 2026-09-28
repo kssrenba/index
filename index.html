@@ -12013,6 +12013,166 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           }
         }
 
+        /* Cada par temporada/estúdio vira uma unidade visual própria quando há mais de um estúdio. */
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) {
+          align-items: center;
+          justify-content: center;
+          column-gap: 7px;
+          row-gap: 6px;
+          padding: 2px 3px;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) .rank-meta-studio-row {
+          flex: 0 0 auto;
+          flex-wrap: nowrap;
+          gap: 2,5px;
+          min-height: 25px;
+          max-width: 100%;
+          padding: 2px 4px;
+          white-space: nowrap;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) .rank-meta-studio-season {
+          font-size: 10px;
+          color: #a1a1aa;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) .rank-meta-studio-name {
+          font-size: 13px;
+          font-weight: 650;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-row.has-inline-studio-separator::before {
+          content: none;
+        }
+
+        @media (max-width: 600px) {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) {
+            column-gap: 5px;
+            row-gap: 5px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) .rank-meta-studio-row {
+            padding: 4px 6px;
+          }
+
+
+        }
+
+        /* Alinha o rótulo STUDIOS ao rótulo STUDIO dos cards com um só estúdio. */
+        @media (min-width: 761px) {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:has(.rank-meta-studio-row:nth-child(2)) > .rank-meta-label {
+            transform: translateY(5px);
+          }
+        }
+
+        /* Desktop: separa claramente S1, S2 etc. sem margem negativa. */
+        @media (min-width: 761px) {
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) {
+            column-gap: 10px;
+            row-gap: 3px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) .rank-meta-studio-row {
+            gap: 3px;
+            padding: 1px 0;
+            margin-left: 0;
+          }
+        }
+
+
+        /* Mobile: Studio ocupa a linha inteira; Rewatch/MAL Score e Year dividem a segunda. */
+        @media (max-width: 760px) {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            grid-template-rows: 78px 58px;
+            height: 136px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item {
+            min-height: 0;
+            padding: 8px 10px;
+            border-right: 0;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--studio {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            border-bottom: 1px solid rgba(255,255,255,0.09);
+          }
+
+          /* Fechado: uma linha visual, com todos os estúdios que couberem. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
+            height: 30px;
+            max-height: 30px;
+            overflow: hidden;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 4px 14px;
+            padding: 2px 0;
+            justify-content: center;
+            align-content: flex-start;
+          }
+
+          /* Aberto: a lista completa ocupa o card, com rolagem se necessário. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--studios.is-meta-expanded .rank-meta-studio-list {
+            height: auto;
+            max-height: 100px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+            gap: 4px 14px;
+            padding: 2px 0;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row) .rank-meta-studio-row {
+            min-height: 26px;
+            padding: 2px 0;
+            gap: 3px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--studios .rank-meta-studio-row.has-inline-studio-separator::before {
+            content: "-";
+            left: -10px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--rewatch,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--score {
+            grid-column: 1;
+            grid-row: 2;
+            border-right: 1px solid rgba(255,255,255,0.09);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--season {
+            grid-column: 2;
+            grid-row: 2;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta.is-meta-expanded {
+            height: 136px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta.is-meta-expanded .rank-meta-item.is-meta-expanded {
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+          }
+        }
+
+
+        /* Mobile: pausa apenas a animação contínua dos fundos. */
+        @media (max-width: 760px) {
+          .anime-item-ambient,
+          .search-result-ambient,
+          .fav-ep-ambient {
+            animation: none !important;
+          }
+        }
+
       </style>
 
     </head>
@@ -12555,6 +12715,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           // Mesmo quando ainda não der tempo de concluir, isso elimina uma parte
           // importante da latência de abertura em conexões móveis.
           document.addEventListener('pointerdown', (event) => {
+            if (event.pointerType === 'touch') return;
             const item = event.target.closest('.anime-item');
             if (!item) return;
             const img = item.querySelector('.poster-wrap img.thumb');
@@ -13029,7 +13190,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   const cached = getCachedMalScore(malId);
                   const initialText = cached ? formatMalScoreText(cached.score) : '…';
                   return `
-                  <div class="rank-meta-item">
+                  <div class="rank-meta-item rank-meta-item--score">
                     <span class="rank-meta-label">${field.label}</span>
                     <a class="rank-meta-value rank-meta-value--score" data-field="score" href="${escapeHtml(malUrl)}" target="_blank" rel="noopener">${initialText}</a>
                   </div>`;
@@ -14132,12 +14293,16 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               // e o swipe trocam de pôster sem aguardar rede/decodificação.
               const visibleItems = getVisibleItems();
               const index = visibleItems.indexOf(item);
-              [-2, -1, 1, 2].forEach(offset => {
+              const mobileCarousel = window.matchMedia('(max-width: 760px)').matches;
+              const neighborOffsets = mobileCarousel
+                ? (navigator.connection?.saveData ? [] : [-1, 1])
+                : [-2, -1, 1, 2];
+              neighborOffsets.forEach(offset => {
                 if (index < 0 || !visibleItems.length) return;
                 const neighbor = visibleItems[(index + offset + visibleItems.length) % visibleItems.length];
                 const neighborImg = neighbor && neighbor.querySelector('.poster-wrap img.thumb');
                 const neighborSrc = neighborImg && neighborImg.getAttribute('data-poster-src');
-                if (neighborSrc) preloadLightboxPoster(neighborSrc, offset === -1 || offset === 1 ? 'high' : 'auto');
+                if (neighborSrc) preloadLightboxPoster(neighborSrc, mobileCarousel ? 'low' : (offset === -1 || offset === 1 ? 'high' : 'auto'));
               });
             }
 
@@ -15630,8 +15795,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           // Antecipa aproximadamente uma tela. Assim as capas logo abaixo já
           // chegam prontas sem disputar conexão com dezenas de cards distantes.
           const __posterAheadMargin = Math.max(
-            __mobilePosterLoading ? 700 : 950,
-            Math.round(window.innerHeight * (__mobilePosterLoading ? 0.9 : 1.15))
+            __mobilePosterLoading ? 360 : 950,
+            Math.round(window.innerHeight * (__mobilePosterLoading ? 0.6 : 1.15))
           );
           const __posterBehindMargin = __mobilePosterLoading ? 280 : 400;
 
@@ -15755,7 +15920,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const drain = () => {
               __posterLoadFrame = 0;
               let started = 0;
-              while (__posterLoadJobs.length && started < 12) {
+              while (__posterLoadJobs.length && started < (__mobilePosterLoading ? 4 : 12)) {
                 const job = __posterLoadJobs.shift();
                 if (job.generation !== __posterRenderGeneration) continue;
                 job.task();
@@ -15858,15 +16023,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   }
                 }
                 schedulePosterOptimization(img);
-                if (__mobilePosterLoading && wrap.dataset.posterVisible === '1') {
-                  const original = img.getAttribute('data-poster-src');
-                  if (original && original !== src && img.dataset.fullPosterWarmed !== '1') {
-                    img.dataset.fullPosterWarmed = '1';
-                    const warm = () => { if (wrap.isConnected) preloadLightboxPoster(original, 'low'); };
-                    if ('requestIdleCallback' in window) requestIdleCallback(warm);
-                    else setTimeout(warm, 250);
-                  }
-                }
+                // No mobile, baixa o pôster completo ao abrir o lightbox.
               };
               img.addEventListener('load', img.__paintPoster);
               img.addEventListener('error', () => {
