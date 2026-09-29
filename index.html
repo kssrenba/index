@@ -3826,6 +3826,63 @@
           }
         }
 
+        /* Indicador mobile de conteúdo abaixo: um fade discreto no rodapé
+           do lightbox, sem seta ou botão. Ele só aparece quando ainda existe
+           conteúdo para rolar e some ao chegar ao final. */
+        .poster-lightbox-scroll-indicator {
+          display: none;
+        }
+
+        @media (max-width: 760px) {
+          .poster-lightbox-scroll-indicator {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 8;
+            width: 100%;
+            height: 52px;
+            display: block;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            background: linear-gradient(180deg,
+              rgba(5,5,7,0) 0%,
+              rgba(5,5,7,0.22) 38%,
+              rgba(5,5,7,0.72) 100%
+            );
+            -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 35%, #000 100%);
+            mask-image: linear-gradient(180deg, transparent 0%, #000 35%, #000 100%);
+            transition: opacity 0.24s ease, visibility 0s linear 0.24s;
+          }
+
+          .poster-lightbox-scroll-indicator-line,
+          .poster-lightbox-scroll-indicator svg {
+            display: none !important;
+          }
+
+          .poster-lightbox-scroll-indicator.visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.24s ease;
+          }
+
+          .poster-lightbox-scroll-indicator.at-bottom {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.18s ease, visibility 0s linear 0.18s;
+          }
+
+          .poster-lightbox:not(.open) .poster-lightbox-scroll-indicator {
+            opacity: 0 !important;
+            visibility: hidden !important;
+          }
+
+          .poster-lightbox.simple-mode .poster-lightbox-scroll-indicator {
+            display: none !important;
+          }
+        }
+
         @media (max-width: 760px) {
           .poster-lightbox {
             align-items: flex-start;
@@ -10490,6 +10547,10 @@
             border-bottom-right-radius: 15px;
           }
 
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters {
+            grid-area: characters;
+          }
+
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal {
             grid-area: auto;
             grid-column: 1 / -1;
@@ -10577,8 +10638,9 @@
               "list list"
               "meta meta"
               "moreinfo moreinfo"
-              "mal mal";
-            grid-template-rows: repeat(6, max-content);
+              "mal mal"
+              "characters characters";
+            grid-template-rows: repeat(7, max-content);
             column-gap: 11px;
             row-gap: 16px;
             align-items: start;
@@ -12411,6 +12473,22 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           .poster-lightbox-character-link:focus-visible .poster-lightbox-character-rank {
             color: #f472b6;
           }
+
+          /* Top 3 do True Characters: no hover, a posição assume a cor da medalha. */
+          .poster-lightbox-character-link.rank-gold:hover .poster-lightbox-character-rank,
+          .poster-lightbox-character-link.rank-gold:focus-visible .poster-lightbox-character-rank {
+            color: #d4af37;
+          }
+
+          .poster-lightbox-character-link.rank-silver:hover .poster-lightbox-character-rank,
+          .poster-lightbox-character-link.rank-silver:focus-visible .poster-lightbox-character-rank {
+            color: #b8bcc2;
+          }
+
+          .poster-lightbox-character-link.rank-bronze:hover .poster-lightbox-character-rank,
+          .poster-lightbox-character-link.rank-bronze:focus-visible .poster-lightbox-character-rank {
+            color: #b0703f;
+          }
         }
         @media (min-width: 761px) and (max-width: 1199px) {
           .poster-lightbox-character-link {
@@ -12418,39 +12496,121 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           }
         }
 
-        /* Mobile: pausa apenas a animação contínua dos fundos. */
-        @media (min-width: 761px) {
-          ol.ranking.category-trueCharacters .title-row:has(.true-character-rank-movement) {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-          }
-          ol.ranking.category-trueCharacters .title-row .title-anime {
-            min-width: 0;
-          }
-          .true-character-rank-movement {
-            display: inline-flex;
-            flex: none;
-            align-items: center;
-            gap: 2px;
-            font: 800 13px/1 var(--font-title);
-            white-space: nowrap;
-          }
-          .true-character-rank-movement svg {
-            width: 14px;
-            height: 14px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-          }
-          .true-character-rank-movement--up { color: #4ade80; }
-          .true-character-rank-movement--down { color: #f87171; }
-          .true-character-rank-movement--down svg { transform: rotate(180deg); }
-        }
+        /* Mobile: mostra a seção TRUE CHARACTERS também no lightbox.
+           Os personagens ficam em uma faixa horizontal rolável para preservar
+           o mesmo visual compacto do desktop sem esmagar os cards na largura
+           do celular. */
         @media (max-width: 760px) {
-          .true-character-rank-movement { display: none; }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters:not(:empty) {
+            display: block;
+            width: 100%;
+            grid-column: 1 / -1;
+            margin-top: 0;
+            padding: 13px 12px 12px;
+            border: 0;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.055);
+            overflow: hidden;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters-label {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 0 10px;
+            padding: 0;
+            color: rgba(255,255,255,0.64);
+            font: 800 10px/1.3 var(--font-title);
+            letter-spacing: 0.055em;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters-grid {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 2px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters-grid::-webkit-scrollbar {
+            display: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link {
+            flex: 0 0 75vw;
+            min-width: 0;
+            min-height: 58px;
+            height: 58px;
+            gap: 9px;
+            padding: 4px 48px 4px 4px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.035);
+            transform: none;
+            overflow: hidden;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link:active {
+            background: rgba(255,255,255,0.085);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-img {
+            width: 50px;
+            height: 50px;
+            flex: 0 0 50px;
+            border-radius: 8px;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-text {
+            flex: 1 1 auto;
+            width: auto;
+            min-width: 0;
+            max-width: none;
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-name {
+            display: block !important;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
+            color: #fff !important;
+            font-size: 12.5px;
+            line-height: 1.2;
+            font-weight: 750;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-rank {
+            right: 10px;
+            font-size: 23px;
+            transform: translateY(-50%) scaleY(1.7);
+          }
+
+          /* Top 3 continuam com as cores das medalhas no mobile. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link.rank-gold .poster-lightbox-character-rank {
+            color: #d4af37;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link.rank-silver .poster-lightbox-character-rank {
+            color: #b8bcc2;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link.rank-bronze .poster-lightbox-character-rank {
+            color: #b0703f;
+          }
         }
 
         @media (max-width: 760px) {
@@ -12461,7 +12621,232 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           }
         }
 
-      </style>
+              /* FIX: True Characters no lightbox mobile — texto visível */
+        @media (max-width: 760px) {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters-grid {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: stretch !important;
+            gap: 8px !important;
+            overflow-x: auto !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link {
+            display: grid !important;
+            grid-template-columns: 50px minmax(0, 1fr) auto !important;
+            align-items: center !important;
+            flex: 0 0 75vw !important;
+            width: 75vw !important;
+            min-width: 75vw !important;
+            height: 58px !important;
+            min-height: 58px !important;
+            padding: 4px 10px 4px 4px !important;
+            gap: 9px !important;
+            overflow: hidden !important;
+            color: #fff !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-img {
+            display: block !important;
+            width: 50px !important;
+            height: 50px !important;
+            min-width: 50px !important;
+            max-width: 50px !important;
+            min-height: 50px !important;
+            max-height: 50px !important;
+            grid-column: 1 !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-text {
+            display: flex !important;
+            grid-column: 2 !important;
+            min-width: 0 !important;
+            width: auto !important;
+            max-width: none !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            overflow: hidden !important;
+            align-items: flex-start !important;
+            justify-content: center !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-name {
+            display: block !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            white-space: nowrap !important;
+            text-overflow: ellipsis !important;
+            color: #fff !important;
+            font-family: var(--font-title) !important;
+            font-size: 12.5px !important;
+            line-height: 1.2 !important;
+            font-weight: 750 !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-rank {
+            position: static !important;
+            grid-column: 3 !important;
+            justify-self: end !important;
+            right: auto !important;
+            top: auto !important;
+            transform: none !important;
+            font-size: 23px !important;
+            line-height: 1 !important;
+          }
+        }
+
+
+        /* ── True Characters no lightbox mobile: mesma identidade visual do desktop ── */
+        @media (max-width: 760px) {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters:not(:empty) {
+            border: 0 !important;
+            background: rgba(255,255,255,0.055) !important;
+            box-shadow: none !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters-label {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            margin: 0 0 11px !important;
+            padding: 0 !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: none !important;
+            box-shadow: none !important;
+            color: rgba(255,255,255,0.64) !important;
+            font: 800 11px/1.3 var(--font-title) !important;
+            letter-spacing: 0.055em !important;
+            text-align: left;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 11px !important;
+            flex: 0 0 75vw !important;
+            box-sizing: border-box !important;
+            min-width: 75vw !important;
+            min-height: 64px !important;
+            height: 64px !important;
+            border: 0 !important;
+            border-radius: 10px !important;
+            background: rgba(255,255,255,0.035) !important;
+            padding: 5px 58px 5px 0 !important;
+            color: rgba(255,255,255,0.9) !important;
+            box-shadow: none !important;
+            transform: none !important;
+            text-align: left !important;
+            overflow: hidden !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link:active,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link:hover,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link:focus-visible {
+            border: 0 !important;
+            background: rgba(255,255,255,0.11) !important;
+            box-shadow: none !important;
+            transform: none !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-img {
+            width: 52px !important;
+            height: 52px !important;
+            flex: 0 0 52px !important;
+            border-radius: 8px !important;
+            object-fit: cover !important;
+            box-shadow: none !important;
+            background: rgba(255,255,255,0.06) !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-text {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            min-width: 0 !important;
+            position: relative !important;
+            z-index: 1 !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-name {
+            display: block !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            color: #fff !important;
+            font: 750 14px/1.25 var(--font-title) !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+          }
+
+          /* O #XX usa exatamente o tratamento do desktop. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-rank {
+            position: absolute !important;
+            top: 50% !important;
+            right: 13px !important;
+            color: rgba(255,255,255,0.18) !important;
+            font: 900 27px/1 var(--font-title) !important;
+            letter-spacing: -0.055em !important;
+            font-variant-numeric: tabular-nums !important;
+            transform: translateY(-50%) scaleY(1.85) !important;
+            transform-origin: center center !important;
+            text-shadow: none !important;
+            pointer-events: none !important;
+          }
+
+          /* Top 3 continuam com ouro, prata e bronze no #XX. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link.rank-gold .poster-lightbox-character-rank {
+            color: #d4af37 !important;
+          }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link.rank-silver .poster-lightbox-character-rank {
+            color: #b8bcc2 !important;
+          }
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link.rank-bronze .poster-lightbox-character-rank {
+            color: #b0703f !important;
+          }
+
+          /* Quando existe apenas 1 True Character no mobile, ele ocupa toda
+             a largura disponível do bloco, em vez de manter 75vw. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters-grid .poster-lightbox-character-link:only-child {
+            flex-basis: 100% !important;
+            width: 100% !important;
+            min-width: 100% !important;
+          }
+        }
+
+
+        /* True Characters mobile: altura fixa para que todos os cards tenham
+           exatamente o mesmo tamanho, independentemente da proporção da imagem. */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters.category-trueCharacters li.anime-item {
+            height: var(--true-character-card-h, 156px) !important;
+            min-height: var(--true-character-card-h, 156px) !important;
+            max-height: var(--true-character-card-h, 156px) !important;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters li.anime-item > .poster-wrap {
+            height: var(--true-character-card-h, 156px) !important;
+            min-height: var(--true-character-card-h, 156px) !important;
+            max-height: var(--true-character-card-h, 156px) !important;
+          }
+
+          ol.ranking.mode-true-characters.category-trueCharacters li.anime-item > .poster-wrap > .thumb {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+          }
+        }
+
+</style>
 
     </head>
 
@@ -12884,6 +13269,12 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             <!-- <div id="posterLightboxRatings" class="rank-ratings"></div> -->
           </div>
         </figure>
+        <div class="poster-lightbox-scroll-indicator" id="posterLightboxScrollIndicator" aria-hidden="true">
+          <span class="poster-lightbox-scroll-indicator-line"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m7 10 5 5 5-5"></path>
+          </svg>
+        </div>
       </div>
 
       <!-- ── Zoom mobile do poster-lightbox: ao tocar na imagem pequena (layout
@@ -13093,7 +13484,31 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const searchBtn = document.getElementById('posterLightboxSearch');
             const closeBtn = document.getElementById('posterLightboxClose');
             const lightboxFigure = lightbox && lightbox.querySelector('.poster-lightbox-figure');
+            const lightboxScrollIndicator = document.getElementById('posterLightboxScrollIndicator');
             if (!lightbox || !lightboxImg || !closeBtn) return;
+
+            function updateLightboxScrollIndicator() {
+              if (!lightboxScrollIndicator || !lightboxFigure) return;
+              if (!window.matchMedia('(max-width: 760px)').matches || !lightbox.classList.contains('open') || lightbox.classList.contains('simple-mode')) {
+                lightboxScrollIndicator.classList.remove('visible', 'at-bottom');
+                return;
+              }
+
+              const remaining = lightboxFigure.scrollHeight - lightboxFigure.clientHeight - lightboxFigure.scrollTop;
+              const hasMoreBelow = lightboxFigure.scrollHeight > lightboxFigure.clientHeight + 8;
+              if (!hasMoreBelow) {
+                lightboxScrollIndicator.classList.remove('visible', 'at-bottom');
+                return;
+              }
+
+              lightboxScrollIndicator.classList.add('visible');
+              lightboxScrollIndicator.classList.toggle('at-bottom', remaining <= 14);
+            }
+
+            if (lightboxFigure) {
+              lightboxFigure.addEventListener('scroll', updateLightboxScrollIndicator, { passive: true });
+            }
+            window.addEventListener('resize', updateLightboxScrollIndicator, { passive: true });
 
             // ── Zoom da imagem no mobile: toca no pôster pequeno e ele aparece
             // ampliado, centralizado, por cima de tudo. Só liga no mobile
@@ -14959,7 +15374,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               }
               if (lightboxCharacters) {
                 lightboxCharacters.innerHTML = '';
-                if (window.matchMedia('(min-width: 761px)').matches && typeof trueCharactersData !== 'undefined') {
+                if (typeof trueCharactersData !== 'undefined') {
                   const sourceAnime = animeData.find(anime => anime.id === item.id)
                     || animeData.find(anime => normalizeAnimeLookupTitle(anime.title) === normalizeAnimeLookupTitle(title));
                   const related = trueCharactersData
@@ -14972,7 +15387,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                     lightboxCharacters.innerHTML = '<button type="button" class="poster-lightbox-characters-label" aria-label="Abrir lista True Characters">TRUE CHARACTERS</button>'
                       + '<div class="poster-lightbox-characters-grid">'
                       + related.map(({ character, position }) =>
-                        `<button type="button" class="poster-lightbox-character-link" data-character-id="${escapeHtml(character.id)}" aria-label="Ver ${escapeHtml(character.title)} em True Characters"><img class="poster-lightbox-character-img" src="${escapeHtml(character.img || '')}" alt="" loading="lazy" decoding="async"><span class="poster-lightbox-character-text"><span class="poster-lightbox-character-name">${escapeHtml(character.title)}</span></span><span class="poster-lightbox-character-rank" aria-hidden="true">#${String(position).padStart(2, '0')}</span></button>`
+                        `<button type="button" class="poster-lightbox-character-link${position === 1 ? ' rank-gold' : position === 2 ? ' rank-silver' : position === 3 ? ' rank-bronze' : ''}" data-character-id="${escapeHtml(character.id)}" aria-label="Ver ${escapeHtml(character.title)} em True Characters"><img class="poster-lightbox-character-img" src="${escapeHtml(character.img || '')}" alt="" loading="lazy" decoding="async"><span class="poster-lightbox-character-text"><span class="poster-lightbox-character-name">${escapeHtml(character.title)}</span></span><span class="poster-lightbox-character-rank" aria-hidden="true">#${String(position).padStart(2, '0')}</span></button>`
                       ).join('') + '</div>';
                   }
                 }
@@ -15026,6 +15441,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               pendingItem = null;
               ++lightboxRenderToken;
               showItem(nextItem);
+              if (lightboxFigure) lightboxFigure.scrollTop = 0;
+              requestAnimationFrame(updateLightboxScrollIndicator);
             }
 
             function navigate(step) {
@@ -15111,6 +15528,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               lightbox.style.removeProperty('--lb-pull-opacity');
               lightbox.classList.add('open');
               lightbox.setAttribute('aria-hidden', 'false');
+              if (lightboxFigure) lightboxFigure.scrollTop = 0;
+              requestAnimationFrame(updateLightboxScrollIndicator);
               lockBodyScroll();
               lastFocused = document.activeElement;
               closeBtn.focus();
@@ -15157,6 +15576,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               lightbox.style.removeProperty('--lb-pull-opacity');
               lightbox.classList.remove('open');
               lightbox.setAttribute('aria-hidden', 'true');
+              lightboxScrollIndicator?.classList.remove('visible', 'at-bottom');
               if (soundBtn) {
                 soundBtn.classList.remove('visible');
                 soundBtn.setAttribute('aria-hidden', 'true');
@@ -16711,49 +17131,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           // o mesmo nome de arquivo. Um identificador por carregamento evita que
           // o navegador/PWA reutilize a versão antiga após apenas atualizar a página.
           const trueCharacterImageRevision = Date.now().toString(36);
-          // Compara a ordem atual com a última ordem vista neste navegador.
-          // Uma nova visita não apaga as setas até a lista mudar novamente.
-          const trueCharacterRankMovement = (() => {
-            if (typeof trueCharactersData === 'undefined' || !Array.isArray(trueCharactersData)) return {};
-            const order = trueCharactersData.map(character => String(character.id));
-            const storageKey = 'myhtml.trueCharacters.rankHistory.v1';
-            // A posição #20 do Rudeus é conhecida, mas não estava no primeiro
-            // registro do navegador. Recupera apenas a mudança atual (#16).
-            const recoverRudeusMove = changes => {
-              if (order[15] === 'rudeus' && !Object.prototype.hasOwnProperty.call(changes, 'rudeus')) {
-                changes.rudeus = 20 - 16;
-              }
-              return changes;
-            };
-            try {
-              const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
-              if (!saved || !Array.isArray(saved.order)) {
-                const changes = recoverRudeusMove({});
-                localStorage.setItem(storageKey, JSON.stringify({ order, changes }));
-                return changes;
-              }
-              if (saved.order.length === order.length && saved.order.every((id, index) => id === order[index])) {
-                const changes = saved.changes && typeof saved.changes === 'object' ? saved.changes : {};
-                if (!Object.prototype.hasOwnProperty.call(changes, 'rudeus') && order[15] === 'rudeus') {
-                  recoverRudeusMove(changes);
-                  localStorage.setItem(storageKey, JSON.stringify({ order, changes }));
-                }
-                return changes;
-              }
-              const previousPositions = new Map(saved.order.map((id, index) => [id, index + 1]));
-              const changes = {};
-              order.forEach((id, index) => {
-                const previous = previousPositions.get(id);
-                if (previous != null && previous !== index + 1) changes[id] = previous - (index + 1);
-              });
-              if (!previousPositions.has('rudeus')) recoverRudeusMove(changes);
-              localStorage.setItem(storageKey, JSON.stringify({ order, changes }));
-              return changes;
-            } catch (_) {
-              return recoverRudeusMove({});
-            }
-          })();
-
           function freshTrueCharacterImageSrc(originalPath) {
             if (!originalPath) return originalPath;
             const path = String(originalPath);
@@ -16856,15 +17233,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   .replace(/</g, '&lt;')
                   .replace(/>/g, '&gt;')}"`
               : '';
-            const movement = mode === 'trueCharacters' && rankIndex != null
-              ? (Number.isInteger(Number(anime.previousRank)) && Number(anime.previousRank) > 0
-                  ? Number(anime.previousRank) - (rankIndex + 1)
-                  : Number(trueCharacterRankMovement[String(anime.id)]) || 0)
-              : 0;
-            const movementHtml = movement
-              ? `<span class="true-character-rank-movement true-character-rank-movement--${movement > 0 ? 'up' : 'down'}" aria-label="${movement > 0 ? 'Subiu' : 'Desceu'} ${Math.abs(movement)} ${Math.abs(movement) === 1 ? 'posição' : 'posições'}" title="${movement > 0 ? 'Subiu' : 'Desceu'} ${Math.abs(movement)} ${Math.abs(movement) === 1 ? 'posição' : 'posições'}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4"/></svg>${Math.abs(movement)}</span>`
-              : '';
-
             let progressHtml = '';
             if (mode === 'watching') {
               const progress = parseWatchProgress(anime);
@@ -17017,7 +17385,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 <div class="meta">
                   <div class="title-row">
                     <h3 class="title-anime">${anime.title}</h3>
-                    ${movementHtml}
                   </div>
 
                   ${remainingInfo ? `<div class="info-row">

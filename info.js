@@ -3188,16 +3188,22 @@ const trueCharactersData = [
     info: "Mushoku Tensei: Jobless Reincarnation",
   },
   {
+    id: "rimuru",
+    img: "other-images/truecharacters/rimuru.webp",
+    title: "Rimuru Tempest",
+    info: "That Time I Got Reincarnated as a Slime",
+  },
+  {
     id: "echidna",
     img: "other-images/truecharacters/echidna.webp",
     title: "Echidna",
     info: "Re:ZERO - Starting Life in Another World",
   },
   {
-    id: "veldora",
-    img: "other-images/truecharacters/veldora.webp",
-    title: "Veldora Tempest",
-    info: "That Time I Got Reincarnated as a Slime",
+    id: "merlin",
+    img: "other-images/truecharacters/merlin.webp",
+    title: "Merlin",
+    info: "The Seven Deadly Sins: Nanatsu no Taizai",
   },
   {
     id: "diablo",
@@ -3212,6 +3218,12 @@ const trueCharactersData = [
     info: "Code Geass: Lelouch of the Rebellion",
   },
   {
+    id: "veldora",
+    img: "other-images/truecharacters/veldora.webp",
+    title: "Veldora Tempest",
+    info: "That Time I Got Reincarnated as a Slime",
+  },
+  {
     id: "shaula",
     img: "other-images/truecharacters/shaula.webp",
     title: "Shaula",
@@ -3224,16 +3236,10 @@ const trueCharactersData = [
     info: "Jujutsu Kaisen",
   },
   {
-    id: "robin",
-    img: "other-images/truecharacters/robin.webp",
-    title: "Nico Robin",
-    info: "One Piece",
-  },
-  {
-    id: "cc",
-    img: "other-images/truecharacters/cc.webp",
-    title: "C.C.",
-    info: "Code Geass: Lelouch of the Rebellion",
+    id: "elfaria",
+    img: "other-images/truecharacters/elfaria.webp",
+    title: "Elfaria Albis Serfort",
+    info: "Wistoria: Wand and Sword",
   },
   {
     id: "shin",
@@ -3248,22 +3254,46 @@ const trueCharactersData = [
     info: "Kingdom",
   },
   {
-    id: "ayanokoji",
-    img: "other-images/truecharacters/ayanokoji.webp",
-    title: "Kiyotaka Ayanokoji",
-    info: "Classroom of the Elite",
-  },
-  {
     id: "rudeus",
     img: "other-images/truecharacters/rudeus.webp",
     title: "Rudeus Greyrat",
     info: "Mushoku Tensei: Jobless Reincarnation",
   },
   {
-    id: "hancock",
-    img: "other-images/truecharacters/hancock.webp",
-    title: "Boa Hancock",
+    id: "ayanokoji",
+    img: "other-images/truecharacters/ayanokoji.webp",
+    title: "Kiyotaka Ayanokoji",
+    info: "Classroom of the Elite",
+  },
+  {
+    id: "lucy",
+    img: "other-images/truecharacters/lucy.webp",
+    title: "Lucyna Kushinada",
+    info: "Cyberpunk: Edgerunners",
+  },
+  {
+    id: "esdeath",
+    img: "other-images/truecharacters/esdeath.webp",
+    title: "Esdeath",
+    info: "Akame ga Kill",
+  },
+  {
+    id: "orsted",
+    img: "other-images/truecharacters/orsted.webp",
+    title: "Orsted",
+    info: "Mushoku Tensei: Jobless Reincarnation",
+  },
+  {
+    id: "robin",
+    img: "other-images/truecharacters/robin.webp",
+    title: "Nico Robin",
     info: "One Piece",
+  },
+  {
+    id: "cc",
+    img: "other-images/truecharacters/cc.webp",
+    title: "C.C.",
+    info: "Code Geass: Lelouch of the Rebellion",
   },
   {
     id: "taira",
@@ -3272,16 +3302,22 @@ const trueCharactersData = [
     info: "You and I are Polar Opposites",
   },
   {
-    id: "bakugo",
-    img: "other-images/truecharacters/bakugo.webp",
-    title: "Katsuki Bakugou",
-    info: "My Hero Academia",
-  },
-  {
     id: "stark",
     img: "other-images/truecharacters/stark.webp",
     title: "Stark",
     info: "Frieren: Beyond Journey's End",
+  },
+  {
+    id: "hancock",
+    img: "other-images/truecharacters/hancock.webp",
+    title: "Boa Hancock",
+    info: "One Piece",
+  },
+  {
+    id: "bakugo",
+    img: "other-images/truecharacters/bakugo.webp",
+    title: "Katsuki Bakugou",
+    info: "My Hero Academia",
   },
   {
     id: "ryuusui",
@@ -3294,6 +3330,12 @@ const trueCharactersData = [
     img: "other-images/truecharacters/cappela.webp",
     title: "Capella Emerada Lugunicai",
     info: "Re:ZERO - Starting Life in Another World",
+  },
+  {
+    id: "futaba",
+    img: "other-images/truecharacters/futaba.webp",
+    title: "Rio Futuba",
+    info: "Rascal Does Not Dream of Bunny Girl Senpai",
   },
   {
     id: "shizuku",
