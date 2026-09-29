@@ -3242,9 +3242,9 @@ const trueCharactersData = [
     info: "Wistoria: Wand and Sword",
   },
   {
-    id: "shin",
-    img: "other-images/truecharacters/shin.webp",
-    title: "Shin (Li Xin)",
+    id: "xin",
+    img: "other-images/truecharacters/xin.webp",
+    title: "Xin (Li Xin)",
     info: "Kingdom",
   },
   {
