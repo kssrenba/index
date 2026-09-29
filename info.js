@@ -76,13 +76,12 @@ const rawAnimeData = [
     mal: [
       { label: "1 temporada", episodes: 1176, note: 10, malName: "One Piece" },
 
-      { spacer: true, text: "One Films", watched: true},
+      { spacer: true, text: "One Randoms", watched: true},
       { label: "Film: Z", episodes: "1h47m", note: 7, malName: "One Piece Film: Z " },
       { label: "Film: Gold", episodes: "2h0m", note: 7, malName: "One Piece Film: Gold " },
       { label: "Stampede", episodes: "1h41m", note: 8, malName: "One Piece: Stampede " },
       { label: "Film: Red", episodes: "1h56m", note: 9, malName: "One Piece Film: Red " },
 
-      { spacer: true, text: "One Filler", watched: true},
       { label: "TV Special: Fan Letter", episodes: "24m", note: 8, malName: "One Piece Fan Letter " },
       { label: "TV Special: Heroines", episodes: "23m", note: 7, malName: "One Piece: Heroines " },
       {
@@ -3183,18 +3182,6 @@ const trueCharactersData = [
     info: "Re:ZERO - Starting Life in Another World",
   },
   {
-    id: "robin",
-    img: "other-images/truecharacters/robin.webp",
-    title: "Nico Robin",
-    info: "One Piece",
-  },
-  {
-    id: "veldora",
-    img: "other-images/truecharacters/veldora.webp",
-    title: "Veldora Tempest",
-    info: "That Time I Got Reincarnated as a Slime",
-  },
-  {
     id: "eris",
     img: "other-images/truecharacters/eris.webp",
     title: "Eris Greyrat",
@@ -3205,6 +3192,12 @@ const trueCharactersData = [
     img: "other-images/truecharacters/echidna.webp",
     title: "Echidna",
     info: "Re:ZERO - Starting Life in Another World",
+  },
+  {
+    id: "veldora",
+    img: "other-images/truecharacters/veldora.webp",
+    title: "Veldora Tempest",
+    info: "That Time I Got Reincarnated as a Slime",
   },
   {
     id: "diablo",
@@ -3219,22 +3212,40 @@ const trueCharactersData = [
     info: "Code Geass: Lelouch of the Rebellion",
   },
   {
+    id: "shaula",
+    img: "other-images/truecharacters/shaula.webp",
+    title: "Shaula",
+    info: "Re:ZERO - Starting Life in Another World",
+  },
+  {
+    id: "mei-mei",
+    img: "other-images/truecharacters/mei-mei.webp",
+    title: "Mei Mei",
+    info: "Jujutsu Kaisen",
+  },
+  {
+    id: "robin",
+    img: "other-images/truecharacters/robin.webp",
+    title: "Nico Robin",
+    info: "One Piece",
+  },
+  {
     id: "cc",
     img: "other-images/truecharacters/cc.webp",
     title: "C.C.",
     info: "Code Geass: Lelouch of the Rebellion",
   },
   {
-    id: "taira",
-    img: "other-images/truecharacters/taira.webp",
-    title: "Shuuji Taira",
-    info: "You and I are Polar Opposites",
+    id: "shin",
+    img: "other-images/truecharacters/shin.webp",
+    title: "Shin (Li Xin)",
+    info: "Kingdom",
   },
   {
-    id: "shaula",
-    img: "other-images/truecharacters/shaula.webp",
-    title: "Shaula",
-    info: "Re:ZERO - Starting Life in Another World",
+    id: "qiang-lei",
+    img: "other-images/truecharacters/qiang-lei.webp",
+    title: "Qiang Lei (Kyou Kai)",
+    info: "Kingdom",
   },
   {
     id: "ayanokoji",
@@ -3243,10 +3254,34 @@ const trueCharactersData = [
     info: "Classroom of the Elite",
   },
   {
+    id: "rudeus",
+    img: "other-images/truecharacters/rudeus.webp",
+    title: "Rudeus Greyrat",
+    info: "Mushoku Tensei: Jobless Reincarnation",
+  },
+  {
+    id: "hancock",
+    img: "other-images/truecharacters/hancock.webp",
+    title: "Boa Hancock",
+    info: "One Piece",
+  },
+  {
+    id: "taira",
+    img: "other-images/truecharacters/taira.webp",
+    title: "Shuuji Taira",
+    info: "You and I are Polar Opposites",
+  },
+  {
     id: "bakugo",
     img: "other-images/truecharacters/bakugo.webp",
     title: "Katsuki Bakugou",
     info: "My Hero Academia",
+  },
+  {
+    id: "stark",
+    img: "other-images/truecharacters/stark.webp",
+    title: "Stark",
+    info: "Frieren: Beyond Journey's End",
   },
   {
     id: "ryuusui",
@@ -3255,22 +3290,10 @@ const trueCharactersData = [
     info: "Dr. Stone",
   },
   {
-    id: "rudeus",
-    img: "other-images/truecharacters/rudeus.webp",
-    title: "Rudeus Greyrat",
-    info: "Mushoku Tensei: Jobless Reincarnation",
-  },
-  {
     id: "capella",
     img: "other-images/truecharacters/cappela.webp",
     title: "Capella Emerada Lugunicai",
     info: "Re:ZERO - Starting Life in Another World",
-  },
-  {
-    id: "stark",
-    img: "other-images/truecharacters/stark.webp",
-    title: "Stark",
-    info: "Frieren: Beyond Journey's End",
   },
   {
     id: "shizuku",
@@ -3303,12 +3326,6 @@ const trueCharactersData = [
     info: "Haikyuu!!",
   },
   {
-    id: "reinhard",
-    img: "other-images/truecharacters/reinhard.webp",
-    title: "Reinhard Van Astrea",
-    info: "Re:ZERO - Starting Life in Another World",
-  },
-  {
     id: "chrollo",
     img: "other-images/truecharacters/chrollo.webp",
     title: "Chrollo Lucilfer",
@@ -3319,6 +3336,12 @@ const trueCharactersData = [
     img: "other-images/truecharacters/tsukishima.webp",
     title: "Kei Tsukishima",
     info: "Haikyuu!!",
+  },
+  {
+    id: "reinhard",
+    img: "other-images/truecharacters/reinhard.webp",
+    title: "Reinhard Van Astrea",
+    info: "Re:ZERO - Starting Life in Another World",
   },
 ];
 

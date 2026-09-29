@@ -11652,7 +11652,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row::before {
 }
 
 ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover {
-  background: rgba(255, 255, 255, .09) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
   transform: translateX(2px);
 }
 
@@ -11988,6 +11990,11 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             padding: 0 6px;
           }
 
+          /* No mobile, o anúncio usa o centro da faixa inteira. */
+          ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta .announce-track {
+            --announce-rank-offset: 0px;
+          }
+
           ol.ranking:is(.category-watching, .category-plan, .category-incomplete, .category-announced, .release-calendar-list)
             .meta > .announce-strip.announce-strip--meta {
             right: 0 !important;
@@ -11996,6 +12003,149 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         @media (max-width: 600px) {
           ol.ranking.mode-true-characters .meta > .announce-strip.announce-strip--meta::after {
             display: none !important;
+          }
+        }
+        /* Announced Sequels: composição editorial de True Characters com pôster 9:16. */
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters.category-announced {
+            --announced-poster-w: clamp(128px, 38vw, 160px);
+            --announced-card-h: clamp(228px, 67.556vw, 284px);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 14px;
+            padding: 0 10px;
+          }
+
+          ol.ranking.mode-true-characters.category-announced li.anime-item {
+            display: grid !important;
+            grid-template-columns: var(--announced-poster-w) minmax(0, 1fr) !important;
+            grid-template-rows: auto !important;
+            width: 100%;
+            height: auto !important;
+            min-height: var(--announced-card-h) !important;
+            max-height: none !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border: 1px solid rgba(255,255,255,0.075) !important;
+            border-radius: 16px !important;
+            background: linear-gradient(110deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012) 58%), rgba(8,8,10,0.88) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.025) !important;
+            transform: none !important;
+          }
+
+          ol.ranking.mode-true-characters.category-announced li.anime-item::after {
+            content: none !important;
+          }
+
+          ol.ranking.mode-true-characters.category-announced li.anime-item > .poster-wrap {
+            position: relative !important;
+            inset: auto !important;
+            z-index: 2;
+            display: block;
+            width: var(--announced-poster-w) !important;
+            height: 100% !important;
+            min-height: var(--announced-card-h) !important;
+            max-height: none !important;
+            aspect-ratio: 9 / 16 !important;
+            align-self: stretch;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+          }
+
+          ol.ranking.mode-true-characters.category-announced li.anime-item > .poster-wrap > .thumb {
+            position: absolute !important;
+            inset: 0;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            object-position: center !important;
+            transform: scale(1.01) !important;
+            filter: saturate(0.92) contrast(1.03) !important;
+          }
+
+          ol.ranking.mode-true-characters.category-announced li.anime-item > .anime-item-ambient {
+            position: absolute !important;
+            top: -24px;
+            right: -24px;
+            bottom: -24px;
+            left: calc(var(--announced-poster-w) - 24px);
+            z-index: 1;
+            display: block !important;
+            width: auto;
+            height: auto;
+            background-size: cover;
+            background-position: center;
+            filter: blur(14px) brightness(0.78) saturate(1.12);
+            opacity: 1 !important;
+            transform: scale(1.08);
+            pointer-events: none;
+          }
+
+          ol.ranking.mode-true-characters.category-announced li.anime-item > .anime-item-ambient-shade {
+            display: none !important;
+          }
+
+          ol.ranking.mode-true-characters.category-announced .meta {
+            position: relative !important;
+            inset: auto !important;
+            z-index: 2;
+            display: flex;
+            min-width: 0;
+            min-height: var(--announced-card-h) !important;
+            padding: 22px 16px 38px !important;
+            gap: 8px !important;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(110deg, rgba(5,5,8,0.32), rgba(5,5,8,0.52) 58%, rgba(5,5,8,0.66)), rgba(5,5,8,0.28) !important;
+          }
+
+          ol.ranking.mode-true-characters.category-announced .meta::before {
+            content: none !important;
+          }
+
+          ol.ranking.mode-true-characters.category-announced .title-row,
+          ol.ranking.mode-true-characters.category-announced .info-row {
+            width: 100% !important;
+            padding: 0 !important;
+          }
+
+          ol.ranking.mode-true-characters.category-announced .title-row {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            overflow: hidden;
+          }
+
+          ol.ranking.mode-true-characters.category-announced .title-row::before {
+            content: counter(item, decimal-leading-zero);
+            display: inline-block;
+            margin-right: 7px;
+            color: color-mix(in srgb, var(--item-hover-color, #34d399) 78%, #fff);
+            font: 900 16px/1 var(--font-title);
+            font-variant-numeric: tabular-nums;
+          }
+
+          ol.ranking.mode-true-characters.category-announced .title-anime {
+            display: inline;
+            max-width: 100% !important;
+            overflow: visible;
+            white-space: normal;
+            color: #fff;
+            font-size: 16px !important;
+            font-weight: 800;
+            line-height: 1.16 !important;
+            text-shadow: none !important;
+          }
+
+          ol.ranking.mode-true-characters.category-announced .info-row .info {
+            max-width: 100% !important;
+            color: rgba(255,255,255,0.55) !important;
+            font-size: 11px !important;
+            line-height: 1.35;
+            white-space: normal;
+            text-shadow: none !important;
           }
         }
         @media (max-width: 760px), (hover: none), (pointer: coarse) {
@@ -12164,7 +12314,145 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         }
 
 
+        /* Referência aos personagens da obra no ranking True Characters (desktop). */
+        .poster-lightbox-characters { display: none; }
+        @media (min-width: 761px) {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-characters:not(:empty) {
+            display: block;
+            width: 100%;
+            grid-column: 1 / -1;
+            margin-top: -12px;
+            padding: 15px 16px 17px;
+            border: 0;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.055);
+          }
+          .poster-lightbox-characters-label {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 11px;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: rgba(255,255,255,0.64);
+            font: 800 11px/1.3 var(--font-title);
+            letter-spacing: 0.055em;
+            cursor: pointer;
+            transition: color 0.2s ease;
+          }
+          .poster-lightbox-characters-label:hover,
+          .poster-lightbox-characters-label:focus-visible {
+            color: #f472b6;
+          }
+          .poster-lightbox-characters-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+          }
+          .poster-lightbox-character-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            flex: 1 1 calc((100% - 18px) / 3);
+            box-sizing: border-box;
+            min-width: 0;
+            min-height: 64px;
+            border: 0;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.035);
+            padding: 5px 58px 5px 0;
+            color: rgba(255,255,255,0.9);
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+          }
+          .poster-lightbox-character-link:hover,
+          .poster-lightbox-character-link:focus-visible {
+            background: rgba(255,255,255,0.11);
+            transform: translateY(-2px);
+          }
+          .poster-lightbox .poster-lightbox-character-img {
+            width: 52px;
+            height: 52px;
+            flex: 0 0 52px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: none;
+            background: rgba(255,255,255,0.06);
+          }
+          .poster-lightbox-character-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            position: relative;
+            z-index: 1;
+          }
+          .poster-lightbox-character-name {
+            overflow: hidden;
+            color: #fff;
+            font: 750 14px/1.25 var(--font-title);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .poster-lightbox-character-rank {
+            position: absolute;
+            top: 50%;
+            right: 13px;
+            color: rgba(255,255,255,0.18);
+            font: 900 27px/1 var(--font-title);
+            letter-spacing: -0.055em;
+            font-variant-numeric: tabular-nums;
+            transform: translateY(-50%) scaleY(1.85);
+            pointer-events: none;
+            transition: color 0.2s ease;
+          }
+          .poster-lightbox-character-link:hover .poster-lightbox-character-rank,
+          .poster-lightbox-character-link:focus-visible .poster-lightbox-character-rank {
+            color: #f472b6;
+          }
+        }
+        @media (min-width: 761px) and (max-width: 1199px) {
+          .poster-lightbox-character-link {
+            flex-basis: calc((100% - 9px) / 2);
+          }
+        }
+
         /* Mobile: pausa apenas a animação contínua dos fundos. */
+        @media (min-width: 761px) {
+          ol.ranking.category-trueCharacters .title-row:has(.true-character-rank-movement) {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          ol.ranking.category-trueCharacters .title-row .title-anime {
+            min-width: 0;
+          }
+          .true-character-rank-movement {
+            display: inline-flex;
+            flex: none;
+            align-items: center;
+            gap: 2px;
+            font: 800 13px/1 var(--font-title);
+            white-space: nowrap;
+          }
+          .true-character-rank-movement svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+          }
+          .true-character-rank-movement--up { color: #4ade80; }
+          .true-character-rank-movement--down { color: #f87171; }
+          .true-character-rank-movement--down svg { transform: rotate(180deg); }
+        }
+        @media (max-width: 760px) {
+          .true-character-rank-movement { display: none; }
+        }
+
         @media (max-width: 760px) {
           .anime-item-ambient,
           .search-result-ambient,
@@ -12588,6 +12876,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             <div id="posterLightboxMeta" class="rank-meta"></div>
             <div id="posterLightboxMoreInfo" class="poster-lightbox-more-info"></div>
             <div id="posterLightboxMal" class="rank-mal"></div>
+            <div id="posterLightboxCharacters" class="poster-lightbox-characters"></div>
             <!-- Sistema de notas (estrelas) desativado do site por enquanto.
                 O código continua funcionando por baixo (JS intacto), só não
                 é mostrado porque este container está comentado.
@@ -12731,6 +13020,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const lightboxHeroRank = document.getElementById('posterLightboxHeroRank');
             const lightboxTitle = document.getElementById('posterLightboxTitle');
             const lightboxList = document.getElementById('posterLightboxList');
+            const lightboxCharacters = document.getElementById('posterLightboxCharacters');
             const lightboxAnnounce = document.getElementById('posterLightboxAnnounce');
             const lightboxRatings = document.getElementById('posterLightboxRatings');
             const lightboxMeta = document.getElementById('posterLightboxMeta');
@@ -14667,6 +14957,26 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   }
                 }
               }
+              if (lightboxCharacters) {
+                lightboxCharacters.innerHTML = '';
+                if (window.matchMedia('(min-width: 761px)').matches && typeof trueCharactersData !== 'undefined') {
+                  const sourceAnime = animeData.find(anime => anime.id === item.id)
+                    || animeData.find(anime => normalizeAnimeLookupTitle(anime.title) === normalizeAnimeLookupTitle(title));
+                  const related = trueCharactersData
+                    .map((character, index) => ({ character, position: index + 1 }))
+                    .filter(({ character }) => {
+                      const origin = findAllAnimeForCharacter(character.info);
+                      return origin && sourceAnime && origin.id === sourceAnime.id;
+                    });
+                  if (related.length) {
+                    lightboxCharacters.innerHTML = '<button type="button" class="poster-lightbox-characters-label" aria-label="Abrir lista True Characters">TRUE CHARACTERS</button>'
+                      + '<div class="poster-lightbox-characters-grid">'
+                      + related.map(({ character, position }) =>
+                        `<button type="button" class="poster-lightbox-character-link" data-character-id="${escapeHtml(character.id)}" aria-label="Ver ${escapeHtml(character.title)} em True Characters"><img class="poster-lightbox-character-img" src="${escapeHtml(character.img || '')}" alt="" loading="lazy" decoding="async"><span class="poster-lightbox-character-text"><span class="poster-lightbox-character-name">${escapeHtml(character.title)}</span></span><span class="poster-lightbox-character-rank" aria-hidden="true">#${String(position).padStart(2, '0')}</span></button>`
+                      ).join('') + '</div>';
+                  }
+                }
+              }
               if (lightboxAnnounce) {
                 const ns = sequelInfo;
                 if (ns && ns.info) {
@@ -15023,6 +15333,26 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 if (typeof navigateToAnimeInCategory === 'function') {
                   navigateToAnimeInCategory(targetId, targetMode);
                 }
+              });
+            }
+
+            if (lightboxCharacters) {
+              lightboxCharacters.addEventListener('click', function(e) {
+                if (e.target.closest('.poster-lightbox-characters-label')) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  closeLightbox(true);
+                  currentCategory = 'trueCharacters';
+                  render();
+                  window.scrollTo({ top: 0, behavior: 'instant' });
+                  return;
+                }
+                const link = e.target.closest('.poster-lightbox-character-link');
+                if (!link) return;
+                e.preventDefault();
+                e.stopPropagation();
+                closeLightbox(true);
+                navigateToAnimeInCategory(link.dataset.characterId, 'trueCharacters');
               });
             }
 
@@ -16381,6 +16711,49 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           // o mesmo nome de arquivo. Um identificador por carregamento evita que
           // o navegador/PWA reutilize a versão antiga após apenas atualizar a página.
           const trueCharacterImageRevision = Date.now().toString(36);
+          // Compara a ordem atual com a última ordem vista neste navegador.
+          // Uma nova visita não apaga as setas até a lista mudar novamente.
+          const trueCharacterRankMovement = (() => {
+            if (typeof trueCharactersData === 'undefined' || !Array.isArray(trueCharactersData)) return {};
+            const order = trueCharactersData.map(character => String(character.id));
+            const storageKey = 'myhtml.trueCharacters.rankHistory.v1';
+            // A posição #20 do Rudeus é conhecida, mas não estava no primeiro
+            // registro do navegador. Recupera apenas a mudança atual (#16).
+            const recoverRudeusMove = changes => {
+              if (order[15] === 'rudeus' && !Object.prototype.hasOwnProperty.call(changes, 'rudeus')) {
+                changes.rudeus = 20 - 16;
+              }
+              return changes;
+            };
+            try {
+              const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
+              if (!saved || !Array.isArray(saved.order)) {
+                const changes = recoverRudeusMove({});
+                localStorage.setItem(storageKey, JSON.stringify({ order, changes }));
+                return changes;
+              }
+              if (saved.order.length === order.length && saved.order.every((id, index) => id === order[index])) {
+                const changes = saved.changes && typeof saved.changes === 'object' ? saved.changes : {};
+                if (!Object.prototype.hasOwnProperty.call(changes, 'rudeus') && order[15] === 'rudeus') {
+                  recoverRudeusMove(changes);
+                  localStorage.setItem(storageKey, JSON.stringify({ order, changes }));
+                }
+                return changes;
+              }
+              const previousPositions = new Map(saved.order.map((id, index) => [id, index + 1]));
+              const changes = {};
+              order.forEach((id, index) => {
+                const previous = previousPositions.get(id);
+                if (previous != null && previous !== index + 1) changes[id] = previous - (index + 1);
+              });
+              if (!previousPositions.has('rudeus')) recoverRudeusMove(changes);
+              localStorage.setItem(storageKey, JSON.stringify({ order, changes }));
+              return changes;
+            } catch (_) {
+              return recoverRudeusMove({});
+            }
+          })();
+
           function freshTrueCharacterImageSrc(originalPath) {
             if (!originalPath) return originalPath;
             const path = String(originalPath);
@@ -16469,7 +16842,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const normalCardThumb = (mode === 'announced' || mode === 'announced-unwatched')
               ? sequelsThumbSrc(anime.img)
               : anime.img;
-            let cardThumbSrc = isMobileCard
+            let cardThumbSrc = isMobileCard && mode !== 'announced' && mode !== 'announced-unwatched'
               ? mobileCardSearchThumbSrc(anime.img)
               : normalCardThumb;
             if (mode === 'trueCharacters') cardThumbSrc = freshTrueCharacterImageSrc(cardThumbSrc);
@@ -16482,6 +16855,14 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   .replace(/"/g, '&quot;')
                   .replace(/</g, '&lt;')
                   .replace(/>/g, '&gt;')}"`
+              : '';
+            const movement = mode === 'trueCharacters' && rankIndex != null
+              ? (Number.isInteger(Number(anime.previousRank)) && Number(anime.previousRank) > 0
+                  ? Number(anime.previousRank) - (rankIndex + 1)
+                  : Number(trueCharacterRankMovement[String(anime.id)]) || 0)
+              : 0;
+            const movementHtml = movement
+              ? `<span class="true-character-rank-movement true-character-rank-movement--${movement > 0 ? 'up' : 'down'}" aria-label="${movement > 0 ? 'Subiu' : 'Desceu'} ${Math.abs(movement)} ${Math.abs(movement) === 1 ? 'posição' : 'posições'}" title="${movement > 0 ? 'Subiu' : 'Desceu'} ${Math.abs(movement)} ${Math.abs(movement) === 1 ? 'posição' : 'posições'}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4"/></svg>${Math.abs(movement)}</span>`
               : '';
 
             let progressHtml = '';
@@ -16636,6 +17017,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 <div class="meta">
                   <div class="title-row">
                     <h3 class="title-anime">${anime.title}</h3>
+                    ${movementHtml}
                   </div>
 
                   ${remainingInfo ? `<div class="info-row">
