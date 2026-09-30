@@ -10465,12 +10465,36 @@
             transform: scale(0.985);
           }
 
+          /* CORREÇÃO FINAL: quando o grupo contém dois ou mais Peak Episodes,
+             ele precisa ser um único item da flex row e ocupar 100% da largura,
+             deixando os outros rankings nas linhas próprias. */
+          @media (max-width: 760px) {
+            .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes {
+              flex: 0 0 100% !important;
+              width: 100% !important;
+              max-width: 100% !important;
+              flex-basis: 100% !important;
+              align-self: stretch !important;
+              box-sizing: border-box !important;
+              order: 20 !important;
+            }
+
+            .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag {
+              width: 100% !important;
+              flex: 1 1 0 !important;
+            }
+          }
+
           /* Peak Episodes agrupados: continuam sendo uma única pill também
-             no mobile, com cada episódio ocupando sua metade. */
+             no mobile, com cada episódio ocupando sua metade. Quando houver
+             dois ou mais, a pill inteira ganha uma linha exclusiva, como
+             acontece com o All Animes. */
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes {
             display: grid;
             grid-template-columns: repeat(var(--fav-count, 2), minmax(0, 1fr));
-            flex: 1 1 auto;
+            flex: 0 0 100%;
+            width: 100%;
+            max-width: 100%;
             min-width: 0;
             min-height: 38px;
             padding: 0;
