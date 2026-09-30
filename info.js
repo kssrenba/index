@@ -1752,7 +1752,7 @@ const favoriteEpisodesData = [
       "other-images/peakepisodes/mha2-10.webp",
       "other-images/peakepisodes/mha2-9.webp",
     ],
-    rating: 9.6,
+    rating: 9.8,
     imdbUrl: "https://www.imdb.com/pt/title/tt38599375/",
     // crunchyrollUrl: "https://www.crunchyroll.com/pt-br/watch/G14UV48WG/the-final-boss",
     myRating: 9.8,
@@ -1760,6 +1760,7 @@ const favoriteEpisodesData = [
   },
   {
     id: "re-zero-2",
+    animeId: "re-zero",
     anime: "Re:ZERO - Starting Life in Another World",
     episodeLabel: "T2.E11 The Taste of Death",
     img: "other-images/peakepisodes/re-zero2-1.webp",

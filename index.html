@@ -9988,6 +9988,60 @@
             display: none;
           }
 
+          /* Dois (ou mais) Peak Episodes do mesmo anime ocupam UMA única
+             pill com a largura combinada das pills individuais. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes {
+            flex: var(--fav-count, 2) 1 0 !important;
+            display: grid !important;
+            grid-template-columns: repeat(var(--fav-count, 2), minmax(0, 1fr));
+            align-items: stretch;
+            gap: 0;
+            min-width: 0;
+            min-height: 38px;
+            padding: 0 !important;
+            overflow: hidden;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag {
+            flex: none !important;
+            width: 100%;
+            min-width: 0;
+            min-height: 38px;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px 13px !important;
+            transform: none !important;
+            filter: none !important;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag + .list-tag {
+            border-left: 1px solid rgba(255,255,255,0.08) !important;
+          }
+
+          /* O hover é individual, como nas células Studio / Year / Rewatch:
+             passar o mouse em um Peak Episode ilumina somente aquele episódio. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes:hover {
+            background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 10%, rgba(255,255,255,0.025));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.055), 0 8px 20px rgba(0,0,0,0.14);
+            transform: none;
+            filter: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag {
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag:hover,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag:focus-visible {
+            background: rgba(255,255,255,0.13) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.18);
+            transform: translateY(-2px) !important;
+            filter: brightness(1.12) !important;
+            z-index: 2;
+          }
+
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
             border-radius: 15px;
             border: 0;
@@ -10017,13 +10071,15 @@
             padding: 12px;
             position: relative;
             isolation: isolate;
-            transition: background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item:hover {
             background: rgba(255,255,255,0.13) !important;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.18);
+            transform: translateY(-2px);
             filter: brightness(1.12);
+            z-index: 2;
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-more-info .watch-now-links {
@@ -10407,6 +10463,45 @@
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag:active {
             background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 17%, rgba(255,255,255,0.035));
             transform: scale(0.985);
+          }
+
+          /* Peak Episodes agrupados: continuam sendo uma única pill também
+             no mobile, com cada episódio ocupando sua metade. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes {
+            display: grid;
+            grid-template-columns: repeat(var(--fav-count, 2), minmax(0, 1fr));
+            flex: 1 1 auto;
+            min-width: 0;
+            min-height: 38px;
+            padding: 0;
+            gap: 0;
+            overflow: hidden;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag {
+            min-width: 0;
+            width: 100%;
+            min-height: 38px;
+            flex: none;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            padding: 5px 11px;
+            transform: none;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag + .list-tag {
+            border-left: 1px solid rgba(255,255,255,0.08);
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes:active {
+            transform: none;
+          }
+
+          /* No mobile, cada metade também recebe o hover/press separadamente. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag:active {
+            background: rgba(255,255,255,0.13) !important;
+            filter: brightness(1.12) !important;
           }
 
           .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-content {
@@ -12862,6 +12957,44 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           }
         }
 
+
+        /* Hover final: o movimento deve acontecer no próprio bloco/botão, não só no texto. */
+        @media (min-width: 761px) {
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            position: relative;
+            z-index: 1;
+          }
+
+          /* O card inteiro de Studio / Year / Rewatch sobe junto.
+             As células continuam podendo iluminar individualmente, mas não
+             fazem um segundo translate que dê a impressão de mover só o texto. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta:hover {
+            transform: translateY(-2px) !important;
+            background: rgba(255,255,255,0.075) !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+            filter: brightness(1.08);
+            z-index: 3;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item:hover {
+            transform: none !important;
+          }
+
+          /* Cada Peak Episode é um botão próprio e sobe como botão,
+             mantendo o hover independente entre os dois. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag {
+            position: relative;
+            z-index: 1;
+            will-change: transform;
+          }
+
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag:hover,
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag:focus-visible {
+            transform: translateY(-2px) !important;
+            z-index: 4;
+          }
+        }
 </style>
 
     </head>
@@ -14890,6 +15023,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   : [];
                 favoriteEpisodesData.forEach((entry, favIdx) => {
                   const entryAnimeId = entry.animeId || entry.id;
+                  // Episódios com ID próprio (ex: "re-zero-2") precisam de
+                  // animeId para continuar vinculados ao anime no posterlightbox.
+                  // O fallback pelo id preserva o comportamento dos entries antigos.
                   if (entryAnimeId !== animeId) return;
                   const favRank = favRanks[favIdx] != null ? favRanks[favIdx] : favIdx + 1;
                   tags.push({
@@ -15309,6 +15445,40 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
                 const tagToHtml = t => `<button type="button" class="list-tag" data-mode="${t.key}" data-target-id="${escapeHtml(t.targetId || item.id)}" style="--tag-color:${t.color || 'var(--glow-accent)'}"><span class="list-tag-content">${t.position != null ? `<span class="list-tag-rank${t.key === 'all' ? ' list-tag-rank--all' : ''}">#${t.position}</span>` : ''}<span class="list-tag-name">${escapeHtml(t.label)}</span></span></button>`;
 
+                // Peak Episodes: quando o mesmo anime tem dois (ou mais)
+                // episódios favoritos, eles viram UMA única pill visual, com
+                // largura equivalente à soma das pills que existiriam separadas.
+                // Cada metade continua sendo um botão independente, preservando
+                // o clique que leva exatamente ao episódio correspondente.
+                const renderTagSequence = (tagList) => {
+                  const parts = [];
+                  let i = 0;
+                  while (i < tagList.length) {
+                    const tag = tagList[i];
+                    if (tag.key === 'favEpisodes') {
+                      const group = [];
+                      while (i < tagList.length && tagList[i].key === 'favEpisodes') {
+                        group.push(tagList[i]);
+                        i += 1;
+                      }
+                      if (group.length > 1) {
+                        const count = group.length;
+                        parts.push(
+                          `<span class="list-tag list-tag-combined list-tag-combined--fav-episodes" style="--fav-count:${count};--tag-color:${group[0].color || 'var(--glow-accent)'}">` +
+                          group.map(tagToHtml).join('') +
+                          `</span>`
+                        );
+                      } else {
+                        parts.push(tagToHtml(group[0]));
+                      }
+                      continue;
+                    }
+                    parts.push(tagToHtml(tag));
+                    i += 1;
+                  }
+                  return parts.join('<span class="list-sep"></span>');
+                };
+
                 // O Watching Now mesclado com a temporada precisa respeitar a mesma
                 // hierarquia das outras tags, em vez de ser forçado para o início.
                 // Esta tabela fica local a este bloco porque LIGHTBOX_TAG_ORDER,
@@ -15334,10 +15504,10 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   (renderedLightboxTagOrder[t.key] ?? 999) >= watchingOrder
                 );
                 const orderedTagParts = [
-                  ...beforeWatching.map(tagToHtml),
+                  renderTagSequence(beforeWatching),
                   ...(mergedWatchingTagHtml ? [mergedWatchingTagHtml] : []),
-                  ...afterWatching.map(tagToHtml)
-                ];
+                  renderTagSequence(afterWatching)
+                ].filter(Boolean);
                 const tagsHtml = orderedTagParts.join('<span class="list-sep"></span>');
 
                 const divisionHtml = (division && !hideDivision && !isUnwatchedDivision && !watchingEntry && !mergedWatchingTagHtml)
