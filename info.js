@@ -212,7 +212,7 @@ const rawAnimeData = [
     img: "myranks-images/myranks/re-zero.webp",
     title: "Re:ZERO - Starting Life in Another World",
     malSearch: "Re:Zero",
-    info: "3 temporadas: 66 episódios",
+    info: "4 temporadas: 85 episódios",
     studio: "White Fox",
     airedSeason: "2016-?",
     rewatch: "Only Season 1",
@@ -221,7 +221,7 @@ const rawAnimeData = [
       { label: "2ª temporada I", episodes: 13, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season" },
       { label: "2ª temporada II", episodes: 12, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season Part 2" },
       { label: "3ª temporada", episodes: 16, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 3rd Season" },
-      { label: "4ª temporada", episodes: 19, unwatched: true, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season" },
+      { label: "4ª temporada", episodes: 19, note: 9, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season" },
     ],
   },
 {
@@ -1517,23 +1517,6 @@ const rawWatchingData = [
 
   // Spring 2026
   {
-    id: "re-zero",
-    img: "watchingnow-images/watchingnow/re-zero.webp",
-    title: "Re:ZERO - Starting Life in Another World",
-    malSearch: "Re:ZERO",
-    info: "4ª temporadas: 19 episódios",
-    season: "spring-2026",
-    studio: "White Fox",
-    airedSeason: "2016-?",
-    seasons: [25, 25, 16, 19],
-    cours: [null, [13, 12], null, null],
-    potential: "9.0",
-    url: "https://www.anime-planet.com/anime/rezero-starting-life-in-another-world-season-4",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GRGG9798R/rezero--starting-life-in-another-world-",
-    malUrl: "https://myanimelist.net/anime/61316/Re_Zero_kara_Hajimeru_Isekai_Seikatsu_4th_Season",
-  },
-  {
     id: "imfwtspgimc",
     img: "watchingnow-images/watchingnow/imfwtspgimc.webp",
     title: "I Made Friends with the Second Prettiest Girl in My Class",
@@ -1974,15 +1957,6 @@ const rawReleaseCalendarData = [
     title: "The Ghost in the Shell",
     season: "summer-2026",
     releaseDay: "tuesday",
-  },
-
-  // WEDNESDAY
-  {
-    id: "re-zero",
-    img: "watchingnow-images/watchingnow/re-zero.webp",
-    title: "Re:ZERO - Starting Life in Another World",
-    season: "summer-2026",
-    releaseDay: "wednesday",
   },
 
   // THURSDAY
@@ -3377,7 +3351,7 @@ const trueCharactersData = [
     id: "hinata",
     img: "other-images/truecharacters/hinata.webp",
     title: "Shoyo Hinata",
-    info: "Haikyuu!!",
+    info: "Haikyuu!!  ",
   },
   {
     id: "alya",
