@@ -5595,7 +5595,11 @@
           content: "#" counter(item);
           position: absolute;
           top: 10px;
-          right: 16px;
+          right: 26px;
+          width: 150px;
+          display: block;
+          text-align: right;
+          white-space: nowrap;
           z-index: -1;
           color: rgba(255,255,255,0.32);
           font: 900 54px/1 var(--font-title);
@@ -5749,7 +5753,7 @@
           }
           ol.ranking.mode-true-characters .meta { padding: 18px 40px 18px 18px; }
           ol.ranking.mode-true-characters .title-anime { font-size: 16.5px; }
-          ol.ranking.mode-true-characters .meta::before { font-size: 46px; }
+          ol.ranking.mode-true-characters .meta::before { right: 22px; width: 140px; font-size: 44px; }
           ol.ranking.mode-true-characters .rank-wrap { top: 58px; right: 14px; }
           ol.ranking.mode-true-characters .rank-secondary { font-size: 13px; }
           ol.ranking.category-watching .meta::before,
@@ -5781,7 +5785,7 @@
             line-clamp: 2;
           }
           ol.ranking.mode-true-characters .info-row .info { font-size: 10.5px; }
-          ol.ranking.mode-true-characters .meta::before { top: 9px; right: 11px; font-size: 40px; }
+          ol.ranking.mode-true-characters .meta::before { top: 9px; right: 20px; width: 130px; font-size: 38px; }
           ol.ranking.mode-true-characters .rank-wrap { top: 51px; right: 11px; }
           ol.ranking.mode-true-characters .rank-secondary { font-size: 11px; }
           ol.ranking.category-watching .meta::before,
@@ -5797,7 +5801,7 @@
           }
           ol.ranking.mode-true-characters .meta { padding: 13px 28px 13px 13px; }
           ol.ranking.mode-true-characters .title-anime { font-size: 14.5px; }
-          ol.ranking.mode-true-characters .meta::before { font-size: 34px; }
+          ol.ranking.mode-true-characters .meta::before { right: 7px; width: 86px; font-size: 34px; }
           ol.ranking.mode-true-characters .rank-wrap { top: 44px; right: 9px; }
           ol.ranking.mode-true-characters .rank-secondary { font-size: 10px; }
           ol.ranking.category-watching .meta::before,
@@ -13019,6 +13023,32 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             z-index: 4;
           }
         }
+
+
+        /* ── Rank de 3 dígitos: override final ──
+           Algumas regras responsivas anteriores redefiniam a largura do
+           pseudo-elemento depois do ajuste inicial. Este bloco fica no fim do
+           CSS para garantir espaço suficiente para #100, #110, #125 etc. */
+        @media (min-width: 601px) {
+          ol.ranking.mode-true-characters:is(.category-all, .category-trueCharacters) .meta::before {
+            width: 220px !important;
+            min-width: 220px !important;
+            right: 8px !important;
+            white-space: nowrap !important;
+            text-align: right !important;
+          }
+        }
+
+        @media (max-width: 600px) {
+          ol.ranking.mode-true-characters:is(.category-all, .category-trueCharacters) .meta::before {
+            width: 120px !important;
+            min-width: 120px !important;
+            right: 6px !important;
+            white-space: nowrap !important;
+            text-align: right !important;
+          }
+        }
+
 </style>
 
     </head>
