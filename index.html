@@ -361,6 +361,39 @@
         /* Wrapper que segura o input e o texto-fantasma da sugestão "/all",
           alinhados exatamente por cima um do outro (mesma fonte/tamanho) pra
           a sugestão nascer bem na posição onde o texto digitado termina. */
+        .search-box-drawer .search-clear-btn {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          flex: 0 0 28px;
+          width: 28px;
+          height: 28px;
+          padding: 0;
+          border: 0;
+          border-radius: 50%;
+          background: none;
+          box-shadow: none;
+          color: rgba(255,255,255,0.7);
+          cursor: pointer;
+          transition: color 0.18s ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .search-box-drawer.has-value .search-clear-btn { display: flex; }
+
+        .search-box-drawer .search-clear-btn svg {
+          width: 14px;
+          height: 14px;
+          flex: 0 0 14px;
+          color: inherit;
+          stroke-width: 2.6;
+        }
+
+        .search-box-drawer .search-clear-btn:hover {
+          background: none;
+          color: #fff;
+        }
+
         .search-input-ghost-wrap {
           position: relative;
           flex: 1;
@@ -935,6 +968,10 @@
           text-decoration: none;
         }
 
+        /* Sem faixa de "nova temporada": reserva a altura dela (22px) pra o card
+          ficar do mesmo tamanho dos que têm a faixa. */
+        .search-result-item--no-ns .search-result-card-inner { padding-bottom: 22px; }
+
         .search-result-card-inner:has(.search-result-next-season) .search-result-info {
           border-radius: 0;
         }
@@ -993,8 +1030,21 @@
           display: none;
         }
 
+        /* Estado vazio: a mensagem fica centralizada em TODA a área do palco
+          (mesmo espaço do carrossel borrado), nos dois modos do drawer. */
         .search-drawer-results.is-empty-state {
           display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+          align-items: center;
+          justify-content: center;
+          align-content: center;
+          padding: 0 12px;
+          overflow: hidden;
+        }
+
+        .search-drawer-results.is-empty-state > .search-empty {
+          flex: 0 0 auto;
         }
 
         .search-empty {
@@ -1021,8 +1071,6 @@
           z-index: -1;
           border-radius: 20px;
           background: radial-gradient(ellipse 100% 90% at 50% 50%, rgba(0,0,0,0.72), rgba(0,0,0,0.42) 65%, transparent 100%);
-          backdrop-filter: blur(2px);
-          -webkit-backdrop-filter: blur(2px);
         }
 
         .search-empty-title {
@@ -1103,6 +1151,60 @@
         .search-panel-live.has-min-query.is-no-results .search-preview-blur {
           opacity: 0.7;
           filter: blur(5px) saturate(0.8) brightness(0.85);
+        }
+
+        /* ── Prévia ao passar o mouse numa lista (só drawer expandido, desktop) ──
+          Fica no mesmo palco do carrossel, por cima dele; o carrossel borrado
+          some enquanto a prévia aparece. */
+        .search-hover-preview { display: none; }
+
+        @media (min-width: 1024px) {
+          .search-hover-preview {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 14px;
+            position: absolute;
+            inset: 0;
+            padding: 10px 12px 20px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.22s ease;
+          }
+
+          .category-drawer.expanded .search-panel-live:not(.has-min-query) .search-hover-preview.is-on {
+            opacity: 1;
+          }
+
+          .category-drawer.expanded.is-hover-previewing .search-panel-live:not(.has-min-query) .search-preview-blur {
+            opacity: 0;
+          }
+
+          /* Cards da prévia levemente apagados (é só um "espiar"). */
+          .category-drawer.expanded .search-hover-preview > .search-result-item {
+            opacity: 0.55;
+            filter: saturate(0.7);
+          }
+
+          /* Mesma grade dos resultados: 3 por fileira (True Characters: 2). */
+          .category-drawer.expanded .search-hover-preview > .search-result-item {
+            --per-row: 3;
+            flex: 0 0 auto;
+            width: calc((100% - (var(--per-row) - 1) * 14px) / var(--per-row));
+            min-width: 0;
+          }
+
+          .category-drawer.expanded .search-hover-preview > .search-result-item--tc { --per-row: 2; }
+
+          @container (max-width: 760px) {
+            .category-drawer.expanded .search-hover-preview > .search-result-item { --per-row: 2; }
+          }
+
+          @container (max-width: 480px) {
+            .category-drawer.expanded .search-hover-preview > .search-result-item { --per-row: 1; }
+          }
         }
 
         .search-marquee-row {
@@ -1277,6 +1379,9 @@
           transition: background 0.14s linear, visibility 0s linear 0s;
         }
 
+        @property --drawer-glow-1 { syntax: '<color>'; inherits: true; initial-value: rgba(226,232,240,0.5); }
+        @property --drawer-glow-2 { syntax: '<color>'; inherits: true; initial-value: rgba(226,232,240,0.3); }
+        @property --drawer-glow-3 { syntax: '<color>'; inherits: true; initial-value: rgba(226,232,240,0.22); }
         .category-drawer {
           position: fixed;
           top: 0;
@@ -1292,7 +1397,7 @@
           box-shadow: -10px 0 40px rgba(0,0,0,0.5), inset 1px 0 0 rgba(255,255,255,0.05);
           isolation: isolate;
           transform: translate3d(100%, 0, 0);
-          transition: transform 0.18s ease-out;
+          transition: transform 0.18s ease-out, --drawer-glow-1 .35s ease, --drawer-glow-2 .35s ease, --drawer-glow-3 .35s ease;
           z-index: 1300;
           will-change: transform;
           backface-visibility: hidden;
@@ -1328,23 +1433,26 @@
         .drawer-top-actions { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
 
         .drawer-eyebrow {
-          font-size: 10px;
+          font-size: 11.5px;
           font-weight: 800;
-          letter-spacing: 1.6px;
+          letter-spacing: 1.2px;
           text-transform: uppercase;
-          color: var(--glow-accent, #34d399);
+          /* Quase branco: o accent sobre o brilho da mesma cor perdia contraste. */
+          color: rgba(255, 255, 255, 0.92);
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75), 0 0 8px rgba(0, 0, 0, 0.45);
         }
 
         .drawer-eyebrow-credits {
-          color: var(--glow-accent, #34d399);
+          color: color-mix(in srgb, var(--glow-accent, #34d399) 45%, #ffffff);
           text-decoration: none;
           cursor: pointer;
-          transition: color 0.2s ease;
+          /* sem transition aqui: a cor acompanha --glow-accent junto com o resto do drawer */
         }
 
         .drawer-eyebrow-credits:hover,
         .drawer-eyebrow-credits:focus-visible {
           color: #ffffff;
+          transition: color 0.2s ease; /* suaviza só a entrada no hover */
         }
 
         .drawer-title {
@@ -1405,7 +1513,7 @@
           font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 1.5px;
-          color: #4b5563;
+          color: #aab2c0;
           font-weight: 800;
           padding: 6px 18px 10px;
         }
@@ -1606,6 +1714,304 @@
         @keyframes drawerPanelIn {
           from { opacity: 0; transform: translateY(4px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+
+
+        /* ══════════ POLIMENTO VISUAL DO DRAWER (normal + expandido) ══════════ */
+
+        /* Sombra e borda do painel */
+        .category-drawer {
+          box-shadow: -24px 0 70px rgba(0,0,0,0.6), inset 1px 0 0 rgba(255,255,255,0.07);
+        }
+
+        /* Cabeçalho: divisória em degradê (some nas pontas) */
+        .drawer-top {
+          border-bottom: 1px solid transparent;
+          border-image: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.14) 18%, rgba(255,255,255,0.14) 82%, transparent 100%) 1;
+        }
+
+        .drawer-eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        @media (max-width: 760px) {
+          .drawer-eyebrow { font-size: 12px; letter-spacing: 0.8px; }
+        }
+
+        .drawer-eyebrow::before {
+          content: '';
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: var(--glow-accent, #34d399);
+          box-shadow: 0 0 8px var(--glow-accent, #34d399);
+          flex: 0 0 5px;
+        }
+
+        .drawer-title {
+          background: linear-gradient(180deg, #ffffff 25%, #c3cad6 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+          letter-spacing: -0.01em;
+        }
+
+        /* Títulos de seção: rótulo + filete em degradê */
+        .drawer-section { padding-top: 10px; }
+
+        .drawer-section-title {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 18px 10px;
+          font-size: 10.5px;
+          letter-spacing: 1.8px;
+        }
+
+        /* Itens: estilo original (sem azulejo nos ícones, sem cartões arredondados);
+          só o contador ficou um pouco mais claro para leitura. */
+        .drawer-item-count { color: #8a93a3; }
+
+        /* Sem a linha abaixo da barra de pesquisa */
+        .search-drawer-input-wrap { border-bottom: none; }
+
+        /* Scrollbar discreta nas colunas de listas */
+        .drawer-content,
+        .drawer-panel[data-panel="ranks"],
+        .drawer-lists-col {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255,255,255,0.18) transparent;
+        }
+
+        /* ── DRAWER EXPANDIDO (desktop): 3 colunas lado a lado ──
+          O botão só existe em telas largas. A coluna Search é a maior (flex:1);
+          Ranks e Lists mantêm a largura do drawer normal. A ordem é sempre
+          a mesma, independente da lista aberta: [Search | Ranks | Lists]. */
+        .drawer-lists-col { display: contents; }
+
+        .drawer-expand {
+          display: none;
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          border: none;
+          background: transparent;
+          color: #cbd5e1;
+          cursor: pointer;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
+          flex: 0 0 auto;
+        }
+
+        .drawer-expand:hover {
+          background: rgba(255,255,255,0.05);
+          color: #fff;
+          transform: scale(1.02);
+        }
+
+        .drawer-expand svg { width: 20px; height: 20px; stroke-width: 2.2; }
+        .drawer-expand .icon-collapse { display: none; }
+        .drawer-title-trio { display: none; }
+
+        @media (min-width: 1024px) {
+          .drawer-expand { display: inline-flex; }
+
+          .category-drawer.expanded .drawer-expand .icon-expand { display: none; }
+          .category-drawer.expanded .drawer-expand .icon-collapse { display: block; }
+
+          .category-drawer {
+            transition: transform 0.18s ease-out, width 0.42s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.42s, --drawer-glow-1 .35s ease, --drawer-glow-2 .35s ease, --drawer-glow-3 .35s ease;
+          }
+
+          /* Drawer fechado = fora da pintura (e animações pausadas). No modo
+            expandido as 3 colunas ficam sempre montadas; sem isso o carrossel
+            borrado da busca continuava animando fora da tela e disputando a
+            GPU com a lista de cards (imagens pretas até passar o mouse). */
+          .category-drawer:not(.show) { visibility: hidden; }
+          .category-drawer.show { transition-delay: 0s, 0s, 0s, 0s, 0s, 0s; }
+
+          .category-drawer:not(.show) .search-marquee-track {
+            animation-play-state: paused !important;
+          }
+
+          .category-drawer.expanded {
+            --exp-col-w: min(var(--drawer-w), 30vw);
+            width: 100vw;
+            border-left: none;
+          }
+
+          /* Cabeçalho: © e frases um pouco mais para a direita, e as 3 frases
+            japonesas ficam sobre as suas respectivas colunas. */
+          .category-drawer.expanded .drawer-top { padding-left: 30px; position: relative; }
+          .category-drawer.expanded .drawer-top-text #drawerTitleEl { visibility: hidden; }
+
+          .category-drawer.expanded .drawer-title-trio {
+            display: flex;
+            align-items: baseline;
+            gap: 28px;
+            position: absolute;
+            left: 30px;
+            right: 110px;
+            bottom: 16px;
+            pointer-events: none;
+          }
+
+          .category-drawer.expanded .drawer-title-trio .drawer-title {
+            white-space: nowrap;
+            flex: 0 0 auto;
+          }
+
+          .category-drawer.expanded .drawer-title-trio .dtt-search { order: 1; }
+          .category-drawer.expanded .drawer-title-trio .dtt-ranks { order: 2; }
+          .category-drawer.expanded .drawer-title-trio .dtt-lists { order: 3; }
+
+          /* Lupa + texto da busca alinhados com o ©2025-2026 (30px). */
+          .category-drawer.expanded .search-box-drawer { padding-left: 30px; }
+
+          /* Divisória sutil em degradê entre as colunas + leve fundo nas listas */
+          .category-drawer.expanded .drawer-panel[data-panel="ranks"],
+          .category-drawer.expanded .drawer-lists-col {
+            border-left: none;
+            box-shadow: inset 1px 0 0 rgba(255,255,255,0.07);
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.008) 60%, transparent 100%);
+          }
+
+          .category-drawer.expanded .drawer-panel.search-panel-live { border-left: none; }
+
+          /* Sem os botões MyRanks / Search / MyLists no topo. */
+          .category-drawer.expanded .drawer-tabs { display: none; }
+
+          .category-drawer.expanded .drawer-content {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            overflow: hidden;
+            padding: 0;
+          }
+
+          /* Colunas fixas (Ranks e Lists) */
+          .category-drawer.expanded .drawer-panel[data-panel="ranks"],
+          .category-drawer.expanded .drawer-lists-col {
+            display: block;
+            flex: 0 0 var(--exp-col-w);
+            width: var(--exp-col-w);
+            min-width: 0;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 18px;
+            border-left: 1px solid rgba(255,255,255,0.06);
+            animation: drawerColIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+          }
+
+          .category-drawer.expanded .drawer-lists-col .drawer-panel {
+            display: block;
+            animation: none;
+          }
+
+          @keyframes drawerColIn {
+            from { opacity: 0; transform: translateX(28px); }
+            to   { opacity: 1; transform: translateX(0); }
+          }
+
+          @keyframes drawerSearchColIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to   { opacity: 1; transform: translateX(0); }
+          }
+
+          /* Coluna grande (Search) */
+          .category-drawer.expanded .drawer-panel.search-panel-live {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            flex: 1 1 0;
+            min-width: 0;
+            height: 100%;
+            overflow: hidden;
+            border-left: 1px solid rgba(255,255,255,0.06);
+            animation: drawerSearchColIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+          }
+
+          /* Resultados da busca: scrollbar à ESQUERDA.
+            direction:rtl move a barra de rolagem para a esquerda; os filhos
+            voltam para ltr e a linha usa row-reverse, então os cards
+            continuam fluindo da esquerda para a direita.
+            Cards normais: 3 por fileira. True Characters: 2 por fileira.
+            Em colunas mais estreitas (container query) diminui. */
+          .category-drawer.expanded .search-stage { container-type: inline-size; }
+
+          .category-drawer.expanded .search-drawer-results {
+            display: flex;
+            flex-direction: row-reverse;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 14px;
+            direction: rtl;
+          }
+
+          .category-drawer.expanded .search-drawer-results > * { direction: ltr; }
+
+          .category-drawer.expanded .search-drawer-results.is-empty-state {
+            flex-direction: column;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: center;
+            align-content: center;
+          }
+
+          .category-drawer.expanded .search-drawer-results.is-empty-state > .search-empty {
+            flex: 0 0 auto;
+          }
+
+          /* Expandido, sem resultados: em vez de um véu só atrás do texto, o
+            carrossel inteiro (100% da largura/altura do palco) escurece
+            por igual e a mensagem fica no centro dele. */
+          .category-drawer.expanded .search-panel-live.has-min-query.is-no-results .search-preview-blur {
+            opacity: 0.38;
+          }
+
+          .category-drawer.expanded .search-drawer-results.is-empty-state > .search-empty::before {
+            display: none;
+          }
+
+          .category-drawer.expanded .search-drawer-results > .search-section-header,
+          .category-drawer.expanded .search-drawer-results > .search-empty {
+            flex: 0 0 100%;
+            width: 100%;
+          }
+
+          .category-drawer.expanded .search-drawer-results > .search-result-item {
+            --per-row: 3;
+            flex: 0 0 auto;
+            width: calc((100% - (var(--per-row) - 1) * 14px) / var(--per-row));
+            min-width: 0;
+          }
+
+          .category-drawer.expanded .search-drawer-results > .search-result-item--tc { --per-row: 2; }
+
+          @container (max-width: 760px) {
+            .category-drawer.expanded .search-drawer-results > .search-result-item { --per-row: 2; }
+          }
+
+          @container (max-width: 480px) {
+            .category-drawer.expanded .search-drawer-results > .search-result-item { --per-row: 1; }
+          }
+
+          /* Lista de comandos (/): também com a scrollbar à esquerda. */
+          .category-drawer.expanded .slash-command-list { direction: rtl; }
+          .category-drawer.expanded .slash-command-list > * { direction: ltr; }
+
+          .category-drawer.expanded .drawer-panel[data-panel="ranks"] { animation-delay: 0.05s; }
+          .category-drawer.expanded .drawer-lists-col { animation-delay: 0.1s; }
+
+          /* Ordem fixa das colunas (esquerda → direita): Search | Ranks | Lists */
+          .category-drawer.expanded .drawer-panel.search-panel-live { order: 1; }
+          .category-drawer.expanded .drawer-panel[data-panel="ranks"] { order: 2; }
+          .category-drawer.expanded .drawer-lists-col { order: 3; }
         }
 
         /* ── RANKING LIST ── */
@@ -12604,7 +13010,26 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             <h2 class="drawer-title" id="drawerTitleEl">You Decided That:</h2>
 
           </div>
+          <div class="drawer-title-trio" aria-hidden="true">
+            <h2 class="drawer-title dtt-search">リサーチはここから始まります</h2>
+            <h2 class="drawer-title dtt-ranks">私のランキング</h2>
+            <h2 class="drawer-title dtt-lists">自分用のリスト</h2>
+          </div>
           <div class="drawer-top-actions">
+            <button class="drawer-expand" id="drawerExpandBtn" aria-label="Expandir" aria-pressed="false" data-tooltip="Expand">
+              <svg class="icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 8V3h5"></path>
+                <path d="M21 8V3h-5"></path>
+                <path d="M3 16v5h5"></path>
+                <path d="M21 16v5h-5"></path>
+              </svg>
+              <svg class="icon-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M8 3v5H3"></path>
+                <path d="M16 3v5h5"></path>
+                <path d="M8 21v-5H3"></path>
+                <path d="M16 21v-5h5"></path>
+              </svg>
+            </button>
             <button class="drawer-close" id="drawerCloseBtn" aria-label="Fechar" data-tooltip="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M18 6 6 18"></path>
@@ -12732,6 +13157,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             </div>
           </div>
 
+          <div class="drawer-lists-col">
           <div class="drawer-panel" data-panel="lists">
             <div class="drawer-section">
               <div class="drawer-section-title">My Principal Anime Lists</div>
@@ -12820,6 +13246,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             </div>
           </div>
 
+          </div>
+
           <div class="drawer-panel search-panel-live" data-panel="search">
             <div class="search-drawer-input-wrap">
               <div class="search-box-drawer" id="searchBoxDrawer">
@@ -12833,6 +13261,12 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   <span class="search-ghost-hint" id="searchGhostHint" aria-hidden="true"></span>
                   <input type="text" id="searchDrawerInput" placeholder="search anime, character or list" autocomplete="off" autocapitalize="off" spellcheck="false">
                 </div>
+                <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Limpar busca" tabindex="-1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="M6 6l12 12"></path>
+                  </svg>
+                </button>
               </div>
             </div>
 
@@ -16076,6 +16510,22 @@ function getMetaFor(animeId) {
             // Não volta a converter arquivos grandes na thread do scroll.
           }
 
+          // Capas reaproveitadas do cache (blob: já otimizado) podiam ficar
+          // sem ser pintadas ao trocar de lista — o card ficava preto até o
+          // hover (que ativa will-change). Simula esse mesmo "empurrão" por
+          // alguns frames para forçar a nova camada a ser rasterizada.
+          function kickThumbRepaint(img) {
+            if (img.__kicking) return;
+            img.__kicking = true;
+            img.style.willChange = 'transform';
+            img.style.backfaceVisibility = 'hidden';
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              img.style.willChange = '';
+              img.style.backfaceVisibility = '';
+              img.__kicking = false;
+            }));
+          }
+
           function startLoadingPoster(wrap, immediate = false) {
             const img = wrap.querySelector('img.thumb');
             const fallback = wrap.querySelector('.poster-fallback');
@@ -16104,6 +16554,7 @@ function getMetaFor(animeId) {
                     ambient.classList.add('ready');
                   }
                 }
+                if (String(img.currentSrc || img.src || '').startsWith('blob:')) kickThumbRepaint(img);
                 schedulePosterOptimization(img);
                 // No mobile, baixa o pôster completo ao abrir o lightbox.
               };
@@ -17048,10 +17499,45 @@ function getMetaFor(animeId) {
             }
           }
 
+          // ── Drawer expandido (desktop): botão que alterna entre o drawer
+          // normal e a tela inteira com Ranks, Search e Lists lado a lado. ──
+          const DRAWER_EXPANDED_KEY = 'myanimerank_drawerExpanded';
+          const drawerExpandBtn = document.getElementById('drawerExpandBtn');
+
+          function setDrawerExpanded(expanded, persist) {
+            if (!drawer) return;
+            drawer.classList.toggle('expanded', !!expanded);
+            if (drawerExpandBtn) {
+              drawerExpandBtn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+              drawerExpandBtn.setAttribute('aria-label', expanded ? 'Recolher' : 'Expandir');
+              drawerExpandBtn.setAttribute('data-tooltip', expanded ? 'Collapse' : 'Expand');
+            }
+            if (expanded) { try { initSearchMarquee(); } catch (e) {} }
+            if (persist) {
+              try { localStorage.setItem(DRAWER_EXPANDED_KEY, expanded ? '1' : '0'); } catch (e) {}
+            }
+          }
+
+          if (drawerExpandBtn) {
+            drawerExpandBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              setDrawerExpanded(!drawer.classList.contains('expanded'), true);
+            });
+          }
+
+          try {
+            if (localStorage.getItem(DRAWER_EXPANDED_KEY) === '1') setDrawerExpanded(true, false);
+          } catch (e) {}
+
+          const drawerActiveInit = drawerTabs.find(t => t.classList.contains('active'));
+          if (drawer) drawer.setAttribute('data-active-tab', drawerActiveInit ? drawerActiveInit.getAttribute('data-tab') : 'ranks');
+
           function switchDrawerTab(target, opts) {
-            if (target === 'search') initSearchMarquee();
+            if (target === 'search' || (drawer && drawer.classList.contains('expanded'))) initSearchMarquee();
             const tab = drawerTabs.find(t => t.getAttribute('data-tab') === target);
             if (!tab) return;
+            // Define a ordem das colunas no modo expandido (desktop).
+            if (drawer) drawer.setAttribute('data-active-tab', target);
             // Por padrão, trocar de aba foca o campo de busca (quando a aba for
             // "search"). Mas quando isso é chamado internamente pela restauração
             // de estado salvo (reload da página), NÃO queremos roubar o foco
@@ -17114,8 +17600,84 @@ function getMetaFor(animeId) {
             saveDrawerStateNow();
           }
 
+          // ── Prévia dos pôsteres da lista sob o mouse (só expandido + desktop) ──
+          let hoverPreviewEl = null;
+          let hoverPreviewMode = '';
+          let hoverPreviewTimer = 0;
+
+          function canShowHoverPreview() {
+            return drawer && drawer.classList.contains('expanded')
+              && window.matchMedia('(min-width: 1024px)').matches;
+          }
+
+          function getHoverPreviewEl() {
+            if (hoverPreviewEl) return hoverPreviewEl;
+            const stage = drawer && drawer.querySelector('.search-stage');
+            if (!stage) return null;
+            hoverPreviewEl = document.createElement('div');
+            hoverPreviewEl.className = 'search-hover-preview';
+            // Antes dos resultados/lista de comandos, que ficam por cima dela.
+            const resultsEl = stage.querySelector('.search-drawer-results');
+            stage.insertBefore(hoverPreviewEl, resultsEl || null);
+            return hoverPreviewEl;
+          }
+
+          let hoverPreviewHideTimer = 0;
+          function cancelHoverPreviewHide() { clearTimeout(hoverPreviewHideTimer); }
+          // Esconde com uma folga: dá tempo de o mouse cruzar a coluna do meio
+          // e chegar nos cards da prévia sem ela sumir. Também cancela uma
+          // troca de prévia ainda pendente (passou rápido por cima de outro item).
+          function scheduleHoverPreviewHide(delay) {
+            clearTimeout(hoverPreviewTimer);
+            clearTimeout(hoverPreviewHideTimer);
+            hoverPreviewHideTimer = setTimeout(hideHoverPreview, delay == null ? 420 : delay);
+          }
+
+          function hideHoverPreview() {
+            clearTimeout(hoverPreviewTimer);
+            clearTimeout(hoverPreviewHideTimer);
+            hoverPreviewMode = '';
+            if (hoverPreviewEl) hoverPreviewEl.classList.remove('is-on');
+            if (drawer) drawer.classList.remove('is-hover-previewing');
+          }
+
+          function showHoverPreview(mode) {
+            if (!mode || !canShowHoverPreview()) { hideHoverPreview(); return; }
+            cancelHoverPreviewHide();
+            if (mode === hoverPreviewMode) return;
+            clearTimeout(hoverPreviewTimer);
+            hoverPreviewTimer = setTimeout(() => {
+              const el = getHoverPreviewEl();
+              if (!el || !canShowHoverPreview()) return;
+              if (typeof window.__buildSearchPreview !== 'function') return;
+              const count = window.__buildSearchPreview(mode, el, mode === 'trueCharacters' ? 12 : 9);
+              if (!count) { hideHoverPreview(); return; }
+              hoverPreviewMode = mode;
+              el.classList.add('is-on');
+              drawer.classList.add('is-hover-previewing');
+            }, 90);
+          }
+
+          function setDrawerHoverGlow(item) {
+            if (!drawer) return;
+            if (!item) {
+              ['1','2','3'].forEach(n => drawer.style.removeProperty('--drawer-glow-' + n));
+              hideHoverPreview();
+              return;
+            }
+            showHoverPreview(item.getAttribute('data-mode'));
+            const color = item.style.getPropertyValue('--cat-color') || getComputedStyle(item).getPropertyValue('--cat-color');
+            if (!color || !color.trim()) return;
+            const { r, g, b } = hexToRgb(color);
+            drawer.style.setProperty('--drawer-glow-1', `rgba(${r}, ${g}, ${b}, 0.5)`);
+            drawer.style.setProperty('--drawer-glow-2', `rgba(${r}, ${g}, ${b}, 0.3)`);
+            drawer.style.setProperty('--drawer-glow-3', `rgba(${r}, ${g}, ${b}, 0.22)`);
+          }
+
           function closeDrawer(skipScrollRestore) {
             if (!drawer || !backdrop) return;
+            setDrawerHoverGlow(null);
+            hideHoverPreview();
             if (drawerFrame) cancelAnimationFrame(drawerFrame);
             isDrawerOpen = false;
             drawer.classList.remove('show');
@@ -17188,6 +17750,22 @@ function getMetaFor(animeId) {
           };
 
           function createDrawerController() {
+            if (drawer) {
+              drawer.addEventListener('mouseover', (e) => {
+                const item = e.target.closest && e.target.closest('.drawer-item:not([disabled])');
+                if (item && drawer.contains(item)) setDrawerHoverGlow(item);
+              });
+              drawer.addEventListener('mouseout', (e) => {
+                const from = e.target.closest && e.target.closest('.drawer-item');
+                if (!from) return;
+                const to = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.drawer-item:not([disabled])');
+                if (to && drawer.contains(to)) return;
+                setDrawerHoverGlow(null);
+              });
+              drawer.addEventListener('click', (e) => {
+                if (e.target.closest && e.target.closest('.drawer-item')) setTimeout(() => { setDrawerHoverGlow(null); hideHoverPreview(); }, 0);
+              });
+            }
             filterBtnEl.addEventListener('click', (e) => {
               e.stopPropagation();
               if (isDrawerOpen) {
@@ -19288,6 +19866,53 @@ function getMetaFor(animeId) {
               closeDrawer(skipScrollRestore);
             }
 
+            function buildResultItemHtml(entry, i, acc, accGlow, query) {
+                  return `
+                    <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id]) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
+                      <div class="search-result-card-inner">
+                        <div class="search-result-ambient" aria-hidden="true"></div>
+                        <div class="search-result-ambient-shade" aria-hidden="true"></div>
+                        <div class="search-result-thumb-wrap">
+                          <img class="search-result-thumb" data-src="${searchThumbSrc(entry.tag === 'favep' ? getFavEpThumb(entry.anime) : entry.anime.img)}" alt="" loading="lazy">
+
+                        </div>
+                        <div class="search-result-info">
+                          ${buildSearchRankHtml(entry)}
+                          <span class="search-result-title">${highlightTitle(entry.anime.title, query)}</span>
+                          ${(() => {
+                            if (entry.tag === 'favep') {
+                              return entry.anime.subtitle ? `<span class="search-result-meta">${entry.anime.subtitle}</span>` : '';
+                            }
+                            if (entry.tag !== 'watching') {
+                              return entry.anime.info ? `<span class="search-result-meta">${String(entry.anime.info).split(/<br\s*\/?>/i)[0].trim()}</span>` : '';
+                            }
+                            const remaining = String(entry.anime.info || '')
+                              .split(/<br\s*\/?>/i)[0]
+                              .replace(/[-–:]?\s*Progress:\s*(?:\d+|-)\s*\/\s*(?:\d+|-)\s*/i, '')
+                              .trim();
+                            const metaHtml = remaining ? `<span class="search-result-meta">${remaining}</span>` : '';
+                            return metaHtml + buildSearchProgressHtml(entry.anime, acc);
+                          })()}
+                        </div>
+                          ${(() => {
+                            // No card de Peak Episodes (favep) não mostramos a faixa de
+                            // "nova temporada anunciada" — ela não faz sentido nesse
+                            // contexto (o card é sobre um episódio específico, não sobre
+                            // o anime como um todo).
+                            if (entry.tag === 'favep') return '';
+                            const ns = nextSeasonMap[entry.anime.id];
+                            if (!ns) return '';
+                            const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
+                            const isMulti = nsLines.length > 1;
+                            return `<div class="announce-strip search-result-next-season"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
+                                      <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
+                                    </div>`;
+                          })()}
+                      </div>
+                      <svg class="search-result-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>`;
+            }
+
             function renderEntries(entries, query) {
               const cmd = getSlashCommand(query);
               const shouldRotateWatching = !!(cmd && SLASH_COMMANDS[cmd].rotateWatching);
@@ -19344,50 +19969,7 @@ function getMetaFor(animeId) {
                     const { r, g, b } = hexToRgb(acc);
                     accGlow = `rgba(${r}, ${g}, ${b}, 0.35)`;
                   } catch (e) {}
-                  return `
-                    <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
-                      <div class="search-result-card-inner">
-                        <div class="search-result-ambient" aria-hidden="true"></div>
-                        <div class="search-result-ambient-shade" aria-hidden="true"></div>
-                        <div class="search-result-thumb-wrap">
-                          <img class="search-result-thumb" data-src="${searchThumbSrc(entry.tag === 'favep' ? getFavEpThumb(entry.anime) : entry.anime.img)}" alt="" loading="lazy">
-
-                        </div>
-                        <div class="search-result-info">
-                          ${buildSearchRankHtml(entry)}
-                          <span class="search-result-title">${highlightTitle(entry.anime.title, query)}</span>
-                          ${(() => {
-                            if (entry.tag === 'favep') {
-                              return entry.anime.subtitle ? `<span class="search-result-meta">${entry.anime.subtitle}</span>` : '';
-                            }
-                            if (entry.tag !== 'watching') {
-                              return entry.anime.info ? `<span class="search-result-meta">${String(entry.anime.info).split(/<br\s*\/?>/i)[0].trim()}</span>` : '';
-                            }
-                            const remaining = String(entry.anime.info || '')
-                              .split(/<br\s*\/?>/i)[0]
-                              .replace(/[-–:]?\s*Progress:\s*(?:\d+|-)\s*\/\s*(?:\d+|-)\s*/i, '')
-                              .trim();
-                            const metaHtml = remaining ? `<span class="search-result-meta">${remaining}</span>` : '';
-                            return metaHtml + buildSearchProgressHtml(entry.anime, acc);
-                          })()}
-                        </div>
-                          ${(() => {
-                            // No card de Peak Episodes (favep) não mostramos a faixa de
-                            // "nova temporada anunciada" — ela não faz sentido nesse
-                            // contexto (o card é sobre um episódio específico, não sobre
-                            // o anime como um todo).
-                            if (entry.tag === 'favep') return '';
-                            const ns = nextSeasonMap[entry.anime.id];
-                            if (!ns) return '';
-                            const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
-                            const isMulti = nsLines.length > 1;
-                            return `<div class="announce-strip search-result-next-season"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
-                                      <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
-                                    </div>`;
-                          })()}
-                      </div>
-                      <svg class="search-result-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-                    </div>`;
+                  return buildResultItemHtml(entry, i, acc, accGlow, query);
                 }).join('');
 
                 return headerHtml + itemsHtml;
@@ -19493,6 +20075,81 @@ function getMetaFor(animeId) {
             };
             const SLASH_COMMAND_LIST = Object.keys(SLASH_COMMANDS);
 
+            // ── Prévia (hover no drawer expandido): mesmos cards da busca ──
+            // Monta o HTML dos primeiros cards da lista como se fosse o resultado
+            // do comando (/comedy, /romance...), reaproveitando o template real.
+            const PREVIEW_MODE_FILTER = {
+              all:           entry => entry.tag === null && !planIds.has(entry.anime.id),
+              romance:       SLASH_COMMANDS['/romance'].filter,
+              isekai:        SLASH_COMMANDS['/isekai'].filter,
+              sports:        SLASH_COMMANDS['/sport'].filter,
+              comedy:        SLASH_COMMANDS['/comedy'].filter,
+              mecha:         SLASH_COMMANDS['/mecha'].filter,
+              watching:      SLASH_COMMANDS['/watching'].filter,
+              plan:          SLASH_COMMANDS['/planwatch'].filter,
+              incomplete:    SLASH_COMMANDS['/incomplete'].filter,
+              announced:     SLASH_COMMANDS['/announced'].filter,
+              favEpisodes:   SLASH_COMMANDS['/episodes'].filter,
+              trueCharacters: SLASH_COMMANDS['/characters'].filter
+            };
+            const PREVIEW_MODE_FORCED = {
+              romance: 'romance', isekai: 'isekai', sports: 'sports', comedy: 'comedy',
+              mecha: 'mecha', incomplete: 'incomplete', announced: 'announced',
+              favEpisodes: 'favEpisodes', trueCharacters: 'trueCharacters'
+            };
+            window.__buildSearchPreview = function (mode, target, limit) {
+              const filter = PREVIEW_MODE_FILTER[mode];
+              if (!filter || !target) return 0;
+              const entries = searchIndex.filter(filter);
+              // groupEntriesIntoSections grava forcedCategory nas entries; guarda
+              // e restaura pra não interferir numa busca que esteja na tela.
+              const saved = entries.map(e => e.forcedCategory);
+              const sections = groupEntriesIntoSections(entries, false, PREVIEW_MODE_FORCED[mode] || null, false);
+              const html = [];
+              let n = 0;
+              sections.forEach(section => {
+                section.items.forEach(entry => {
+                  if (n >= limit) return;
+                  const acc = section.color || '#e2e8f0';
+                  let accGlow = 'transparent';
+                  try { const { r, g, b } = hexToRgb(acc); accGlow = `rgba(${r}, ${g}, ${b}, 0.35)`; } catch (e) {}
+                  html.push(buildResultItemHtml(entry, -1, acc, accGlow, ''));
+                  n++;
+                });
+              });
+              target.innerHTML = html.join('');
+              entries.forEach((e, k) => { e.forcedCategory = saved[k]; });
+              // Clique num card da prévia leva pro anime, igual ao resultado de busca.
+              const shown = [];
+              sections.forEach(section => section.items.forEach(entry => { if (shown.length < limit) shown.push(entry); }));
+              target.querySelectorAll('.search-result-item').forEach((el, k) => {
+                const entry = shown[k];
+                if (!entry) return;
+                el.addEventListener('click', () => {
+                  const prevForced = entry.forcedCategory;
+                  entry.forcedCategory = PREVIEW_MODE_FORCED[mode] || null;
+                  const cat = categoryForResult(entry);
+                  entry.forcedCategory = prevForced;
+                  openSearchEntry(entry, cat);
+                });
+              });
+              target.querySelectorAll('.search-result-thumb').forEach(img => {
+                const src = img.getAttribute('data-src');
+                if (!src) return;
+                const item = img.closest('.search-result-item');
+                const ambient = item ? item.querySelector('.search-result-ambient') : null;
+                img.addEventListener('load', () => {
+                  if (ambient) {
+                    ambient.style.backgroundImage = `url("${src}")`;
+                    ambient.classList.add('ready');
+                  }
+                }, { once: true });
+                img.src = src;
+              });
+              initAnnounceStrips();
+              return n;
+            };
+
             function getSlashCommand(query) {
               const norm = normalize(query);
               return SLASH_COMMANDS[norm] ? norm : null;
@@ -19579,9 +20236,11 @@ function getMetaFor(animeId) {
               if (!entry) return;
 
               rememberSearchQuery(searchInput.value);
+              openSearchEntry(entry, categoryForResult(entry));
+            }
 
+            function openSearchEntry(entry, targetCategory) {
               const targetId = entry.anime.id;
-              const targetCategory = categoryForResult(entry);
 
               closeSearchDrawer(true);
               searchInput.value = '';
