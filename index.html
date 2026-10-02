@@ -397,7 +397,7 @@
 
         /* Texto-fantasma: fica atrás do input, com a parte já digitada invisível
           (só ocupando espaço, pra empurrar a sugestão pro lugar certo) e a
-          sugestão "all" em itálico/apagado, tipo o "Digite para filtrar" do
+          sugestão "all" em itálico/apagado, tipo o "Digite para Drawer" do
           comando / no chat. */
         .search-ghost-hint {
           position: absolute;
@@ -560,16 +560,8 @@
           filter: none;
         }
 
-        .slash-command-item .cmd-index {
-          display: none;
-        }
 
-        .slash-command-item:hover .cmd-index,
-        .slash-command-item.active .cmd-index {
-          color: var(--cmd-color, var(--glow-accent));
-          opacity: 1;
-          transform: translateX(-2px);
-        }
+
 
         .slash-command-item .cmd-name {
           font-size: 14px;
@@ -606,36 +598,9 @@
           transform: translateX(1px);
         }
 
-        .search-clear-btn {
-          background: transparent;
-          border: none;
-          border-radius: 8px;
-          width: 32px;
-          height: 32px;
-          padding: 0;
-          display: none;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          flex: 0 0 32px;
-          color: #cbd5e1;
-          transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
-        }
 
-        .search-clear-btn:hover {
-          background: rgba(255,255,255,0.05);
-          color: #fff;
-          transform: scale(1.02);
-        }
 
-        .search-clear-btn svg {
-          width: 17px;
-          height: 17px;
-          color: currentColor;
-          cursor: pointer;
-        }
 
-        .search-box-drawer.has-value .search-clear-btn { display: flex; }
 
         .search-drawer-results {
           position: absolute;
@@ -865,6 +830,101 @@
             min-width: 70px;
             font-size: 34px;
             transform: translateY(-50%) scaleY(2.25);
+          }
+        }
+
+        /* ── True Characters no search: card "dossiê" igual ao card mobile de
+           True Characters — retrato à esquerda ocupando a altura toda do
+           card, e à direita o #rank na frente do nome (mesma linha), com a
+           obra de origem embaixo. O fundo atrás do texto continua usando o
+           mesmo wallpaper borrado (.search-result-ambient) já usado nos
+           outros cards de busca — só muda o layout. */
+        .search-result-item--tc .search-result-card-inner {
+          display: flex;
+          align-items: stretch;
+          min-height: 128px;
+        }
+
+        .search-result-item--tc .search-result-thumb-wrap {
+          flex: 0 0 128px;
+          width: 128px;
+          height: auto;
+          padding-top: 0;
+          border-radius: 0;
+          align-self: stretch;
+        }
+
+        .search-result-item--tc .search-result-ambient-shade {
+          background: linear-gradient(100deg, rgba(10,10,14,0.12) 0%, rgba(10,10,14,0.66) 40%, rgba(10,10,14,0.88) 100%);
+        }
+
+        /* Linha de cima (#rank + nome) e, embaixo, a obra de origem — por
+           isso o container vira uma grade em "linha" com o meta forçado a
+           quebrar pra linha de baixo (flex-basis: 100%). */
+        .search-result-item--tc .search-result-info {
+          display: grid;
+          grid-template-columns: max-content minmax(0, 1fr);
+          grid-template-rows: auto auto;
+          align-content: center;
+          align-items: center;
+          column-gap: 8px;
+          row-gap: 5px;
+          min-width: 0;
+          min-height: 0;
+          padding: 16px 16px 16px 16px;
+          justify-content: initial;
+        }
+
+        .search-result-item--tc .search-result-rank {
+          position: static;
+          grid-column: 1;
+          grid-row: 1;
+          width: auto;
+          min-width: 0;
+          transform: none;
+          text-align: left;
+          font: 900 16px/1 var(--font-title);
+          letter-spacing: -0.02em;
+          color: color-mix(in srgb, var(--acc, #f472b6) 85%, #fff 8%);
+        }
+
+        .search-result-item--tc .search-result-title {
+          grid-column: 2;
+          grid-row: 1;
+          min-width: 0;
+          display: block;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: 16px;
+        }
+
+        .search-result-item--tc .search-result-meta {
+          grid-column: 1 / -1;
+          grid-row: 2;
+          width: 100%;
+          margin-top: 0;
+          color: rgba(255,255,255,0.78);
+          font-weight: 700;
+        }
+
+        .search-result-item--tc .search-result-rank.rank-gold { color: #d4af37; }
+        .search-result-item--tc .search-result-rank.rank-silver { color: #b8bcc2; }
+        .search-result-item--tc .search-result-rank.rank-bronze { color: #b0703f; }
+
+        @media (max-width: 380px) {
+          .search-result-item--tc .search-result-card-inner {
+            min-height: 112px;
+          }
+          .search-result-item--tc .search-result-thumb-wrap {
+            flex-basis: 112px;
+            width: 112px;
+          }
+          .search-result-item--tc .search-result-title {
+            font-size: 14.5px;
+          }
+          .search-result-item--tc .search-result-rank {
+            font-size: 14px;
           }
         }
 
@@ -1532,156 +1592,6 @@
           height: 17px;
           stroke: var(--glow-accent, #34d399);
           transform: translateY(1px);
-        }
-
-        /* ── DRAWER: CREDITS ──
-          Lista estática de créditos, com pegada de créditos de filme
-          (cargo em caixa alta + nome), mas em fluxo normal dentro do
-          drawer-content, sobre o fundo padrão do drawer (sem tela preta,
-          sem rolagem automática). */
-        :root {
-          --credits-gold: var(--glow-accent);
-          --credits-gold-bright: color-mix(in srgb, var(--glow-accent) 55%, #ffffff);
-        }
-
-        .credits-crawl {
-          padding: 4px 22px 24px;
-        }
-
-        .credits-block {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
-          text-align: center;
-          padding: 22px 12px;
-          width: 100%;
-          max-width: 320px;
-          margin: 0 auto;
-        }
-
-        .credits-block + .credits-block {
-          border-top: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .credits-role {
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 3px;
-          text-transform: uppercase;
-          color: var(--credits-gold);
-          opacity: 0.85;
-        }
-
-        .credits-names {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 9px;
-        }
-
-        .credits-name {
-          font-family: var(--font-title);
-          font-weight: 700;
-          font-size: clamp(17px, 4.5vw, 21px);
-          letter-spacing: 0.01em;
-          color: #f2f0ea;
-          text-decoration: none;
-          transition: color 0.2s ease, text-shadow 0.2s ease;
-        }
-
-        .credits-name:hover,
-        .credits-name:focus-visible {
-          color: var(--credits-gold-bright);
-          text-shadow: 0 0 14px rgba(203,213,225,0.35);
-        }
-
-        /* ── Créditos com o logo do serviço em vez de texto ──
-          Cada entrada vira um link que mostra a imagem do logo
-          (assets/logos/*.webp), com uma altura fixa e largura
-          livre para caber logos de proporções diferentes (ícone quadrado
-          vs. wordmark alongado, como o da Canva). */
-        .credits-name.credits-name-logo {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          line-height: 0;
-          transition: filter 0.2s ease, transform 0.2s ease;
-        }
-
-        .credits-name.credits-name-logo:hover,
-        .credits-name.credits-name-logo:focus-visible {
-          filter: brightness(1.2);
-          transform: translateY(-1px);
-          text-shadow: none;
-        }
-
-        .credits-logo-img {
-          display: block;
-          height: 24px;
-          width: auto;
-          max-width: 160px;
-          object-fit: contain;
-        }
-
-        /* Alguns wordmarks (ex: Canva) tendem a ser mais largos/baixos —
-          um pouco menor de altura fica proporcionalmente mais parecido
-          com o restante da lista. */
-        .credits-logo-img--wide {
-          height: 20px;
-        }
-
-        .credits-logo-img--canva {
-          height: 26px;
-        }
-        
-        /* Link com ícone do GitHub + nome de usuário */
-        .credits-name-github {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .credits-github-icon {
-          flex-shrink: 0;
-        }
-
-        /* Ajustes finos de tamanho por logo específico (pedidos pelo usuário) */
-        .credits-logo-img--prime {
-          height: 30px;
-        }
-
-        .credits-logo-img--anime-planet {
-          height: 40px;
-        }
-
-        .credits-logo-img--pinterest {
-          height: 26px;
-        }
-
-        /* Gemini um pouco maior no bloco Fontes & Referências */
-        .credits-logo-img--gemini-source {
-          height: 20px;
-        }
-
-        /* ChatGPT um pouco maior no bloco Fontes & Referências */
-        .credits-logo-img--chatgpt-source {
-          height: 30px;
-        }
-
-        /* Bloco Fontes & Referências em grade de 2 colunas (2 logos por linha) */
-        .credits-names--sources {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          align-items: center;
-          justify-items: center;
-          column-gap: 22px;
-          row-gap: 18px;
-        }
-
-        /* Se sobrar um item ímpar (ex: 5º logo), ele ocupa a linha toda e fica centralizado */
-        .credits-names--sources > .credits-name-logo:last-child:nth-child(odd) {
-          grid-column: 1 / -1;
         }
 
         .drawer-panel {
@@ -3137,37 +3047,15 @@
           hover); no mobile continua sendo apenas o logo, sem ação — por isso
           o pointer-events é desativado por padrão (mobile-first) e só
           reativado a partir de 761px (ver regra @media logo abaixo). */
-        .rank-mal-mal-row > a.rank-mal-label--mal {
-          display: inline-flex;
-          align-items: center;
-          justify-content: flex-start;
-          gap: 5px;
-          cursor: default;
-          pointer-events: none;
-        }
 
         @media (min-width: 761px) {
-          .rank-mal-mal-row > a.rank-mal-label--mal {
-            cursor: pointer;
-            pointer-events: auto;
-          }
 
-          .rank-mal-mal-row > a.rank-mal-label--mal:hover,
-          .rank-mal-mal-row > a.rank-mal-label--mal:focus-visible {
-            color: var(--mal-blue);
-          }
         }
 
         /* Linha que agrupa o link/logo do MyAnimeList com a setinha de
           "abrir/fechar todos" (".rank-mal-toggle-all") lado a lado — sem
           esse wrapper, os dois cairiam em linhas separadas, já que ".rank-
           mal" é flex-column. */
-        .rank-mal-mal-row {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          margin-bottom: -3px;
-        }
 
         /* Setinha ao lado do logo do MyAnimeList: abre/fecha de uma vez só
           todas as linhas de nome real das temporadas (ver
@@ -3647,321 +3535,6 @@
         }
 
         /* ── Blocos de rank (Story / Animation / Characters / Ending...) ── */
-        .rank-ratings {
-          display: flex;
-          flex-direction: column;
-          gap: 18px;
-          width: 100%;
-          padding-top: 8px;
-          border-top: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .rank-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-        }
-
-        .rank-row-label {
-          font-family: var(--font-title);
-          font-weight: 600;
-          font-size: 15px;
-          letter-spacing: 0.03em;
-          color: var(--muted);
-          flex: 0 0 auto;
-          min-width: 140px;
-          cursor: pointer;
-          user-select: none;
-          transition: color 0.15s ease, opacity 0.15s ease;
-        }
-
-        .rank-row-label:hover {
-          color: var(--text);
-        }
-
-        .rank-row-label.excluded {
-          text-decoration: line-through;
-          text-decoration-thickness: 1.5px;
-          opacity: 0.45;
-        }
-
-        .rank-row-label.excluded:hover {
-          opacity: 0.65;
-        }
-
-        .rank-row.excluded .rank-stars {
-          opacity: 0.45;
-          position: relative;
-        }
-
-        .rank-row.excluded .rank-stars::after {
-          content: '';
-          position: absolute;
-          left: 10px;
-          right: -2px;
-          top: 50%;
-          height: 1.5px;
-          background: var(--muted);
-          transform: translateY(-50%);
-          pointer-events: none;
-          z-index: 2;
-        }
-
-        .rank-row.excluded .rank-score {
-          opacity: 0.45;
-          text-decoration: line-through;
-          text-decoration-thickness: 1.5px;
-          text-decoration-color: var(--muted);
-        }
-
-        .rank-stars {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          position: relative;
-          cursor: pointer;
-          user-select: none;
-          -webkit-user-select: none;
-        }
-
-        .rank-stars .star-zero-hit {
-          position: relative;
-          width: 8px;
-          height: 26px;
-          flex: 0 0 auto;
-          cursor: pointer;
-        }
-
-        .rank-stars .star-slot {
-          position: relative;
-          width: 26px;
-          height: 26px;
-          flex: 0 0 auto;
-        }
-
-        .rank-stars .star-slot svg {
-          position: absolute;
-          inset: 0;
-          width: 26px;
-          height: 26px;
-          stroke: rgba(255,255,255,0.28);
-          stroke-width: 1.6;
-          fill: none;
-          pointer-events: none;
-          transition: stroke 0.15s ease, fill 0.15s ease;
-        }
-
-        .rank-stars .star-slot .star-fill {
-          fill: var(--star-color, var(--glow-accent));
-          stroke: var(--star-color, var(--glow-accent));
-          overflow: hidden;
-          display: none;
-          transition: fill 0.15s ease, stroke 0.15s ease;
-        }
-
-        .rank-stars .star-slot .star-fill.half {
-          clip-path: inset(0 50% 0 0);
-        }
-
-        .rank-stars .star-half-hit,
-        .rank-stars .star-full-hit {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          width: 50%;
-          cursor: pointer;
-        }
-        .rank-stars .star-half-hit { left: 0; }
-        .rank-stars .star-full-hit { left: 50%; }
-
-        .rank-score {
-          font-family: var(--font-title);
-          font-weight: 700;
-          font-size: 14px;
-          color: var(--star-color, var(--text));
-          min-width: 32px;
-          text-align: right;
-          flex: 0 0 auto;
-          transition: color 0.15s ease;
-        }
-
-        .rank-average {
-          display: flex;
-          align-items: baseline;
-          justify-content: space-between;
-          gap: 10px;
-          padding-top: 16px;
-          padding-bottom: 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
-          width: 100%;
-        }
-
-        .rank-average-value {
-          font-family: var(--font-title);
-          font-weight: 900;
-          font-size: 28px;
-          color: var(--star-color-avg, var(--glow-accent));
-          transition: color 0.15s ease;
-        }
-
-        .rank-average-value .rank-average-max {
-          font-size: 15px;
-          font-weight: 700;
-          opacity: 0.55;
-          margin-left: 2px;
-        }
-
-        @media (max-width: 900px) {
-          .poster-lightbox-figure {
-            max-width: 96vw;
-            gap: 28px;
-          }
-          .poster-lightbox img {
-            width: min(42vw, 380px);
-            height: min(82vh, 560px);
-          }
-          .poster-lightbox-panel {
-            width: min(420px, 46vw);
-          }
-        }
-
-        /* Indicador mobile de conteúdo abaixo: um fade discreto no rodapé
-           do lightbox, sem seta ou botão. Ele só aparece quando ainda existe
-           conteúdo para rolar e some ao chegar ao final. */
-        .poster-lightbox-scroll-indicator {
-          display: none;
-        }
-
-        @media (max-width: 760px) {
-          .poster-lightbox-scroll-indicator {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 8;
-            width: 100%;
-            height: 52px;
-            display: block;
-            pointer-events: none;
-            opacity: 0;
-            visibility: hidden;
-            background: linear-gradient(180deg,
-              rgba(5,5,7,0) 0%,
-              rgba(5,5,7,0.22) 38%,
-              rgba(5,5,7,0.72) 100%
-            );
-            -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 35%, #000 100%);
-            mask-image: linear-gradient(180deg, transparent 0%, #000 35%, #000 100%);
-            transition: opacity 0.24s ease, visibility 0s linear 0.24s;
-          }
-
-          .poster-lightbox-scroll-indicator-line,
-          .poster-lightbox-scroll-indicator svg {
-            display: none !important;
-          }
-
-          .poster-lightbox-scroll-indicator.visible {
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.24s ease;
-          }
-
-          .poster-lightbox-scroll-indicator.at-bottom {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.18s ease, visibility 0s linear 0.18s;
-          }
-
-          .poster-lightbox:not(.open) .poster-lightbox-scroll-indicator {
-            opacity: 0 !important;
-            visibility: hidden !important;
-          }
-
-          .poster-lightbox.simple-mode .poster-lightbox-scroll-indicator {
-            display: none !important;
-          }
-        }
-
-        @media (max-width: 760px) {
-          .poster-lightbox {
-            align-items: flex-start;
-            /* Impede que o excesso de scroll do modal alcance o navegador e
-               dispare o pull-to-refresh da página. */
-            overscroll-behavior-y: none;
-            /* No celular, blur de tela inteira + fade atrasavam o primeiro
-              frame perceptível do modal. O wallpaper ambient continua dando
-              profundidade, mas a camada principal abre imediatamente. */
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            transition: none;
-          }
-
-          /* O gesto de puxar para baixo acompanha o dedo e, ao passar do
-             limite, leva o próprio lightbox para fora da tela. */
-          .poster-lightbox.mobile-pull-dragging {
-            transform: translate3d(0, var(--lb-pull-y, 0px), 0);
-            opacity: var(--lb-pull-opacity, 1);
-          }
-
-          .poster-lightbox.mobile-pull-rebounding {
-            transform: translate3d(0, 0, 0);
-            opacity: 1;
-            transition: transform 0.22s cubic-bezier(0.22, 1.25, 0.36, 1), opacity 0.18s ease-out;
-          }
-
-          .poster-lightbox.mobile-pull-closing {
-            transform: translate3d(0, var(--lb-pull-y, 0px), 0);
-            opacity: var(--lb-pull-opacity, 1);
-          }
-
-          .poster-lightbox.mobile-pull-closing.mobile-pull-closing-active {
-            transform: translate3d(0, 105dvh, 0);
-            opacity: 0;
-            transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease-out;
-          }
-
-          .poster-lightbox-figure {
-            flex-direction: column;
-            align-items: center;
-            max-height: 90vh;
-            max-height: 90dvh;
-            overflow-y: auto;
-            overscroll-behavior-y: contain;
-            overflow-x: hidden;
-            width: 100%;
-            margin-top: 76px;
-            transition: none;
-          }
-
-          .poster-lightbox img {
-            width: min(80vw, 340px);
-            height: min(46vh, 460px);
-          }
-
-          .poster-lightbox-panel {
-            width: min(92vw, 460px);
-            max-height: none;
-            align-items: center;
-            text-align: center;
-          }
-
-          .poster-lightbox-panel .poster-lightbox-list,
-          .poster-lightbox-panel .poster-lightbox-title {
-            text-align: center;
-            justify-content: center;
-          }
-
-          .rank-meta {
-            justify-content: center;
-            text-align: center;
-            padding: 16px 14px;
-          }
-          .rank-meta-item { align-items: center; padding: 0 16px; }
-
-          .rank-row-label { min-width: 104px; }
-        }
-
         /* ── Layout mobile do poster lightbox: pôster pequeno + título lado a
           lado no topo, com tags/ficha técnica/temporadas abaixo, ocupando a
           largura toda. Só se aplica no modo "completo" (com myranks); o modo
@@ -4233,9 +3806,6 @@
             linha de botões), senão o logo fica longe demais das temporadas
             logo abaixo dele. Cancela parte do gap com margem negativa,
             voltando pros ~8px de antes só aqui. */
-          .poster-lightbox:not(.simple-mode) .rank-mal-mal-row {
-            margin-bottom: -11px;
-          }
 
           /* Notas por temporada/filme/especial: no mobile, mesmo layout de
             colunas do PC — temporada / episódios / pontilhado / nota — para
@@ -5009,17 +4579,6 @@
             stroke-linejoin: round;
           }
 
-          .mobile-nav-label {
-            display: block;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 9px;
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: 0.01em;
-            white-space: nowrap;
-          }
 
           .mobile-nav-btn.active {
             color: var(--nav-color, #fff);
@@ -5060,9 +4619,6 @@
             height: 20px;
           }
 
-          .mobile-nav-btn--menu .mobile-nav-label {
-            color: rgba(255,255,255,0.62);
-          }
 
           .mobile-nav-btn--menu.active .mobile-nav-menu-icon {
             transform: translateY(-2px) rotate(-4deg);
@@ -6551,317 +6107,6 @@
           .fav-ep-thumb { width: 62px; }
         }
 
-        /* ══════════════════════════════════════════════════════════════════
-          Fav Ep Lightbox — modal em tela cheia ao clicar na imagem de um
-          card de "Peak Episodes". Baseado no layout de referência feito
-          no Canva: imagem grande com contador, setas nas laterais, título +
-          episódio centralizados e os selos MNP/IMDb embaixo (IMDb linkando
-          pra ep.imdbUrl). Componente próprio, separado do .poster-lightbox
-          (que é mais robusto e usado só pelo "All Animes"/"Watching Now").
-          ══════════════════════════════════════════════════════════════════ */
-        .fav-ep-lightbox {
-          position: fixed;
-          inset: 0;
-          height: 100vh;
-          height: 100dvh;
-          z-index: 10000;
-          display: none;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          background: rgba(0,0,0,0.55);
-          backdrop-filter: blur(6px);
-          -webkit-backdrop-filter: blur(6px);
-          opacity: 0;
-          transition: opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-          cursor: zoom-out;
-        }
-
-        .fav-ep-lightbox.open {
-          display: flex;
-          opacity: 1;
-        }
-
-        /* ── Ambient: a própria imagem do episódio, ampliada e borrada, como
-          wallpaper do fundo (mesma mecânica do .poster-lightbox-ambient) ── */
-        .fav-ep-lightbox-ambient {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          height: 100dvh;
-          z-index: 0;
-          pointer-events: none;
-          overflow: hidden;
-          opacity: 0;
-          transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .fav-ep-lightbox-ambient img {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 140%;
-          height: 140%;
-          min-width: 140vw;
-          min-height: 140vh;
-          object-fit: cover;
-          filter: blur(70px) saturate(1.6) brightness(0.7);
-          transform: translate(-50%, -50%) scale(1.4);
-        }
-
-        .fav-ep-lightbox-ambient::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(ellipse 130% 120% at 50% 45%, transparent 0%, rgba(0,0,0,0.25) 100%);
-        }
-
-        .fav-ep-lightbox.open .fav-ep-lightbox-ambient.ready {
-          opacity: 0.67;
-        }
-
-        .fav-ep-lightbox-box {
-          position: relative;
-          z-index: 1;
-          width: 100%;
-          max-width: min(96vw, 1400px);
-          max-height: 92vh;
-          overflow-y: auto;
-          scrollbar-width: none;
-          background: transparent;
-          border: none;
-          box-shadow: none;
-          padding: 22px 22px 28px;
-          display: flex;
-          flex-direction: column;
-          cursor: default;
-          transform: scale(0.96);
-          transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .fav-ep-lightbox-box::-webkit-scrollbar { display: none; }
-
-        .fav-ep-lightbox.open .fav-ep-lightbox-box {
-          transform: scale(1);
-        }
-
-        /* Botão de fechar fixo no canto superior direito da tela, igual ao
-          .poster-lightbox-close (não fica preso à caixa/box). */
-        .fav-ep-lightbox-close {
-          position: fixed;
-          top: 20px;
-          right: 24px;
-          z-index: 2;
-          width: 40px;
-          height: 40px;
-          border-radius: 12px;
-          border: none;
-          background: rgba(255,255,255,0.015);
-          color: #cbd5e1;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          outline: none;
-          transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
-        }
-
-        .fav-ep-lightbox-close:hover {
-          background: rgba(255,255,255,0.05);
-          color: #fff;
-          transform: scale(1.02);
-        }
-
-        .fav-ep-lightbox-close:focus,
-        .fav-ep-lightbox-close:focus-visible {
-          outline: none;
-          box-shadow: none;
-        }
-
-        .fav-ep-lightbox-close svg {
-          width: 22px;
-          height: 22px;
-          stroke: currentColor;
-          stroke-width: 2.2;
-          fill: none;
-        }
-
-        .fav-ep-lightbox-content {
-          display: flex;
-          align-items: flex-start;
-          gap: 40px;
-          width: 100%;
-        }
-
-        .fav-ep-lightbox-media {
-          flex: 1 1 60%;
-          min-width: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .fav-ep-lightbox-image-wrap {
-          position: relative;
-          width: 100%;
-          min-width: 0;
-          line-height: 0;
-          border-radius: 16px;
-          overflow: hidden;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-
-        .fav-ep-lightbox-image-wrap img {
-          display: block;
-          width: 100%;
-          aspect-ratio: 16 / 9;
-          object-fit: cover;
-          background: var(--surface);
-        }
-
-        /* Mesmo contador "posição/total" (ex: 1/5) usado no card normal
-          (.fav-ep-counter), só reaproveitado aqui dentro do lightbox. */
-        .fav-ep-lightbox-counter {
-          position: absolute;
-          right: 10px;
-          top: 10px;
-          z-index: 2;
-          font-family: var(--font-title);
-          font-weight: 800;
-          font-size: 13px;
-          letter-spacing: 0.02em;
-          line-height: 1.6;
-          white-space: nowrap;
-          color: #fff;
-          background: rgba(10,10,10,0.6);
-          backdrop-filter: blur(4px);
-          -webkit-backdrop-filter: blur(4px);
-          padding: 4px 12px;
-          border-radius: 999px;
-          pointer-events: none;
-          box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
-        }
-
-        /* Tira de mini-thumbnails abaixo da imagem grande, com as setas ‹ ›
-          nas laterais — reaproveita as classes .fav-ep-thumbnav /
-          .fav-ep-thumbstrip / .fav-ep-thumb já usadas no carrossel do card. */
-        #favEpLightboxThumbnav.fav-ep-thumbnav { display: none; }
-        #favEpLightboxThumbnav.fav-ep-thumbnav.has-gallery { display: flex; }
-
-        /* Ao contrário da tira do card (que preenche o espaço disponível e
-          trava via JS em quantas miniaturas cabem inteiras), aqui a tira
-          deve só ter o tamanho do próprio conteúdo, pra centralizar de
-          verdade junto com as setas — sem sobrar espaço vazio de um lado. */
-        #favEpLightboxThumbstrip.fav-ep-thumbstrip {
-          flex: 0 1 auto;
-          max-width: 100%;
-        }
-
-        .fav-ep-lightbox-info {
-          flex: 1 1 34%;
-          min-width: 0;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          padding-top: 4px;
-        }
-
-        .fav-ep-lightbox-title {
-          margin: 0;
-          font-family: var(--font-title);
-          font-weight: 800;
-          font-size: 28px;
-          color: #fff;
-          text-align: left;
-          line-height: 1.3;
-        }
-
-        .fav-ep-lightbox-rank {
-          display: inline-block;
-          margin-right: 6px;
-          font-family: var(--font-title);
-          font-weight: 900;
-          font-size: 0.68em;
-          color: rgba(255,255,255,0.5);
-          letter-spacing: -0.01em;
-          vertical-align: middle;
-        }
-
-        .fav-ep-lightbox-rank.rank-gold { color: #d4af37; }
-        .fav-ep-lightbox-rank.rank-silver { color: #b8bcc2; }
-        .fav-ep-lightbox-rank.rank-bronze { color: #b0703f; }
-
-        .fav-ep-lightbox-subtitle {
-          margin: 10px 0 0;
-          font-size: 15px;
-          font-weight: 600;
-          color: var(--muted);
-          text-align: left;
-        }
-
-        .fav-ep-lightbox-badges {
-          margin-top: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
-
-        /* Botão do Crunchyroll, ao lado do selo do IMDb: no PC é só a logo
-          (o link já é óbvio pelo hover), no mobile a logo vem acompanhada
-          do ícone de link externo, igual ao padrão já usado nos botões do
-          "All Animes" (.rank-mal-label--crunchyroll). */
-        .fav-ep-crunchyroll-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          width: fit-content;
-          text-decoration: none;
-          cursor: pointer;
-          transition: opacity 0.15s ease, filter 0.15s ease;
-        }
-
-        a.fav-ep-crunchyroll-btn:hover,
-        a.fav-ep-crunchyroll-btn:focus-visible {
-          filter: brightness(1.15);
-          opacity: 0.85;
-        }
-
-        .fav-ep-crunchyroll-logo {
-          display: block;
-          width: auto;
-          height: 17px;
-          max-width: none;
-          object-fit: contain;
-        }
-
-        .fav-ep-crunchyroll-btn svg {
-          width: 12px;
-          height: 12px;
-          flex: 0 0 12px;
-          color: var(--muted);
-          opacity: 0.8;
-        }
-
-        @media (min-width: 641px) {
-          .fav-ep-crunchyroll-btn svg { display: none; }
-        }
-
-        @media (max-width: 640px) {
-          .fav-ep-lightbox { padding: 16px; }
-          .fav-ep-lightbox-box { padding: 18px 16px 22px; border-radius: 18px; }
-          .fav-ep-lightbox-content { flex-direction: column; align-items: center; gap: 18px; }
-          .fav-ep-lightbox-media { flex: none; width: 100%; }
-          .fav-ep-lightbox-info { align-items: center; text-align: center; padding-top: 0; }
-          .fav-ep-lightbox-title,
-          .fav-ep-lightbox-subtitle { text-align: center; font-size: 18px; }
-          .fav-ep-lightbox-subtitle { font-size: 14px; }
-          .fav-ep-lightbox-badges { justify-content: center; }
-        }
-
         /* ── CALENDÁRIO DE LANÇAMENTOS ── */
         .calendar-toggle-btn[hidden] {
           display: none !important;
@@ -6913,6 +6158,23 @@
           color: #fff;
           transform: scale(1.02);
           box-shadow: none;
+        }
+
+        /* Calendário temporariamente indisponível: mantém o botão visível,
+           mas deixa claro que não pode ser usado em desktop nem mobile. */
+        #calendarBtn:disabled,
+        #calendarBtn:disabled:hover,
+        #calendarBtn:disabled:active {
+          background: transparent;
+          color: rgba(255,255,255,0.22);
+          opacity: 0.62;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+
+        #calendarBtn:disabled svg {
+          opacity: 0.72;
         }
 
         .calendar-toggle-btn.active svg {
@@ -8912,9 +8174,6 @@
           }
         }
         /* Cópia da faixa Next Season posicionada fora do pôster apenas no mobile. */
-        .announce-strip--mobile {
-          display: none !important;
-        }
 
         /* ── Mobile cards v6: 16:9 forçado + Next Season abaixo ─────────── */
         @media (max-width: 600px) {
@@ -8983,44 +8242,9 @@
             object-position: center;
           }
 
-          ol.ranking.mode-true-characters li.anime-item > .poster-wrap > .announce-strip:not(.announce-strip--mobile) {
-            display: none !important;
-          }
 
-          ol.ranking.mode-true-characters li.anime-item > .announce-strip--mobile {
-            position: relative;
-            inset: auto;
-            z-index: 2;
-            display: flex !important;
-            width: 100%;
-            max-width: none;
-            height: 22px;
-            min-height: 22px;
-            padding: 0;
-            border: 0;
-            border-top: 1px solid rgba(255,255,255,0.055);
-            border-bottom: 1px solid rgba(255,255,255,0.055);
-            border-radius: 0;
-            background: #0d0d11;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            -webkit-mask-image: none;
-            mask-image: none;
-          }
 
-          ol.ranking.mode-true-characters li.anime-item > .announce-strip--mobile .announce-track {
-            margin: 0 auto;
-          }
 
-          ol.ranking.mode-true-characters li.anime-item > .announce-strip--mobile .announce-line {
-            height: 22px;
-            line-height: 22px;
-            padding: 0 14px;
-            color: rgba(255,255,255,0.58);
-            font-size: 8px;
-            font-weight: 750;
-            letter-spacing: 0.025em;
-          }
 
           /* Calendário: usa o mesmo card do Watching Now no mobile. */
           ol.ranking.mode-true-characters.release-calendar-list {
@@ -9266,44 +8490,9 @@
 
           /* A cópia externa deixa de ser usada. A faixa original volta para a
              borda inferior da imagem, exatamente como no desktop. */
-          ol.ranking.mode-true-characters li.anime-item > .announce-strip--mobile {
-            display: none !important;
-          }
 
-          ol.ranking.mode-true-characters li.anime-item > .poster-wrap > .announce-strip:not(.announce-strip--mobile) {
-            position: absolute;
-            top: auto;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 3;
-            display: flex !important;
-            width: auto;
-            max-width: none;
-            height: 16px;
-            min-height: 16px;
-            padding: 0;
-            border: 0;
-            border-radius: 0;
-            background: rgba(10,10,10,0.38);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%);
-            mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%);
-          }
 
-          ol.ranking.mode-true-characters li.anime-item > .poster-wrap > .announce-strip:not(.announce-strip--mobile) .announce-track {
-            margin: 0;
-          }
 
-          ol.ranking.mode-true-characters li.anime-item > .poster-wrap > .announce-strip:not(.announce-strip--mobile) .announce-line {
-            height: 16px;
-            line-height: 16px;
-            padding: 0 32px;
-            color: rgba(255,255,255,0.82);
-            font-size: 9px;
-            font-weight: 700;
-          }
 
           /* Torna o wallpaper inferior claramente visível. */
           ol.ranking.mode-true-characters:is(
@@ -10702,9 +9891,6 @@
             padding: 0;
           }
 
-          .poster-lightbox:not(.simple-mode) .rank-mal-mal-row {
-            margin-bottom: -3px;
-          }
 
           .poster-lightbox:not(.simple-mode) .rank-mal-myranks-logo .mal-btn-logo {
             height: 20px;
@@ -11057,8 +10243,65 @@
           stroke-linejoin: round;
         }
 
+        .poster-lightbox-randomizer {
+          position: fixed;
+          top: 20px;
+          right: 194px;
+          z-index: 2;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          padding: 0;
+          border: none;
+          border-radius: 12px;
+          color: #cbd5e1;
+          background: transparent;
+          box-shadow: none;
+          cursor: pointer;
+          outline: none;
+          transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
+        }
+
+        .poster-lightbox-randomizer.visible {
+          display: inline-flex;
+        }
+
+        .poster-lightbox-randomizer:hover {
+          background: rgba(255,255,255,0.05);
+          color: #fff;
+          transform: scale(1.02);
+        }
+
+        .poster-lightbox-randomizer:focus,
+        .poster-lightbox-randomizer:focus-visible {
+          outline: none;
+          box-shadow: none;
+        }
+
+        .poster-lightbox-randomizer svg {
+          width: 22px;
+          height: 22px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 2.2;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
         .poster-lightbox-sound,
         .poster-lightbox-calendar { right: 168px !important; }
+
+        .poster-lightbox:has(.poster-lightbox-randomizer.visible) .poster-lightbox-sound {
+          right: 216px !important;
+        }
+        .poster-lightbox:has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar {
+          right: 216px !important;
+        }
+        .poster-lightbox:has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) {
+          right: 264px !important;
+        }
         .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 216px !important; }
 
         @media (min-width: 761px) {
@@ -11070,9 +10313,21 @@
             border-radius: 14px;
           }
 
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-randomizer {
+            top: 24px;
+            right: 180px;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+          }
+
           .poster-lightbox:not(.simple-mode) .poster-lightbox-sound,
           .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar { right: 180px !important; }
           .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 232px !important; }
+
+          .poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-sound,
+          .poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar { right: 232px !important; }
+          .poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 284px !important; }
         }
 
         /* No desktop, o grupo acompanha a borda útil do painel de informações
@@ -11081,9 +10336,14 @@
         @media (min-width: 761px) {
           .poster-lightbox:not(.simple-mode) .poster-lightbox-close { right: 90px !important; }
           .poster-lightbox:not(.simple-mode) .poster-lightbox-search { right: 142px !important; }
+          /* Mantém exatamente o mesmo espaçamento entre X, Search e Randomizer. */
+          .poster-lightbox:not(.simple-mode) .poster-lightbox-randomizer { right: 194px !important; }
           .poster-lightbox:not(.simple-mode) .poster-lightbox-sound,
           .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar { right: 194px !important; }
+          .poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-sound,
+          .poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar { right: 246px !important; }
           .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 246px !important; }
+          .poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 298px !important; }
         }
 
         @media (max-width: 760px) {
@@ -11094,12 +10354,23 @@
             height: 38px;
           }
 
+          .poster-lightbox-randomizer {
+            top: 14px;
+            right: 110px;
+            width: 38px;
+            height: 38px;
+          }
+
           .poster-lightbox-sound,
           .poster-lightbox-calendar { right: 110px !important; }
           .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 158px !important; }
+
+          .poster-lightbox:has(.poster-lightbox-randomizer.visible) .poster-lightbox-sound,
+          .poster-lightbox:has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar { right: 158px !important; }
+          .poster-lightbox:has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 206px !important; }
         }
 
-        /* Desempenho v19: blur pré-calculado no Worker, sem filtrar uma textura grande a cada frame. */
+        /* Desempenho v19: blur pré-calculado no Worker, sem Drawer uma textura grande a cada frame. */
         .anime-item-ambient.ambient-baked,
         .fav-ep-ambient.ambient-baked {
           filter: none !important;
@@ -11626,9 +10897,6 @@
             transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), filter 0.16s ease !important;
           }
 
-          html body > #mobileBottomNav .mobile-nav-label {
-            display: none !important;
-          }
 
           html body > #mobileBottomNav .mobile-nav-btn::before {
             display: none !important;
@@ -12360,7 +11628,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) .rank-meta-studio-row {
           flex: 0 0 auto;
           flex-wrap: nowrap;
-          gap: 2,5px;
+          gap: 2.5px;
           min-height: 25px;
           max-width: 100%;
           padding: 2px 4px;
@@ -12373,7 +11641,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         }
 
         .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-list:has(.rank-meta-studio-row:nth-child(2)) .rank-meta-studio-name {
-          font-size: 13px;
+          font-size: 14.5px;
           font-weight: 650;
         }
 
@@ -13049,6 +12317,49 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           }
         }
 
+
+
+        /* Studios: o valor ocupa sempre uma única linha abaixo de "STUDIOS".
+           Quando houver vários estúdios, eles permanecem na mesma linha e
+           o indicador MORE aparece apenas se o conteúdo realmente ultrapassar
+           a largura disponível. */
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          width: 100%;
+          height: 22px;
+          max-height: 22px;
+          min-width: 0;
+          overflow: hidden !important;
+          white-space: nowrap;
+          padding: 0 14px;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row {
+          flex: 0 0 auto !important;
+          flex-wrap: nowrap !important;
+          white-space: nowrap !important;
+          max-width: none;
+          gap: 3px;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-season,
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-name {
+          white-space: nowrap !important;
+          flex: 0 0 auto;
+        }
+
+        .poster-lightbox:not(.simple-mode) .rank-meta-item--studios:not(.is-meta-expanded).has-hidden-studio-rows .rank-meta-studio-list {
+          padding-right: 44px;
+          padding-left: 14px;
+          justify-content: center;
+        }
 </style>
 
     </head>
@@ -13064,7 +12375,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
           </div>
           <div class="drawer-top-actions">
-            <button class="drawer-close" id="drawerCloseBtn" aria-label="Fechar" data-tooltip="Fechar">
+            <button class="drawer-close" id="drawerCloseBtn" aria-label="Fechar" data-tooltip="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M18 6 6 18"></path>
                 <path d="M6 6l12 12"></path>
@@ -13333,25 +12644,23 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           </div>
 
           <div class="header-controls">
-            <button id="calendarBtn" class="calendar-toggle-btn" type="button" data-tooltip="Calendário de lançamentos" aria-label="Calendário de lançamentos" aria-pressed="false">
+            <button id="calendarBtn" class="calendar-toggle-btn" type="button" disabled data-tooltip="Unavailable" aria-label="Unavailable" aria-disabled="true" aria-pressed="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="5" width="18" height="16" rx="2"></rect>
                 <path d="M16 3v4M8 3v4M3 10h18"></path>
                 <path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path>
               </svg>
             </button>
-            <button id="randomPlanBtn" class="calendar-toggle-btn" type="button" hidden data-tooltip="Escolher anime aleatório" aria-label="Escolher anime aleatório">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M16 3h5v5"></path>
-                <path d="m4 20 6.5-6.5"></path>
-                <path d="M21 16v5h-5"></path>
-                <path d="m15.5 15.5 5 5"></path>
-                <path d="M4 4l5 5"></path>
-                <path d="m14 9 2.5-2.5A4 4 0 0 1 19.3 5H21"></path>
+            <button id="randomPlanBtn" class="calendar-toggle-btn" type="button" hidden data-tooltip="Random Anime" aria-label="Random Anime">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 7h2.4c1.55 0 3.02 0.72 3.96 1.95l5.28 6.9A4.02 4.02 0 0 0 19 17h2"></path>
+                <path d="M4 17h2.4c1.55 0 3.02-0.72 3.96-1.95l5.28-6.9A4.02 4.02 0 0 1 19 7h2"></path>
+                <path d="m18.2 4 2.8 3-2.8 3"></path>
+                <path d="m18.2 14 2.8 3-2.8 3"></path>
               </svg>
             </button>
             <div class="filter-wrapper">
-              <button id="filterBtn" class="filter-btn icon-only" type="button" data-tooltip="Filtrar" aria-expanded="false" aria-haspopup="true" aria-controls="categoryDrawer" aria-label="Filtrar">
+              <button id="filterBtn" class="filter-btn icon-only" type="button" data-tooltip="Drawer" aria-expanded="false" aria-haspopup="true" aria-controls="categoryDrawer" aria-label="Drawer">
                 <span class="left-pill">
                   <svg class="icon-left" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M3 5h18l-7 8v6l-4 2v-8L3 5z"></path>
@@ -13413,14 +12722,14 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         <div class="poster-lightbox-ambient" id="posterLightboxAmbient">
           <img id="posterLightboxAmbientImg" src="" alt="" aria-hidden="true">
         </div>
-        <button type="button" class="poster-lightbox-calendar" id="posterLightboxCalendar" aria-label="Ir para o calendário" data-tooltip="Ir para o calendário">
+        <button type="button" class="poster-lightbox-calendar" id="posterLightboxCalendar" aria-label="Go to the Calendar" data-tooltip="Go to the Calendar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="5" width="18" height="16" rx="2"></rect>
             <path d="M16 3v4M8 3v4M3 10h18"></path>
             <path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path>
           </svg>
         </button>
-        <button type="button" class="poster-lightbox-sound" id="posterLightboxSound" aria-label="Silenciar (M)" data-tooltip="Silenciar (M)" aria-pressed="false">
+        <button type="button" class="poster-lightbox-sound" id="posterLightboxSound" aria-label="Mute (M)" data-tooltip="Mute (M)" aria-pressed="false">
           <svg class="poster-lightbox-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
             <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
@@ -13432,13 +12741,21 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             <path d="m21 9-5 5"></path>
           </svg>
         </button>
-        <button type="button" class="poster-lightbox-search" id="posterLightboxSearch" aria-label="Pesquisar no Drawer" data-tooltip="Pesquisar no Drawer">
+        <button type="button" class="poster-lightbox-search" id="posterLightboxSearch" aria-label="Search in Drawer" data-tooltip="Search in Drawer">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="7"></circle>
             <path d="m20 20-4.2-4.2"></path>
           </svg>
         </button>
-        <button type="button" class="poster-lightbox-close" id="posterLightboxClose" aria-label="Fechar" data-tooltip="Fechar">
+        <button type="button" class="poster-lightbox-randomizer" id="posterLightboxRandomizer" aria-label="Escolher Other Random Anime" data-tooltip="Other Random Anime" aria-hidden="true" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 7h2.4c1.55 0 3.02 0.72 3.96 1.95l5.28 6.9A4.02 4.02 0 0 0 19 17h2"></path>
+                <path d="M4 17h2.4c1.55 0 3.02-0.72 3.96-1.95l5.28-6.9A4.02 4.02 0 0 1 19 7h2"></path>
+                <path d="m18.2 4 2.8 3-2.8 3"></path>
+                <path d="m18.2 14 2.8 3-2.8 3"></path>
+              </svg>
+        </button>
+        <button type="button" class="poster-lightbox-close" id="posterLightboxClose" aria-label="Close" data-tooltip="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M18 6 6 18"></path>
             <path d="M6 6l12 12"></path>
@@ -13465,11 +12782,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             <div id="posterLightboxMoreInfo" class="poster-lightbox-more-info"></div>
             <div id="posterLightboxMal" class="rank-mal"></div>
             <div id="posterLightboxCharacters" class="poster-lightbox-characters"></div>
-            <!-- Sistema de notas (estrelas) desativado do site por enquanto.
-                O código continua funcionando por baixo (JS intacto), só não
-                é mostrado porque este container está comentado.
-                Para reativar, é só descomentar a linha abaixo: -->
-            <!-- <div id="posterLightboxRatings" class="rank-ratings"></div> -->
           </div>
         </figure>
         <div class="poster-lightbox-scroll-indicator" id="posterLightboxScrollIndicator" aria-hidden="true">
@@ -13616,7 +12928,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const lightboxList = document.getElementById('posterLightboxList');
             const lightboxCharacters = document.getElementById('posterLightboxCharacters');
             const lightboxAnnounce = document.getElementById('posterLightboxAnnounce');
-            const lightboxRatings = document.getElementById('posterLightboxRatings');
             const lightboxMeta = document.getElementById('posterLightboxMeta');
             const lightboxMal = document.getElementById('posterLightboxMal');
             const lightboxMoreInfo = document.getElementById('posterLightboxMoreInfo');
@@ -13628,12 +12939,15 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             const lightboxSimpleLink = document.getElementById('posterLightboxSimpleLink');
             const calendarBtn = document.getElementById('posterLightboxCalendar');
             const randomPlanBtn = document.getElementById('randomPlanBtn');
+            const randomizerLightboxBtn = document.getElementById('posterLightboxRandomizer');
             const soundBtn = document.getElementById('posterLightboxSound');
 
             function updateStudioSeparators(list) {
               if (!list) return;
               const studioItem = list.closest('.rank-meta-item--studios');
-              const hasHiddenRows = list.scrollHeight > list.clientHeight + 1;
+              const hasHiddenRows =
+                list.scrollHeight > list.clientHeight + 1 ||
+                list.scrollWidth > list.clientWidth + 1;
               studioItem?.classList.toggle('has-hidden-studio-rows', hasHiddenRows);
               const rows = Array.from(list.querySelectorAll('.rank-meta-studio-row'))
                 .filter(row => getComputedStyle(row).display !== 'none');
@@ -13761,6 +13075,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             let sequelPosterActive = false;
             let sequelPosterToggleToken = 0;
             let randomPlanNavigation = false;
+            // Quando o poster-lightbox é aberto pelo randomizer, ele fica
+            // travado neste anime: sem navegação lateral por setas ou swipe.
+            let randomPlanNavigationLocked = false;
             let randomPlanHistory = [];
             let randomPlanHistoryIndex = -1;
             const randomPlanCardCache = new Map();
@@ -13847,8 +13164,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               if (soundOnIcon) soundOnIcon.style.display = posterSoundMuted ? 'none' : '';
               if (soundOffIcon) soundOffIcon.style.display = posterSoundMuted ? '' : 'none';
               soundBtn.setAttribute('aria-pressed', posterSoundMuted ? 'true' : 'false');
-              soundBtn.setAttribute('aria-label', posterSoundMuted ? 'Ativar efeitos sonoros' : 'Silenciar efeitos sonoros');
-              soundBtn.dataset.tooltip = posterSoundMuted ? 'Ativar efeitos sonoros (M)' : 'Silenciar efeitos sonoros (M)';
+              soundBtn.setAttribute('aria-label', posterSoundMuted ? 'Enable Sound Effects ' : 'Turn Off Sound Effects ');
+              soundBtn.dataset.tooltip = posterSoundMuted ? 'Enable  Sound Effects  (M)' : 'Turn Off Sound Effects  (M)';
             }
 
             function togglePosterSound() {
@@ -13905,13 +13222,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             }
 
             // ── Sistema de notas (Story / Animation / Characters / Ending) ──
-            const RATING_CATEGORIES = [
-              { key: 'animation',  label: 'Animation' },
-              { key: 'characters', label: 'Characters' },
-              { key: 'emotional',  label: 'Emotional Impact' },
-            ];
-            const RATINGS_STORAGE_KEY = 'myanimerank_ratings';
-            const EXCLUDED_STORAGE_KEY = 'myanimerank_excluded_categories';
             const META_STORAGE_KEY = 'myanimerank_meta';
             const META_FIELDS = [
               { key: 'studio',  label: 'Studio',    placeholder: 'br' },
@@ -14029,13 +13339,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               }
             }
 
-            function saveAllMeta(data) {
-              try {
-                localStorage.setItem(META_STORAGE_KEY, JSON.stringify(data));
-              } catch (e) {}
-            }
-
-            function getMetaFor(animeId) {
+function getMetaFor(animeId) {
               const all = loadAllMeta();
               const staticMeta = (typeof ANIME_STATIC_META !== 'undefined' && ANIME_STATIC_META[animeId]) || {};
               return { ...staticMeta, ...(all[animeId] || {}) };
@@ -14263,18 +13567,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             // ícone de link externo dentro de ".watch-now-links"), só que
             // aponta pra sua lista pessoal no MyAnimeList em vez do
             // Anime-Planet. Ver CSS ".rank-mal-label--links-about".
-            function buildMalLinksAboutButtonHtml(url) {
-              if (!url) return '';
-              return `
-                <a class="rank-mal-label rank-mal-label--mal rank-mal-label--links-about" href="${url}" target="_blank" rel="noopener">
-                  <span class="watch-now-more-info-text">LINKS ABOUT</span>
-                  <img class="mal-btn-logo" src="assets/logos/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async">
-                  ${EXTERNAL_LINK_ICON_SVG}
-                </a>`;
-            }
-
-
-            // Monta as linhas de "1ª temporada", "2ª temporada" etc. (sem nota)
+// Monta as linhas de "1ª temporada", "2ª temporada" etc. (sem nota)
             // pra um anime do Watching Now que ainda não tem entrada no Global
             // Ranking, reaproveitando os mesmos campos já usados na barra de
             // progresso (seasons/movieSeasons/movieDurations/cours) — ver
@@ -14697,10 +13990,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 let watchingMyRanksHeaderHtml = '';
                 if (hasMyRanksEntry) {
                   const watchingMyRanksMalUrl = buildMalProfileSearchUrl(item);
-                  const watchingMalNameCount = entries.reduce((count, entry) => {
-                    const name = entry && typeof entry.malName === 'string' ? entry.malName.trim() : '';
-                    return count + (name ? 1 : 0);
-                  }, 0);
                   // A seta é um controle fixo do cabeçalho do MAL: aparece em
                   // todos os cards, mesmo quando este anime ainda não possui
                   // malName cadastrado em alguma temporada.
@@ -14717,262 +14006,12 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               // MyAnimeList fica diretamente acima das notas por temporada e
               // continua clicável, levando para a lista pessoal filtrada pelo anime.
               const myRanksMalUrl = buildMalProfileSearchUrl(item);
-              const malNameCount = entries.reduce((count, entry) => {
-                const name = entry && typeof entry.malName === 'string' ? entry.malName.trim() : '';
-                return count + (name ? 1 : 0);
-              }, 0);
               // Mesmo comportamento no Global Ranking e nas demais listas.
               const toggleAllMalNamesHtml = `<button type="button" class="rank-mal-toggle-all" aria-expanded="false" aria-label="Mostrar todos os nomes das temporadas no MyAnimeList">${MAL_NAME_ARROW_SVG}</button>`;
               const myRanksMalHeaderHtml = myRanksMalUrl
                 ? `<div class="rank-mal-myranks-header"><a class="rank-mal-label rank-mal-label--mal rank-mal-myranks-logo" href="${myRanksMalUrl}" target="_blank" rel="noopener" aria-label="Abrir no MyAnimeList"><img class="mal-btn-logo" style="height: 21px; width: auto;" src="assets/logos/myanimelist.webp" alt="MyAnimeList" loading="lazy" decoding="async"></a>${toggleAllMalNamesHtml}</div>`
                 : '';
               lightboxMal.innerHTML = `${myRanksMalHeaderHtml}<div class="rank-mal-rows">${rowsHtml}</div>`;
-            }
-
-            function loadAllRatings() {
-              try {
-                return JSON.parse(localStorage.getItem(RATINGS_STORAGE_KEY) || '{}');
-              } catch (e) {
-                return {};
-              }
-            }
-
-            function saveAllRatings(data) {
-              try {
-                localStorage.setItem(RATINGS_STORAGE_KEY, JSON.stringify(data));
-              } catch (e) {}
-            }
-
-            function getRatingsFor(animeId) {
-              const all = loadAllRatings();
-              return all[animeId] || {};
-            }
-
-            function setRatingFor(animeId, categoryKey, value) {
-              const all = loadAllRatings();
-              if (!all[animeId]) all[animeId] = {};
-              if (value >= 0) {
-                all[animeId][categoryKey] = value;
-              } else {
-                delete all[animeId][categoryKey];
-              }
-              if (Object.keys(all[animeId]).length === 0) delete all[animeId];
-              saveAllRatings(all);
-            }
-
-            // ── Categorias excluídas da média (ex: clicar em "Ending" pra ignorá-la) ──
-            function loadAllExcluded() {
-              try {
-                return JSON.parse(localStorage.getItem(EXCLUDED_STORAGE_KEY) || '{}');
-              } catch (e) {
-                return {};
-              }
-            }
-
-            function saveAllExcluded(data) {
-              try {
-                localStorage.setItem(EXCLUDED_STORAGE_KEY, JSON.stringify(data));
-              } catch (e) {}
-            }
-
-            function getExcludedFor(animeId) {
-              const all = loadAllExcluded();
-              return all[animeId] || {};
-            }
-
-            function isCategoryExcluded(animeId, categoryKey) {
-              return !!getExcludedFor(animeId)[categoryKey];
-            }
-
-            function toggleCategoryExcluded(animeId, categoryKey) {
-              const all = loadAllExcluded();
-              if (!all[animeId]) all[animeId] = {};
-              if (all[animeId][categoryKey]) {
-                delete all[animeId][categoryKey];
-              } else {
-                all[animeId][categoryKey] = true;
-              }
-              if (Object.keys(all[animeId]).length === 0) delete all[animeId];
-              saveAllExcluded(all);
-            }
-
-            const STAR_PATH = 'M12 2.5l2.9 6.06 6.6.79-4.86 4.6 1.28 6.55L12 17.5l-5.92 3-1.28-6.55-4.94-4.79 6.6-.79z';
-
-            function buildStarSlot(index) {
-              // Cada slot representa uma estrela inteira (1..5), com metade
-              // esquerda/direita clicável para permitir notas de 0.5 em 0.5.
-              return `
-                <span class="star-slot" data-index="${index}">
-                  <svg viewBox="0 0 24 24" class="star-outline">
-                    <path d="${STAR_PATH}"></path>
-                  </svg>
-                  <svg viewBox="0 0 24 24" class="star-fill full">
-                    <path d="${STAR_PATH}"></path>
-                  </svg>
-                  <svg viewBox="0 0 24 24" class="star-fill half">
-                    <path d="${STAR_PATH}"></path>
-                  </svg>
-                  <span class="star-half-hit" data-value="${index - 0.5}"></span>
-                  <span class="star-full-hit" data-value="${index}"></span>
-                </span>`;
-            }
-
-            function renderStarsValue(container, value) {
-              const slots = container.querySelectorAll('.star-slot');
-              slots.forEach((slot, i) => {
-                const starIndex = i + 1;
-                const full = slot.querySelector('.star-fill.full');
-                const half = slot.querySelector('.star-fill.half');
-                const isFull = value >= starIndex;
-                const isHalf = !isFull && value >= starIndex - 0.5;
-                full.style.display = isFull ? 'block' : 'none';
-                half.style.display = isHalf ? 'block' : 'none';
-                slot.classList.toggle('empty', !isFull && !isHalf);
-              });
-            }
-
-            // Interpola do vermelho (nota baixa) ao azul (nota alta) passando
-            // por um tom neutro no meio, num gradiente HSL suave.
-            function colorForRating(value) {
-              if (!value || value <= 0) return null;
-              const t = Math.max(0, Math.min(1, value / 5));
-              // 0 -> vermelho (hue 0), 1 -> azul (hue 215)
-              const hue = 0 + t * 215;
-              const sat = 78;
-              const light = 58;
-              return `hsl(${hue.toFixed(0)}deg ${sat}% ${light}%)`;
-            }
-
-            function computeAverage(ratingsObj, excludedObj) {
-              const excluded = excludedObj || {};
-              const values = RATING_CATEGORIES
-                .filter(c => !excluded[c.key])
-                .map(c => ratingsObj[c.key])
-                .filter(v => typeof v === 'number' && v >= 0);
-              if (!values.length) return null;
-              const sum = values.reduce((a, b) => a + b, 0);
-              return sum / values.length;
-            }
-
-            function renderRatings(animeId) {
-              if (!lightboxRatings) return;
-              const ratingsObj = getRatingsFor(animeId);
-
-              const rowsHtml = RATING_CATEGORIES.map(cat => `
-                <div class="rank-row" data-category="${cat.key}">
-                  <span class="rank-row-label" data-category="${cat.key}" role="button" tabindex="0" data-tooltip="Clique para excluir/incluir na média">${cat.label}</span>
-                  <span class="rank-stars" role="slider" aria-label="${cat.label}" tabindex="0">
-                    <span class="star-zero-hit" data-value="0" data-tooltip="Zerar nota"></span>
-                    ${[1,2,3,4,5].map(buildStarSlot).join('')}
-                  </span>
-                  <span class="rank-score">–</span>
-                </div>`).join('');
-
-              lightboxRatings.innerHTML = rowsHtml;
-
-              RATING_CATEGORIES.forEach(cat => {
-                const row = lightboxRatings.querySelector(`.rank-row[data-category="${cat.key}"]`);
-                if (!row) return;
-                const starsEl = row.querySelector('.rank-stars');
-                const scoreEl = row.querySelector('.rank-score');
-                const labelEl = row.querySelector('.rank-row-label');
-                const value = ratingsObj[cat.key] || 0;
-
-                function applyExcludedState() {
-                  const excluded = isCategoryExcluded(animeId, cat.key);
-                  row.classList.toggle('excluded', excluded);
-                  if (labelEl) labelEl.classList.toggle('excluded', excluded);
-                }
-
-                applyExcludedState();
-
-                if (labelEl) {
-                  labelEl.addEventListener('click', function() {
-                    toggleCategoryExcluded(animeId, cat.key);
-                    applyExcludedState();
-                    updateAverage(animeId);
-                  });
-                  labelEl.addEventListener('keydown', function(e) {
-                    if (e.key !== 'Enter' && e.key !== ' ') return;
-                    e.preventDefault();
-                    toggleCategoryExcluded(animeId, cat.key);
-                    applyExcludedState();
-                    updateAverage(animeId);
-                  });
-                }
-
-                function applyValue(v) {
-                  const clamped = Math.max(0, Math.min(5, v));
-                  renderStarsValue(starsEl, clamped);
-                  scoreEl.textContent = clamped > 0 ? clamped.toFixed(1).replace(/\.0$/, '') : '0';
-                  const color = colorForRating(clamped);
-                  starsEl.style.setProperty('--star-color', color || 'var(--glow-accent)');
-                  scoreEl.style.setProperty('--star-color', color || 'var(--text)');
-                }
-
-                applyValue(value);
-
-                starsEl.addEventListener('mousemove', function(e) {
-                  const hit = e.target.closest('.star-zero-hit, .star-half-hit, .star-full-hit');
-                  if (!hit) return;
-                  applyValue(parseFloat(hit.getAttribute('data-value')));
-                });
-
-                starsEl.addEventListener('mouseleave', function() {
-                  const current = getRatingsFor(animeId)[cat.key] || 0;
-                  applyValue(current);
-                });
-
-                starsEl.addEventListener('click', function(e) {
-                  const hit = e.target.closest('.star-zero-hit, .star-half-hit, .star-full-hit');
-                  if (!hit) return;
-                  let value = parseFloat(hit.getAttribute('data-value'));
-                  const current = getRatingsFor(animeId)[cat.key] || 0;
-                  // clicar de novo no mesmo valor zera a nota
-                  if (current === value) value = 0;
-                  setRatingFor(animeId, cat.key, value);
-                  applyValue(value);
-                  updateAverage(animeId);
-                });
-
-                starsEl.addEventListener('keydown', function(e) {
-                  const current = getRatingsFor(animeId)[cat.key] || 0;
-                  let next = current;
-                  if (e.key === 'ArrowRight' || e.key === 'ArrowUp') next = Math.min(5, current + 0.5);
-                  else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') next = Math.max(0, current - 0.5);
-                  else return;
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setRatingFor(animeId, cat.key, next);
-                  applyValue(next);
-                  updateAverage(animeId);
-                });
-              });
-
-              updateAverage(animeId);
-            }
-
-            function updateAverage(animeId) {
-              if (!lightboxRatings) return;
-              const avgEl = lightboxRatings.querySelector('.rank-average-value');
-              const numEl = lightboxRatings.querySelector('.rank-average-number');
-              const maxEl = lightboxRatings.querySelector('.rank-average-max');
-              if (!avgEl || !numEl) return;
-              const avg = computeAverage(getRatingsFor(animeId), getExcludedFor(animeId));
-              if (avg == null) {
-                numEl.textContent = '–';
-                if (maxEl) maxEl.style.display = 'none';
-                avgEl.style.setProperty('--star-color-avg', 'var(--glow-accent)');
-                return;
-              }
-              // Escala de 0–5 (estrelas) para 0–10, mostrando 1 casa decimal,
-              // ou 2 quando a segunda casa não é zero (ex: 9.25)
-              const scaled = avg * 2;
-              const rounded2 = Math.round(scaled * 100) / 100;
-              const asStr = rounded2.toFixed(2);
-              numEl.textContent = asStr;
-              if (maxEl) maxEl.style.display = '';
-              avgEl.style.setProperty('--star-color-avg', colorForRating(avg) || 'var(--glow-accent)');
             }
 
             function getVisibleItems() {
@@ -15348,6 +14387,13 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
               // O botão de volume só existe visualmente nos pôsteres que têm
               // efeito sonoro. O estado mudo, porém, é compartilhado por todos.
+              if (randomizerLightboxBtn) {
+                const showRandomizerButton = !!randomPlanNavigationLocked;
+                randomizerLightboxBtn.classList.toggle('visible', showRandomizerButton);
+                randomizerLightboxBtn.setAttribute('aria-hidden', showRandomizerButton ? 'false' : 'true');
+                randomizerLightboxBtn.tabIndex = showRandomizerButton ? 0 : -1;
+              }
+
               if (soundBtn) {
                 const hasSoundEffect = itemHasPosterSound(item);
                 soundBtn.classList.toggle('visible', hasSoundEffect);
@@ -15666,7 +14712,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
               renderMeta(item.id, isRichPanel, watchNowMalUrl, isWatchingNow || isPlanToWatch);
               renderMalScores(item.id, isRichPanel, animePlanetUrl, crunchyrollUrl, watchNowMalUrl, netflixUrl, isPlanToWatch);
-              // renderRatings(item.id); // sistema de notas desativado do site (ver comentário no HTML acima)
             }
 
             // ── Troca de item dentro do lightbox: 100% instantâneo ──
@@ -15686,6 +14731,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             }
 
             function navigate(step) {
+              if (randomPlanNavigationLocked) return;
               if (randomPlanNavigation) {
                 if (step < 0 && randomPlanHistoryIndex > 0) {
                   randomPlanHistoryIndex--;
@@ -15758,6 +14804,12 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               // Renderiza a imagem e os dados antes de abrir a camada, evitando
               // qualquer quadro vazio ou atraso perceptível na abertura.
               randomPlanNavigation = options.randomPlan === true;
+              randomPlanNavigationLocked = options.randomPlan === true;
+              if (randomizerLightboxBtn && !randomPlanNavigationLocked) {
+                randomizerLightboxBtn.classList.remove('visible');
+                randomizerLightboxBtn.setAttribute('aria-hidden', 'true');
+                randomizerLightboxBtn.tabIndex = -1;
+              }
               if (!randomPlanNavigation) {
                 randomPlanHistory = [];
                 randomPlanHistoryIndex = -1;
@@ -15809,6 +14861,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               // sessão do lightbox).
               watchNowExtraOpen = false;
               randomPlanNavigation = false;
+              randomPlanNavigationLocked = false;
               randomPlanHistory = [];
               randomPlanHistoryIndex = -1;
               lightbox.classList.remove('mobile-pull-dragging', 'mobile-pull-rebounding', 'mobile-pull-closing', 'mobile-pull-closing-active');
@@ -15817,6 +14870,11 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               lightbox.classList.remove('open');
               lightbox.setAttribute('aria-hidden', 'true');
               lightboxScrollIndicator?.classList.remove('visible', 'at-bottom');
+              if (randomizerLightboxBtn) {
+                randomizerLightboxBtn.classList.remove('visible');
+                randomizerLightboxBtn.setAttribute('aria-hidden', 'true');
+                randomizerLightboxBtn.tabIndex = -1;
+              }
               if (soundBtn) {
                 soundBtn.classList.remove('visible');
                 soundBtn.setAttribute('aria-hidden', 'true');
@@ -15939,6 +14997,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 if (!randomItem) return;
                 if (lightbox.classList.contains('open')) {
                   randomPlanNavigation = true;
+                  randomPlanNavigationLocked = true;
                   randomPlanHistory = [randomItem];
                   randomPlanHistoryIndex = 0;
                   swapItem(randomItem);
@@ -15947,6 +15006,19 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                   randomPlanHistoryIndex = 0;
                   openLightbox(randomItem, { randomPlan: true });
                 }
+              });
+            }
+
+            if (randomizerLightboxBtn) {
+              randomizerLightboxBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!lightbox.classList.contains('open') || !randomPlanNavigationLocked) return;
+                const randomItem = pickRandomPlanItem(currentItem);
+                if (!randomItem) return;
+                randomPlanNavigation = true;
+                randomPlanNavigationLocked = true;
+                swapItem(randomItem);
               });
             }
 
@@ -16226,11 +15298,11 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               } else if (e.key === 'ArrowRight') {
                 e.preventDefault();
                 e.stopPropagation();
-                navigate(1);
+                if (!randomPlanNavigationLocked) navigate(1);
               } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 e.stopPropagation();
-                navigate(-1);
+                if (!randomPlanNavigationLocked) navigate(-1);
               }
             }, true);
 
@@ -16352,6 +15424,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               if (dt > LB_SWIPE_MAX_TIME) return;
               if (Math.abs(dy) > LB_SWIPE_MAX_OFF_AXIS) return;
               if (Math.abs(dx) < LB_SWIPE_MIN_DISTANCE) return;
+              if (randomPlanNavigationLocked) return;
 
               if (dx < 0) {
                 navigate(1);   // swipe pra esquerda = próximo card
@@ -16359,260 +15432,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 navigate(-1);  // swipe pra direita = card anterior
               }
             }, { capture: true, passive: true });
-          })();
-
-          // ── Fav Ep Lightbox: abre ao clicar na imagem grande de um card de
-          // "Peak Episodes". Módulo próprio e enxuto — não usa o
-          // posterLightbox (esse é mais robusto, com estúdio/notas/MAL, feito
-          // pro "All Animes"/"Watching Now"). ──
-          (function initFavEpLightbox() {
-            const lightbox = document.getElementById('favEpLightbox');
-            const closeBtn = document.getElementById('favEpLightboxClose');
-            const imgEl = document.getElementById('favEpLightboxImg');
-            const counterEl = document.getElementById('favEpLightboxCounter');
-            const prevBtn = document.getElementById('favEpLightboxPrev');
-            const nextBtn = document.getElementById('favEpLightboxNext');
-            const titleEl = document.getElementById('favEpLightboxTitle');
-            const subtitleEl = document.getElementById('favEpLightboxSubtitle');
-            const badgesEl = document.getElementById('favEpLightboxBadges');
-            const lightboxAmbient = document.getElementById('favEpLightboxAmbient');
-            const lightboxAmbientImg = document.getElementById('favEpLightboxAmbientImg');
-            const thumbnavEl = document.getElementById('favEpLightboxThumbnav');
-            const thumbstripEl = document.getElementById('favEpLightboxThumbstrip');
-            if (!lightbox || !imgEl || !closeBtn) return;
-
-            let gallery = [];
-            let index = 0;
-            let lastFocused = null;
-
-            // ── Ambient: a própria imagem do episódio (borrada via CSS) vira o
-            // wallpaper do fundo, igual ao .poster-lightbox-ambient ──
-            function updateAmbient(src) {
-              if (!lightboxAmbient || !lightboxAmbientImg) return;
-              if (lightboxAmbientImg.src !== src) {
-                lightboxAmbient.classList.remove('ready');
-                lightboxAmbientImg.src = src;
-              }
-              if (lightboxAmbientImg.complete && lightboxAmbientImg.naturalWidth > 0) {
-                lightboxAmbient.classList.add('ready');
-              } else {
-                lightboxAmbientImg.onload = () => lightboxAmbient.classList.add('ready');
-              }
-            }
-
-            // Ícone de link externo, usado no botão do Crunchyroll no mobile
-            // (mesmo desenho do ícone já usado nos botões do "All Animes").
-            const FAV_EP_EXTERNAL_LINK_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path></svg>`;
-
-            // Selos MNP/IMDb dentro do lightbox — mesmo markup/classe usados no
-            // card, então herdam o visual já existente. O selo do IMDb vira um
-            // link pro ep.imdbUrl (quando definido), igual no card. Ao lado do
-            // IMDb, quando houver ep.crunchyrollUrl, entra o botão do
-            // Crunchyroll pra abrir o episódio direto: no PC só a logo, no
-            // mobile a logo + ícone de link (ver CSS .fav-ep-crunchyroll-btn).
-            function renderBadges(ep) {
-              if (!badgesEl) return;
-              const parts = [];
-              if (ep.myRating !== undefined && ep.myRating !== null && ep.myRating !== '') {
-                parts.push(`<div class="fav-ep-my-rating">
-                  <span class="fav-ep-my-rating-source">MNP</span>
-                  <span class="fav-ep-my-rating-value">${ep.myRating}<span class="fav-ep-my-rating-max">/10</span></span>
-                </div>`);
-              }
-              if (ep.rating !== undefined && ep.rating !== null && ep.rating !== '') {
-                const inner = `<span class="fav-ep-rating-source">IMDb</span>
-                  <span class="fav-ep-rating-value">${ep.rating}<span class="fav-ep-rating-max">/10</span></span>`;
-                parts.push(ep.imdbUrl
-                  ? `<a class="fav-ep-rating" href="${ep.imdbUrl}" target="_blank" rel="noopener">${inner}</a>`
-                  : `<div class="fav-ep-rating">${inner}</div>`);
-              }
-              if (ep.crunchyrollUrl) {
-                parts.push(`<a class="fav-ep-crunchyroll-btn" href="${ep.crunchyrollUrl}" target="_blank" rel="noopener">
-                  <img class="fav-ep-crunchyroll-logo" src="assets/logos/crunchyroll.webp" alt="Crunchyroll" loading="lazy" decoding="async">
-                  ${FAV_EP_EXTERNAL_LINK_ICON_SVG}
-                </a>`);
-              }
-              badgesEl.innerHTML = parts.join('');
-            }
-
-            function renderThumbs() {
-              if (!thumbstripEl || !thumbnavEl) return;
-              const hasGallery = gallery.length > 1;
-              thumbnavEl.classList.toggle('has-gallery', hasGallery);
-              if (!hasGallery) {
-                thumbstripEl.innerHTML = '';
-                return;
-              }
-              thumbstripEl.innerHTML = gallery.map((src, i) =>
-                `<button type="button" class="fav-ep-thumb" data-index="${i}" aria-label="Ver imagem ${i + 1}">
-                  <img src="${src}" alt="" loading="lazy" decoding="async">
-                </button>`
-              ).join('');
-              thumbstripEl.querySelectorAll('.fav-ep-thumb').forEach((t, i) => {
-                t.addEventListener('click', function(e) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  goTo(i);
-                });
-              });
-            }
-
-            function updateActiveThumb() {
-              if (!thumbstripEl) return;
-              const thumbs = thumbstripEl.querySelectorAll('.fav-ep-thumb');
-              thumbs.forEach((t, i) => t.classList.toggle('is-active', i === index));
-              const activeThumb = thumbs[index];
-              if (activeThumb) {
-                activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-              }
-            }
-
-            function updateImage() {
-              if (!gallery.length) return;
-              imgEl.src = gallery[index];
-              updateAmbient(gallery[index]);
-              const hasGallery = gallery.length > 1;
-              if (counterEl) {
-                counterEl.style.display = hasGallery ? '' : 'none';
-                counterEl.textContent = `${index + 1}/${gallery.length}`;
-              }
-              updateActiveThumb();
-            }
-
-            function goTo(i) {
-              if (gallery.length < 2) return;
-              index = ((i % gallery.length) + gallery.length) % gallery.length;
-              updateImage();
-            }
-
-            function open(ep, rank, startIndex) {
-              gallery = Array.isArray(ep.images) && ep.images.length
-                ? ep.images
-                : (ep.img ? [ep.img] : []);
-              if (!gallery.length) return;
-              index = (startIndex >= 0 && startIndex < gallery.length) ? startIndex : 0;
-              renderThumbs();
-              updateImage();
-
-              if (titleEl) {
-                const rankBadgeClass = rank === 1 ? ' rank-gold' : rank === 2 ? ' rank-silver' : rank === 3 ? ' rank-bronze' : '';
-                const rankHtml = rank != null ? `<span class="fav-ep-lightbox-rank${rankBadgeClass}">#${rank}</span>` : '';
-                titleEl.innerHTML = `${rankHtml}${ep.anime || ''}`;
-              }
-              if (subtitleEl) subtitleEl.textContent = ep.episodeLabel || '';
-              renderBadges(ep);
-
-              lightbox.classList.add('open');
-              lightbox.setAttribute('aria-hidden', 'false');
-              lockBodyScroll();
-              lastFocused = document.activeElement;
-              closeBtn.focus();
-            }
-
-            function close() {
-              lightbox.classList.remove('open');
-              lightbox.setAttribute('aria-hidden', 'true');
-              unlockBodyScroll();
-              setTimeout(() => {
-                imgEl.src = '';
-                gallery = [];
-                if (lightboxAmbient) lightboxAmbient.classList.remove('ready');
-                if (lightboxAmbientImg) lightboxAmbientImg.src = '';
-              }, 150);
-              if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
-            }
-
-            // Clique em qualquer lugar do card de Peak Episodes abre o
-            // lightbox, já na imagem que estava selecionada/hover no card
-            // naquele momento. Selos (MNP/IMDb) e o mini-carrossel de
-            // thumbnails ficam de fora (o do IMDb precisa abrir o link normal,
-            // e os controles do carrossel já dão stopPropagation nos cliques).
-            document.addEventListener('click', function(e) {
-              if (e.target.closest('a')) return;
-
-              // No mobile o lightbox fica desativado: o card já mostra a nota,
-              // o botão do Crunchyroll e o carrossel de imagens direto nele.
-              if (window.matchMedia('(max-width: 640px)').matches) return;
-
-              const card = e.target.closest('.fav-ep-card');
-              if (!card || typeof favoriteEpisodesData === 'undefined') return;
-
-              const selection = window.getSelection();
-              if (selection && selection.toString().length > 0) return;
-
-              const ep = favoriteEpisodesData.find(x => x.id === card.id);
-              if (!ep) return;
-
-              const epGallery = Array.isArray(ep.images) && ep.images.length
-                ? ep.images
-                : (ep.img ? [ep.img] : []);
-              const mainImg = card.querySelector('.fav-ep-main-img');
-              let startIndex = 0;
-              if (mainImg) {
-                const src = mainImg.getAttribute('src') || mainImg.getAttribute('data-src') || '';
-                const found = epGallery.indexOf(src);
-                if (found !== -1) startIndex = found;
-              }
-
-              const ranks = (typeof computeFavEpisodeRanks === 'function')
-                ? computeFavEpisodeRanks(favoriteEpisodesData)
-                : [];
-              const idxInData = favoriteEpisodesData.indexOf(ep);
-              const rank = ranks[idxInData] != null ? ranks[idxInData] : idxInData + 1;
-
-              open(ep, rank, startIndex);
-            });
-
-            closeBtn.addEventListener('click', function(e) { e.stopPropagation(); close(); });
-            lightbox.addEventListener('click', function(e) { if (e.target === lightbox) close(); });
-            if (prevBtn) prevBtn.addEventListener('click', function(e) { e.stopPropagation(); goTo(index - 1); });
-            if (nextBtn) nextBtn.addEventListener('click', function(e) { e.stopPropagation(); goTo(index + 1); });
-
-            document.addEventListener('keydown', function(e) {
-              if (!lightbox.classList.contains('open')) return;
-              if (e.key === 'Escape') {
-                close();
-              } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                e.stopPropagation();
-                goTo(index - 1);
-              } else if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                e.stopPropagation();
-                goTo(index + 1);
-              }
-            }, true);
-
-            // ── Swipe (mobile) na imagem grande, igual ao carrossel do card ──
-            const SWIPE_MIN_DISTANCE = 40;
-            const SWIPE_MAX_OFF_AXIS = 60;
-            const SWIPE_MAX_TIME = 600;
-            let touchStartX = 0, touchStartY = 0, touchStartTime = 0, touching = false;
-            const mediaEl = lightbox.querySelector('.fav-ep-lightbox-image-wrap');
-            if (mediaEl) {
-              mediaEl.addEventListener('touchstart', function(e) {
-                if (e.touches.length !== 1) return;
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
-                touchStartTime = Date.now();
-                touching = true;
-                e.stopPropagation();
-              }, { passive: true });
-
-              mediaEl.addEventListener('touchend', function(e) {
-                if (!touching) return;
-                touching = false;
-                e.stopPropagation();
-                const touch = e.changedTouches[0];
-                const dx = touch.clientX - touchStartX;
-                const dy = touch.clientY - touchStartY;
-                const dt = Date.now() - touchStartTime;
-                if (dt > SWIPE_MAX_TIME) return;
-                if (Math.abs(dy) > SWIPE_MAX_OFF_AXIS) return;
-                if (Math.abs(dx) < SWIPE_MIN_DISTANCE) return;
-                if (dx < 0) goTo(index + 1); else goTo(index - 1);
-              }, { passive: true });
-            }
           })();
 
           function normalizeTilde(infoStr) {
@@ -16725,14 +15544,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             mecha: new Set(mechaIds)
           };
 
-          const SUB_CATEGORY_COLORS = {
-            romance: '#f472b6',
-            isekai: '#a78bfa',
-            sports: '#facc15',
-            comedy: '#fb923c',
-            mecha: '#38bdf8'
-          };
-
           function getSubCategory(animeId) {
             if (SUB_CATEGORY_SETS.romance.has(animeId)) return 'romance';
             if (SUB_CATEGORY_SETS.isekai.has(animeId)) return 'isekai';
@@ -16757,11 +15568,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           const mobileBottomNavButtons = mobileBottomNavEl
             ? Array.from(mobileBottomNavEl.querySelectorAll('.mobile-nav-btn'))
             : [];
-          const FIRST_SEEN_KEY = 'myranks_seen_v1';
 
           let currentCategory = 'watching';
-
-          const CATEGORY_ORDER = ['all', 'romance', 'isekai', 'sports', 'comedy', 'mecha', 'watching', 'plan', 'incomplete', 'announced'];
           let isDrawerOpen = false;
 
           const hashMap = {
@@ -17943,9 +16751,9 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
           const drawerTitleEl = document.getElementById('drawerTitleEl');
 
           const DRAWER_TAB_TITLES = {
-            ranks: 'per aspera ad astra',
-            search: 'vince te ipsum',
-            lists: 'age quod agis',
+            ranks: "私のランキング",
+            search: 'リサーチはここから始まります',
+            lists: '自分用のリスト',
           };
 
           // Os ícones do header (filtro, busca) controlam o MESMO
@@ -18402,9 +17210,13 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               planAnnounced.sort(byNextSeasonOrder);
               return [...watchedAnnounced, ...watchingAnnounced, ...planAnnounced];
             } else if (mode === 'favEpisodes') {
-              return favoriteEpisodesData;
+              return (typeof favoriteEpisodesData !== 'undefined' && Array.isArray(favoriteEpisodesData))
+                ? favoriteEpisodesData
+                : [];
             } else if (mode === 'trueCharacters') {
-              return trueCharactersData;
+              return (typeof trueCharactersData !== 'undefined' && Array.isArray(trueCharactersData))
+                ? trueCharactersData
+                : [];
             }
             return [];
           }
@@ -19663,26 +18475,12 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             buildRow(rowLeft, pool, COUNT);
             buildRow(rowRight2, pool, COUNT);
 
-            // No desktop, a tela de senha reutiliza exatamente o mesmo tipo de
-            // carrossel do drawer de busca, com outro embaralhamento por linha.
-            const authRight = document.getElementById('siteAuthMarqueeRight');
-            const authLeft = document.getElementById('siteAuthMarqueeLeft');
-            const authRight2 = document.getElementById('siteAuthMarqueeRight2');
-            const authLeft2 = document.getElementById('siteAuthMarqueeLeft2');
-            if (authRight && authLeft && authRight2) {
-              const authCount = window.matchMedia('(max-width: 600px)').matches ? Math.min(8, COUNT) : COUNT;
-              buildRow(authRight, pool, authCount);
-              buildRow(authLeft, pool, authCount);
-              buildRow(authRight2, pool, authCount);
-              if (authLeft2) buildRow(authLeft2, pool, authCount);
-            }
           }
 
           function initSearch() {
             const searchPanelEl = document.querySelector('.search-panel-live');
             const searchBoxDrawer = document.getElementById('searchBoxDrawer');
             const searchInput = document.getElementById('searchDrawerInput');
-            const searchClearBtn = document.getElementById('searchDrawerClearBtn');
             const searchResults = document.getElementById('searchDrawerResults');
             if (!searchInput || !searchResults) return;
 
@@ -20272,7 +19070,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                     accGlow = `rgba(${r}, ${g}, ${b}, 0.35)`;
                   } catch (e) {}
                   return `
-                    <div class="search-result-item" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
+                    <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
                       <div class="search-result-card-inner">
                         <div class="search-result-ambient" aria-hidden="true"></div>
                         <div class="search-result-ambient-shade" aria-hidden="true"></div>
@@ -20524,9 +19322,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             // Sugestão sutil dos comandos de barra: enquanto o usuário digita algo
             // que ainda pode virar um dos comandos (ex.: "/", "/a", "/al"...),
             // mostra o restante das letras em itálico apagado logo depois do
-            // cursor, tipo o "Digite para filtrar" do menu de comandos do chat.
+            // cursor, tipo o "Digite para Drawer" do menu de comandos do chat.
             const searchGhostHint = document.getElementById('searchGhostHint');
-            const ALL_COMMAND = '/all'; // mantido por compatibilidade com o Tab abaixo
 
             // Comando sorteado quando o campo tem só "/" — sorteia de novo toda
             // vez que o usuário volta pro "/" sozinho (apaga tudo e digita "/"
@@ -21143,12 +19940,8 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               e.preventDefault();
               e.stopPropagation();
               const posterLightbox = document.getElementById('posterLightbox');
-              const favEpLightbox = document.getElementById('favEpLightbox');
               if (posterLightbox?.classList.contains('open')) {
                 document.getElementById('posterLightboxClose')?.click();
-              }
-              if (favEpLightbox?.classList.contains('open')) {
-                document.getElementById('favEpLightboxClose')?.click();
               }
               openDrawer('search', { focus: true });
             }
@@ -21170,6 +19963,21 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
             currentCategory = mode;
 
+            // Quando a troca de lista acontece pelas setas ou pelo swipe com o
+            // drawer aberto, mantém a aba e o título do drawer sincronizados
+            // com a nova categoria. Sem isso, por exemplo, Watching Now podia
+            // continuar mostrando o título da aba Ranks.
+            if (isDrawerOpen) {
+              const nextDrawerTab = MODE_TAB[mode] || 'ranks';
+              const activeDrawerTab = drawerTabs.find(t => t.classList.contains('active'));
+              const activeDrawerTabName = activeDrawerTab?.getAttribute('data-tab') || '';
+              if (activeDrawerTabName !== nextDrawerTab) {
+                switchDrawerTab(nextDrawerTab, { focus: false });
+              } else if (drawerTitleEl && DRAWER_TAB_TITLES[nextDrawerTab]) {
+                drawerTitleEl.textContent = DRAWER_TAB_TITLES[nextDrawerTab];
+              }
+            }
+
             try {
               const kS = 'myanimerank_scrollY_' + currentCategory;
               const kE = 'myanimerank_expanded_' + currentCategory;
@@ -21190,9 +19998,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
             const lightboxEl = document.getElementById('posterLightbox');
             if (lightboxEl && lightboxEl.classList.contains('open')) return;
-
-            const favEpLightboxEl = document.getElementById('favEpLightbox');
-            if (favEpLightboxEl && favEpLightboxEl.classList.contains('open')) return;
 
             const isMobileListNavigation = window.matchMedia('(max-width: 760px)').matches;
             if (e.key === 'ArrowRight') {
@@ -21228,8 +20033,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
               if (e.target.closest('.category-drawer') || e.target.closest('.filter-wrapper') || e.target.closest('.fav-ep-media') || e.target.closest('.poster-lightbox-zoom.open')) return;
               const lightboxEl = document.getElementById('posterLightbox');
               if (lightboxEl && lightboxEl.classList.contains('open')) return;
-              const favEpLightboxEl = document.getElementById('favEpLightbox');
-              if (favEpLightboxEl && favEpLightboxEl.classList.contains('open')) return;
               if (e.touches.length !== 1) return;
               touchStartX = e.touches[0].clientX;
               touchStartY = e.touches[0].clientY;
@@ -21244,8 +20047,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
               const lightboxEl = document.getElementById('posterLightbox');
               if (lightboxEl && lightboxEl.classList.contains('open')) return;
-              const favEpLightboxEl = document.getElementById('favEpLightbox');
-              if (favEpLightboxEl && favEpLightboxEl.classList.contains('open')) return;
 
               const touch = e.changedTouches[0];
               const dx = touch.clientX - touchStartX;
@@ -21393,15 +20194,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
                 .replace(/'/g, '&#039;');
             }
 
-            function getSeasonLabel(item) {
-              if (!item || !item.season) return { text: 'Seasonal', color: 'var(--glow-accent)' };
-              if (typeof WATCHING_SEASON_LABELS !== 'undefined' && WATCHING_SEASON_LABELS[item.season]) {
-                return WATCHING_SEASON_LABELS[item.season];
-              }
-              return { text: item.season, color: 'var(--glow-accent)' };
-            }
-
-            function getCalendarItems() {
+function getCalendarItems() {
               return (typeof rawReleaseCalendarData !== 'undefined' && Array.isArray(rawReleaseCalendarData))
                 ? rawReleaseCalendarData.filter(item => item && item.releaseDay)
                 : [];
@@ -21468,11 +20261,12 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
             }
 
             function setCalendarMode(enabled, options = {}) {
+              if (calendarBtn.disabled) return;
               calendarMode = !!enabled;
               document.body.classList.toggle('release-calendar-mode', calendarMode);
               calendarBtn.classList.toggle('active', calendarMode);
               calendarBtn.setAttribute('aria-pressed', calendarMode ? 'true' : 'false');
-              const calendarTooltip = calendarMode ? 'Fechar' : 'Calendário de lançamentos';
+              const calendarTooltip = calendarMode ? 'Close' : 'Seasonal Anime Calendar';
               calendarBtn.setAttribute('data-tooltip', calendarTooltip);
               calendarBtn.setAttribute('title', calendarTooltip);
               calendarBtn.setAttribute('aria-label', calendarTooltip);

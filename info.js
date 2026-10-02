@@ -270,7 +270,7 @@ const rawAnimeData = [
     id: "kingdom",
     img: "myranks-images/myranks/kingdom.webp",
     title: "Kingdom",
-    info: "(~) 3 temporadas: 103 episódios",
+    info: "(~) 4 temporadas: 129 episódios",
     studios: [
       { season: "S1-S2", name: "Studio Pierrot" },
       { season: "S3-S6", name: "Studio Pierrot and Signpost" },
@@ -281,7 +281,7 @@ const rawAnimeData = [
       { label: "1ª temporada", episodes: 38, note: 8, malName: "Kingdom" },
       { label: "2ª temporada", episodes: 39, note: 7, malName: "Kingdom 2nd Season" },
       { label: "3ª temporada", episodes: 26, note: 9, malName: "Kingdom 3rd Season" },
-      { label: "4ª temporada", episodes: 26, unwatched: true, malName: "Kingdom 4th Season" },
+      { label: "4ª temporada", episodes: 26, note: 8, malName: "Kingdom 4th Season" },
       { label: "5ª temporada", episodes: 13, unwatched: true, malName: "Kingdom 5th Season" },
       { label: "6ª temporada", episodes: 13, unwatched: true, malName: "Kingdom 6th Season" },
     ],
@@ -1564,19 +1564,6 @@ const rawWatchingData = [
 
   // On Hold
   {
-    id: "black-clover",
-    img: "watchingnow-images/watchingnow/black-clover.webp",
-    title: "Black Clover",
-    info: "1 temporada: 170 episódios",
-    studio: "Studio Pierrot",
-    season: "on-hold",
-    airedSeason: "2017",
-    url: "https://www.anime-planet.com/anime/black-clover",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRE50KV36/black-clover",
-    malUrl: "https://myanimelist.net/anime/34572/Black_Clover",
-    seasons: [170],
-  },
-  {
     id: "tqq",
     img: "watchingnow-images/watchingnow/tqq.webp",
     title: "The Quintessential Quintuplets",
@@ -1898,115 +1885,13 @@ const favoriteEpisodesData = [
 // "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" ou "sunday".
 const rawReleaseCalendarData = [
 
-  // SUNDAY
-  {
-    id: "opposites",
-    img: "watchingnow-images/watchingnow/opposites.webp",
-    title: "You and I are Polar Opposites",
-    season: "summer-2026",
-    releaseDay: "sunday",
-  },
-  {
-    id: "hanaori-san-still-wants-to-fight",
-    img: "watchingnow-images/watchingnow/hanaori-san-still-wants-to-fight.webp",
-    title: "Hanaori-san Still Wants to Fight in the Next Life",
-    season: "summer-2026",
-    releaseDay: "sunday",
-  },
-  {
-    id: "villainess",
-    img: "watchingnow-images/watchingnow/villainess.webp",
-    title: "Though I Am an Inept Villainess",
-    season: "summer-2026",
-    releaseDay: "sunday",
-  },
-  {
-    id: "sparks-of-tomorrow",
-    img: "watchingnow-images/watchingnow/sparks-of-tomorrow.webp",
-    title: "Sparks of Tomorrow",
-    season: "summer-2026",
-    releaseDay: "sunday",
-  },
-  {
-    id: "the-100-girlfriends",
-    img: "watchingnow-images/watchingnow/the-100-girlfriends.webp",
-    title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
-    season: "summer-2026",
-    releaseDay: "sunday",
-  },
-
-  // MONDAY
-  {
-    id: "love-unseen",
-    img: "watchingnow-images/watchingnow/love-unseen.webp",
-    title: "Love Unseen Beneath the Clear Night Sky",
-    season: "summer-2026",
-    releaseDay: "monday",
-  },
-  {
-    id: "wrong-about-her",
-    img: "watchingnow-images/watchingnow/wrong-about-her.webp",
-    title: "Oh Boy, Was I Wrong About Her",
-    season: "summer-2026",
-    releaseDay: "monday",
-  },
-
-  // TUESDAY
-  {
-    id: "ghost-in-the-shell",
-    img: "watchingnow-images/watchingnow/ghost-in-the-shell.webp",
-    title: "The Ghost in the Shell",
-    season: "summer-2026",
-    releaseDay: "tuesday",
-  },
-
-  // THURSDAY
-  {
-    id: "smoking",
-    img: "watchingnow-images/watchingnow/smoking.webp",
-    title: "Smoking Behind the Supermarket with You",
-    season: "summer-2026",
-    releaseDay: "thursday",
-  },
-  {
-    id: "tomb-raider-king",
-    img: "watchingnow-images/watchingnow/tomb-raider-king.webp",
-    title: "Tomb Raider King",
-    season: "summer-2026",
-    releaseDay: "thursday",
-  },
-  {
-    id: "overshadowed-to-overpowered",
-    img: "watchingnow-images/watchingnow/overshadowed-to-overpowered.webp",
-    title: "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-    season: "summer-2026",
-    releaseDay: "thursday",
-  },
-
-  // FRIDAY
-  {
-    id: "exiled-heavy-knight",
-    img: "watchingnow-images/watchingnow/exiled-heavy-knight.webp",
-    title: "The Exiled Heavy Knight Knows How to Game the System",
-    season: "summer-2026",
-    releaseDay: "friday",
-  },
-  {
-    id: "chainsmoker-cat",
-    img: "watchingnow-images/watchingnow/chainsmoker-cat.webp",
-    title: "Chainsmoker Cat",
-    season: "summer-2026",
-    releaseDay: "friday",
-  },
-
-  // SATURDAY
-  {
-    id: "black-torch",
-    img: "watchingnow-images/watchingnow/black-torch.webp",
-    title: "Black Torch",
-    season: "summer-2026",
-    releaseDay: "saturday",
-  },
+  // {
+  //   id: "opposites",
+  //   img: "watchingnow-images/watchingnow/opposites.webp",
+  //   title: "You and I are Polar Opposites",
+  //   season: "summer-2026",
+  //   releaseDay: "sunday",
+  // },
 
 ];
 
@@ -3432,13 +3317,6 @@ const trueCharactersData = [
     title: "Reinhard Van Astrea",
     info: "Re:ZERO - Starting Life in Another World",
   },
-
-  {
-    id: "cornelia",
-    img: "other-images/truecharacters/cornelia.webp",
-    title: "Cornelia li Britania",
-    info: "Code Geass: Lelouch of the Rebellion",
-  },
   {
     id: "killua",
     img: "other-images/truecharacters/killua.webp",
@@ -3536,400 +3414,10 @@ const trueCharactersData = [
     info: "Rascal Does Not Dream of Bunny Girl Senpai",
   },
   {
-    id: "kageyama",
-    img: "other-images/truecharacters/kageyama.webp",
-    title: "Kageyama Tobio",
-    info: "Haikyuu!!",
-  },
-  {
-    id: "ryunosuke-tanaka",
-    img: "other-images/truecharacters/ryunosuke-tanaka.webp",
-    title: "Ryunosuke Tanaka",
-    info: "Haikyuu!!",
-  },
-  {
     id: "oikawa",
     img: "other-images/truecharacters/oikawa.webp",
     title: "Oikawa",
     info: "Haikyuu!!",
-  },
-  {
-    id: "julius",
-    img: "other-images/truecharacters/julius.webp",
-    title: "Julius",
-    info: "Re:ZERO - Starting Life in Another World",
-  },
-  {
-    id: "priscilla-barielle",
-    img: "other-images/truecharacters/priscilla-barielle.webp",
-    title: "Priscilla Barielle",
-    info: "Re:ZERO - Starting Life in Another World",
-  },
-  {
-    id: "rebecca",
-    img: "other-images/truecharacters/rebecca.webp",
-    title: "Rebecca",
-    info: "Cyberpunk: Edgerunners",
-  },
-  {
-    id: "kohaku",
-    img: "other-images/truecharacters/kohaku.webp",
-    title: "Kohaku",
-    info: "Dr. Stone",
-  },
-  {
-    id: "chrome",
-    img: "other-images/truecharacters/chrome.webp",
-    title: "Chrome",
-    info: "Dr. Stone",
-  },
-  {
-    id: "kaseki",
-    img: "other-images/truecharacters/kaseki.webp",
-    title: "Kaseki",
-    info: "Dr. Stone",
-  },
-  {
-    id: "joel-gear",
-    img: "other-images/truecharacters/joel-gear.webp",
-    title: "Joel Gear",
-    info: "Dr. Stone",
-  },
-  {
-    id: "escanor",
-    img: "other-images/truecharacters/escanor.webp",
-    title: "Escanor",
-    info: "The Seven Deadly Sins: Nanatsu no Taizai",
-  },
-  {
-    id: "ban",
-    img: "other-images/truecharacters/ban.webp",
-    title: "Ban",
-    info: "The Seven Deadly Sins: Nanatsu no Taizai",
-  },
-  {
-    id: "lord-biao",
-    img: "other-images/truecharacters/lord-biao.webp",
-    title: "Lord Biao",
-    info: "Kingdom",
-  },
-  {
-    id: "tou-teng",
-    img: "other-images/truecharacters/tou-teng.webp",
-    title: "Tou (Teng)",
-    info: "Kingdom",
-  },
-  {
-    id: "meng-wu",
-    img: "other-images/truecharacters/meng-wu.webp",
-    title: "Meng Wu",
-    info: "Kingdom",
-  },
-  {
-    id: "yang-duanhe",
-    img: "other-images/truecharacters/yang-duanhe.webp",
-    title: "Yang Duanhe",
-    info: "Kingdom",
-  },
-  {
-    id: "huan-yi",
-    img: "other-images/truecharacters/huan-yi.webp",
-    title: "Huan Yi",
-    info: "Kingdom",
-  },
-  {
-    id: "levi",
-    img: "other-images/truecharacters/levi.webp",
-    title: "Levi",
-    info: "Attack on Titan",
-  },
-  {
-    id: "mikasa",
-    img: "other-images/truecharacters/mikasa.webp",
-    title: "Mikasa",
-    info: "Attack on Titan",
-  },
-  {
-    id: "annie",
-    img: "other-images/truecharacters/annie.webp",
-    title: "Annie",
-    info: "Attack on Titan",
-  },
-  {
-    id: "iori",
-    img: "other-images/truecharacters/iori.webp",
-    title: "Iori",
-    info: "Grand Blue Dreaming",
-  },
-  {
-    id: "kohei",
-    img: "other-images/truecharacters/kohei.webp",
-    title: "Kohei",
-    info: "Grand Blue Dreaming",
-  },
-  {
-    id: "azusa",
-    img: "other-images/truecharacters/azusa.webp",
-    title: "Azusa",
-    info: "Grand Blue Dreaming",
-  },
-  {
-    id: "chisa-nice-body",
-    img: "other-images/truecharacters/chisa-nice-body.webp",
-    title: "Chisa (Nice Body)",
-    info: "Grand Blue Dreaming",
-  },
-  {
-    id: "sakurako-busujima",
-    img: "other-images/truecharacters/sakurako-busujima.webp",
-    title: "Sakurako Busujima",
-    info: "Grand Blue Dreaming",
-  },
-  {
-    id: "ichika",
-    img: "other-images/truecharacters/ichika.webp",
-    title: "Ichika",
-    info: "Classroom of the Elite",
-  },
-  {
-    id: "tsubasa-nanase",
-    img: "other-images/truecharacters/tsubasa-nanase.webp",
-    title: "Tsubasa Nanase",
-    info: "Classroom of the Elite",
-  },
-  {
-    id: "horikita",
-    img: "other-images/truecharacters/horikita.webp",
-    title: "Horikita",
-    info: "Classroom of the Elite",
-  },
-  {
-    id: "kakeru-ryuen",
-    img: "other-images/truecharacters/kakeru-ryuen.webp",
-    title: "Kakeru Ryūen",
-    info: "Classroom of the Elite",
-  },
-  {
-    id: "aizawa",
-    img: "other-images/truecharacters/aizawa.webp",
-    title: "Aizawa",
-    info: "My Hero Academia",
-  },
-  {
-    id: "shigaraki",
-    img: "other-images/truecharacters/shigaraki.webp",
-    title: "Shigaraki",
-    info: "My Hero Academia",
-  },
-  {
-    id: "hawks",
-    img: "other-images/truecharacters/hawks.webp",
-    title: "Hawks",
-    info: "My Hero Academia",
-  },
-  {
-    id: "overhaul",
-    img: "other-images/truecharacters/overhaul.webp",
-    title: "Overhaul",
-    info: "My Hero Academia",
-  },
-  {
-    id: "momo",
-    img: "other-images/truecharacters/momo.webp",
-    title: "Momo",
-    info: "Dan da Dan",
-  },
-  {
-    id: "momo-grandmother",
-    img: "other-images/truecharacters/momo-grandmother.webp",
-    title: "Momo Grandmother",
-    info: "Dan da Dan",
-  },
-  {
-    id: "pink-hair-girl-aira",
-    img: "other-images/truecharacters/pink-hair-girl-aira.webp",
-    title: "Pink Hair Girl (Aira)",
-    info: "Dan da Dan",
-  },
-  {
-    id: "benimaru",
-    img: "other-images/truecharacters/benimaru.webp",
-    title: "Benimaru",
-    info: "That Time I Got Reincarnated as a Slime",
-  },
-  {
-    id: "souei",
-    img: "other-images/truecharacters/souei.webp",
-    title: "Souei",
-    info: "That Time I Got Reincarnated as a Slime",
-  },
-  {
-    id: "tatsumaki",
-    img: "other-images/truecharacters/tatsumaki.webp",
-    title: "Tatsumaki",
-    info: "One-Punch Man",
-  },
-  {
-    id: "genos",
-    img: "other-images/truecharacters/genos.webp",
-    title: "Genos",
-    info: "One-Punch Man",
-  },
-  {
-    id: "metal-bat",
-    img: "other-images/truecharacters/metal-bat.webp",
-    title: "Metal Bat",
-    info: "One-Punch Man",
-  },
-  {
-    id: "alpha",
-    img: "other-images/truecharacters/alpha.webp",
-    title: "Alpha",
-    info: "The Eminence in Shadow",
-  },
-  {
-    id: "delta",
-    img: "other-images/truecharacters/delta.webp",
-    title: "Delta",
-    info: "The Eminence in Shadow",
-  },
-  {
-    id: "aurora",
-    img: "other-images/truecharacters/aurora.webp",
-    title: "Aurora",
-    info: "The Eminence in Shadow",
-  },
-  {
-    id: "rudo",
-    img: "other-images/truecharacters/rudo.webp",
-    title: "Rudo",
-    info: "Gachiakuta",
-  },
-  {
-    id: "riyo",
-    img: "other-images/truecharacters/riyo.webp",
-    title: "Riyo",
-    info: "Gachiakuta",
-  },
-  {
-    id: "jabber",
-    img: "other-images/truecharacters/jabber.webp",
-    title: "Jabber",
-    info: "Gachiakuta",
-  },
-  {
-    id: "sagiri",
-    img: "other-images/truecharacters/sagiri.webp",
-    title: "Sagiri",
-    info: "Hell's Paradise: Jigokuraku",
-  },
-  {
-    id: "yuzuriha",
-    img: "other-images/truecharacters/yuzuriha.webp",
-    title: "Yuzuriha",
-    info: "Hell's Paradise: Jigokuraku",
-  },
-  {
-    id: "shion",
-    img: "other-images/truecharacters/shion.webp",
-    title: "Shion",
-    info: "Hell's Paradise: Jigokuraku",
-  },
-  {
-    id: "askeladd",
-    img: "other-images/truecharacters/askeladd.webp",
-    title: "Askeladd",
-    info: "Vinland Saga",
-  },
-  {
-    id: "canute",
-    img: "other-images/truecharacters/canute.webp",
-    title: "Canute",
-    info: "Vinland Saga",
-  },
-  {
-    id: "thorfinn",
-    img: "other-images/truecharacters/thorfinn.webp",
-    title: "Thorfinn",
-    info: "Vinland Saga",
-  },
-  {
-    id: "patausche-kivia",
-    img: "other-images/truecharacters/patausche-kivia.webp",
-    title: "Patausche Kivia",
-    info: "Sentenced to be a Hero",
-  },
-  {
-    id: "will",
-    img: "other-images/truecharacters/will.webp",
-    title: "Will",
-    info: "Wistoria: Wand and Sword",
-  },
-  {
-    id: "julius-wistoria-wand-and-sword",
-    img: "other-images/truecharacters/julius-wistoria-wand-and-sword.webp",
-    title: "Julius",
-    info: "Wistoria: Wand and Sword",
-  },
-  {
-    id: "ayano",
-    img: "other-images/truecharacters/ayano.webp",
-    title: "Ayano",
-    info: "Alya Sometimes Hides Her Feelings in Russian",
-  },
-  {
-    id: "yuki",
-    img: "other-images/truecharacters/yuki.webp",
-    title: "Yuki",
-    info: "Alya Sometimes Hides Her Feelings in Russian",
-  },
-  {
-    id: "ikumi-mito",
-    img: "other-images/truecharacters/ikumi-mito.webp",
-    title: "Ikumi Mito",
-    info: "Food Wars! Shokugeki no Soma",
-  },
-  {
-    id: "soma-yukihira",
-    img: "other-images/truecharacters/soma-yukihira.webp",
-    title: "Soma Yukihira",
-    info: "Food Wars! Shokugeki no Soma",
-  },
-  {
-    id: "alice-nakiri",
-    img: "other-images/truecharacters/alice-nakiri.webp",
-    title: "Alice Nakiri",
-    info: "Food Wars! Shokugeki no Soma",
-  },
-  {
-    id: "ryo-kurokiba",
-    img: "other-images/truecharacters/ryo-kurokiba.webp",
-    title: "Ryo Kurokiba",
-    info: "Food Wars! Shokugeki no Soma",
-  },
-  {
-    id: "freya",
-    img: "other-images/truecharacters/freya.webp",
-    title: "Freya",
-    info: "Danmachi: Is It Wrong to Try to Pick Up Girls in a Dungeon",
-  },
-  {
-    id: "ryuu",
-    img: "other-images/truecharacters/ryuu.webp",
-    title: "Ryuu",
-    info: "Danmachi: Is It Wrong to Try to Pick Up Girls in a Dungeon",
-  },
-  {
-    id: "tatara-fujita",
-    img: "other-images/truecharacters/tatara-fujita.webp",
-    title: "Tatara Fujita",
-    info: "Welcome to the Ballroom",
-  },
-  {
-    id: "shizuku-hanaoka",
-    img: "other-images/truecharacters/shizuku-hanaoka.webp",
-    title: "Shizuku Hanaoka",
-    info: "Welcome to the Ballroom",
   },
 ];
 
@@ -4044,7 +3532,6 @@ const nextSeasonMap = {
   "i-got-a-cheat-skill": { info: "Season 2 in Production" },
 
   // randoms 
-  "black-clover": { info: "2nd Season in Oct 2026" },
   "ramparts-of-ice": { info: "2nd Season in Oct 2026" },
   "aoashi": { info: "2nd Season in Oct 2026" },
   "sentenced-hero": { info: "2nd Season in Production" },
