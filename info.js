@@ -1,11 +1,11 @@
-// animes.js
+// info.js
 // ─────────────────────────────────────────────────────────────────────────
 // Todos os dados de animes/episódios/personagens/ranks do site, separados
 // do index.html para facilitar edição. Este arquivo declara variáveis
 // globais (const) que são lidas pelo <script> principal do index.html —
 // por isso ele precisa ser carregado ANTES desse script:
 //
-//   <script src="animes.js"></script>
+//   <script src="info.js"></script>
 //   <script> ... (script principal) ... </script>
 //
 // Para editar um anime, episódio favorito, personagem, categoria ou
@@ -14,7 +14,7 @@
 
 // All Animes — lista principal usada na aba "All Animes".
 const rawAnimeData = [
-{
+  {
     id: "code-geass",
     img: "myranks-images/myranks/code-geass.webp",
     title: "Code Geass: Lelouch of the Rebellion",
@@ -27,16 +27,16 @@ const rawAnimeData = [
         label: "1ª temporada",
         episodes: 25,
         note: 9,
-        malName: "Code Geass: Hangyaku no Lelouch ",
+        malName: "Code Geass: Hangyaku no Lelouch",
       },
       {
         label: "2ª temporada",
         episodes: 25,
         note: 10,
-        malName: "Code Geass: Hangyaku no Lelouch R2 ",
+        malName: "Code Geass: Hangyaku no Lelouch R2",
       },
 
-      { spacer: true, text: "Filler Cannon Sequel"  },
+      { spacer: true, text: "Filler Cannon Sequel" },
       { label: "Akito the Exiled 1 - The Wyvern Arrives", episodes: "51m", malName: "Code Geass: Boukoku no Akito 1 - Yokuryuu wa Maiorita", unwatched: true },
       { label: "Akito the Exiled 2 - The Wyvern Divided", episodes: "59m", malName: "Code Geass: Boukoku no Akito 2 - Hikisakareshi Yokuryuu", unwatched: true },
       { label: "Akito the Exiled 3 - The Brightness Falls", episodes: "59m", malName: "Code Geass: Boukoku no Akito 3 - Kagayaku Mono Ten yori Otsu", unwatched: true },
@@ -46,10 +46,9 @@ const rawAnimeData = [
       { label: "Movie II - Transgression", episodes: "2h12m", malName: "Code Geass: Hangyaku no Lelouch I - Handou", unwatched: true },
       { label: "Movie III - Glorification", episodes: "2h20m", malName: "Code Geass: Hangyaku no Lelouch I - Oudou", unwatched: true },
       { label: "Code Geass: Lelouch of the Re:Surrection", episodes: "1h52m", malName: "Code Geass: Fukkatsu no Lelouch", unwatched: true },
-      
     ],
   },
-{
+  {
     id: "hxh",
     img: "myranks-images/myranks/hxh.webp",
     title: "Hunter x Hunter (2011)",
@@ -57,15 +56,15 @@ const rawAnimeData = [
     studio: "MADHOUSE",
     airedSeason: "2011-2014",
     rewatch: "2 Times",
-    mal: [{ label: "1 temporada", episodes: 148, note: 10, malName: "Hunter x Hunter (2011)" },
+    mal: [
+      { label: "1 temporada", episodes: 148, note: 10, malName: "Hunter x Hunter (2011)" },
       { spacer: true, text: "~70% Filler ( XP )" },
       { label: "Hunter x Hunter (1999)", episodes: 62, malName: "Hunter x Hunter", unwatched: true },
       { label: "Movie 1: Phantom Rouge", episodes: "1h36m", malName: "Hunter x Hunter Movie 1: Phantom Rouge", unwatched: true },
       { label: "Movie 2: The Last Mission", episodes: "1h37m", malName: "Hunter x Hunter Movie 2: The Last Mission", unwatched: true },
     ],
-    
   },
-{
+  {
     id: "one-piece",
     img: "myranks-images/myranks/one-piece.webp",
     title: "One Piece",
@@ -76,19 +75,23 @@ const rawAnimeData = [
     mal: [
       { label: "1 temporada", episodes: 1176, note: 10, malName: "One Piece" },
 
-      { spacer: true, text: "One Randoms", watched: true},
-      { label: "Film: Z", episodes: "1h47m", note: 7, malName: "One Piece Film: Z " },
-      { label: "Film: Gold", episodes: "2h0m", note: 7, malName: "One Piece Film: Gold " },
-      { label: "Stampede", episodes: "1h41m", note: 8, malName: "One Piece: Stampede " },
-      { label: "Film: Red", episodes: "1h56m", note: 9, malName: "One Piece Film: Red " },
+      { spacer: true, text: "One Filler", watched: true },
+      { label: "Film: Z", episodes: "1h47m", note: 7, malName: "One Piece Film: Z" },
+      { label: "Film: Gold", episodes: "2h0m", note: 7, malName: "One Piece Film: Gold" },
+      { label: "Film: Stampede", episodes: "1h41m", note: 8, malName: "One Piece: Stampede" },
+      { label: "Film: Red", episodes: "1h56m", note: 9, malName: "One Piece Film: Red" },
 
-      { label: "TV Special: Fan Letter", episodes: "24m", note: 8, malName: "One Piece Fan Letter " },
-      { label: "TV Special: Heroines", episodes: "23m", note: 7, malName: "One Piece: Heroines " },
+      { label: "TV Special: Fan Letter", episodes: "24m", note: 8, malName: "One Piece Fan Letter" },
+      { label: "TV Special: Heroines", episodes: "23m", note: 7, malName: "One Piece: Heroines" },
       {
-        label: "ONA: Monsters: 103 Mercies Dragon Damnation", episodes: "25m", note: 7, malName: "Monsters: 103 Mercies Dragon Damnation",},
+        label: "ONA: Monsters: 103 Mercies Dragon Damnation",
+        episodes: "25m",
+        note: 7,
+        malName: "Monsters: 103 Mercies Dragon Damnation",
+      },
     ],
   },
-{
+  {
     id: "jjk",
     img: "myranks-images/myranks/jjk.webp",
     title: "Jujutsu Kaisen",
@@ -97,7 +100,7 @@ const rawAnimeData = [
     airedSeason: "2020-?",
     rewatch: "No 3rd Season",
     mal: [
-      { label: "1ª temporada", episodes: 24, note: 8, malName: "Jujutsu Kaisen " },
+      { label: "1ª temporada", episodes: 24, note: 8, malName: "Jujutsu Kaisen" },
       { label: "Movie: Jujutsu Kaisen 0", episodes: "1h44m", note: 8, malName: "Jujutsu Kaisen 0 Movie" },
       { label: "2ª temporada", episodes: 23, note: 9, malName: "Jujutsu Kaisen 2nd Season" },
       {
@@ -108,7 +111,7 @@ const rawAnimeData = [
       },
     ],
   },
-{
+  {
     id: "frieren",
     img: "myranks-images/myranks/frieren.webp",
     title: "Frieren: Beyond Journey's End",
@@ -117,7 +120,7 @@ const rawAnimeData = [
     airedSeason: "2023-?",
     rewatch: "Not Yet",
     mal: [
-      { label: "1ª temporada", episodes: 28, note: 10, malName: "Sousou no Frieren " },
+      { label: "1ª temporada", episodes: 28, note: 10, malName: "Sousou no Frieren" },
       {
         label: "2ª temporada",
         episodes: 10,
@@ -126,7 +129,7 @@ const rawAnimeData = [
       },
     ],
   },
-{
+  {
     id: "oshi-no-ko",
     img: "myranks-images/myranks/oshi-no-ko.webp",
     title: "[Oshi no Ko]",
@@ -140,7 +143,7 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 11, note: 9, malName: "[Oshi No Ko] 3rd Season" },
     ],
   },
-{
+  {
     id: "haikyuu",
     img: "myranks-images/myranks/haikyuu.webp",
     title: "Haikyuu!!",
@@ -158,11 +161,11 @@ const rawAnimeData = [
         label: "Movie 5: The Dumpster Battle",
         episodes: "1h24m",
         note: 8,
-        malName: "Haikyuu!! Movie: Gomisuteba no Kessen ",
+        malName: "Haikyuu!! Movie: Gomisuteba no Kessen",
       },
     ],
   },
-{
+  {
     id: "mushoku",
     img: "myranks-images/myranks/mushoku.webp",
     title: "Mushoku Tensei: Jobless Reincarnation",
@@ -187,13 +190,13 @@ const rawAnimeData = [
         label: "2ª temporada I",
         episodes: 12,
         note: 7,
-        malName: "	Mushoku Tensei II: Isekai Ittara Honki Dasu ",
+        malName: "Mushoku Tensei II: Isekai Ittara Honki Dasu",
       },
       {
         label: "2ª temporada II",
         episodes: 12,
         note: 8,
-        malName: "Mushoku Tensei II: Isekai Ittara Honki Dasu Part 2 ",
+        malName: "Mushoku Tensei II: Isekai Ittara Honki Dasu Part 2",
       },
       {
         label: "3ª temporada I",
@@ -204,10 +207,9 @@ const rawAnimeData = [
 
       { spacer: true, text: "Filler Cannon" },
       { label: "Eris the Goblin Slayer", episodes: "Special", malName: "Mushoku Tensei: Isekai Ittara Honki Dasu - Eris no Goblin Toubatsu", unwatched: true },
-      
     ],
   },
-{
+  {
     id: "re-zero",
     img: "myranks-images/myranks/re-zero.webp",
     title: "Re:ZERO - Starting Life in Another World",
@@ -224,7 +226,7 @@ const rawAnimeData = [
       { label: "4ª temporada", episodes: 19, note: 9, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season" },
     ],
   },
-{
+  {
     id: "cyberpunk",
     img: "myranks-images/myranks/cyberpunk.webp",
     title: "Cyberpunk: Edgerunners",
@@ -232,9 +234,9 @@ const rawAnimeData = [
     studio: "Trigger",
     airedSeason: "2022",
     rewatch: "Season 1",
-    mal: [{ label: "1ª temporada", episodes: 10, note: 9, malName: "Cyberpunk: Edgerunners " }],
+    mal: [{ label: "1ª temporada", episodes: 10, note: 9, malName: "Cyberpunk: Edgerunners" }],
   },
-{
+  {
     id: "solo-leveling",
     img: "myranks-images/myranks/solo-leveling.webp",
     title: "Solo Leveling",
@@ -243,30 +245,30 @@ const rawAnimeData = [
     airedSeason: "2024-?",
     rewatch: "Yes",
     mal: [
-      { label: "1ª temporada", episodes: 12, note: 8, malName: "Ore dake Level Up na Ken " },
-      { label: "2ª temporada", episodes: 13, note: 9, malName: "Ore dake Level Up na Ken Season 2: Arise from the Shadow " },
+      { label: "1ª temporada", episodes: 12, note: 8, malName: "Ore dake Level Up na Ken" },
+      { label: "2ª temporada", episodes: 13, note: 9, malName: "Ore dake Level Up na Ken Season 2: Arise from the Shadow" },
     ],
   },
-{
+  {
     id: "dr-stone",
     img: "myranks-images/myranks/dr-stone.webp",
     title: "Dr. Stone",
-    info: "4 temporadas: 95 episódios",
+    info: "4 temporadas: 94 episódios",
     studio: "TMS Entertainment",
     airedSeason: "2019-2026",
     rewatch: "2 Times (Season 4 Not Yet)",
     mal: [
-      { label: "1ª temporada", episodes: 24, note: 8, malName: "	Dr. Stone " },
-      { label: "2ª temporada", episodes: 11, note: 7, malName: "Dr. Stone: Stone Wars " },
-      { label: "TV Special: Ryusui", episodes: "54m", note: 8, malName: "Dr. Stone: Ryuusui " },
-      { label: "3ª temporada I", episodes: 11, note: 7, malName: "	Dr. Stone: New World " },
-      { label: "3ª temporada II", episodes: 11, note: 8, malName: "Dr. Stone: New World Part 2 " },
-      { label: "4ª temporada I", episodes: 12, note: 8, malName: "Dr. Stone: Science Future " },
-      { label: "4ª temporada II", episodes: 12, note: 9, malName: "Dr. Stone: Science Future Part 2 " },
-      { label: "4ª temporada III", episodes: 13, note: 8, malName: "Dr. Stone: Science Future Part 3 " },
+      { label: "1ª temporada", episodes: 24, note: 8, malName: "Dr. Stone" },
+      { label: "2ª temporada", episodes: 11, note: 7, malName: "Dr. Stone: Stone Wars" },
+      { label: "TV Special: Ryusui", episodes: "54m", note: 8, malName: "Dr. Stone: Ryuusui" },
+      { label: "3ª temporada I", episodes: 11, note: 7, malName: "Dr. Stone: New World" },
+      { label: "3ª temporada II", episodes: 11, note: 8, malName: "Dr. Stone: New World Part 2" },
+      { label: "4ª temporada I", episodes: 12, note: 8, malName: "Dr. Stone: Science Future" },
+      { label: "4ª temporada II", episodes: 12, note: 9, malName: "Dr. Stone: Science Future Part 2" },
+      { label: "4ª temporada III", episodes: 13, note: 8, malName: "Dr. Stone: Science Future Part 3" },
     ],
   },
-{
+  {
     id: "kingdom",
     img: "myranks-images/myranks/kingdom.webp",
     title: "Kingdom",
@@ -274,7 +276,7 @@ const rawAnimeData = [
     studios: [
       { season: "S1-S2", name: "Studio Pierrot" },
       { season: "S3-S6", name: "Studio Pierrot and Signpost" },
-     ],
+    ],
     airedSeason: "2012",
     rewatch: "No",
     mal: [
@@ -286,7 +288,7 @@ const rawAnimeData = [
       { label: "6ª temporada", episodes: 13, unwatched: true, malName: "Kingdom 6th Season" },
     ],
   },
-{
+  {
     id: "aot",
     img: "myranks-images/myranks/aot.webp",
     title: "Attack on Titan",
@@ -294,20 +296,20 @@ const rawAnimeData = [
     studios: [
       { season: "S1-S3", name: "Wit Studio" },
       { season: "S4", name: "MAPPA" },
-     ],
+    ],
     airedSeason: "2013-2022",
     rewatch: "First 3 Seasons",
     mal: [
-      { label: "1ª temporada", episodes: 25, note: 9, malName: "	Shingeki no Kyojin " },
+      { label: "1ª temporada", episodes: 25, note: 9, malName: "Shingeki no Kyojin" },
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Shingeki no Kyojin Season 2" },
-      { label: "3ª temporada I", episodes: 12, note: 7, malName: "	Shingeki no Kyojin Season 3  " },
+      { label: "3ª temporada I", episodes: 12, note: 7, malName: "Shingeki no Kyojin Season 3" },
       { label: "3ª temporada II", episodes: 10, note: 8, malName: "Shingeki no Kyojin Season 3 Part 2" },
-      { label: "4ª temporada I", episodes: 16, note: 8, malName: "	Shingeki no Kyojin: The Final Season " },
-      { label: "4ª temporada II", episodes: 12, note: 9, malName: "	Shingeki no Kyojin: The Final Season Part 2 " },
-      { label: "4ª temporada III: The Final Chapters", episodes: 2, note: 9, malName: "Shingeki no Kyojin: The Final Season - Kanketsu-hen " },
+      { label: "4ª temporada I", episodes: 16, note: 8, malName: "Shingeki no Kyojin: The Final Season" },
+      { label: "4ª temporada II", episodes: 12, note: 9, malName: "Shingeki no Kyojin: The Final Season Part 2" },
+      { label: "4ª temporada III: The Final Chapters", episodes: 2, note: 9, malName: "Shingeki no Kyojin: The Final Season - Kanketsu-hen" },
     ],
   },
-{
+  {
     id: "grand-blue",
     img: "myranks-images/myranks/grand-blue.webp",
     title: "Grand Blue Dreaming",
@@ -315,8 +317,8 @@ const rawAnimeData = [
     studios: [
       { season: "S1", name: "Zero-G" },
       { season: "S2", name: "Zero-G and Liber" },
-      { season: "S3", name: "Zero-G and Saber Works" }
-     ],
+      { season: "S3", name: "Zero-G and Saber Works" },
+    ],
     airedSeason: "2018-?",
     rewatch: "First 2 Seasons",
     mal: [
@@ -325,7 +327,7 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 12, note: 8, malName: "Grand Blue Season 3" },
     ],
   },
-{
+  {
     id: "cote",
     img: "myranks-images/myranks/cote.webp",
     title: "Classroom of the Elite",
@@ -334,22 +336,22 @@ const rawAnimeData = [
     airedSeason: "2017-?",
     rewatch: "First 3 Seasons",
     mal: [
-      { label: "1ª temporada", episodes: 12, note: 8, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e  " },
-      { label: "2ª temporada", episodes: 13, note: 8, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 2nd Season " },
-      { label: "3ª temporada", episodes: 13, note: 7, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 3rd Season " },
+      { label: "1ª temporada", episodes: 12, note: 8, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e" },
+      { label: "2ª temporada", episodes: 13, note: 8, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 2nd Season" },
+      { label: "3ª temporada", episodes: 13, note: 7, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 3rd Season" },
       { label: "4ª temporada", episodes: 16, note: 8, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 4th Season: 2-nensei-hen 1 Gakki" },
     ],
   },
-{
+  {
     id: "mha",
     img: "myranks-images/myranks/my-hero-academia.webp",
     title: "My Hero Academia",
-    info: "8 temporadas: 171 episódios <br> 3 Filmes: 5h10m",
+    info: "8 temporadas: 170 episódios <br>3 Filmes: 5h10m",
     studio: "Bones",
     airedSeason: "2016-2025",
     rewatch: "First 5 Seasons",
     mal: [
-      { label: "1ª temporada", episodes: 13, note: 7, malName: "Boku no Hero Academia   " },
+      { label: "1ª temporada", episodes: 13, note: 7, malName: "Boku no Hero Academia" },
       { label: "2ª temporada", episodes: 25, note: 8, malName: "Boku no Hero Academia 2nd Season" },
       { label: "3ª temporada", episodes: 25, note: 6, malName: "Boku no Hero Academia 3rd Season" },
       { label: "4ª temporada", episodes: 25, note: 6, malName: "Boku no Hero Academia 4th Season" },
@@ -359,14 +361,14 @@ const rawAnimeData = [
       { label: "8ª temporada", episodes: 11, note: 9, malName: "Boku no Hero Academia: Final Season" },
       { label: "TV Special: MHA More", episodes: "23m", note: 7, malName: "Boku no Hero Academia: More" },
 
-      { spacer: true, text: "MHA Movies", watched: true},
-      { label: "Movie 1: Two Heroes ", episodes: "1h36m", note: 6, malName: "Boku no Hero Academia the Movie 1: Futari no Hero" },
+      { spacer: true, text: "MHA Movies", watched: true },
+      { label: "Movie 1: Two Heroes", episodes: "1h36m", note: 6, malName: "Boku no Hero Academia the Movie 1: Futari no Hero" },
       { label: "Movie 2: Heroes Rising", episodes: "1h44m", note: 6, malName: "Boku no Hero Academia the Movie 2: Heroes Rising" },
       { label: "Movie 3: World Heroes Mission", episodes: "1h44m", unwatched: true, malName: "Boku no Hero Academia the Movie 3: World Heroes' Mission" },
       { label: "Movie 4: You're Next", episodes: "1h50m", note: 7, malName: "Boku no Hero Academia the Movie 4: You're Next" },
     ],
   },
-{
+  {
     id: "dan-da-dan",
     img: "myranks-images/myranks/dan-da-dan.webp",
     title: "Dan da Dan",
@@ -379,7 +381,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 9, malName: "Dandadan 2nd Season" },
     ],
   },
-{
+  {
     id: "tensei-shitara-slime",
     img: "myranks-images/myranks/tensei-shitara-slime.webp",
     title: "That Time I Got Reincarnated as a Slime",
@@ -397,28 +399,26 @@ const rawAnimeData = [
       { spacer: true, text: "Filler Movies" },
       { label: "Movie 1: Scarlet Bond", episodes: "1h48m", unwatched: true, malName: "Tensei shitara Slime Datta Ken Movie: Guren no Kizuna-hen" },
       { label: "Movie 2: Tears of the Azure Sea", episodes: "1h44m", unwatched: true, malName: "Tensei Shitara Slime Datta Ken Movie 2: Soukai no Namida-hen" },
-
     ],
   },
-{
+  {
     id: "opm",
     img: "myranks-images/myranks/opm.webp",
     title: "One-Punch Man",
     info: "3 temporadas: 36 episódios",
-    studio: "MADHOUSE/J.C. Staff",
-      studios: [
-        { season: "S1", name: "MADHOUSE" },
-        { season: "S2-S3", name: "J.C. Staff" }
-      ],
+    studios: [
+      { season: "S1", name: "MADHOUSE" },
+      { season: "S2-S3", name: "J.C. Staff" },
+    ],
     airedSeason: "2015-?",
     rewatch: "2 Times (Season 3 Never)",
     mal: [
-      { label: "1ª temporada", episodes: 12, note: 9, malName: "One Punch Man " },
-      { label: "2ª temporada", episodes: 12, note: 6, malName: "One Punch Man 2nd Season " },
-      { label: "3ª temporada I", episodes: 12, note: 2, malName: "One Punch Man 3 " },
+      { label: "1ª temporada", episodes: 12, note: 9, malName: "One Punch Man" },
+      { label: "2ª temporada", episodes: 12, note: 6, malName: "One Punch Man 2nd Season" },
+      { label: "3ª temporada I", episodes: 12, note: 2, malName: "One Punch Man 3" },
     ],
   },
-{
+  {
     id: "shadow",
     img: "myranks-images/myranks/shadow.webp",
     title: "The Eminence in Shadow",
@@ -431,13 +431,13 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Kage no Jitsuryokusha ni Naritakute! 2nd Season" },
     ],
   },
-{
+  {
     id: "hajime-no-ippo",
     img: "myranks-images/myranks/hajime-no-ippo.webp",
     title: "Hajime no Ippo: The Fighting",
-    info: "(~) 3 temporadas: 126 episódios",
+    info: "(~) 2 temporadas: 101 episódios",
     studio: "MADHOUSE",
-    airedSeason: "2000-2014!",
+    airedSeason: "2000-2014",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 75, note: 9, malName: "Hajime no Ippo" },
@@ -445,7 +445,7 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 25, unwatched: true, malName: "Hajime no Ippo: Rising" },
     ],
   },
-{
+  {
     id: "gachiakuta",
     img: "myranks-images/myranks/gachiakuta.webp",
     title: "Gachiakuta",
@@ -455,7 +455,7 @@ const rawAnimeData = [
     rewatch: "Not Yet",
     mal: [{ label: "1ª temporada", episodes: 24, note: 8, malName: "Gachiakuta" }],
   },
-{
+  {
     id: "hells-paradise",
     img: "myranks-images/myranks/hells-paradise.webp",
     title: "Hell's Paradise: Jigokuraku",
@@ -468,7 +468,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Jigokuraku 2nd Season" },
     ],
   },
-{
+  {
     id: "horimiya",
     img: "myranks-images/myranks/horimiya.webp",
     title: "Horimiya",
@@ -481,7 +481,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 13, note: 7, malName: "Horimiya: Piece" },
     ],
   },
-{
+  {
     id: "vinland-saga",
     img: "myranks-images/myranks/vinland-saga.webp",
     title: "Vinland Saga",
@@ -489,7 +489,7 @@ const rawAnimeData = [
     studios: [
       { season: "S1", name: "Wit Studio" },
       { season: "S2", name: "MAPPA" },
-     ],
+    ],
     airedSeason: "2019-2023",
     rewatch: "Season 1",
     mal: [
@@ -497,7 +497,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 24, note: 8, malName: "Vinland Saga Season 2" },
     ],
   },
-{
+  {
     id: "fragrant-flowers",
     img: "myranks-images/myranks/fragrant-flowers.webp",
     title: "The Fragrant Flowers Bloom with Dignity",
@@ -507,7 +507,7 @@ const rawAnimeData = [
     rewatch: "Yes",
     mal: [{ label: "1ª temporada", episodes: 13, note: 8, malName: "Kaoru Hana wa Rin to Saku" }],
   },
-{
+  {
     id: "opposites",
     img: "myranks-images/myranks/opposites.webp",
     title: "You and I are Polar Opposites",
@@ -520,7 +520,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Seihantai na Kimi to Boku 2nd Season" },
     ],
   },
-{
+  {
     id: "demon-slayer",
     img: "myranks-images/myranks/demon-slayer.webp",
     title: "Demon Slayer: Kimetsu no Yaiba",
@@ -537,7 +537,7 @@ const rawAnimeData = [
       { label: "Movie: Infinity Castle Part 1", episodes: "2h35m", note: 8, malName: "Kimetsu no Yaiba Movie 1: Mugenjou-hen - Akaza Sairai" },
     ],
   },
-{
+  {
     id: "shangri-la-frontier",
     img: "myranks-images/myranks/shangri-la-frontier.webp",
     title: "Shangri-La Frontier",
@@ -550,7 +550,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 25, note: 7, malName: "Shangri-La Frontier: Kusoge Hunter, Kamige ni Idoman to su 2nd Season" },
     ],
   },
-{
+  {
     id: "bunny-girl-senpai",
     img: "myranks-images/myranks/bunny-girl-senpai.webp",
     title: "Rascal Does Not Dream of Bunny Girl Senpai",
@@ -581,7 +581,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Seishun Buta Yarou wa Santa Claus no Yume wo Minai" },
     ],
   },
-{
+  {
     id: "your-lie-in-april",
     img: "myranks-images/myranks/your-lie-in-april.webp",
     title: "Your Lie in April",
@@ -591,7 +591,7 @@ const rawAnimeData = [
     rewatch: "Impossible",
     mal: [{ label: "1 temporada", episodes: 22, note: 8, malName: "Shigatsu wa Kimi no Uso" }],
   },
-{
+  {
     id: "sentenced-hero",
     img: "myranks-images/myranks/sentenced-hero.webp",
     title: "Sentenced to be a Hero",
@@ -599,11 +599,9 @@ const rawAnimeData = [
     studio: "Studio KAI",
     airedSeason: "2026",
     rewatch: "No",
-    mal: [
-      { label: "1 temporada", episodes: 12, note: 8, malName: "Yuusha-kei ni Shosu: Choubatsu Yuusha 9004-tai Keimu Kiroku" },
-    ],    
+    mal: [{ label: "1 temporada", episodes: 12, note: 8, malName: "Yuusha-kei ni Shosu: Choubatsu Yuusha 9004-tai Keimu Kiroku" }],
   },
-{
+  {
     id: "akame-ga-kill",
     img: "myranks-images/myranks/akame-ga-kill.webp",
     title: "Akame ga Kill",
@@ -613,7 +611,7 @@ const rawAnimeData = [
     rewatch: "Yes",
     mal: [{ label: "1 temporada", episodes: 24, note: 8, malName: "Akame ga Kill!" }],
   },
-{
+  {
     id: "wistoria",
     img: "myranks-images/myranks/wistoria.webp",
     title: "Wistoria: Wand and Sword",
@@ -626,7 +624,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Tsue to Tsurugi no Wistoria Season 2" },
     ],
   },
-{
+  {
     id: "prison-school",
     img: "myranks-images/myranks/prison-school.webp",
     title: "Prison School",
@@ -636,10 +634,10 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
-      { label: "OVA: Mad Wax ", episodes: "25m", note: 7, malName: "Prison School: Mad Wax" },
+      { label: "OVA: Mad Wax", episodes: "25m", note: 7, malName: "Prison School: Mad Wax" },
     ],
   },
-{
+  {
     id: "blue-box",
     img: "myranks-images/myranks/blue-box.webp",
     title: "Blue Box",
@@ -649,7 +647,7 @@ const rawAnimeData = [
     rewatch: "Yes",
     mal: [{ label: "1ª temporada", episodes: 25, note: 8, malName: "Ao no Hako" }],
   },
-{
+  {
     id: "mashle",
     img: "myranks-images/myranks/mashle.webp",
     title: "Mashle: Magic and Muscles",
@@ -662,7 +660,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 7, malName: "Mashle: Shinkakusha Kouho Senbatsu Shiken-hen" },
     ],
   },
-{
+  {
     id: "roshidere",
     img: "myranks-images/myranks/roshidere.webp",
     title: "Alya Sometimes Hides Her Feelings in Russian",
@@ -672,7 +670,7 @@ const rawAnimeData = [
     rewatch: "Yes",
     mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san" }],
   },
-{
+  {
     id: "cinderella-gray",
     img: "myranks-images/myranks/cinderella-gray.webp",
     title: "Uma Musume: Cinderella Gray",
@@ -685,7 +683,7 @@ const rawAnimeData = [
       { label: "1ª temporada II", episodes: 10, note: 7, malName: "Uma Musume: Cinderella Gray Part 2" },
     ],
   },
-{
+  {
     id: "zom-100",
     img: "myranks-images/myranks/zom-100.webp",
     title: "Zom 100: Bucket List of the Dead",
@@ -695,7 +693,7 @@ const rawAnimeData = [
     rewatch: "Yes",
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto" }],
   },
-{
+  {
     id: "eighty-six",
     img: "myranks-images/myranks/eighty-six.webp",
     title: "86 Eighty-Six",
@@ -708,7 +706,7 @@ const rawAnimeData = [
       { label: "1ª temporada II", episodes: 12, note: 7, malName: "86 Part 2" },
     ],
   },
-{
+  {
     id: "food-wars",
     img: "myranks-images/myranks/food-wars.webp",
     title: "Food Wars! Shokugeki no Soma",
@@ -726,7 +724,7 @@ const rawAnimeData = [
       { label: "5ª temporada", episodes: 13, note: 4, malName: "Shokugeki no Souma: Gou no Sara" },
     ],
   },
-{
+  {
     id: "danmachi",
     img: "myranks-images/myranks/danmachi.webp",
     title: "Danmachi: Is It Wrong to Try to Pick Up Girls in a Dungeon",
@@ -744,7 +742,7 @@ const rawAnimeData = [
       { label: "5ª temporada", episodes: 15, unwatched: true, malName: "Dungeon ni Deai wo Motomeru no wa Machigatteiru Darou ka V: Houjou no Megami-hen" },
     ],
   },
-{
+  {
     id: "chitose",
     img: "myranks-images/myranks/chitose.webp",
     title: "Chitose is in Ramune Bottle",
@@ -754,7 +752,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1ª temporada", episodes: 13, note: 7, malName: "Chitose-kun wa Ramune Bin no Naka" }],
   },
-{
+  {
     id: "makeine",
     img: "myranks-images/myranks/makeine.webp",
     title: "Makeine: Too Many Losing Heroines!",
@@ -764,7 +762,7 @@ const rawAnimeData = [
     rewatch: "Not Yet",
     mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Make Heroine ga Oosugiru!" }],
   },
-{
+  {
     id: "tsukimichi",
     img: "myranks-images/myranks/tsukimichi.webp",
     title: "Tsukimichi -Moonlit Fantasy-",
@@ -773,7 +771,7 @@ const rawAnimeData = [
     studios: [
       { season: "S1", name: "C2C" },
       { season: "S2", name: "J.C. Staff" },
-     ],
+    ],
     airedSeason: "2021-?",
     rewatch: "No",
     mal: [
@@ -781,7 +779,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 25, note: 7, malName: "Tsuki ga Michibiku Isekai Douchuu 2nd Season" },
     ],
   },
-{
+  {
     id: "my-dress-up-darling",
     img: "myranks-images/myranks/my-dress-up-darling.webp",
     title: "My Dress-Up Darling",
@@ -794,7 +792,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Sono Bisque Doll wa Koi wo Suru Season 2" },
     ],
   },
-{
+  {
     id: "welcome-to-the-ballroom",
     img: "myranks-images/myranks/welcome-to-the-ballroom.webp",
     title: "Welcome to the Ballroom",
@@ -804,7 +802,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 24, note: 7, malName: "Ballroom e Youkoso" }],
   },
-{
+  {
     id: "the-100-girlfriends",
     img: "myranks-images/myranks/the-100-girlfriends.webp",
     title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
@@ -818,7 +816,7 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo 3rd Season" },
     ],
   },
-{
+  {
     id: "silent-voice",
     img: "myranks-images/myranks/silent-voice.webp",
     title: "A Silent Voice",
@@ -828,7 +826,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "Filme", episodes: "2h10m", note: 7, malName: "Koe no Katachi" }],
   },
-{
+  {
     id: "apothecary-diaries",
     img: "myranks-images/myranks/apothecary-diaries.webp",
     title: "The Apothecary Diaries",
@@ -841,7 +839,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 24, unwatched: true, malName: "Kusuriya no Hitorigoto 2nd Season" },
     ],
   },
-{
+  {
     id: "shield-hero",
     img: "myranks-images/myranks/shield-hero.webp",
     title: "The Rising of the Shield Hero",
@@ -856,7 +854,7 @@ const rawAnimeData = [
       { label: "4ª temporada", episodes: 12, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 4" },
     ],
   },
-{
+  {
     id: "sword-art-online",
     img: "myranks-images/myranks/sword-art-online.webp",
     title: "Sword Art Online",
@@ -866,7 +864,7 @@ const rawAnimeData = [
     rewatch: "Yes",
     mal: [{ label: "1ª temporada", episodes: 25, note: 7, malName: "Sword Art Online" }],
   },
-{
+  {
     id: "gurren-lagann",
     img: "myranks-images/myranks/gurren-lagann.webp",
     title: "Gurren Lagann",
@@ -885,7 +883,7 @@ const rawAnimeData = [
       },
     ],
   },
-{
+  {
     id: "gals-cant-be-kind-to-otaku",
     img: "myranks-images/myranks/gals-cant-be-kind-to-otaku.webp",
     title: "Gals Can't Be Kind to Otaku",
@@ -895,7 +893,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Otaku ni Yasashii Gal wa Inai!?" }],
   },
-{
+  {
     id: "nisekoi",
     img: "myranks-images/myranks/nisekoi.webp",
     title: "Nisekoi: False Love",
@@ -908,7 +906,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, note: 6, malName: "Nisekoi:" },
     ],
   },
-{
+  {
     id: "nanatsu-no-taizai",
     img: "myranks-images/myranks/nanatsu-no-taizai.webp",
     title: "The Seven Deadly Sins: Nanatsu no Taizai",
@@ -916,7 +914,7 @@ const rawAnimeData = [
     studios: [
       { season: "S1-S2", name: "A-1 Pictures" },
       { season: "S3-S4", name: "Studio Deen" },
-     ],
+    ],
     airedSeason: "2014-2021",
     rewatch: "2 First Seasons",
     mal: [
@@ -926,13 +924,13 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 24, note: 6, malName: "Nanatsu no Taizai: Kamigami no Gekirin" },
       { label: "4ª temporada", episodes: 24, note: 5, malName: "Nanatsu no Taizai: Funnu no Shinpan" },
 
-      { spacer: true, text: "Nanatsu Movies", watched: true},
+      { spacer: true, text: "Nanatsu Movies", watched: true },
       { label: "Movie 1: Prisoners of the Sky", episodes: "1h39m", note: 6, malName: "Nanatsu no Taizai Movie 1: Tenkuu no Torawarebito" },
       { label: "Movie 2: Cursed By Light", episodes: "1h19m", note: 5, malName: "Nanatsu no Taizai Movie 2: Hikari ni Norowareshi Mono-tachi" },
       { label: "ONA: Grudge of Edinburgh", episodes: "52m", note: 3, malName: "Nanatsu no Taizai: Ensa no Edinburgh" },
     ],
   },
-{
+  {
     id: "angel-next-door",
     img: "myranks-images/myranks/angel-next-door.webp",
     title: "The Angel Next Door Spoils Me Rotten",
@@ -945,7 +943,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken 2nd Season" },
     ],
   },
-{
+  {
     id: "prism-rondo",
     img: "myranks-images/myranks/prism-rondo.webp",
     title: "Love Through a Prism",
@@ -955,7 +953,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 20, note: 7, malName: "Prism Rondo" }],
   },
-{
+  {
     id: "farming-life",
     img: "myranks-images/myranks/farming-life.webp",
     title: "Farming Life in Another World",
@@ -968,7 +966,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Isekai Nonbiri Nouka 2nd Season" },
     ],
   },
-{
+  {
     id: "the-girl-i-like-forgot-her-glasses",
     img: "myranks-images/myranks/the-girl-i-like-forgot-her-glasses.webp",
     title: "The Girl I Like Forgot Her Glasses",
@@ -978,7 +976,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 7, malName: "Suki na Ko ga Megane wo Wasureta" }],
   },
-{
+  {
     id: "highschool-of-the-dead",
     img: "myranks-images/myranks/highschool-of-the-dead.webp",
     title: "Highschool of the Dead",
@@ -991,7 +989,7 @@ const rawAnimeData = [
       { label: "OVA: Drifters of the Dead", episodes: "16m", note: 5, malName: "Highschool of the Dead: Drifters of the Dead" },
     ],
   },
-{
+  {
     id: "midnight-heart",
     img: "myranks-images/myranks/midnight-heart.webp",
     title: "Tune In to the Midnight Heart",
@@ -1000,11 +998,9 @@ const rawAnimeData = [
     studio: "Gekkou",
     airedSeason: "2026",
     rewatch: "No",
-    mal: [
-      { label: "1 temporada", episodes: 12, note: 6, malName: "Mayonaka Heart Tune" },
-    ],
+    mal: [{ label: "1 temporada", episodes: 12, note: 6, malName: "Mayonaka Heart Tune" }],
   },
-{
+  {
     id: "more-than-married-couple",
     img: "myranks-images/myranks/more-than-married-couple.webp",
     title: "More than a Married Couple, but Not Lovers",
@@ -1014,7 +1010,7 @@ const rawAnimeData = [
     rewatch: "Yes",
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Fuufu Ijou, Koibito Miman." }],
   },
-{
+  {
     id: "toradora",
     img: "myranks-images/myranks/toradora.webp",
     title: "Toradora!",
@@ -1024,7 +1020,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 25, note: 7, malName: "Toradora!" }],
   },
-{
+  {
     id: "yamada-kun-lv999",
     img: "myranks-images/myranks/yamada-kun-lv999.webp",
     title: "My Love Story with Yamada-kun at LV999",
@@ -1034,7 +1030,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Yamada-kun to Lv999 no Koi wo Suru" }],
   },
-{
+  {
     id: "lookism",
     img: "myranks-images/myranks/lookism.webp",
     title: "Lookism",
@@ -1044,7 +1040,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 8, note: 6, malName: "Lookism" }],
   },
-{
+  {
     id: "tower-of-god",
     img: "myranks-images/myranks/tower-of-god.webp",
     title: "Tower of God",
@@ -1058,7 +1054,7 @@ const rawAnimeData = [
       { label: "2ª temporada II", episodes: 13, unwatched: true, malName: "Kami no Tou: Ouji Houkan" },
     ],
   },
-{
+  {
     id: "the-god-of-high-school",
     img: "myranks-images/myranks/the-god-of-high-school.webp",
     title: "The God of High School",
@@ -1068,7 +1064,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 7, malName: "The God of High School" }],
   },
-{
+  {
     id: "immortal-king",
     img: "myranks-images/myranks/immortal-king.webp",
     title: "The Daily Life of the Immortal King",
@@ -1084,7 +1080,7 @@ const rawAnimeData = [
       { label: "5ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 5" },
     ],
   },
-{
+  {
     id: "healing-magic",
     img: "myranks-images/myranks/healing-magic.webp",
     title: "The Wrong Way to Use Healing Magic",
@@ -1094,7 +1090,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1ª temporada", episodes: 13, note: 6, malName: "Chiyu Mahou no Machigatta Tsukaikata" }],
   },
-{
+  {
     id: "the-water-magician",
     img: "myranks-images/myranks/the-water-magician.webp",
     title: "The Water Magician",
@@ -1104,7 +1100,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 6, malName: "Mizu Zokusei no Mahoutsukai" }],
   },
-{
+  {
     id: "my-little-monster",
     img: "myranks-images/myranks/my-little-monster.webp",
     title: "My Little Monster",
@@ -1114,7 +1110,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Tonari no Kaibutsu-kun" }],
   },
-{
+  {
     id: "blue-period",
     img: "myranks-images/myranks/blue-period.webp",
     title: "Blue Period",
@@ -1124,7 +1120,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Blue Period" }],
   },
-{
+  {
     id: "masamune-kuns-revenge",
     img: "myranks-images/myranks/masamune-kuns-revenge.webp",
     title: "Masamune-kun's Revenge",
@@ -1137,7 +1133,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Masamune-kun no Revenge R" },
     ],
   },
-{
+  {
     id: "i-got-a-cheat-skill",
     img: "myranks-images/myranks/i-got-a-cheat-skill.webp",
     title: "I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too",
@@ -1147,10 +1143,15 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [
       { label: "1 temporada", episodes: 13, note: 5, malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta" },
-      { label: "TV Special: Real World", episodes: "47m", malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta (TV Special)", unwatched: true },
+      {
+        label: "TV Special: Real World",
+        episodes: "47m",
+        malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta (TV Special)",
+        unwatched: true,
+      },
     ],
   },
-{
+  {
     id: "no-game-no-life-zero",
     img: "myranks-images/myranks/no-game-no-life-zero.webp",
     title: "No Game No Life: Zero",
@@ -1160,7 +1161,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "Filme", episodes: "1h47m", note: 6, malName: "No Game No Life: Zero" }],
   },
-{
+  {
     id: "bottom-tier",
     img: "myranks-images/myranks/bottom-tier.webp",
     title: "Bottom-Tier Character Tomozaki",
@@ -1173,7 +1174,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Jaku-Chara Tomozaki-kun 2nd Stage" },
     ],
   },
-{
+  {
     id: "bubble",
     img: "myranks-images/myranks/bubble.webp",
     title: "Bubble",
@@ -1183,7 +1184,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "Filme", episodes: "1h40m", note: 6, malName: "Bubble" }],
   },
-{
+  {
     id: "magi-sinbad",
     img: "myranks-images/myranks/magi-adventure-of-sinbad.webp",
     title: "Magi: Adventure of Sinbad",
@@ -1194,7 +1195,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Magi: Sinbad no Bouken" }],
   },
-{
+  {
     id: "failure-frame",
     img: "myranks-images/myranks/failure-frame.webp",
     title: "Failure Frame: I Became the Strongest and Annihilated Everything With Low-Level Spells",
@@ -1202,9 +1203,9 @@ const rawAnimeData = [
     studio: "Arvo Animation",
     airedSeason: "2023",
     rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Hazurewaku no \"Joutai Ijou Skill\" de Saikyou ni Natta Ore ga Subete wo Juurin suru made" }],
+    mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: 'Hazurewaku no "Joutai Ijou Skill" de Saikyou ni Natta Ore ga Subete wo Juurin suru made' }],
   },
-{
+  {
     id: "campfire-cooking",
     img: "myranks-images/myranks/campfire-cooking.webp",
     title: "Campfire Cooking in Another World with My Absurd Skill",
@@ -1217,7 +1218,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Tondemo Skill de Isekai Hourou Meshi 2" },
     ],
   },
-{
+  {
     id: "trapped-in-a-dating-sim",
     img: "myranks-images/myranks/trapped-in-a-dating-sim.webp",
     title: "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs",
@@ -1227,7 +1228,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1ª temporada", episodes: 12, note: 4, malName: "Otome Game Sekai wa Mob ni Kibishii Sekai desu" }],
   },
-{
+  {
     id: "4-cut",
     img: "myranks-images/myranks/4-cut.webp",
     title: "4 Cut Hero",
@@ -1237,7 +1238,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 10, note: 4, malName: "Si Ge Yongzhe" }],
   },
-{
+  {
     id: "the-worlds-finest-assassin",
     img: "myranks-images/myranks/the-worlds-finest-assassin.webp",
     title: "The World's Finest Assassin Gets Reincarnated in Another World as an Aristocrat",
@@ -1247,7 +1248,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1ª temporada", episodes: 12, note: 5, malName: "Sekai Saikou no Ansatsusha, Isekai Kizoku ni Tensei suru" }],
   },
-{
+  {
     id: "haibara-teenage",
     img: "myranks-images/myranks/haibara-teenage.webp",
     title: "Haibara's Teenage New Game",
@@ -1257,17 +1258,17 @@ const rawAnimeData = [
     rewatch: "Never",
     mal: [{ label: "1 temporada", episodes: 12, note: 3, malName: "Haibara-kun no Tsuyokute Seishun New Game" }],
   },
-{
+  {
     id: "akashic-records",
     img: "myranks-images/myranks/akashic-records.webp",
     title: "Akashic Records of Bastard Magic Instructor",
     info: "12 episódios",
-    studio: "Liden Films",
+    studio: "LIDENFILMS",
     airedSeason: "2017",
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 4, malName: "Rokudenashi Majutsu Koushi to Akashic Records" }],
   },
-{
+  {
     id: "black-summoner",
     img: "myranks-images/myranks/black-summoner.webp",
     title: "Black Summoner",
@@ -1277,7 +1278,7 @@ const rawAnimeData = [
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Kuro no Shoukanshi" }],
   },
-{
+  {
     id: "cannon-busters",
     img: "myranks-images/myranks/cannon-busters.webp",
     title: "Cannon Busters",
@@ -1287,7 +1288,7 @@ const rawAnimeData = [
     rewatch: "Never",
     mal: [{ label: "1 temporada", episodes: 12, note: 3, malName: "Cannon Busters" }],
   },
-{
+  {
     id: "wind-breaker",
     img: "myranks-images/myranks/wind-breaker.webp",
     title: "Wind Breaker",
@@ -1329,8 +1330,7 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [12, 13],
     url: "https://www.anime-planet.com/anime/you-and-i-are-polar-opposites-2nd-season",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00365624/you-and-i-are-polar-opposites",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00365624/you-and-i-are-polar-opposites",
     malUrl: "https://myanimelist.net/anime/63832/Seihantai_na_Kimi_to_Boku_2nd_Season",
   },
   {
@@ -1343,8 +1343,7 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [12],
     url: "https://www.anime-planet.com/anime/smoking-behind-the-supermarket-with-you",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00378116/smoking-behind-the-supermarket-with-you",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378116/smoking-behind-the-supermarket-with-you",
     malUrl: "https://myanimelist.net/anime/62076/Super_no_Ura_de_Yani_Suu_Futari",
   },
   {
@@ -1357,22 +1356,8 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [12],
     url: "https://www.anime-planet.com/anime/hanaori-san-still-wants-to-fight-in-the-next-life",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00378066/hanaori-san-still-wants-to-fight-in-the-next-life",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378066/hanaori-san-still-wants-to-fight-in-the-next-life",
     malUrl: "https://myanimelist.net/anime/62535/Hanaori-san_wa_Tensei_shitemo_Kenka_ga_Shitai",
-  },
-  {
-    id: "black-torch",
-    img: "watchingnow-images/watchingnow/black-torch.webp",
-    title: "Black Torch",
-    info: "NaN episódios - Progress: -/-",
-    season: "summer-2026",
-    studio: "100studio",
-    airedSeason: "2026",
-    url: "https://www.anime-planet.com/anime/black-torch",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00377907/black-torch",
-    malUrl: "https://myanimelist.net/anime/61169/Black_Torch",
   },
   {
     id: "villainess",
@@ -1384,8 +1369,7 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [11],
     url: "https://www.anime-planet.com/anime/though-i-am-an-inept-villainess-tale-of-the-butterfly-rat-body-swap-in-the-maiden-court",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00371881/though-i-am-an-inept-villainess",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371881/though-i-am-an-inept-villainess",
     malUrl: "https://myanimelist.net/anime/61240/Futsutsuka_na_Akujo_dewa_Gozaimasu_ga__Suuguu_Chouso_Torikae_Den",
   },
   {
@@ -1398,10 +1382,8 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [12],
     url: "https://www.anime-planet.com/anime/love-unseen-beneath-the-clear-night-sky",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00378087/love-unseen-beneath-the-clear-night-sky",
-    malUrl:
-      "https://myanimelist.net/anime/62936/Toumei_na_Yoru_ni_Kakeru_Kimi_to_Me_ni_Mienai_Koi_wo_Shita",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378087/love-unseen-beneath-the-clear-night-sky",
+    malUrl: "https://myanimelist.net/anime/62936/Toumei_na_Yoru_ni_Kakeru_Kimi_to_Me_ni_Mienai_Koi_wo_Shita",
   },
   {
     id: "exiled-heavy-knight",
@@ -1413,10 +1395,8 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [26],
     url: "https://www.anime-planet.com/anime/the-exiled-heavy-knight-knows-how-to-game-the-system",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00378018/the-exiled-heavy-knight-knows-how-to-game-the-system",
-    malUrl:
-      "https://myanimelist.net/anime/59741/Tsuihou_sareta_Tensei_Juukishi_wa_Game_Chishiki_de_Musou_suru",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378018/the-exiled-heavy-knight-knows-how-to-game-the-system",
+    malUrl: "https://myanimelist.net/anime/59741/Tsuihou_sareta_Tensei_Juukishi_wa_Game_Chishiki_de_Musou_suru",
   },
   {
     id: "tomb-raider-king",
@@ -1454,10 +1434,8 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [12, 12, 12],
     url: "https://www.anime-planet.com/anime/the-100-girlfriends-who-really-really-really-really-really-love-you-season-3",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GNVHKN933/the-100-girlfriends-who-really-really-really-really-really-love-you",
-    malUrl:
-      "https://myanimelist.net/anime/62811/Kimi_no_Koto_ga_Daidaidaidaidaisuki_na_100-nin_no_Kanojo_3rd_Season",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN933/the-100-girlfriends-who-really-really-really-really-really-love-you",
+    malUrl: "https://myanimelist.net/anime/62811/Kimi_no_Koto_ga_Daidaidaidaidaisuki_na_100-nin_no_Kanojo_3rd_Season",
   },
   {
     id: "ghost-in-the-shell",
@@ -1471,20 +1449,6 @@ const rawWatchingData = [
     url: "https://www.anime-planet.com/anime/the-ghost-in-the-shell",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/58929/Koukaku_Kidoutai_TV",
-  },
-  {
-    id: "wrong-about-her",
-    img: "watchingnow-images/watchingnow/wrong-about-her.webp",
-    title: "Oh Boy, Was I Wrong About Her",
-    info: "12 episódios",
-    season: "summer-2026",
-    studio: "Project No.9",
-    airedSeason: "2026",
-    seasons: [12],
-    url: "https://www.anime-planet.com/anime/oh-boy-was-i-wrong-about-her",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378120/oh-boy-was-i-wrong-about-her",
-    malUrl:
-      "https://myanimelist.net/anime/56735/Tenkou-saki_no_Seiso_Karen_na_Bishoujo_ga_Mukashi_Danshi_to_Omotte_Issho_ni_Asonda_Osananajimi_Datta_Ken",
   },
   {
     id: "chainsmoker-cat",
@@ -1509,10 +1473,8 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [12],
     url: "https://www.anime-planet.com/anime/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00378115/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage",
-    malUrl:
-      "https://myanimelist.net/anime/63508/Rakudai_Kenja_no_Gakuin_Musou__Nidome_no_Tensei_S-Rank_Cheat_Majutsushi_Boukenroku",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378115/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage",
+    malUrl: "https://myanimelist.net/anime/63508/Rakudai_Kenja_no_Gakuin_Musou__Nidome_no_Tensei_S-Rank_Cheat_Majutsushi_Boukenroku",
   },
 
   // Spring 2026
@@ -1526,10 +1488,8 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [12],
     url: "https://www.anime-planet.com/anime/i-made-friends-with-the-second-prettiest-girl-in-my-class",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00371673/i-made-friends-with-the-second-prettiest-girl-in-my-class",
-    malUrl:
-      "https://myanimelist.net/anime/56734/Class_de_2-banme_ni_Kawaii_Onnanoko_to_Tomodachi_ni_Natta",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371673/i-made-friends-with-the-second-prettiest-girl-in-my-class",
+    malUrl: "https://myanimelist.net/anime/56734/Class_de_2-banme_ni_Kawaii_Onnanoko_to_Tomodachi_ni_Natta",
   },
   {
     id: "farming-life",
@@ -1554,10 +1514,8 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [12],
     url: "https://www.anime-planet.com/anime/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GT00371923/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt",
-    malUrl:
-      "https://myanimelist.net/anime/61425/Ponkotsu_Fuuki_Iin_to_Skirt-take_ga_Futekisetsu_na_JK_no_Hanashi",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371923/the-klutzy-class-monitor-and-the-girl-with-the-short-skirt",
+    malUrl: "https://myanimelist.net/anime/61425/Ponkotsu_Fuuki_Iin_to_Skirt-take_ga_Futekisetsu_na_JK_no_Hanashi",
   },
 
   // Winter 2026
@@ -1571,7 +1529,7 @@ const rawWatchingData = [
     studios: [
       { season: "S1", name: "Tezuka Productions" },
       { season: "S2-MOVIE", name: "Bibury Animation Studios" },
-     ],
+    ],
     season: "on-hold",
     airedSeason: "2019-2022",
     seasons: [12, 12, 1],
@@ -1580,19 +1538,6 @@ const rawWatchingData = [
     url: "https://www.anime-planet.com/anime/the-quintessential-quintuplets",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GY4PD7Z06/the-quintessential-quintuplets",
     malUrl: "https://myanimelist.net/anime/38101/5-toubun_no_Hanayome",
-  },
-  {
-    id: "tokyo-ghoul",
-    img: "watchingnow-images/watchingnow/tokyo-ghoul.webp",
-    title: "Tokyo Ghoul",
-    info: "2 temporadas: 24 episódios",
-    season: "on-hold",
-    studio: "Studio Pierrot",
-    airedSeason: "2014-2015",
-    seasons: [12, 12],
-    url: "https://www.anime-planet.com/anime/tokyo-ghoul",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/G6NV7Z50Y/tokyo-ghoul",
-    malUrl: "https://myanimelist.net/anime/22319/Tokyo_Ghoul",
   },
   {
     id: "aoashi",
@@ -1620,23 +1565,8 @@ const rawWatchingData = [
     seasons: [13, 12, 12, 22, 15],
     cours: [null, null, null, [11, 11], null],
     url: "https://www.anime-planet.com/anime/is-it-wrong-to-try-to-pick-up-girls-in-a-dungeon-v",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/G6DQN9KGR/is-it-wrong-to-try-to-pick-up-girls-in-a-dungeon",
-    malUrl:
-      "https://myanimelist.net/anime/57066/Dungeon_ni_Deai_wo_Motomeru_no_wa_Machigatteiru_Darou_ka_V__Houjou_no_Megami-hen?q=danmachi&cat=anime",
-  },
-  {
-    id: "bocchi-the-rock",
-    img: "watchingnow-images/watchingnow/bocchi-the-rock.webp",
-    title: "Bocchi the Rock",
-    info: "12 episódios",
-    season: "on-hold",
-    studio: "CloverWorks",
-    airedSeason: "2022-?",
-    seasons: [12],
-    url: "https://www.anime-planet.com/anime/bocchi-the-rock",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GXJHM3P19/bocchi-the-rock",
-    malUrl: "https://myanimelist.net/anime/47917/Bocchi_the_Rock",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/G6DQN9KGR/is-it-wrong-to-try-to-pick-up-girls-in-a-dungeon",
+    malUrl: "https://myanimelist.net/anime/57066/Dungeon_ni_Deai_wo_Motomeru_no_wa_Machigatteiru_Darou_ka_V__Houjou_no_Megami-hen?q=danmachi&cat=anime",
   },
 ];
 
@@ -1757,7 +1687,6 @@ const favoriteEpisodesData = [
       "other-images/peakepisodes/re-zero2-3.webp",
       "other-images/peakepisodes/re-zero2-4.webp",
       "other-images/peakepisodes/re-zero2-5.webp",
-
     ],
     rating: 9.6,
     imdbUrl: "https://www.imdb.com/pt/title/tt12496222",
@@ -1863,12 +1792,7 @@ const favoriteEpisodesData = [
     anime: "Classroom of the Elite",
     episodeLabel: "T2.E12 — Force Without Wisdom Collapses Under Its Own Weight.",
     img: "other-images/peakepisodes/cote-2.webp",
-    images: [
-      "other-images/peakepisodes/cote-2.webp",
-      "other-images/peakepisodes/cote-1.webp",
-      "other-images/peakepisodes/cote-3.webp",
-      "other-images/peakepisodes/cote-4.webp",
-    ],
+    images: ["other-images/peakepisodes/cote-2.webp", "other-images/peakepisodes/cote-1.webp", "other-images/peakepisodes/cote-3.webp", "other-images/peakepisodes/cote-4.webp"],
     rating: 9.6,
     imdbUrl: "https://www.imdb.com/pt/title/tt21935338/",
     // crunchyrollUrl:
@@ -1878,13 +1802,10 @@ const favoriteEpisodesData = [
   },
 ];
 
-// Plan to Watch — fila de animes a assistir, em ordem de prioridade.
-
 // Release Calendar — calendário semanal de lançamentos.
 // Adicione/remova os animes aqui. releaseDay aceita:
 // "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" ou "sunday".
 const rawReleaseCalendarData = [
-
   // {
   //   id: "opposites",
   //   img: "watchingnow-images/watchingnow/opposites.webp",
@@ -1892,34 +1813,10 @@ const rawReleaseCalendarData = [
   //   season: "summer-2026",
   //   releaseDay: "sunday",
   // },
-
 ];
 
+// Plan to Watch — fila de animes a assistir, em ordem de prioridade.
 const rawPlanToWatchData = [
-  {
-    id: "bleach",
-    img: "plantowatch-images/plantowatch/bleach.webp",
-    title: "Bleach",
-    info: "5 temporadas: 416 episódios",
-    studios: [
-      { season: "S1-S3", name: "Studio Pierrot" },
-      { season: "S4-S5", name: "Pierrrot Films" },
-     ],
-    airedSeason: "2004-2026",
-    url: "https://www.anime-planet.com/anime/bleach",
-    crunchyroll: "",
-    malUrl: "https://myanimelist.net/anime/269/Bleach",
-
-    mal: [
-      { label: "1ª temporada", episodes: 366, malName: "Bleach", unwatched: true  },
-
-      { spacer: true, text: "Bleach: Thousand-Year Blood War"  },
-      { label: "2ª temporada", episodes: 13, malName: "Bleach: Sennen Kessen-hen", unwatched: true  },
-      { label: "3ª temporada: The Separation", episodes: 13, malName: "Bleach: Sennen Kessen-hen - Ketsubetsu-tan", unwatched: true  },
-      { label: "4ª temporada: The Conflict", episodes: 14, malName: "Bleach: Sennen Kessen-hen - Soukoku-tan", unwatched: true  },
-      { label: "5ª temporada: The Calamity", episodes: 10, malName: "Bleach: Sennen Kessen-hen - Kashin-tan", unwatched: true  },
-    ],
-  },
   {
     id: "nippon-sangoku",
     img: "plantowatch-images/plantowatch/nippon-sangoku.webp",
@@ -1931,9 +1828,52 @@ const rawPlanToWatchData = [
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/63375/Nippon_Sangoku",
 
-    mal: [
-      { label: "1 temporada", episodes: 12, malName: "Nippon Sangoku", unwatched: true  },
+    mal: [{ label: "1 temporada", episodes: 12, malName: "Nippon Sangoku", unwatched: true }],
+  },
+  {
+    id: "saga-of-tanya-the-evil",
+    img: "plantowatch-images/plantowatch/saga-of-tanya-the-evil.webp",
+    title: "Saga of Tanya the Evil",
+    info: "1 temporada: 12 episódios <br>1 Filme: 1h38m",
+    studio: "NUT",
+    airedSeason: "2017-2019",
+    url: "https://www.anime-planet.com/anime/saga-of-tanya-the-evil",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GR9VJK494/saga-of-tanya-the-evil",
+    malUrl: "https://myanimelist.net/anime/32615/Youjo_Senki",
+  },
+  {
+    id: "astra-space",
+    img: "plantowatch-images/plantowatch/astra-space.webp",
+    title: "Astra Lost in Space",
+    info: "12 episódios",
+    studio: "Lerche",
+    airedSeason: "2019",
+    url: "https://www.anime-planet.com/anime/astra-lost-in-space",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GMEHMEWZM/astra-lost-in-space",
+    malUrl: "https://myanimelist.net/anime/39198/Kanata_no_Astra",
+  },
+  {
+    id: "bleach",
+    img: "plantowatch-images/plantowatch/bleach.webp",
+    title: "Bleach",
+    info: "5 temporadas: 416 episódios",
+    studios: [
+      { season: "S1-S3", name: "Studio Pierrot" },
+      { season: "S4-S5", name: "Pierrot Films" },
+    ],
+    airedSeason: "2004-2026",
+    url: "https://www.anime-planet.com/anime/bleach",
+    crunchyroll: "",
+    malUrl: "https://myanimelist.net/anime/269/Bleach",
 
+    mal: [
+      { label: "1ª temporada", episodes: 366, malName: "Bleach", unwatched: true },
+
+      { spacer: true, text: "Bleach: Thousand-Year Blood War" },
+      { label: "2ª temporada", episodes: 13, malName: "Bleach: Sennen Kessen-hen", unwatched: true },
+      { label: "3ª temporada: The Separation", episodes: 13, malName: "Bleach: Sennen Kessen-hen - Ketsubetsu-tan", unwatched: true },
+      { label: "4ª temporada: The Conflict", episodes: 14, malName: "Bleach: Sennen Kessen-hen - Soukoku-tan", unwatched: true },
+      { label: "5ª temporada: The Calamity", episodes: 10, malName: "Bleach: Sennen Kessen-hen - Kashin-tan", unwatched: true },
     ],
   },
   {
@@ -1947,30 +1887,26 @@ const rawPlanToWatchData = [
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/2034/Lovely%E2%98%85Complex",
 
-    mal: [
-      { label: "1 temporada", episodes: 24, malName: "Lovely★Complex", unwatched: true  },
-
-    ],
+    mal: [{ label: "1 temporada", episodes: 24, malName: "Lovely★Complex", unwatched: true }],
   },
   {
     id: "my-teen-romantic-comedy",
     img: "plantowatch-images/plantowatch/my-teen-romantic-comedy.webp",
     title: "My Teen Romantic Comedy SNAFU",
     info: "3 temporadas: 39 episódios",
-        studios: [
+    studios: [
       { season: "S1", name: "Brain's Base" },
       { season: "S2-S3", name: "feel" },
-     ],
+    ],
     airedSeason: "2013-2020",
     url: "https://www.anime-planet.com/anime/my-teen-romantic-comedy-snafu",
     crunchyroll: "",
-    malUrl:
-      "https://myanimelist.net/anime/14813/Yahari_Ore_no_Seishun_Love_Comedy_wa_Machigatteiru",
+    malUrl: "https://myanimelist.net/anime/14813/Yahari_Ore_no_Seishun_Love_Comedy_wa_Machigatteiru",
 
     mal: [
-      { label: "1ª temporada", episodes: 13, malName: "Yahari Ore no Seishun Love Comedy wa Machigatteiru", unwatched: true  },
-      { label: "2ª temporada", episodes: 13, malName: "Yahari Ore no Seishun Love Comedy wa Machigatteiru. Zoku", unwatched: true  },
-      { label: "3ª temporada", episodes: 12, malName: "Yahari Ore no Seishun Love Comedy wa Machigatteiru. Kan", unwatched: true  },
+      { label: "1ª temporada", episodes: 13, malName: "Yahari Ore no Seishun Love Comedy wa Machigatteiru", unwatched: true },
+      { label: "2ª temporada", episodes: 13, malName: "Yahari Ore no Seishun Love Comedy wa Machigatteiru. Zoku", unwatched: true },
+      { label: "3ª temporada", episodes: 12, malName: "Yahari Ore no Seishun Love Comedy wa Machigatteiru. Kan", unwatched: true },
     ],
   },
   {
@@ -1983,9 +1919,7 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/terror-in-resonance",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/23283/Zankyou_no_Terror",
-    mal: [
-      { label: "1 temporada", episodes: 11, malName: "Zankyou no Terror", unwatched: true  },
-    ],
+    mal: [{ label: "1 temporada", episodes: 11, malName: "Zankyou no Terror", unwatched: true }],
   },
   {
     id: "dxd",
@@ -1995,21 +1929,21 @@ const rawPlanToWatchData = [
     studios: [
       { season: "S1-S3", name: "TNK" },
       { season: "S4", name: "Passione" },
-     ],
+    ],
     airedSeason: "2012-2018",
     url: "https://www.anime-planet.com/anime/high-school-dxd",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GR2P21J9R/high-school-dxd",
     malUrl: "https://myanimelist.net/anime/11617/High_School_DxD",
-  
+
     mal: [
-      { label: "1ª temporada", episodes: 12, malName: "High School DxD", unwatched: true  },
-      { label: "High School DxD: 2 OVAs", episodes: "46m", malName: "High School DxD OVA", unwatched: true  },
-      { label: "2ª temporada: New", episodes: 12, malName: "High School DxD New", unwatched: true  },
-      { label: "High School DxD New OVA", episodes: "24m", malName: "High School DxD New: Oppai, Tsutsumimasu!", unwatched: true  },
-      { label: "3ª temporada: BorN", episodes: 12, malName: "High School DxD BorN", unwatched: true  },
-      { label: "High School DxD BorN OVA", episodes: "24m", malName: "High School DxD BorN: Yomigaeranai Fushichou", unwatched: true  },
-      { label: "TV Special: Holiness Behind the Gym", episodes: "24m", malName: "High School DxD Hero: Taiikukan-ura no Holy", unwatched: true  },
-      { label: "4ª temporada: Hero", episodes: 12, malName: "High School DxD Hero", unwatched: true  },
+      { label: "1ª temporada", episodes: 12, malName: "High School DxD", unwatched: true },
+      { label: "High School DxD: 2 OVAs", episodes: "46m", malName: "High School DxD OVA", unwatched: true },
+      { label: "2ª temporada: New", episodes: 12, malName: "High School DxD New", unwatched: true },
+      { label: "High School DxD New OVA", episodes: "24m", malName: "High School DxD New: Oppai, Tsutsumimasu!", unwatched: true },
+      { label: "3ª temporada: BorN", episodes: 12, malName: "High School DxD BorN", unwatched: true },
+      { label: "High School DxD BorN OVA", episodes: "24m", malName: "High School DxD BorN: Yomigaeranai Fushichou", unwatched: true },
+      { label: "TV Special: Holiness Behind the Gym", episodes: "24m", malName: "High School DxD Hero: Taiikukan-ura no Holy", unwatched: true },
+      { label: "4ª temporada: Hero", episodes: 12, malName: "High School DxD Hero", unwatched: true },
     ],
   },
   {
@@ -2023,9 +1957,7 @@ const rawPlanToWatchData = [
     crunchyroll: "https://www.youtube.com/playlist?list=PLud1Y7nEL_d7BojMHk9Y6s6wsFeB6BmGz",
     malUrl: "https://myanimelist.net/anime/268/Golden_Boy",
 
-    mal: [
-      { label: "1 temporada", episodes: 6 , malName: "Golden Boy", unwatched: true  },
-    ],
+    mal: [{ label: "1 temporada", episodes: 6, malName: "Golden Boy", unwatched: true }],
   },
   {
     id: "konosuba",
@@ -2036,24 +1968,23 @@ const rawPlanToWatchData = [
       { season: "S1-S2", name: "Studio Deen" },
       { season: "MOVIE", name: "J.C. Staff" },
       { season: "S3", name: "Drive" },
-     ],
+    ],
     airedSeason: "2016",
     url: "https://www.anime-planet.com/anime/konosuba-gods-blessing-on-this-wonderful-world",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GYE5K3GQR/konosuba--gods-blessing-on-this-wonderful-world",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYE5K3GQR/konosuba--gods-blessing-on-this-wonderful-world",
     malUrl: "https://myanimelist.net/anime/30831/Kono_Subarashii_Sekai_ni_Shukufuku_wo",
 
     mal: [
-      { label: "1ª temporada", episodes: 10 , malName: "Kono Subarashii Sekai ni Shukufuku wo!", unwatched: true  },
-      { label: "2ª temporada", episodes: 10 , malName: "Kono Subarashii Sekai ni Shukufuku wo! 2", unwatched: true  },
-      { label: "Movie: Legend of Crimson", episodes: "1h30m" , malName: "Kono Subarashii Sekai ni Shukufuku wo! Movie: Kurenai Densetsu", unwatched: true  },
-      { label: "3ª temporada", episodes: 11 , malName: "Kono Subarashii Sekai ni Shukufuku wo! 2", unwatched: true  },
+      { label: "1ª temporada", episodes: 10, malName: "Kono Subarashii Sekai ni Shukufuku wo!", unwatched: true },
+      { label: "2ª temporada", episodes: 10, malName: "Kono Subarashii Sekai ni Shukufuku wo! 2", unwatched: true },
+      { label: "Movie: Legend of Crimson", episodes: "1h30m", malName: "Kono Subarashii Sekai ni Shukufuku wo! Movie: Kurenai Densetsu", unwatched: true },
+      { label: "3ª temporada", episodes: 11, malName: "Kono Subarashii Sekai ni Shukufuku wo! 2", unwatched: true },
 
-      { spacer: true, text: "FILLERS and SPIN OFFs ( XP )"  },
-      { label: "An Explosion on This Wonderful World", episodes: 12 , malName: "Kono Subarashii Sekai ni Bakuen wo!", unwatched: true  },
-      { label: "OVA 1: God's Blessing on This Wonderful Choker", episodes: "23m" , malName: "Kono Subarashii Sekai ni Shukufuku wo!: Kono Subarashii Choker ni Shukufuku wo!", unwatched: true  },
-      { label: "OVA 2: God's Blessing on This Wonderful Art", episodes: "28m" , malName: "Kono Subarashii Sekai ni Shukufuku wo! 2: Kono Subarashii Geijutsu ni Shukufuku wo!", unwatched: true  },
-      { label: "OVA 3: God's Blessing on This Wonderful Bonus Stage", episodes: "25m" , malName: "Kono Subarashii Sekai ni Shukufuku wo! 3: Bonus Stage", unwatched: true  },
+      { spacer: true, text: "FILLERS and SPIN OFFs ( XP )" },
+      { label: "An Explosion on This Wonderful World", episodes: 12, malName: "Kono Subarashii Sekai ni Bakuen wo!", unwatched: true },
+      { label: "OVA 1: God's Blessing on This Wonderful Choker", episodes: "23m", malName: "Kono Subarashii Sekai ni Shukufuku wo!: Kono Subarashii Choker ni Shukufuku wo!", unwatched: true },
+      { label: "OVA 2: God's Blessing on This Wonderful Art", episodes: "28m", malName: "Kono Subarashii Sekai ni Shukufuku wo! 2: Kono Subarashii Geijutsu ni Shukufuku wo!", unwatched: true },
+      { label: "OVA 3: God's Blessing on This Wonderful Bonus Stage", episodes: "25m", malName: "Kono Subarashii Sekai ni Shukufuku wo! 3: Bonus Stage", unwatched: true },
     ],
   },
   {
@@ -2068,9 +1999,9 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/32182/Mob_Psycho_100?q=mob%20ps",
 
     mal: [
-      { label: "1ª temporada", episodes: 12 , malName: "Mob Psycho 100", unwatched: true  },
-      { label: "2ª temporada", episodes: 13 , malName: "Mob Psycho 100 II", unwatched: true  },
-      { label: "3ª temporada", episodes: 12 , malName: "Mob Psycho 100 III", unwatched: true  },
+      { label: "1ª temporada", episodes: 12, malName: "Mob Psycho 100", unwatched: true },
+      { label: "2ª temporada", episodes: 13, malName: "Mob Psycho 100 II", unwatched: true },
+      { label: "3ª temporada", episodes: 12, malName: "Mob Psycho 100 III", unwatched: true },
     ],
   },
   {
@@ -2086,7 +2017,7 @@ const rawPlanToWatchData = [
 
     mal: [
       { label: "1ª temporada", episodes: 13, malName: "Grisaia no Kajitsu", unwatched: true },
-      { label: "The Labyrinth of Grisaia:  The Cocoon of Caprice 0", episodes: "TV Special", malName: "Grisaia no Meikyuu: Caprice no Mayu 0", unwatched: true },
+      { label: "The Labyrinth of Grisaia: The Cocoon of Caprice 0", episodes: "TV Special", malName: "Grisaia no Meikyuu: Caprice no Mayu 0", unwatched: true },
       { label: "2ª temporada", episodes: 10, malName: "Grisaia no Rakuen", unwatched: true },
       { label: "Movie: Phantom Trigger", episodes: "49m", malName: "Grisaia: Phantom Trigger The Animation", unwatched: true },
       { label: "Movie 2: Phantom Trigger Stargazer", episodes: "1h0m", malName: "Grisaia: Phantom Trigger The Animation - Stargazer", unwatched: true },
@@ -2105,8 +2036,8 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/35968/Wotaku_ni_Koi_wa_Muzukashii",
 
     mal: [
-      { label: "1 temporada", episodes: 11 , malName: "Wotaku ni Koi wa Muzukashii", unwatched: true  },
-      { label: "3 OVAs", episodes: "1h09m" , malName: "Wotaku ni Koi wa Muzukashii", unwatched: true  },
+      { label: "1 temporada", episodes: 11, malName: "Wotaku ni Koi wa Muzukashii", unwatched: true },
+      { label: "3 OVAs", episodes: "1h09m", malName: "Wotaku ni Koi wa Muzukashii", unwatched: true },
     ],
   },
   {
@@ -2121,37 +2052,36 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/50265/Spy_x_Family",
 
     mal: [
-      { label: "1ª temporada", episodes: 12 , malName: "Spy x Family", unwatched: true  },
-      { label: "1ª temporada II", episodes: 13 , malName: "Spy x Family Part 2", unwatched: true  },
-      { label: "2ª temporada", episodes: 12 , malName: "Spy x Family Season 2", unwatched: true  },
-      { label: "3ª temporada", episodes: 13 , malName: "Spy x Family Season 3", unwatched: true  },
+      { label: "1ª temporada", episodes: 12, malName: "Spy x Family", unwatched: true },
+      { label: "1ª temporada II", episodes: 13, malName: "Spy x Family Part 2", unwatched: true },
+      { label: "2ª temporada", episodes: 12, malName: "Spy x Family Season 2", unwatched: true },
+      { label: "3ª temporada", episodes: 13, malName: "Spy x Family Season 3", unwatched: true },
 
-      { spacer: true, text: "Filler Movie ( XP )"  },
-      { label: "Movie: Code White", episodes: "1h50m" , malName: "Spy x Family Movie: Code: White", unwatched: true  },
+      { spacer: true, text: "Filler Movie ( XP )" },
+      { label: "Movie: Code White", episodes: "1h50m", malName: "Spy x Family Movie: Code: White", unwatched: true },
     ],
   },
   {
     id: "kurokos-basketball",
     img: "plantowatch-images/plantowatch/kurokos-basketball.webp",
     title: "Kuroko's Basketball",
-    info: "3 temporadas: 75 episódios <br> 1 Filme: 1h30m",
+    info: "3 temporadas: 75 episódios <br>1 Filme: 1h30m",
     studio: "Production I.G",
     airedSeason: "2012-2017",
     url: "https://www.anime-planet.com/anime/kurokos-basketball",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/G62P48X56/kurokos-basketball",
     malUrl: "https://myanimelist.net/anime/11771/Kuroko_no_Basket",
 
-      mal: [
-      { label: "1ª temporada", episodes: 25 , malName: "Kuroko no Basket", unwatched: true  },
-      { label: "2ª temporada", episodes: 25 , malName: "Kuroko no Basket 2nd Season", unwatched: true  },
-      { label: "3ª temporada", episodes: 25 , malName: "Kuroko no Basket 3rd Season", unwatched: true  },
-      { label: "Movie: Last Game", episodes: "1h30m" , malName: "Kuroko no Basket Movie 4: Last Game", unwatched: true  },
+    mal: [
+      { label: "1ª temporada", episodes: 25, malName: "Kuroko no Basket", unwatched: true },
+      { label: "2ª temporada", episodes: 25, malName: "Kuroko no Basket 2nd Season", unwatched: true },
+      { label: "3ª temporada", episodes: 25, malName: "Kuroko no Basket 3rd Season", unwatched: true },
+      { label: "Movie: Last Game", episodes: "1h30m", malName: "Kuroko no Basket Movie 4: Last Game", unwatched: true },
 
-      { spacer: true, text: "recap movies ( xp )"  },
-      { label: "Movie 1: Winter Cup Highlights: Shadow and Light", episodes: "1h27m" , malName: "Kuroko no Basket Movie 1: Winter Cup - Kage to Hikari", unwatched: true  },
-      { label: "Movie 2: Winter Cup Highlights: Beyond the Tears", episodes: "1h27m" , malName: "Kuroko no Basket Movie 2: Winter Cup - Namida no Saki e", unwatched: true  },
-      { label: "Movie 3: Winter Cup Highlights: Crossing the Door", episodes: "1h28m" , malName: "Kuroko no Basket Movie 3: Winter Cup - Tobira no Mukou", unwatched: true  },
-
+      { spacer: true, text: "recap movies ( xp )" },
+      { label: "Movie 1: Winter Cup Highlights: Shadow and Light", episodes: "1h27m", malName: "Kuroko no Basket Movie 1: Winter Cup - Kage to Hikari", unwatched: true },
+      { label: "Movie 2: Winter Cup Highlights: Beyond the Tears", episodes: "1h27m", malName: "Kuroko no Basket Movie 2: Winter Cup - Namida no Saki e", unwatched: true },
+      { label: "Movie 3: Winter Cup Highlights: Crossing the Door", episodes: "1h28m", malName: "Kuroko no Basket Movie 3: Winter Cup - Tobira no Mukou", unwatched: true },
     ],
   },
   {
@@ -2166,8 +2096,8 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/49596/Blue_Lock",
 
     mal: [
-      { label: "1ª temporada", episodes: 24 , malName: "Blue Lock", unwatched: true  },
-      { label: "2ª temporada", episodes: 14 , malName: "Blue Lock vs. U-20 Japan", unwatched: true  },
+      { label: "1ª temporada", episodes: 24, malName: "Blue Lock", unwatched: true },
+      { label: "2ª temporada", episodes: 14, malName: "Blue Lock vs. U-20 Japan", unwatched: true },
     ],
   },
   {
@@ -2175,15 +2105,18 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/evangelion.webp",
     title: "Neon Genesis Evangelion",
     info: "1 temporada: 26 episódios <br>1 Filme: 1h27m",
-    studio: "Gainax Tatsunoko Production Production I.G",
+    studios: [
+      { season: "S1", name: "Gainax and Tatsunoko Production" },
+      { season: "MOVIE", name: "Gainax and Production I.G" },
+    ],
     airedSeason: "1995-1997",
     url: "https://www.anime-planet.com/anime/neon-genesis-evangelion",
     netflix: "https://www.netflix.com/title/81033445",
     malUrl: "https://myanimelist.net/anime/30/Shinseiki_Evangelion",
 
     mal: [
-      { label: "1 temporada", episodes: 24 , malName: "Shinseiki Evangelion", unwatched: true  },
-      { label: "Movie: The End of Evangelion", episodes: "1h26m" , malName: "Shinseiki Evangelion Movie: Air/Magokoro wo, Kimi ni", unwatched: true  },
+      { label: "1 temporada", episodes: 24, malName: "Shinseiki Evangelion", unwatched: true },
+      { label: "Movie: The End of Evangelion", episodes: "1h26m", malName: "Shinseiki Evangelion Movie: Air/Magokoro wo, Kimi ni", unwatched: true },
     ],
   },
   {
@@ -2194,13 +2127,10 @@ const rawPlanToWatchData = [
     studio: "Bones",
     airedSeason: "2009-2010",
     url: "https://www.anime-planet.com/anime/fullmetal-alchemist-brotherhood",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GRGGPG93R/fullmetal-alchemist-brotherhood",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRGGPG93R/fullmetal-alchemist-brotherhood",
     malUrl: "https://myanimelist.net/anime/5114/Fullmetal_Alchemist__Brotherhood",
 
-    mal: [
-      { label: "1 temporada", episodes: 64 , malName: "Fullmetal Alchemist: Brotherhood", unwatched: true  },
-    ],    
+    mal: [{ label: "1 temporada", episodes: 64, malName: "Fullmetal Alchemist: Brotherhood", unwatched: true }],
   },
   {
     id: "death-note",
@@ -2213,9 +2143,7 @@ const rawPlanToWatchData = [
     netflix: "https://www.netflix.com/title/70204970",
     malUrl: "https://myanimelist.net/anime/1535/Death_Note",
 
-    mal: [
-      { label: "1 temporada", episodes: 37, malName: "Death Note", unwatched: true  },
-    ],    
+    mal: [{ label: "1 temporada", episodes: 37, malName: "Death Note", unwatched: true }],
   },
   {
     id: "i-want-to-eat-your-pancreas",
@@ -2228,9 +2156,7 @@ const rawPlanToWatchData = [
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/36098/Kimi_no_Suizou_wo_Tabetai",
 
-    mal: [
-      { label: "Filme", episodes: "1h48m", malName: "Kimi no Suizou wo Tabetai", unwatched: true  },
-    ],  
+    mal: [{ label: "Filme", episodes: "1h48m", malName: "Kimi no Suizou wo Tabetai", unwatched: true }],
   },
   {
     id: "fate-zero",
@@ -2244,9 +2170,9 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/10087/Fate_Zero",
 
     mal: [
-      { label: "1ª temporada", episodes: 13, malName: "Fate/Zero", unwatched: true  },
-      { label: "2ª temporada", episodes: 12, malName: "Fate/Zero 2nd Season", unwatched: true  },
-    ],  
+      { label: "1ª temporada", episodes: 13, malName: "Fate/Zero", unwatched: true },
+      { label: "2ª temporada", episodes: 12, malName: "Fate/Zero 2nd Season", unwatched: true },
+    ],
   },
   {
     id: "fate-heavens-feel",
@@ -2257,14 +2183,13 @@ const rawPlanToWatchData = [
     airedSeason: "2017-2020",
     url: "https://www.anime-planet.com/anime/fate-stay-night-heavens-feel-i-presage-flower",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GXJHM39V0/fatestay-night-heavens-feel",
-    malUrl:
-      "https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower",
+    malUrl: "https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower",
 
     mal: [
-      { label: "Movie: Heaven's Feel - I. Presage Flower", episodes: "2h00m", malName: "Fate/stay night Movie: Heaven's Feel - I. Presage Flower", unwatched: true  },
-      { label: "Movie: Heaven's Feel - II. Lost Butterfly", episodes: "1h57m", malName: "Fate/stay night Movie: Heaven's Feel - II. Lost Butterfly", unwatched: true  },
-      { label: "Movie: Heaven's Feel - III. Spring Song", episodes: "2h02m", malName: "Fate/stay night Movie: Heaven's Feel - III. Spring Song", unwatched: true  },
-    ],  
+      { label: "Movie: Heaven's Feel - I. Presage Flower", episodes: "2h00m", malName: "Fate/stay night Movie: Heaven's Feel - I. Presage Flower", unwatched: true },
+      { label: "Movie: Heaven's Feel - II. Lost Butterfly", episodes: "1h57m", malName: "Fate/stay night Movie: Heaven's Feel - II. Lost Butterfly", unwatched: true },
+      { label: "Movie: Heaven's Feel - III. Spring Song", episodes: "2h02m", malName: "Fate/stay night Movie: Heaven's Feel - III. Spring Song", unwatched: true },
+    ],
   },
   {
     id: "chainsaw-man",
@@ -2278,9 +2203,9 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/44511/Chainsaw_Man",
 
     mal: [
-      { label: "1 temporada", episodes: 12, malName: "Chainsaw Man", unwatched: true  },
-      { label: "Movie: Reze Arc", episodes: "1h39m", malName: "Chainsaw Man Movie: Reze-hen", unwatched: true  },
-    ],  
+      { label: "1 temporada", episodes: 12, malName: "Chainsaw Man", unwatched: true },
+      { label: "Movie: Reze Arc", episodes: "1h39m", malName: "Chainsaw Man Movie: Reze-hen", unwatched: true },
+    ],
   },
   {
     id: "cowboy-bebop",
@@ -2294,9 +2219,9 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/1/Cowboy_Bebop",
 
     mal: [
-      { label: "1 temporada", episodes: 26, malName: "Cowboy Bebop", unwatched: true  },
-      { label: "Cowbot Bebop: The Movie", episodes: "1h55m", malName: "Cowboy Bebop: Tengoku no Tobira", unwatched: true  },
-    ],  
+      { label: "1 temporada", episodes: 26, malName: "Cowboy Bebop", unwatched: true },
+      { label: "Cowbot Bebop: The Movie", episodes: "1h55m", malName: "Cowboy Bebop: Tengoku no Tobira", unwatched: true },
+    ],
   },
   {
     id: "your-name",
@@ -2309,9 +2234,7 @@ const rawPlanToWatchData = [
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/32281/Kimi_no_Na_wa",
 
-    mal: [
-      { label: "Filme", episodes: "1h50m", malName: "Kimi no Na wa.", unwatched: true  },
-    ],  
+    mal: [{ label: "Filme", episodes: "1h50m", malName: "Kimi no Na wa.", unwatched: true }],
   },
   {
     id: "heavenly-delusion",
@@ -2343,8 +2266,7 @@ const rawPlanToWatchData = [
     studio: "ufotable",
     airedSeason: "2014-2015",
     url: "https://www.anime-planet.com/anime/fate-stay-night-unlimited-blade-works",
-    crunchyroll:
-      "https://www.crunchyroll.com/pt-br/series/GY8V11X7Y/fatestay-night-unlimited-blade-works",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GY8V11X7Y/fatestay-night-unlimited-blade-works",
     malUrl: "https://myanimelist.net/anime/22297/Fate_stay_night__Unlimited_Blade_Works",
   },
   {
@@ -2362,8 +2284,11 @@ const rawPlanToWatchData = [
     id: "gintama",
     img: "plantowatch-images/plantowatch/gintama.webp",
     title: "Gintama",
-    info: "8 temporadas: 367 episódios <br> 1 Filme: 1h44m",
-    studio: "Sunrise, Bandai Namco Pictures",
+    info: "8 temporadas: 367 episódios <br>1 Filme: 1h44m",
+    studios: [
+      { season: "S1-S3", name: "Sunrise" },
+      { season: "S4-S8", name: "Bandai Namco Pictures" },
+    ],
     airedSeason: "2006-2021",
     url: "https://www.anime-planet.com/anime/gintama",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYQ4MKDZ6/gintama",
@@ -2385,7 +2310,10 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/link-click.webp",
     title: "Link Click",
     info: "3 temporadas: 35 episódios",
-    studio: "LAN Studio / CMC Media",
+    studios: [
+      { season: "S1-S2", name: "LAN Studio " },
+      { season: "S3", name: "CMC Media" },
+    ],
     airedSeason: "2021",
     url: "https://www.anime-planet.com/anime/link-click",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GP5HJ8E81/link-click",
@@ -2446,17 +2374,7 @@ const rawPlanToWatchData = [
     netflix: "https://www.netflix.com/title/81409869",
     malUrl: "https://myanimelist.net/anime/19/Monster",
   },
-  {
-    id: "astra-space",
-    img: "plantowatch-images/plantowatch/astra-space.webp",
-    title: "Astra Lost in Space",
-    info: "12 episódios",
-    studio: "Lerche",
-    airedSeason: "2019",
-    url: "https://www.anime-planet.com/anime/astra-lost-in-space",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GMEHMEWZM/astra-lost-in-space",
-    malUrl: "https://myanimelist.net/anime/39198/Kanata_no_Astra",
-  },
+
   {
     id: "fate-strange-fake",
     img: "plantowatch-images/plantowatch/fate-strange-fake.webp",
@@ -2505,8 +2423,11 @@ const rawPlanToWatchData = [
     id: "pretty-derby",
     img: "plantowatch-images/plantowatch/pretty-derby.webp",
     title: "Uma Musume: Pretty Derby",
-    info: "3 temporadas: 39 episódios <br>2 Filmes: 3h26m",
-    studio: "P.A. Works / Studio KAI / CygamesPictures",
+    info: "3 temporadas: 39 episódios",
+    studios: [
+      { season: "S1", name: "P.A. Works" },
+      { season: "S2-S3", name: "Studio KAI" },
+    ],
     airedSeason: "2018-2024",
     url: "https://www.anime-planet.com/anime/uma-musume-pretty-derby",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GR79P2816/umamusume-pretty-derby",
@@ -2526,7 +2447,7 @@ const rawPlanToWatchData = [
   {
     id: "no-game-no-life",
     img: "plantowatch-images/plantowatch/no-game-no-life.webp",
-    title: "No Game No Life ",
+    title: "No Game No Life",
     info: "12 episódios",
     studio: "MADHOUSE",
     airedSeason: "2014",
@@ -2645,17 +2566,6 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/35849/Darling_in_the_FranXX",
   },
   {
-    id: "king-avatar",
-    img: "plantowatch-images/plantowatch/king-avatar.webp",
-    title: "The King's Avatar",
-    info: "3 temporadas: 41 episódios <br>1 Filme: 1h38m",
-    studio: "B.CMAY PICTURES / Colored-Pencil Animation Design",
-    airedSeason: "2017-2024",
-    url: "https://www.anime-planet.com/anime/the-kings-avatar",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GQWH0M113/the-kings-avatar",
-    malUrl: "https://myanimelist.net/anime/33926/Quanzhi_Gaoshou",
-  },
-  {
     id: "cute-girl-in-the-heros-party",
     img: "plantowatch-images/plantowatch/cute-girl-in-the-heros-party.webp",
     title: "There was a Cute Girl in the Hero’s Party, so I Tried Confessing to Her",
@@ -2752,7 +2662,7 @@ const rawPlanToWatchData = [
     airedSeason: "2025",
     url: "https://www.anime-planet.com/anime/dusk-beyond-the-end-of-the-world",
     crunchyroll: "",
-    malUrl: "https://myanimelist.net/anime.php?q=Towa%20no%20Yugure",
+    malUrl: "https://myanimelist.net/anime/61917/Towa_no_Yuugure",
   },
   {
     id: "eureka-seven",
@@ -2770,7 +2680,7 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/full-time-magister.webp",
     title: "Full-Time Magister",
     info: "6 temporadas: 72 episódios",
-    studio: "Shanghai Foch Film Culture Investment",
+    studio: "Foch Film",
     airedSeason: "2016-2023",
     url: "https://www.anime-planet.com/anime/full-time-magister",
     crunchyroll: "",
@@ -2781,7 +2691,10 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/girlfriend-girlfriend.webp",
     title: "Girlfriend, Girlfriend",
     info: "2 temporadas: 24 episódios",
-    studio: "Tezuka Productions / SynergySP",
+    studios: [
+      { season: "S1", name: "Tezuka Productions" },
+      { season: "S2", name: "SynergySP" },
+    ],
     airedSeason: "2021-2023",
     url: "https://www.anime-planet.com/anime/girlfriend-girlfriend",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GEXH3WP97/girlfriend-girlfriend",
@@ -2803,7 +2716,10 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/golden-kamuy.webp",
     title: "Golden Kamuy",
     info: "5 temporadas: 62 episódios",
-    studio: "Geno Studio / Brain's Base",
+    studios: [
+      { season: "S1-S3", name: "Geno Studio" },
+      { season: "S4-S5", name: "Brain's Base" },
+    ],
     airedSeason: "2018-2026",
     url: "https://www.anime-planet.com/anime/golden-kamuy",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GY8DWQN5Y/golden-kamuy",
@@ -2836,7 +2752,10 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/killing-slimes.webp",
     title: "I’ve Been Killing Slimes for 300 Years and Maxed Out My Level",
     info: "2 temporadas: 24 episódios",
-    studio: "Revoroot / Teddy",
+    studios: [
+      { season: "S1", name: "Revoroot" },
+      { season: "S2", name: "Teddy" },
+    ],
     airedSeason: "2021-2025",
     url: "https://www.anime-planet.com/anime/ive-been-killing-slimes-for-300-years-and-maxed-out-my-level",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GW4HM79VM/ive-been-killing-slimes-for-300-years-and-maxed-out-my-level",
@@ -2858,7 +2777,10 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/log-horizon.webp",
     title: "Log Horizon",
     info: "3 temporadas: 62 episódios",
-    studio: "Satelight / Studio Deen",
+    studios: [
+      { season: "S1", name: "Satelight" },
+      { season: "S2-S3", name: "Studio Deen" },
+    ],
     airedSeason: "2013-2021",
     url: "https://www.anime-planet.com/anime/log-horizon",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRVNMG93Y/log-horizon",
@@ -2895,7 +2817,7 @@ const rawPlanToWatchData = [
     airedSeason: "2025",
     url: "https://www.anime-planet.com/anime/may-i-ask-for-one-final-thing",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00389258/may-i-ask-for-one-final-thing",
-    malUrl: "https://myanimelist.net/anime.php?q=Saigo%20ni%20Hitotsu%20dake%20Onegai%20shitemo%20Yoroshii%20deshou%20ka",
+    malUrl: "https://myanimelist.net/anime/59846/Saigo_ni_Hitotsu_dake_Onegai_shitemo_Yoroshii_deshou_ka",
   },
   {
     id: "ninja-kamui",
@@ -2924,23 +2846,16 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/panty-stocking-with-garterbelt.webp",
     title: "Panty & Stocking with Garterbelt",
     info: "2 temporadas: 26 episódios",
-    studio: "Gainax / Trigger",
+    studios: [
+      { season: "S1", name: "Gainax" },
+      { season: "S2", name: "Trigger" },
+    ],
     airedSeason: "2010-2025",
     url: "https://www.anime-planet.com/anime/panty-and-stocking-with-garterbelt",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/8795/Panty___Stocking_with_Garterbelt",
   },
-  {
-    id: "saga-of-tanya-the-evil",
-    img: "plantowatch-images/plantowatch/saga-of-tanya-the-evil.webp",
-    title: "Saga of Tanya the Evil",
-    info: "1 temporada: 12 episódios <br>1 Filme: 1h38m",
-    studio: "NUT",
-    airedSeason: "2017-2019",
-    url: "https://www.anime-planet.com/anime/saga-of-tanya-the-evil",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GR9VJK494/saga-of-tanya-the-evil",
-    malUrl: "https://myanimelist.net/anime/32615/Youjo_Senki",
-  },
+
   {
     id: "scissor-seven",
     img: "plantowatch-images/plantowatch/scissor-seven.webp",
@@ -2968,11 +2883,19 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/tatsuki-fujimoto.webp",
     title: "Tatsuki Fujimoto 17-26",
     info: "8 episódios",
-    studio: "ZEXCS / Lapin Track / GRAPH77 / 100studio / Studio Kafka / P.A. Works",
+    studios: [
+      { season: "E1", name: "ZEXCS" },
+      { season: "E2-3", name: "Lapin Track" },
+      { season: "E4", name: "GRAPH77" },
+      { season: "E5", name: "100studio " },
+      { season: "E6", name: "Studio Kafka" },
+      { season: "E7", name: "100studio " },
+      { season: "E8", name: "P.A. WORKS" },
+    ],
     airedSeason: "2025",
     url: "https://www.anime-planet.com/anime/tatsuki-fujimoto-17-26",
     crunchyroll: "",
-    malUrl: "https://myanimelist.net/anime.php?q=Tatsuki%20Fujimoto%2017-26",
+    malUrl: "https://myanimelist.net/anime/62405/Fujimoto_Tatsuki_17-26",
   },
   {
     id: "kamen-rider",
@@ -2983,7 +2906,7 @@ const rawPlanToWatchData = [
     airedSeason: "2025-2026",
     url: "https://www.anime-planet.com/anime/tojima-wants-to-be-a-kamen-rider",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00364945/tojima-wants-to-be-a-kamen-rider",
-    malUrl: "https://myanimelist.net/anime.php?q=Toujima%20Tanzaburou%20wa%20Kamen%20Rider%20ni%20Naritai",
+    malUrl: "https://myanimelist.net/anime/61159/Toujima_Tanzaburou_wa_Kamen_Rider_ni_Naritai",
   },
   {
     id: "trigun-stampede",
@@ -3008,7 +2931,7 @@ const rawPlanToWatchData = [
     malUrl: "https://myanimelist.net/anime/52741/Undead_Unluck",
   },
   {
-    id: " ",
+    id: "ms-servant",
     img: "plantowatch-images/plantowatch/ms-servant.webp",
     title: "You Are Ms. Servant.",
     info: "12 episódios",
@@ -3090,27 +3013,9 @@ const trueCharactersData = [
     info: "Re:ZERO - Starting Life in Another World",
   },
   {
-    id: "mei-mei",
-    img: "other-images/truecharacters/mei-mei.webp",
-    title: "Mei Mei",
-    info: "Jujutsu Kaisen",
-  },
-  {
-    id: "elfaria",
-    img: "other-images/truecharacters/elfaria.webp",
-    title: "Elfaria Albis Serfort",
-    info: "Wistoria: Wand and Sword",
-  },
-  {
     id: "xin",
     img: "other-images/truecharacters/xin.webp",
     title: "Xin (Li Xin)",
-    info: "Kingdom",
-  },
-  {
-    id: "qiang-lei",
-    img: "other-images/truecharacters/qiang-lei.webp",
-    title: "Qiang Lei (Kyou Kai)",
     info: "Kingdom",
   },
   {
@@ -3120,52 +3025,16 @@ const trueCharactersData = [
     info: "Mushoku Tensei: Jobless Reincarnation",
   },
   {
+    id: "qiang-lei",
+    img: "other-images/truecharacters/qiang-lei.webp",
+    title: "Qiang Lei (Kyou Kai)",
+    info: "Kingdom",
+  },
+  {
     id: "ayanokoji",
     img: "other-images/truecharacters/ayanokoji.webp",
     title: "Kiyotaka Ayanokoji",
     info: "Classroom of the Elite",
-  },
-  {
-    id: "lucy",
-    img: "other-images/truecharacters/lucy.webp",
-    title: "Lucyna Kushinada",
-    info: "Cyberpunk: Edgerunners",
-  },
-  {
-    id: "esdeath",
-    img: "other-images/truecharacters/esdeath.webp",
-    title: "Esdeath",
-    info: "Akame ga Kill",
-  },
-  {
-    id: "stark",
-    img: "other-images/truecharacters/stark.webp",
-    title: "Stark",
-    info: "Frieren: Beyond Journey's End",
-  },
-  {
-    id: "cc",
-    img: "other-images/truecharacters/cc.webp",
-    title: "C.C.",
-    info: "Code Geass: Lelouch of the Rebellion",
-  },
-  {
-    id: "taira",
-    img: "other-images/truecharacters/taira.webp",
-    title: "Shuuji Taira",
-    info: "You and I are Polar Opposites",
-  },
-  {
-    id: "capella",
-    img: "other-images/truecharacters/cappela.webp",
-    title: "Capella Emerada Lugunicai",
-    info: "Re:ZERO - Starting Life in Another World",
-  },
-  {
-    id: "merlin",
-    img: "other-images/truecharacters/merlin.webp",
-    title: "Merlin",
-    info: "The Seven Deadly Sins: Nanatsu no Taizai",
   },
   {
     id: "senku",
@@ -3174,16 +3043,88 @@ const trueCharactersData = [
     info: "Dr. Stone",
   },
   {
+    id: "stark",
+    img: "other-images/truecharacters/stark.webp",
+    title: "Stark",
+    info: "Frieren: Beyond Journey's End",
+  },
+  {
+    id: "zoro",
+    img: "other-images/truecharacters/zoro.webp",
+    title: "Roronoa Zoro",
+    info: "One Piece",
+  },
+  {
+    id: "lucy",
+    img: "other-images/truecharacters/lucy.webp",
+    title: "Lucyna Kushinada",
+    info: "Cyberpunk: Edgerunners",
+  },
+  {
+    id: "elfaria",
+    img: "other-images/truecharacters/elfaria.webp",
+    title: "Elfaria Albis Serfort",
+    info: "Wistoria: Wand and Sword",
+  },
+  {
+    id: "cc",
+    img: "other-images/truecharacters/cc.webp",
+    title: "C.C.",
+    info: "Code Geass: Lelouch of the Rebellion",
+  },
+  {
+    id: "esdeath",
+    img: "other-images/truecharacters/esdeath.webp",
+    title: "Esdeath",
+    info: "Akame ga Kill",
+  },
+  {
+    id: "taira",
+    img: "other-images/truecharacters/taira.webp",
+    title: "Shuuji Taira",
+    info: "You and I are Polar Opposites",
+  },
+  {
+    id: "law",
+    img: "other-images/truecharacters/law.webp",
+    title: "Trafalgar D. Water Law",
+    info: "One Piece",
+  },
+  {
     id: "gojo",
     img: "other-images/truecharacters/gojo.webp",
     title: "Satoru Gojo",
     info: "Jujutsu Kaisen",
   },
   {
+    id: "luffy",
+    img: "other-images/truecharacters/luffy.webp",
+    title: "Monkey D. Luffy",
+    info: "One Piece",
+  },
+  {
     id: "orsted",
     img: "other-images/truecharacters/orsted.webp",
     title: "Orsted",
     info: "Mushoku Tensei: Jobless Reincarnation",
+  },
+  {
+    id: "merlin",
+    img: "other-images/truecharacters/merlin.webp",
+    title: "Merlin",
+    info: "The Seven Deadly Sins: Nanatsu no Taizai",
+  },
+  {
+    id: "capella",
+    img: "other-images/truecharacters/capella.webp",
+    title: "Capella Emerada Lugunicai",
+    info: "Re:ZERO - Starting Life in Another World",
+  },
+  {
+    id: "killua",
+    img: "other-images/truecharacters/killua.webp",
+    title: "Killua Zoldyck",
+    info: "Hunter x Hunter",
   },
   {
     id: "hancock",
@@ -3228,22 +3169,46 @@ const trueCharactersData = [
     info: "Hell's Paradise: Jigokuraku",
   },
   {
-    id: "maki",
-    img: "other-images/truecharacters/maki.webp",
-    title: "Maki Zenin",
+    id: "toji",
+    img: "other-images/truecharacters/toji.webp",
+    title: "Toji Fushiguro",
     info: "Jujutsu Kaisen",
   },
   {
     id: "hinata",
     img: "other-images/truecharacters/hinata.webp",
     title: "Shoyo Hinata",
-    info: "Haikyuu!!  ",
+    info: "Haikyuu!!",
+  },
+  {
+    id: "kurapika",
+    img: "other-images/truecharacters/kurapika.webp",
+    title: "Kurapika",
+    info: "Hunter x Hunter",
+  },
+  {
+    id: "xylo",
+    img: "other-images/truecharacters/xylo.webp",
+    title: "Xylo Forbartz",
+    info: "Sentenced to be a Hero",
   },
   {
     id: "alya",
     img: "other-images/truecharacters/alya.webp",
     title: "Alya",
     info: "Alya Sometimes Hides Her Feelings in Russian",
+  },
+  {
+    id: "frieren-frieren",
+    img: "other-images/truecharacters/frieren.webp",
+    title: "Frieren",
+    info: "Frieren: Beyond Journey's End",
+  },
+  {
+    id: "maki",
+    img: "other-images/truecharacters/maki.webp",
+    title: "Maki Zenin",
+    info: "Jujutsu Kaisen",
   },
   {
     id: "hana",
@@ -3258,22 +3223,10 @@ const trueCharactersData = [
     info: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
   },
   {
-    id: "shizuku",
-    img: "other-images/truecharacters/shizuku.webp",
-    title: "Shizuku Murasaki",
-    info: "Hunter x Hunter",
-  },
-  {
-    id: "tsukasa",
-    img: "other-images/truecharacters/tsukasa.webp",
-    title: "Tsukasa Shishio",
-    info: "Dr. Stone",
-  },
-  {
-    id: "xylo",
-    img: "other-images/truecharacters/xylo.webp",
-    title: "Xylo Forbartz",
-    info: "Sentenced to be a Hero",
+    id: "bokuto",
+    img: "other-images/truecharacters/bokuto.webp",
+    title: "Kotaro Bokuto",
+    info: "Haikyuu!!",
   },
   {
     id: "okarun",
@@ -3282,22 +3235,82 @@ const trueCharactersData = [
     info: "Dan da Dan",
   },
   {
+    id: "oikawa",
+    img: "other-images/truecharacters/oikawa.webp",
+    title: "Oikawa",
+    info: "Haikyuu!!",
+  },
+  {
+    id: "mahito",
+    img: "other-images/truecharacters/mahito.webp",
+    title: "Mahito",
+    info: "Jujutsu Kaisen",
+  },
+  {
+    id: "mei-mei",
+    img: "other-images/truecharacters/mei-mei.webp",
+    title: "Mei Mei",
+    info: "Jujutsu Kaisen",
+  },
+  {
+    id: "tsukasa",
+    img: "other-images/truecharacters/tsukasa.webp",
+    title: "Tsukasa Shishio",
+    info: "Dr. Stone",
+  },
+  {
+    id: "mai",
+    img: "other-images/truecharacters/mai.webp",
+    title: "Mai Sakurajima",
+    info: "Rascal Does Not Dream of Bunny Girl Senpai",
+  },
+  {
+    id: "sakuta",
+    img: "other-images/truecharacters/sakuta.webp",
+    title: "Sakuta Azusagawa",
+    info: "Rascal Does Not Dream of Bunny Girl Senpai",
+  },
+  {
+    id: "akane",
+    img: "other-images/truecharacters/akane.webp",
+    title: "Akane Kurokawa",
+    info: "[Oshi no Ko]",
+  },
+  {
+    id: "ai",
+    img: "other-images/truecharacters/ai.webp",
+    title: "Ai Hoshino",
+    info: "[Oshi no Ko]",
+  },
+  {
     id: "ichinose",
     img: "other-images/truecharacters/ichinose.webp",
     title: "Honami Ichinose",
     info: "Classroom of the Elite",
   },
   {
-    id: "bokuto",
-    img: "other-images/truecharacters/bokuto.webp",
-    title: "Kotaro Bokuto",
-    info: "Haikyuu!!",
+    id: "shizuku",
+    img: "other-images/truecharacters/shizuku.webp",
+    title: "Shizuku Murasaki",
+    info: "Hunter x Hunter",
+  },
+  {
+    id: "perona",
+    img: "other-images/truecharacters/perona.webp",
+    title: "Perona",
+    info: "One Piece",
   },
   {
     id: "futaba",
     img: "other-images/truecharacters/futaba.webp",
     title: "Rio Futuba",
     info: "Rascal Does Not Dream of Bunny Girl Senpai",
+  },
+  {
+    id: "himmel",
+    img: "other-images/truecharacters/himmel.webp",
+    title: "Himmel",
+    info: "Frieren: Beyond Journey's End",
   },
   {
     id: "chrollo",
@@ -3316,108 +3329,6 @@ const trueCharactersData = [
     img: "other-images/truecharacters/reinhard.webp",
     title: "Reinhard Van Astrea",
     info: "Re:ZERO - Starting Life in Another World",
-  },
-  {
-    id: "killua",
-    img: "other-images/truecharacters/killua.webp",
-    title: "Killua Zoldyck",
-    info: "Hunter x Hunter",
-  },
-  {
-    id: "kurapika",
-    img: "other-images/truecharacters/kurapika.webp",
-    title: "Kurapika",
-    info: "Hunter x Hunter",
-  },
-  {
-    id: "zoro",
-    img: "other-images/truecharacters/zoro.webp",
-    title: "Roronoa Zoro",
-    info: "One Piece",
-  },
-  {
-    id: "law",
-    img: "other-images/truecharacters/law.webp",
-    title: "Trafalgar D. Water Law",
-    info: "One Piece",
-  },
-  {
-    id: "luffy",
-    img: "other-images/truecharacters/luffy.webp",
-    title: "Monkey D. Luffy",
-    info: "One Piece",
-  },
-  {
-    id: "perona",
-    img: "other-images/truecharacters/perona.webp",
-    title: "Perona",
-    info: "One Piece",
-  },
-  {
-    id: "mahito",
-    img: "other-images/truecharacters/mahito.webp",
-    title: "Mahito",
-    info: "Jujutsu Kaisen",
-  },
-  {
-    id: "toji",
-    img: "other-images/truecharacters/toji.webp",
-    title: "Toji Fushiguro ",
-    info: "Jujutsu Kaisen",
-  },
-  {
-    id: "uro",
-    img: "other-images/truecharacters/uro.webp",
-    title: "Takako Uro",
-    info: "Jujutsu Kaisen",
-  },
-  {
-    id: "higuruma",
-    img: "other-images/truecharacters/higuruma.webp",
-    title: "Hiromi Higuruma",
-    info: "Jujutsu Kaisen",
-  },
-  {
-    id: "frieren-frieren",
-    img: "other-images/truecharacters/frieren.webp",
-    title: "Frieren",
-    info: "Frieren: Beyond Journey's End",
-  },
-  {
-    id: "himmel",
-    img: "other-images/truecharacters/himmel.webp",
-    title: "Himmel",
-    info: "Frieren: Beyond Journey's End",
-  },
-  {
-    id: "akane",
-    img: "other-images/truecharacters/akane.webp",
-    title: "Akane Kurokawa",
-    info: "[Oshi no Ko]",
-  },
-  {
-    id: "ai",
-    img: "other-images/truecharacters/ai.webp",
-    title: "Ai Hoshino",
-    info: "[Oshi no Ko]",
-  },
-  {
-    id: "sakuta",
-    img: "other-images/truecharacters/sakuta.webp",
-    title: "Sakuta Azusagawa",
-    info: "Rascal Does Not Dream of Bunny Girl Senpai",
-  },
-  {
-    id: "mai",
-    img: "other-images/truecharacters/mai.webp",
-    title: "Mai Sakurajima",
-    info: "Rascal Does Not Dream of Bunny Girl Senpai",
-  },
-  {
-    id: "oikawa",
-    img: "other-images/truecharacters/oikawa.webp",
-    title: "Oikawa",
-    info: "Haikyuu!!",
   },
 ];
 
@@ -3470,27 +3381,11 @@ const isekaiIds = [
   "trapped-in-a-dating-sim",
 ];
 
-const comedyIds = [
-  "grand-blue",
-  "mashle",
-  "prison-school",
-  "opm",
-];
-const sportsIds = [
-  "haikyuu",
-  "hajime-no-ippo",
-  "welcome-to-the-ballroom",
-  "cinderella-gray",
-  "blue-box",
-];
-const mechaIds = [
-  "code-geass",
-  "cyberpunk",
-  "trapped-in-a-dating-sim",
-  "eighty-six",
-  "gurren-lagann",
-  "cannon-busters",
-];
+const comedyIds = ["grand-blue", "mashle", "prison-school", "opm"];
+
+const sportsIds = ["haikyuu", "hajime-no-ippo", "welcome-to-the-ballroom", "cinderella-gray", "blue-box"];
+
+const mechaIds = ["code-geass", "cyberpunk", "trapped-in-a-dating-sim", "eighty-six", "gurren-lagann", "cannon-busters"];
 
 // Next Season Map — status/anúncios de próximas temporadas por id.
 const nextSeasonMap = {
@@ -3505,7 +3400,7 @@ const nextSeasonMap = {
   "the-worlds-finest-assassin": { info: "2nd Season in Winter 2027" },
 
   "tensei-shitara-slime": { info: "Season 4 Part 2 in Summer 2027" },
-  
+
   "mushoku": { info: "Season 3 Part 2 in 2027" },
   "haikyuu": { info: "New Movie in 2027" },
   "dan-da-dan": { info: "Season 3 in 2027" },
@@ -3515,30 +3410,20 @@ const nextSeasonMap = {
   "shadow": { info: "New Movie in 2027" },
   "opm": { info: "3rd Season Part 2 in 2027" },
   "midnight-heart": { info: "Season 2 in 2027" },
-  
+
   "grand-blue": { info: "4th Season Confirmed" },
   "jjk": { info: "4th Season Announced" },
   "oshi-no-ko": { info: "4th Season Announced" },
-  "solo-leveling": { info: "Two Sequels Announced" },
+  "solo-leveling": { info: "New Movie Announced" },
   "kingdom": { info: "7th Season Announced" },
   "cote": { info: "5th Season Announced" },
   "gachiakuta": { info: "Season 2 in Production" },
   "wistoria": { info: "3rd Season Announced" },
   "demon-slayer": { info: "2 Movies in Production" },
+  "sentenced-hero": { info: "2nd Season in Production" },
   "makeine": { info: "2nd Season Announced" },
   "tsukimichi": { info: "3rd Season in Production" },
   "healing-magic": { info: "2nd Season Announced" },
   "danmachi": { info: "Season 6 Announced" },
   "i-got-a-cheat-skill": { info: "Season 2 in Production" },
-
-  // randoms 
-  "ramparts-of-ice": { info: "2nd Season in Oct 2026" },
-  "aoashi": { info: "2nd Season in Oct 2026" },
-  "sentenced-hero": { info: "2nd Season in Production" },
-  "chainsaw-man": { info: "2nd Season in Production" },
-  "fate-strange-fake": { info: "2nd Season Announced" },
-  "konosuba": { info: "4th Season Confirmed" },
-  "spice-and-wolf": { info: "2nd Season Announced" },
-  "blue-lock": { info: "3rd Season Announced" },
-  "bocchi-the-rock": { info: "2nd Season in Production" },
 };
