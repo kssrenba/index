@@ -3041,9 +3041,9 @@ const trueCharactersData = [
     info: "Mushoku Tensei: Jobless Reincarnation",
   },
   {
-    id: "qiang-lei",
-    img: "other-images/truecharacters/qiang-lei.webp",
-    title: "Qiang Lei (Kyou Kai)",
+    id: "wang-jian",
+    img: "other-images/truecharacters/wang-jian.webp",
+    title: "Wang Jian (Ou Sen)",
     info: "Kingdom",
   },
   {
@@ -3065,9 +3065,9 @@ const trueCharactersData = [
     info: "Frieren: Beyond Journey's End",
   },
   {
-    id: "zoro",
-    img: "other-images/truecharacters/zoro.webp",
-    title: "Roronoa Zoro",
+    id: "luffy",
+    img: "other-images/truecharacters/luffy.webp",
+    title: "Monkey D. Luffy",
     info: "One Piece",
   },
   {
@@ -3075,6 +3075,12 @@ const trueCharactersData = [
     img: "other-images/truecharacters/lucy.webp",
     title: "Lucyna Kushinada",
     info: "Cyberpunk: Edgerunners",
+  },
+  {
+    id: "zoro",
+    img: "other-images/truecharacters/zoro.webp",
+    title: "Roronoa Zoro",
+    info: "One Piece",
   },
   {
     id: "elfaria",
@@ -3113,12 +3119,6 @@ const trueCharactersData = [
     info: "Jujutsu Kaisen",
   },
   {
-    id: "luffy",
-    img: "other-images/truecharacters/luffy.webp",
-    title: "Monkey D. Luffy",
-    info: "One Piece",
-  },
-  {
     id: "orsted",
     img: "other-images/truecharacters/orsted.webp",
     title: "Orsted",
@@ -3143,15 +3143,15 @@ const trueCharactersData = [
     info: "Hunter x Hunter",
   },
   {
-    id: "hancock",
-    img: "other-images/truecharacters/hancock.webp",
-    title: "Boa Hancock",
-    info: "One Piece",
-  },
-  {
     id: "robin",
     img: "other-images/truecharacters/robin.webp",
     title: "Nico Robin",
+    info: "One Piece",
+  },
+  {
+    id: "hancock",
+    img: "other-images/truecharacters/hancock.webp",
+    title: "Boa Hancock",
     info: "One Piece",
   },
   {
@@ -3165,18 +3165,6 @@ const trueCharactersData = [
     img: "other-images/truecharacters/bakugo.webp",
     title: "Katsuki Bakugou",
     info: "My Hero Academia",
-  },
-  {
-    id: "ryuusui",
-    img: "other-images/truecharacters/ryuusui.webp",
-    title: "Ryuusui Nanami",
-    info: "Dr. Stone",
-  },
-  {
-    id: "cid",
-    img: "other-images/truecharacters/shadow.webp",
-    title: "Cid Kagenou",
-    info: "The Eminence in Shadow",
   },
   {
     id: "gabimaru",
@@ -3195,6 +3183,24 @@ const trueCharactersData = [
     img: "other-images/truecharacters/hinata.webp",
     title: "Shoyo Hinata",
     info: "Haikyuu!!",
+  },
+  {
+    id: "qiang-lei",
+    img: "other-images/truecharacters/qiang-lei.webp",
+    title: "Qiang Lei (Kyou Kai)",
+    info: "Kingdom",
+  },
+  {
+    id: "cid",
+    img: "other-images/truecharacters/shadow.webp",
+    title: "Cid Kagenou",
+    info: "The Eminence in Shadow",
+  },
+  {
+    id: "ryuusui",
+    img: "other-images/truecharacters/ryuusui.webp",
+    title: "Ryuusui Nanami",
+    info: "Dr. Stone",
   },
   {
     id: "kurapika",
