@@ -1834,12 +1834,18 @@ const rawPlanToWatchData = [
     id: "saga-of-tanya-the-evil",
     img: "plantowatch-images/plantowatch/saga-of-tanya-the-evil.webp",
     title: "Saga of Tanya the Evil",
-    info: "1 temporada: 12 episódios <br>1 Filme: 1h38m",
+    info: "2 temporadas: 24 episódios <br>1 Filme: 1h38m",
     studio: "NUT",
     airedSeason: "2017-2019",
     url: "https://www.anime-planet.com/anime/saga-of-tanya-the-evil",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GR9VJK494/saga-of-tanya-the-evil",
     malUrl: "https://myanimelist.net/anime/32615/Youjo_Senki",
+
+    mal: [
+      { label: "1ª temporada", episodes: 12, malName: "Youjo Senki", unwatched: true },
+      { label: "The Movie", episodes: "1h38m", malName: "Youjo Senki Movie", unwatched: true },
+      { label: "2ª temporada", episodes: 12, malName: "Youjo Senki II", unwatched: true }
+    ],
   },
   {
     id: "astra-space",
@@ -1851,6 +1857,8 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/astra-lost-in-space",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GMEHMEWZM/astra-lost-in-space",
     malUrl: "https://myanimelist.net/anime/39198/Kanata_no_Astra",
+
+    mal: [{ label: "1 temporada", episodes: 12, malName: "Kanata no Astra", unwatched: true }],
   },
   {
     id: "bleach",
@@ -2246,17 +2254,25 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/heavenly-delusion",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/53393/Tengoku_Daimakyou",
+
+    mal: [
+      { label: "1 temporada", episodes: 13, malName: "Tengoku Daimakyou", unwatched: true },
+    ],
   },
   {
     id: "to-be-hero-x",
     img: "plantowatch-images/plantowatch/to-be-hero-x.webp",
     title: "To be Hero X",
     info: "24 episódios",
-    studio: "PB Animation, LAN Studio, Paper Plane, B.COOL STUDIO",
+    studio: "PB Animation, LAN Studio, Paper Plane Animation Studio, B.COOL STUDIO",
     airedSeason: "2025",
     url: "https://www.anime-planet.com/anime/to-be-hero-x",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GQWH0M1J3/to-be-hero-x",
     malUrl: "https://myanimelist.net/anime/53447/Tu_Bian_Yingxiong_X",
+
+    mal: [
+      { label: "1 temporada", episodes: 24, malName: "Tu Bian Yingxiong X", unwatched: true },
+    ],
   },
   {
     id: "fate-stay-night",

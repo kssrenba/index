@@ -95,6 +95,13 @@
       <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet"></noscript>
       <link rel="preload" href="info.js" as="script">
       <style>
+        /* Registradas como <color> para o fundo da página trocar de cor
+           suavemente ao mudar de lista (ver body::before). */
+        @property --glow-1 { syntax: '<color>'; inherits: true; initial-value: rgba(226,232,240,0.38); }
+        @property --glow-2 { syntax: '<color>'; inherits: true; initial-value: rgba(226,232,240,0.24); }
+        @property --glow-3 { syntax: '<color>'; inherits: true; initial-value: rgba(226,232,240,0.16); }
+        @property --page-base { syntax: '<color>'; inherits: true; initial-value: #050505; }
+
         :root{
           --bg: #030303;
           --page-base: #050505;
@@ -174,8 +181,12 @@
             radial-gradient(ellipse 120% 55% at 50% -5%, var(--glow-1), transparent 62%),
             radial-gradient(ellipse 90% 40% at 15% 0%, var(--glow-2), transparent 55%),
             radial-gradient(ellipse 90% 40% at 85% 0%, var(--glow-3), transparent 55%),
+            /* Tema da lista também embaixo e nas laterais, não só no topo */
+            radial-gradient(ellipse 110% 38% at 50% 108%, var(--glow-2), transparent 70%),
+            radial-gradient(ellipse 38% 55% at 102% 62%, var(--glow-3), transparent 70%),
+            radial-gradient(ellipse 38% 55% at -2% 78%, var(--glow-3), transparent 70%),
             var(--page-base, #050505);
-          transition: background-color 0.4s ease;
+          transition: --glow-1 0.6s ease, --glow-2 0.6s ease, --glow-3 0.6s ease, --page-base 0.6s ease;
           transform: translateZ(0);
           will-change: transform;
         }
@@ -1883,7 +1894,7 @@
           height: 5px;
           border-radius: 50%;
           background: var(--glow-accent, #34d399);
-          box-shadow: 0 0 8px var(--glow-accent, #34d399);
+          box-shadow: none;
           flex: 0 0 5px;
         }
 
@@ -2188,6 +2199,43 @@
 
           .category-drawer.expanded .search-section-group > .search-result-item .search-result-info {
             flex: 1 1 auto;
+          }
+
+          /* Announced Sequels: o override acima (coluna) deixava o card com o
+            pôster grande em cima. Aqui devolvemos o layout do preview:
+            pôster 2:3 à esquerda, wallpaper borrado + texto à direita. */
+          .category-drawer.expanded .search-section-group > .search-result-item--ann > .search-result-card-inner {
+            display: grid;
+            grid-template-columns: 42% minmax(0, 1fr);
+            grid-template-rows: 1fr auto;
+            flex: 1 1 auto;
+          }
+
+          .category-drawer.expanded .search-section-group > .search-result-item--ann .search-result-info {
+            flex: none;
+            grid-column: 2;
+            grid-row: 1;
+          }
+
+          /* True Characters: mesma coisa — o override de coluna deixava o
+            pôster em cima. Volta pra linha: pôster 128px à esquerda, texto à direita. */
+          .category-drawer.expanded .search-section-group > .search-result-item--tc > .search-result-card-inner {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            flex: 1 1 auto;
+            min-height: 128px;
+          }
+
+          .category-drawer.expanded .search-section-group > .search-result-item--tc .search-result-info {
+            flex: 1 1 0;
+            min-width: 0;
+            display: grid;
+            grid-template-columns: max-content minmax(0, 1fr);
+            grid-template-rows: auto auto;
+            align-content: center;
+            align-items: center;
+            justify-content: initial;
           }
 
           /* Lista de comandos (/): também com a scrollbar à esquerda. */
@@ -13119,9 +13167,10 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
         }
 
         .poster-lightbox:not(.simple-mode) .rank-meta-item--studios.has-hidden-studio-rows:not(.is-meta-expanded):hover .rank-meta-studio-list::after {
-          background: var(--lb-category, var(--lb-accent, #e2e8f0));
+          /* Mesmo fundo das tags de ranking da lista atual (ex.: "PLAN TO WATCH"). */
+          background: color-mix(in srgb, var(--lb-category, var(--lb-accent, #e2e8f0)) 10%, rgba(255,255,255,0.025));
           border-color: var(--lb-category, var(--lb-accent, #e2e8f0));
-          color: #17120a;
+          color: color-mix(in srgb, var(--lb-category, var(--lb-accent, #e2e8f0)) 82%, white 18%);
         }
 
         /* Teste: S1, S2... com o mesmo tamanho do nome do estúdio. */
@@ -14385,7 +14434,7 @@ function getMetaFor(animeId) {
             // Base da URL da sua lista pessoal no MyAnimeList. Cada card do
             // lightbox do "All Animes" usa essa base + o título do anime (via
             // "?s=") pra abrir a lista já filtrada por aquele anime específico.
-            const MAL_PROFILE_LIST_BASE_URL = 'https://myanimelist.net/animelist/kssrenba';
+            const MAL_PROFILE_LIST_BASE_URL = 'https://myanimelist.net/animelist/ptbr';
 
             function buildMalProfileSearchUrl(item) {
               if (!item) return MAL_PROFILE_LIST_BASE_URL;
@@ -17631,7 +17680,7 @@ function getMetaFor(animeId) {
               root.setProperty('--drawer-glow-3', `rgba(${r}, ${g}, ${b}, 0.22)`);
 
               // Base quase preta, levemente tingida pela cor da categoria
-              const mixWithBlack = (channel) => Math.round(channel * 0.12);
+              const mixWithBlack = (channel) => Math.round(channel * 0.17);
               const pr = mixWithBlack(r), pg = mixWithBlack(g), pb = mixWithBlack(b);
               root.setProperty('--page-base', `rgb(${pr}, ${pg}, ${pb})`);
 
@@ -18758,6 +18807,90 @@ function getMetaFor(animeId) {
             }, 100);
           }, { passive: true });
 
+          // ── Troca de "área de trabalho" entre todas as listas ──
+          // A lista antiga desliza pra fora e a nova entra pelo lado oposto, como
+          // trocar de desktop virtual. A direção segue a ordem das setas do teclado
+          // (a mesma ordem do swipe no mobile).
+          const WORKSPACE_MODES = ['all', 'watching', 'plan'];
+          let __lastRenderedCategory = null;
+          let __workspaceAnimCleanup = null;
+          // Direção imposta por quem trocou a lista (seta/swipe): +1 = nova lista
+          // entra pela direita (seta →), -1 = entra pela esquerda (seta ←).
+          // Assim a direção segue sempre a tecla, mesmo quando a ordem dá a volta
+          // (ex.: All → Plan com →). 0 = deduz pela ordem das listas (drawer/menu).
+          let __forcedSlideDir = 0;
+
+          function getWorkspaceSlideDirection(from, to) {
+            if (!from || !to || from === to) return 0;
+            // Entre as 3 listas principais vale a ordem das setas/swipe.
+            if (WORKSPACE_MODES.includes(from) && WORKSPACE_MODES.includes(to)) {
+              const order = window.matchMedia('(max-width: 760px)').matches
+                ? MOBILE_SWIPE_NAV_ORDER
+                : ARROW_NAV_ORDER;
+              const a = order.indexOf(from), b = order.indexOf(to);
+              if (a !== -1 && b !== -1) return b > a ? 1 : -1;
+            }
+            // Qualquer outra lista: segue a ordem em que aparecem no drawer
+            // (para baixo = entra pela direita, para cima = pela esquerda).
+            const drawerOrder = drawerItems.map(el => el.getAttribute('data-mode'));
+            const a = drawerOrder.indexOf(from), b = drawerOrder.indexOf(to);
+            if (a === -1 || b === -1) return 1;
+            return b > a ? 1 : -1;
+          }
+
+          function playWorkspaceSwitch(oldList, newList, dir) {
+            if (!oldList || !newList || !dir || !container.animate) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            if (__workspaceAnimCleanup) __workspaceAnimCleanup();
+
+            const ghost = oldList.cloneNode(true);
+            ghost.removeAttribute('id');
+            ghost.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+            ghost.setAttribute('aria-hidden', 'true');
+            ghost.setAttribute('inert', '');
+            ghost.style.cssText += ';position:absolute;top:0;left:0;width:' + container.clientWidth + 'px;pointer-events:none;';
+
+            const prevPosition = container.style.position;
+            const prevOverflowX = container.style.overflowX;
+            container.style.position = 'relative';
+            container.style.overflowX = 'clip';
+            container.appendChild(ghost);
+
+            // Clone leve: descarta os cards que estão bem abaixo da área visível
+            // (ninguém vê isso durante a animação) pra não pesar em listas grandes.
+            try {
+              const limitY = window.innerHeight + 300;
+              const kids = Array.from(ghost.children);
+              const tops = kids.map(k => k.getBoundingClientRect().top);
+              for (let i = kids.length - 1; i >= 0 && tops[i] > limitY; i--) kids[i].remove();
+            } catch (e) {}
+
+            const opts = { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' };
+            const outAnim = ghost.animate([
+              { transform: 'translateX(0) scale(1)', opacity: 1 },
+              { transform: `translateX(${-dir * 100}%) scale(0.96)`, opacity: 0 }
+            ], opts);
+            const inAnim = newList.animate([
+              { transform: `translateX(${dir * 100}%) scale(0.96)`, opacity: 0 },
+              { transform: 'translateX(0) scale(1)', opacity: 1 }
+            ], opts);
+
+            let done = false;
+            const cleanup = () => {
+              if (done) return;
+              done = true;
+              try { outAnim.cancel(); } catch (e) {}
+              try { inAnim.cancel(); } catch (e) {}
+              if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
+              container.style.position = prevPosition;
+              container.style.overflowX = prevOverflowX;
+              if (__workspaceAnimCleanup === cleanup) __workspaceAnimCleanup = null;
+            };
+            __workspaceAnimCleanup = cleanup;
+            inAnim.onfinish = cleanup;
+            inAnim.oncancel = cleanup;
+          }
+
           function render() {
             if (__cancelScrollRestore) __cancelScrollRestore();
             __posterRenderGeneration++;
@@ -18801,7 +18934,14 @@ function getMetaFor(animeId) {
             }
             __listDomCache.set(key, list);
             while (__listDomCache.size > 4) __listDomCache.delete(__listDomCache.keys().next().value);
+            const __prevList = container.firstElementChild;
+            let __slideDir = getWorkspaceSlideDirection(__lastRenderedCategory, currentCategory);
+            if (__slideDir !== 0 && __forcedSlideDir !== 0) __slideDir = __forcedSlideDir;
+            __forcedSlideDir = 0;
+            if (__workspaceAnimCleanup && __slideDir === 0) __workspaceAnimCleanup();
             if (container.firstElementChild !== list) container.replaceChildren(list);
+            if (__slideDir && __prevList && __prevList !== list) playWorkspaceSwitch(__prevList, list, __slideDir);
+            __lastRenderedCategory = currentCategory;
             updatePageTexts();
             selectDrawerItem(currentCategory);
             updateMobileBottomNav();
@@ -20882,7 +21022,7 @@ function getMetaFor(animeId) {
             document.addEventListener('keydown', (e) => {
               if (e.key !== 'Tab' || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
               if (document.activeElement === searchInput) return;
-              if (!previewGhostCmd || !isSearchTabOpen()) return;
+              if (!previewGhostCmd || !isDrawerOpen) return;
               if (completePreviewCommand()) {
                 e.preventDefault();
                 searchInput.focus();
@@ -21250,6 +21390,22 @@ function getMetaFor(animeId) {
             input.dispatchEvent(new Event('input', { bubbles: true }));
           });
 
+          // Com o drawer aberto, "T" ou "F" expande/recolhe o drawer (o mesmo botão
+          // de Expand/Collapse). Não interfere se o foco estiver num campo de texto.
+          document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || e.repeat) return;
+            const k = (e.key || '').toLowerCase();
+            if (k !== 't' && k !== 'f') return;
+            if (!isDrawerOpen) return;
+            const t = e.target;
+            const tag = (t && t.tagName) || '';
+            if (t && (t.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')) return;
+            // O botão de expandir só existe no desktop.
+            if (!drawerExpandBtn || drawerExpandBtn.offsetParent === null) return;
+            e.preventDefault();
+            setDrawerExpanded(!drawer.classList.contains('expanded'), true);
+          });
+
           const ARROW_NAV_ORDER = ['plan', 'watching', 'all'];
           const MOBILE_SWIPE_NAV_ORDER = ['all', 'watching', 'plan'];
 
@@ -21290,6 +21446,7 @@ function getMetaFor(animeId) {
               sessionStorage.removeItem(kE);
             } catch(e) {}
 
+            __forcedSlideDir = step > 0 ? 1 : -1;
             render();
             window.scrollTo({ top: 0, behavior: 'instant' });
           }
