@@ -272,7 +272,7 @@ const rawAnimeData = [
     id: "kingdom",
     img: "myranks-images/myranks/kingdom.webp",
     title: "Kingdom",
-    info: "(~) 4 temporadas: 129 episódios",
+    info: "(~) 5 temporadas: 142 episódios",
     studios: [
       { season: "S1-S2", name: "Studio Pierrot" },
       { season: "S3-S6", name: "Studio Pierrot and Signpost" },
@@ -284,7 +284,7 @@ const rawAnimeData = [
       { label: "2ª temporada", episodes: 39, note: 7, malName: "Kingdom 2nd Season" },
       { label: "3ª temporada", episodes: 26, note: 9, malName: "Kingdom 3rd Season" },
       { label: "4ª temporada", episodes: 26, note: 8, malName: "Kingdom 4th Season" },
-      { label: "5ª temporada", episodes: 13, unwatched: true, malName: "Kingdom 5th Season" },
+      { label: "5ª temporada", episodes: 13, note: 8, malName: "Kingdom 5th Season" },
       { label: "6ª temporada", episodes: 13, unwatched: true, malName: "Kingdom 6th Season" },
     ],
   },
@@ -1314,9 +1314,9 @@ const rawWatchingData = [
     season: null,
     airedSeason: "2012",
     seasons: [38, 39, 26, 26, 13, 13],
-    url: "https://www.anime-planet.com/anime/kingdom-4",
+    url: "https://www.anime-planet.com/anime/kingdom-6",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRWE89KMR/kingdom",
-    malUrl: "https://myanimelist.net/anime/50160/Kingdom_4th_Season",
+    malUrl: "https://myanimelist.net/anime/61517/Kingdom_6th_Season",
   },
 
   // Summer 2026

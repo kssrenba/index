@@ -473,6 +473,17 @@
           transition: color 0.15s ease;
         }
 
+        /* Comando da lista em prévia: mesmo "apagado" dos cards da prévia
+          (opacidade .55), no lugar do placeholder. */
+        .search-ghost-hint .ghost-preview {
+          color: var(--text);
+          opacity: 0.55;
+        }
+
+        .search-box-drawer.is-preview-ghost input::placeholder {
+          color: transparent;
+        }
+
         .search-ghost-hint .ghost-suggestion {
           color: var(--muted);
           font-weight: 400;
@@ -659,6 +670,8 @@
         .search-empty {
           grid-column: 1 / -1;
         }
+
+        .search-section-group, .search-groups { display: contents; }
 
         .search-drawer-results::-webkit-scrollbar { width: 8px; }
         .search-drawer-results::-webkit-scrollbar-track { background: transparent; }
@@ -1006,6 +1019,129 @@
 
         .search-result-arrow { display: none; }
 
+        /* ── Announced Sequels no search: mesmo card do Announced Sequels mobile ──
+           Pôster 2:3 à esquerda ocupando a altura toda; à direita o wallpaper
+           borrado com "01 + nome" (até 3 linhas), o info embaixo e, se houver,
+           a faixa de Next Season colada no rodapé da coluna da direita. */
+        .search-result-item--ann {
+          border-radius: 16px;
+          background: linear-gradient(110deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012) 58%), rgba(8,8,10,0.88);
+          box-shadow: 0 0 0 1px rgba(255,255,255,0.075);
+        }
+
+        .search-result-item--ann .search-result-card-inner {
+          display: grid;
+          grid-template-columns: 42% minmax(0, 1fr);
+          grid-template-rows: 1fr auto;
+          padding-bottom: 0;
+          border-radius: 16px;
+        }
+
+        .search-result-item--ann .search-result-thumb-wrap {
+          grid-column: 1;
+          grid-row: 1 / span 2;
+          width: 100%;
+          padding-top: 150%; /* pôster 2:3 */
+          border-radius: 0;
+        }
+
+        .search-result-item--ann .search-result-ambient {
+          inset: -24px;
+          filter: blur(14px) brightness(0.78) saturate(1.12);
+        }
+
+        .search-result-item--ann .search-result-ambient-shade {
+          background: linear-gradient(110deg, rgba(5,5,8,0.32), rgba(5,5,8,0.52) 58%, rgba(5,5,8,0.66)), rgba(5,5,8,0.28);
+        }
+
+        .search-result-item--ann .search-result-info {
+          grid-column: 2;
+          grid-row: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 8px;
+          min-width: 0;
+          min-height: 0;
+          padding: 20px 16px;
+          border-radius: 0;
+        }
+
+        /* Número + nome na mesma "linha de texto": se o nome quebrar, a
+           segunda linha volta pra baixo do número (igual ao card mobile). */
+        .search-result-item--ann .search-result-title-row {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
+          overflow: hidden;
+          width: 100%;
+          min-width: 0;
+          overflow-wrap: break-word;
+        }
+
+        .search-result-item--ann .search-result-rank,
+        .search-result-item--ann .search-result-rank.rank-plain {
+          position: static;
+          display: inline-block;
+          width: auto;
+          min-width: 0;
+          margin-right: 7px;
+          transform: none;
+          text-align: left;
+          font: 900 16px/1 var(--font-title);
+          letter-spacing: -0.02em;
+          font-variant-numeric: tabular-nums;
+          color: color-mix(in srgb, var(--acc, #34d399) 78%, #fff);
+        }
+
+        .search-result-item--ann .search-result-title {
+          display: inline;
+          overflow: visible;
+          white-space: normal;
+          color: #fff;
+          font-size: 16px;
+          font-weight: 800;
+          line-height: 1.16;
+        }
+
+        .search-result-item--ann .search-result-meta {
+          margin-top: 0;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
+          color: rgba(255,255,255,0.55);
+          font-size: 11px;
+          font-weight: 500;
+          line-height: 1.35;
+        }
+
+        .search-result-item--ann .search-result-next-season {
+          grid-column: 2;
+          grid-row: 2;
+          height: 20px;
+          min-height: 20px;
+          border-radius: 0;
+          background: rgba(10,10,10,0.38);
+          box-shadow: none;
+        }
+
+        .search-result-item--ann .search-result-next-season .announce-line {
+          height: 20px;
+          line-height: 20px;
+          padding: 0 10px;
+          font-size: 10px;
+        }
+
+        @media (max-width: 600px) {
+          .search-result-item--ann .search-result-next-season,
+          .search-result-item--ann .search-result-next-season .announce-line {
+            height: 18px;
+            min-height: 18px;
+            line-height: 18px;
+          }
+          .search-result-item--ann .search-result-next-season .announce-line { font-size: 9px; }
+        }
+
         .search-section-header {
           display: flex;
           align-items: center;
@@ -1197,6 +1333,7 @@
           }
 
           .category-drawer.expanded .search-hover-preview > .search-result-item--tc { --per-row: 2; }
+          .category-drawer.expanded .search-hover-preview > .search-result-item--ann { --per-row: 3; }
 
           @container (max-width: 760px) {
             .category-drawer.expanded .search-hover-preview > .search-result-item { --per-row: 2; }
@@ -1978,27 +2115,79 @@
             display: none;
           }
 
-          .category-drawer.expanded .search-drawer-results > .search-section-header,
           .category-drawer.expanded .search-drawer-results > .search-empty {
             flex: 0 0 100%;
             width: 100%;
           }
 
-          .category-drawer.expanded .search-drawer-results > .search-result-item {
-            --per-row: 3;
-            flex: 0 0 auto;
-            width: calc((100% - (var(--per-row) - 1) * 14px) / var(--per-row));
+          /* Grade de 6 colunas: card normal ocupa 2 (3 por fileira), True
+            Characters ocupa 3 (2 por fileira). Linha/colunas de cada bloco
+            vêm inline do JS (empacotamento em renderEntries). */
+          .category-drawer.expanded .search-drawer-results > .search-groups {
+            flex: 0 0 100%;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 14px;
+            align-items: stretch;
+            direction: ltr;
+          }
+
+          .category-drawer.expanded .search-groups > .search-section-group {
+            display: grid;
+            grid-template-columns: repeat(var(--m, 1), minmax(0, 1fr));
+            grid-template-rows: auto 1fr;
+            gap: 14px;
+            min-width: 0;
+            padding-top: 10px;
+          }
+
+          /* Continuação da mesma categoria (2ª fileira em diante, sem título):
+            sem a faixa do cabeçalho e sem o respiro de cima — só o gap normal
+            entre cards separa as fileiras. */
+          .category-drawer.expanded .search-section-group.is-cont {
+            grid-template-rows: 1fr;
+            padding-top: 0;
+          }
+
+          .category-drawer.expanded .search-section-group > .search-section-header {
+            grid-column: 1 / -1;
+            padding-top: 2px;
+            margin-bottom: -8px;
+            white-space: nowrap;
             min-width: 0;
           }
 
-          .category-drawer.expanded .search-drawer-results > .search-result-item--tc { --per-row: 2; }
-
-          @container (max-width: 760px) {
-            .category-drawer.expanded .search-drawer-results > .search-result-item { --per-row: 2; }
+          .category-drawer.expanded .search-section-group > .search-section-header.is-ghost {
+            visibility: hidden;
+            pointer-events: none;
           }
 
-          @container (max-width: 480px) {
-            .category-drawer.expanded .search-drawer-results > .search-result-item { --per-row: 1; }
+          .category-drawer.expanded .search-section-group > .search-section-header .search-section-text {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+
+          /* Todos os cards de uma mesma linha ficam com a mesma altura
+            (o mais alto manda), inclusive entre seções diferentes: o card
+            estica e a área de texto absorve a folga. */
+          .category-drawer.expanded .search-section-group > .search-result-item {
+            width: auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+          }
+
+          .category-drawer.expanded .search-section-group > .search-result-item > .search-result-card-inner {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+          }
+
+          .category-drawer.expanded .search-section-group > .search-result-item .search-result-info {
+            flex: 1 1 auto;
           }
 
           /* Lista de comandos (/): também com a scrollbar à esquerda. */
@@ -17577,6 +17766,8 @@ function getMetaFor(animeId) {
           function openDrawer(tab, opts) {
             if (!drawer || !backdrop) return;
             if (drawerFrame) cancelAnimationFrame(drawerFrame);
+            // Novo sorteio da prévia a cada abertura do drawer.
+            if (!isDrawerOpen && window.__resetSearchPreviewShuffle) window.__resetSearchPreviewShuffle();
             isDrawerOpen = true;
             if (tab) {
               switchDrawerTab(tab, opts);
@@ -17601,6 +17792,14 @@ function getMetaFor(animeId) {
           }
 
           // ── Prévia dos pôsteres da lista sob o mouse (só expandido + desktop) ──
+          // Comando de barra equivalente a cada lista (mostrado apagado na
+          // barra de pesquisa enquanto a prévia da lista está na tela).
+          const HOVER_PREVIEW_COMMANDS = {
+            all: '/ranking', romance: '/romance', isekai: '/isekai', sports: '/sport',
+            comedy: '/comedy', mecha: '/mecha', watching: '/watching', plan: '/planwatch',
+            incomplete: '/incomplete', announced: '/announced',
+            favEpisodes: '/episodes', trueCharacters: '/characters'
+          };
           let hoverPreviewEl = null;
           let hoverPreviewMode = '';
           let hoverPreviewTimer = 0;
@@ -17639,6 +17838,7 @@ function getMetaFor(animeId) {
             hoverPreviewMode = '';
             if (hoverPreviewEl) hoverPreviewEl.classList.remove('is-on');
             if (drawer) drawer.classList.remove('is-hover-previewing');
+            if (typeof window.__setSearchPreviewGhost === 'function') window.__setSearchPreviewGhost('');
           }
 
           function showHoverPreview(mode) {
@@ -17650,11 +17850,14 @@ function getMetaFor(animeId) {
               const el = getHoverPreviewEl();
               if (!el || !canShowHoverPreview()) return;
               if (typeof window.__buildSearchPreview !== 'function') return;
-              const count = window.__buildSearchPreview(mode, el, mode === 'trueCharacters' ? 12 : 9);
+              const count = window.__buildSearchPreview(mode, el, (mode === 'trueCharacters' || mode === 'announced') ? 12 : 9);
               if (!count) { hideHoverPreview(); return; }
               hoverPreviewMode = mode;
               el.classList.add('is-on');
               drawer.classList.add('is-hover-previewing');
+              if (typeof window.__setSearchPreviewGhost === 'function') {
+                window.__setSearchPreviewGhost(HOVER_PREVIEW_COMMANDS[mode] || '');
+              }
             }, 90);
           }
 
@@ -19756,6 +19959,20 @@ function getMetaFor(animeId) {
 
               const sections = [];
 
+              // Announced Sequels: uma seção só, na ordem recebida (ordem da
+              // lista), em vez de separar por Watching/Plan/Global.
+              if (forcedCategory === 'announced') {
+                const annEntries = entries.filter(e => e.tag !== 'favep' && e.tag !== 'trueCharacters');
+                if (annEntries.length) {
+                  sections.push({
+                    text: CATEGORY_LABEL.announced || 'Announced Sequels',
+                    color: CATEGORY_HOVER_COLOR.announced || '#34d399',
+                    items: annEntries
+                  });
+                }
+                return sections;
+              }
+
               if (watchingEntries.length) {
                 const groups = {};
                 watchingEntries.forEach(entry => {
@@ -19868,17 +20085,17 @@ function getMetaFor(animeId) {
 
             function buildResultItemHtml(entry, i, acc, accGlow, query) {
                   return `
-                    <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id]) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
+                    <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? ' search-result-item--ann' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id]) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
                       <div class="search-result-card-inner">
                         <div class="search-result-ambient" aria-hidden="true"></div>
                         <div class="search-result-ambient-shade" aria-hidden="true"></div>
                         <div class="search-result-thumb-wrap">
-                          <img class="search-result-thumb" data-src="${searchThumbSrc(entry.tag === 'favep' ? getFavEpThumb(entry.anime) : entry.anime.img)}" alt="" loading="lazy">
+                          <img class="search-result-thumb" data-src="${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && typeof sequelsThumbSrc === 'function') ? sequelsThumbSrc(entry.anime.img) : searchThumbSrc(entry.tag === 'favep' ? getFavEpThumb(entry.anime) : entry.anime.img)}" alt="" loading="lazy">
 
                         </div>
                         <div class="search-result-info">
-                          ${buildSearchRankHtml(entry)}
-                          <span class="search-result-title">${highlightTitle(entry.anime.title, query)}</span>
+                          ${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? '<div class="search-result-title-row">' : ''}${buildSearchRankHtml(entry)}
+                          <span class="search-result-title">${highlightTitle(entry.anime.title, query)}</span>${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? '</div>' : ''}
                           ${(() => {
                             if (entry.tag === 'favep') {
                               return entry.anime.subtitle ? `<span class="search-result-meta">${entry.anime.subtitle}</span>` : '';
@@ -19953,27 +20170,82 @@ function getMetaFor(animeId) {
               searchResults.classList.remove('is-empty-state');
               if (searchPanelEl) searchPanelEl.classList.remove('is-no-results');
 
+              const accFor = (section) => {
+                const acc = section.color || '#e2e8f0';
+                let accGlow = 'transparent';
+                try {
+                  const { r, g, b } = hexToRgb(acc);
+                  accGlow = `rgba(${r}, ${g}, ${b}, 0.35)`;
+                } catch (e) {}
+                return { acc, accGlow };
+              };
+
+              // ── Empacotamento das seções ──────────────────────────────
+              // Só no drawer expandido (grade de 6 colunas; card normal = 2
+              // colunas, True Characters = 3). Cada seção é quebrada em
+              // "pedaços" de uma fileira; o 1º pedaço leva o título. Cada
+              // pedaço cai na primeira linha que ainda tem espaço — assim
+              // um card sozinho (ex: Kingdom) divide a linha com uma seção
+              // de 2 cards mais abaixo, e o card que sobrou de uma seção
+              // (ex: 4º do Global Ranking) divide a linha com a próxima.
+              // Pedaços de continuação nunca sobem acima do pedaço anterior
+              // da própria seção.
+              const expandedLayout = !!searchResults.closest('.category-drawer.expanded');
+              const stageW = searchResults.clientWidth || 0;
+              const basePerRow = stageW && stageW <= 480 ? 1 : (stageW && stageW <= 760 ? 2 : 3);
+              const pieces = [];
+              if (expandedLayout) {
+                const rows = [];
+                sections.forEach(section => {
+                  const isTc = section.items.every(e => e.tag === 'trueCharacters');
+                  const perRow = isTc ? Math.min(2, basePerRow) : basePerRow;
+                  const unit = 6 / perRow;
+                  let prevRow = -1;
+                  for (let k = 0, first = true; k < section.items.length; k += perRow, first = false) {
+                    const chunk = section.items.slice(k, k + perRow);
+                    const units = chunk.length * unit;
+                    let r = -1;
+                    for (let j = first ? 0 : prevRow + 1; j < rows.length; j++) {
+                      if (rows[j] >= units) { r = j; break; }
+                    }
+                    if (r === -1) { rows.push(6); r = rows.length - 1; }
+                    rows[r] -= units;
+                    prevRow = r;
+                    pieces.push({ section, items: chunk, row: r, span: units, head: first });
+                  }
+                });
+                // Ordem visual: por linha (estável) — assim as setas ↑/↓ e o
+                // setActiveResult seguem exatamente o que aparece na tela.
+                pieces.sort((x, y) => x.row - y.row);
+              } else {
+                sections.forEach(section => pieces.push({ section, items: section.items, row: 0, span: 0, head: true }));
+              }
+              currentMatches = pieces.flatMap(pc => pc.items);
+
+              // Linhas que têm pelo menos um bloco com título. Nelas, os
+              // blocos de continuação ganham um cabeçalho fantasma (só pra
+              // alinhar os cards). Linhas SÓ de continuação ficam sem
+              // cabeçalho e coladas na linha de cima (mesma categoria =
+              // mais perto que o normal).
+              const rowsWithHead = new Set(pieces.filter(p => p.head).map(p => p.row));
               let idxCounter = 0;
-              searchResults.innerHTML = sections.map(section => {
-                const headerHtml = `
-                  <div class="search-section-header" style="--section-color: ${section.color};">
-                    <span class="search-section-text">${section.text}</span>
+              const piecesHtml = pieces.map(pc => {
+                const isCont = expandedLayout && !pc.head && !rowsWithHead.has(pc.row);
+                const headerHtml = (pc.head || (expandedLayout && !isCont)) ? `
+                  <div class="search-section-header${pc.head ? '' : ' is-ghost'}" style="--section-color: ${pc.section.color};"${pc.head ? '' : ' aria-hidden="true"'}>
+                    <span class="search-section-text">${pc.section.text}</span>
                     <div class="search-section-line"></div>
-                  </div>`;
-
-                const itemsHtml = section.items.map(entry => {
-                  const i = idxCounter++;
-                  const acc = section.color || '#e2e8f0';
-                  let accGlow = 'transparent';
-                  try {
-                    const { r, g, b } = hexToRgb(acc);
-                    accGlow = `rgba(${r}, ${g}, ${b}, 0.35)`;
-                  } catch (e) {}
-                  return buildResultItemHtml(entry, i, acc, accGlow, query);
-                }).join('');
-
-                return headerHtml + itemsHtml;
+                  </div>` : '';
+                const { acc, accGlow } = accFor(pc.section);
+                const itemsHtml = pc.items.map(entry => buildResultItemHtml(entry, idxCounter++, acc, accGlow, query)).join('');
+                const style = expandedLayout
+                  ? ` style="grid-row: ${pc.row + 1}; grid-column: span ${pc.span}; --m: ${pc.items.length};"`
+                  : '';
+                return `<div class="search-section-group${isCont ? ' is-cont' : ''}"${style}>${headerHtml}${itemsHtml}</div>`;
               }).join('');
+              searchResults.innerHTML = expandedLayout
+                ? `<div class="search-groups">${piecesHtml}</div>`
+                : piecesHtml;
 
               favEpVisibleIdsLastRender = favEpIdsThisRender;
 
@@ -20043,6 +20315,9 @@ function getMetaFor(animeId) {
                 && SUB_CATEGORY_SETS[key].has(entry.anime.id)
                 && !planIds.has(entry.anime.id);
             }
+            const ANNOUNCED_RANKED_IDS = new Set(
+              animeData.filter(a => nextSeasonMap[a.id] && !planIds.has(a.id)).map(a => a.id)
+            );
             const SLASH_COMMANDS = {
               '/all':         { filter: () => true,                         rotateWatching: true  },
               '/ranking':     { filter: entry => entry.tag !== 'watching' && entry.tag !== 'plan' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters', rotateWatching: false },
@@ -20054,7 +20329,16 @@ function getMetaFor(animeId) {
               '/comedy':      { filter: entry => isSubCategoryEntry(entry, 'comedy'),  rotateWatching: false },
               '/mecha':       { filter: entry => isSubCategoryEntry(entry, 'mecha'),   rotateWatching: false },
               '/incomplete':  { filter: entry => entry.tag === null && !!entry.anime.info && entry.anime.info.includes('⏸') && !planIds.has(entry.anime.id), rotateWatching: false },
-              '/announced':   { filter: entry => !!nextSeasonMap[entry.anime.id] && (entry.tag === 'watching' || entry.tag === 'plan' || (entry.tag === null && !planIds.has(entry.anime.id))), rotateWatching: false },
+              // Mesma regra da lista Announced Sequels: se o anime já está no All
+              // Ranking, essa é a entrada canônica — a cópia do Watching Now não
+              // aparece de novo (casos como Kingdom e DanMachi).
+              '/announced':   { filter: entry => {
+                  const id = entry.anime.id;
+                  if (!nextSeasonMap[id]) return false;
+                  if (entry.tag === null) return !planIds.has(id);
+                  if (entry.tag === 'watching') return !ANNOUNCED_RANKED_IDS.has(id);
+                  return entry.tag === 'plan';
+                }, rotateWatching: false },
               '/episodes':        { filter: entry => entry.tag === 'favep', rotateWatching: false },
               '/characters':      { filter: entry => entry.tag === 'trueCharacters', rotateWatching: false }
             };
@@ -20097,6 +20381,15 @@ function getMetaFor(animeId) {
               mecha: 'mecha', incomplete: 'incomplete', announced: 'announced',
               favEpisodes: 'favEpisodes', trueCharacters: 'trueCharacters'
             };
+            // Ordem aleatória da prévia: um valor sorteado por entrada, por modo.
+            const __previewOrder = new Map();
+            function previewRand(mode, entry) {
+              let m = __previewOrder.get(mode);
+              if (!m) { m = new Map(); __previewOrder.set(mode, m); }
+              if (!m.has(entry)) m.set(entry, Math.random());
+              return m.get(entry);
+            }
+            window.__resetSearchPreviewShuffle = function () { __previewOrder.clear(); };
             window.__buildSearchPreview = function (mode, target, limit) {
               const filter = PREVIEW_MODE_FILTER[mode];
               if (!filter || !target) return 0;
@@ -20105,23 +20398,27 @@ function getMetaFor(animeId) {
               // e restaura pra não interferir numa busca que esteja na tela.
               const saved = entries.map(e => e.forcedCategory);
               const sections = groupEntriesIntoSections(entries, false, PREVIEW_MODE_FORCED[mode] || null, false);
+              // Em vez de seguir a ordem do ranking, sorteia quais cards aparecem.
+              // O sorteio é guardado por modo e só é refeito quando o drawer é
+              // aberto de novo (__resetSearchPreviewShuffle) — enquanto estiver
+              // aberto, passar o mouse de volta numa lista mostra sempre os mesmos.
+              const pairs = [];
+              sections.forEach(section => section.items.forEach(entry => pairs.push({ section, entry })));
+              pairs.sort((a, b) => previewRand(mode, a.entry) - previewRand(mode, b.entry));
+              const picked = pairs.slice(0, limit);
               const html = [];
               let n = 0;
-              sections.forEach(section => {
-                section.items.forEach(entry => {
-                  if (n >= limit) return;
-                  const acc = section.color || '#e2e8f0';
-                  let accGlow = 'transparent';
-                  try { const { r, g, b } = hexToRgb(acc); accGlow = `rgba(${r}, ${g}, ${b}, 0.35)`; } catch (e) {}
-                  html.push(buildResultItemHtml(entry, -1, acc, accGlow, ''));
-                  n++;
-                });
+              picked.forEach(({ section, entry }) => {
+                const acc = section.color || '#e2e8f0';
+                let accGlow = 'transparent';
+                try { const { r, g, b } = hexToRgb(acc); accGlow = `rgba(${r}, ${g}, ${b}, 0.35)`; } catch (e) {}
+                html.push(buildResultItemHtml(entry, -1, acc, accGlow, ''));
+                n++;
               });
               target.innerHTML = html.join('');
               entries.forEach((e, k) => { e.forcedCategory = saved[k]; });
               // Clique num card da prévia leva pro anime, igual ao resultado de busca.
-              const shown = [];
-              sections.forEach(section => section.items.forEach(entry => { if (shown.length < limit) shown.push(entry); }));
+              const shown = picked.map(p => p.entry);
               target.querySelectorAll('.search-result-item').forEach((el, k) => {
                 const entry = shown[k];
                 if (!entry) return;
@@ -20159,6 +20456,16 @@ function getMetaFor(animeId) {
               const cmd = getSlashCommand(query);
               if (cmd) {
                 const entries = searchIndex.filter(SLASH_COMMANDS[cmd].filter);
+                // /announced: segue a ordem real da lista Announced Sequels
+                // (01, 02, 03...), em vez da ordem do índice de busca.
+                if (cmd === '/announced') {
+                  const annRanks = searchCategoryRankMaps.get('announced');
+                  const rankOf = e => {
+                    const r = annRanks && annRanks.get(e.anime);
+                    return r == null ? Infinity : r;
+                  };
+                  entries.sort((a, b) => rankOf(a) - rankOf(b));
+                }
                 renderEntries(entries, query);
                 return;
               }
@@ -20319,6 +20626,7 @@ function getMetaFor(animeId) {
               if (searchBoxDrawer) searchBoxDrawer.classList.toggle('slash-mode', isSlash);
 
               searchGhostHint.innerHTML = '';
+              if (searchBoxDrawer) searchBoxDrawer.classList.remove('is-preview-ghost');
 
               if (isSlash) {
                 // Overlay que espelha o texto já digitado — o input de verdade
@@ -20345,6 +20653,22 @@ function getMetaFor(animeId) {
                 searchGhostHint.appendChild(suggestionSpan);
               }
             }
+
+            // Prévia (hover numa lista no drawer expandido): mostra o comando da
+            // lista (ex.: /mecha) apagado na barra, só enquanto o campo está vazio.
+            let previewGhostCmd = '';
+            window.__setSearchPreviewGhost = function (cmd) {
+              if (!searchGhostHint || !searchInput || !searchBoxDrawer) return;
+              if (searchInput.value) { previewGhostCmd = ''; return; }
+              previewGhostCmd = cmd || '';
+              searchGhostHint.innerHTML = '';
+              searchBoxDrawer.classList.toggle('is-preview-ghost', !!cmd);
+              if (!cmd) return;
+              const span = document.createElement('span');
+              span.className = 'ghost-preview';
+              span.textContent = cmd;
+              searchGhostHint.appendChild(span);
+            };
 
             // Dropdown com TODOS os comandos de barra que batem com o que já foi
             // digitado — diferente do ghost hint (que só completa um único
@@ -20542,6 +20866,29 @@ function getMetaFor(animeId) {
               setTimeout(hideSlashCommandList, 120);
             });
 
+            function completePreviewCommand() {
+              if (!previewGhostCmd || searchInput.value) return false;
+              const cmd = previewGhostCmd;
+              previewGhostCmd = '';
+              searchInput.value = cmd;
+              searchBoxDrawer.classList.add('has-value');
+              updateGhostHint();
+              searchInput.dispatchEvent(new Event('input'));
+              return true;
+            }
+
+            // Mesmo com o foco fora do campo (ex.: depois de clicar numa área
+            // do drawer), o Tab durante a prévia completa o comando.
+            document.addEventListener('keydown', (e) => {
+              if (e.key !== 'Tab' || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+              if (document.activeElement === searchInput) return;
+              if (!previewGhostCmd || !isSearchTabOpen()) return;
+              if (completePreviewCommand()) {
+                e.preventDefault();
+                searchInput.focus();
+              }
+            });
+
             searchInput.addEventListener('keydown', (e) => {
               if (e.key === 'Escape') {
                 hideSlashCommandList();
@@ -20549,6 +20896,9 @@ function getMetaFor(animeId) {
                 return;
               }
               if (e.key === 'Tab') {
+                // Prévia de uma lista na tela: Tab completa o comando mostrado
+                // apagado na barra (ex.: /mecha).
+                if (completePreviewCommand()) { e.preventDefault(); return; }
                 const remainder = getSlashCommandRemainder(searchInput.value);
                 if (remainder) {
                   e.preventDefault();
@@ -20879,6 +21229,25 @@ function getMetaFor(animeId) {
               }
               openDrawer('search', { focus: true });
             }
+          });
+
+          // Com o drawer aberto, a tecla "/" vai direto pra barra de pesquisa
+          // (aba Search) e já digita a "/" lá, abrindo os comandos (/romance,
+          // /isekai...). Se o foco já estiver num campo de texto, não interfere.
+          document.addEventListener('keydown', (e) => {
+            if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+            if (!isDrawerOpen) return;
+            const t = e.target;
+            const tag = (t && t.tagName) || '';
+            if (t && (t.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')) return;
+            const input = document.getElementById('searchDrawerInput');
+            if (!input) return;
+            e.preventDefault();
+            switchDrawerTab('search', { focus: false });
+            input.focus();
+            input.value = '/';
+            try { input.setSelectionRange(1, 1); } catch (err) {}
+            input.dispatchEvent(new Event('input', { bubbles: true }));
           });
 
           const ARROW_NAV_ORDER = ['plan', 'watching', 'all'];
