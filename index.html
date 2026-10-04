@@ -1296,8 +1296,13 @@
           aparecer (borrado) por trás da mensagem "NADA ENCONTRADO", em vez
           de sumir totalmente — igual ao estado de placeholder normal. */
         .search-panel-live.has-min-query.is-no-results .search-preview-blur {
-          opacity: 0.7;
+          opacity: 0.38;
           filter: blur(5px) saturate(0.8) brightness(0.85);
+        }
+
+        /* Sem véu localizado: o carrossel inteiro escurece por igual (igual ao expandido). */
+        .search-drawer-results.is-empty-state > .search-empty::before {
+          display: none;
         }
 
         /* ── Prévia ao passar o mouse numa lista (só drawer expandido, desktop) ──
@@ -2603,6 +2608,34 @@
           opacity: 1;
         }
 
+        /* Mobile: puxar para baixo no topo fecha o posterlightbox com a mesma
+          animação do drawer (acompanha o dedo, rebate ou desliza para fora). */
+        @media (max-width: 760px) {
+          .poster-lightbox.open.mobile-pull-dragging {
+            transform: translate3d(0, var(--lb-pull-y, 0px), 0);
+            opacity: var(--lb-pull-opacity, 1);
+            transition: none;
+            will-change: transform;
+          }
+
+          .poster-lightbox.open.mobile-pull-rebounding {
+            transform: translate3d(0, 0, 0);
+            opacity: 1;
+            transition: transform 0.22s cubic-bezier(0.22, 1.25, 0.36, 1), opacity 0.18s ease-out;
+          }
+
+          .poster-lightbox.open.mobile-pull-closing {
+            transform: translate3d(0, var(--lb-pull-y, 0px), 0);
+            opacity: var(--lb-pull-opacity, 1);
+          }
+
+          .poster-lightbox.open.mobile-pull-closing.mobile-pull-closing-active {
+            transform: translate3d(0, 105dvh, 0);
+            opacity: 0;
+            transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease-out;
+          }
+        }
+
         .poster-lightbox-figure,
         .poster-lightbox-close {
           position: relative;
@@ -2672,7 +2705,7 @@
           overflow: hidden;
           opacity: 0;
           transform: translateY(-10px);
-          transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+          transition: none; /* aparece instantâneo, junto do resto do lightbox */
           -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.55) 68%, transparent 100%);
           mask-image: linear-gradient(to bottom, #000 0%, #000 38%, rgba(0,0,0,0.55) 68%, transparent 100%);
         }
@@ -15365,6 +15398,37 @@ function getMetaFor(animeId) {
               return BANNER_EXTENSIONS.map(ext => `${folder}/${filename}.${ext}`);
             }
 
+            const bannerPreloaded = new Set();
+            function preloadBannerFor(source) {
+              try {
+                const cands = source && source.banner ? [String(source.banner)] : bannerAutoCandidates(source);
+                if (!cands.length) return;
+                const key = cands.join('|');
+                if (bannerPreloaded.has(key) || bannerResolvedCache.get(key) === '') return;
+                bannerPreloaded.add(key);
+                const q = cands.slice();
+                const go = () => {
+                  const next = q.shift();
+                  if (!next) { bannerResolvedCache.set(key, ''); return; }
+                  const im = new Image();
+                  im.onload = () => { bannerResolvedCache.set(key, next); if (im.decode) im.decode().catch(() => {}); };
+                  im.onerror = go;
+                  im.src = bannerFreshUrl(next);
+                };
+                go();
+              } catch (e) {}
+            }
+            ['pointerover', 'touchstart'].forEach(evt => {
+              document.addEventListener(evt, (e) => {
+                const li = e.target && e.target.closest ? e.target.closest('li.anime-item') : null;
+                if (!li || !li.id) return;
+                const src = animeData.find(a => a.id === li.id)
+                  || watchingData.find(a => a.id === li.id)
+                  || planToWatchData.find(a => a.id === li.id);
+                if (src) preloadBannerFor(src);
+              }, { passive: true });
+            });
+
             function hideLightboxBanner() {
               lightbox.classList.remove('has-banner');
               lightboxBanner.classList.remove('ready');
@@ -15413,6 +15477,10 @@ function getMetaFor(animeId) {
                 lightbox.classList.remove('has-banner');
                 lightboxBanner.classList.remove('ready');
                 lightboxBannerImg.src = url;
+                // Imagem já em cache/pré-carregada: mostra na mesma hora (síncrono).
+                if (lightboxBannerImg.complete && lightboxBannerImg.naturalWidth > 0) {
+                  lightboxBannerImg.onload();
+                }
               };
               tryNext();
             }
