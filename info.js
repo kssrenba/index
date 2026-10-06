@@ -1313,6 +1313,21 @@ const rawAnimeData = [
 // Watching Now — animes em exibição/andamento, agrupados por temporada (season).
 const rawWatchingData = [
   // Non-Seasonal Anime
+  {
+    id: "nippon-sangoku",
+    img: "watchingnow-images/watchingnow/nippon-sangoku.webp",
+    title: "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+    info: "12 episódios",
+    studio: "Studio Kafka",
+    season: null,
+    seasons: [12],
+    airedSeason: "2026",
+    url: "https://www.anime-planet.com/anime/nippon-sangoku-the-three-nations-of-the-crimson-sun",
+    crunchyroll: "",
+    malUrl: "https://myanimelist.net/anime/63375/Nippon_Sangoku",
+
+    mal: [{ label: "1 temporada", episodes: 12, malName: "Nippon Sangoku", unwatched: true }],
+  },
 
   // Fall 2026
   {
@@ -1389,19 +1404,6 @@ const rawWatchingData = [
     url: "https://www.anime-planet.com/anime/the-100-girlfriends-who-really-really-really-really-really-love-you-season-3",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN933/the-100-girlfriends-who-really-really-really-really-really-love-you",
     malUrl: "https://myanimelist.net/anime/62811/Kimi_no_Koto_ga_Daidaidaidaidaisuki_na_100-nin_no_Kanojo_3rd_Season",
-  },
-  {
-    id: "chainsmoker-cat",
-    img: "watchingnow-images/watchingnow/chainsmoker-cat.webp",
-    title: "Chainsmoker Cat",
-    info: "12 episódios",
-    season: "summer-2026",
-    studio: "Bibury Animation Studios",
-    airedSeason: "2026",
-    seasons: [12],
-    url: "https://www.anime-planet.com/anime/chainsmoker-cat",
-    netflix: "https://www.netflix.com/title/82760630",
-    malUrl: "https://myanimelist.net/anime/63403/Yani_Neko",
   },
 
   // Spring 2026
@@ -1820,19 +1822,6 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378115/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage",
     malUrl: "https://myanimelist.net/anime/63508/Rakudai_Kenja_no_Gakuin_Musou__Nidome_no_Tensei_S-Rank_Cheat_Majutsushi_Boukenroku",
-  },
-  {
-    id: "nippon-sangoku",
-    img: "plantowatch-images/plantowatch/nippon-sangoku.webp",
-    title: "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
-    info: "12 episódios",
-    studio: "Studio Kafka",
-    airedSeason: "2026",
-    url: "https://www.anime-planet.com/anime/nippon-sangoku-the-three-nations-of-the-crimson-sun",
-    crunchyroll: "",
-    malUrl: "https://myanimelist.net/anime/63375/Nippon_Sangoku",
-
-    mal: [{ label: "1 temporada", episodes: 12, malName: "Nippon Sangoku", unwatched: true }],
   },
   {
     id: "saga-of-tanya-the-evil",

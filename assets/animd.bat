@@ -1,258 +1,337 @@
 @echo off
-chcp 65001 >nul
 setlocal EnableExtensions EnableDelayedExpansion
+chcp 65001 >nul 2>&1
+
+title Anime Manager
+color 07
 
 set "base=C:\Users\Pichau\Desktop\myhtml"
+set "res=%temp%\anime_res.txt"
+set "esc=0"
 
-:inicio
+:MENU
 cls
 echo.
-echo === GERENCIAR ANIME ===
+echo ANIME MANAGER
 echo.
-echo 1 - Mover imagem
-echo 2 - Deletar imagem
+echo 1 - Mover Imagens
+echo 2 - Deletar Imagens
 echo 3 - Sair
 echo.
-set /p "acao=Escolha uma opcao: "
+call :ASK "Escolha uma opção:" op
+if "%esc%"=="1" goto MENU
 
-if "%acao%"=="1" goto mover
-if "%acao%"=="2" goto deletar
-if "%acao%"=="3" goto fim
+if "%op%"=="1" goto MOVER
+if "%op%"=="2" goto DELETAR
+if "%op%"=="3" goto SAIR
 
-echo.
-echo Opcao invalida.
-pause
-goto inicio
+call :PAUSA "Opção inválida."
+goto MENU
 
-
-:mover
+:MOVER
 cls
-echo.
-echo === MOVER ANIME ===
 echo.
 echo 1 - Plan to Watch
 echo 2 - Watching Now
 echo 3 - MyRanks
 echo.
-
 set "origem="
 set "destino="
 set "anime="
 
-set /p "origem=De qual grupo deseja mover? "
-if not "%origem%"=="1" if not "%origem%"=="2" if not "%origem%"=="3" goto origem_invalida
+call :ASK "Origem:" origem
+if "%esc%"=="1" goto MENU
+if "%origem%"=="1" goto MOVER_ORIGEM_OK
+if "%origem%"=="2" goto MOVER_ORIGEM_OK
+if "%origem%"=="3" goto MOVER_ORIGEM_OK
+call :PAUSA "Origem inválida."
+goto MENU
 
-set /p "destino=Para qual grupo deseja mover? "
-if not "%destino%"=="1" if not "%destino%"=="2" if not "%destino%"=="3" goto destino_invalido
+:MOVER_ORIGEM_OK
+call :ASK "Destino:" destino
+if "%esc%"=="1" goto MENU
+if "%destino%"=="1" goto MOVER_DESTINO_OK
+if "%destino%"=="2" goto MOVER_DESTINO_OK
+if "%destino%"=="3" goto MOVER_DESTINO_OK
+call :PAUSA "Destino inválido."
+goto MENU
 
-if "%origem%"=="%destino%" goto grupos_iguais
-
-set /p "anime=Digite o ID/nome do anime: "
-if not defined anime goto anime_invalido
-
-goto executar_movimento
-
-
-:origem_invalida
-echo.
-echo Origem invalida.
-pause
-goto inicio
-
-:destino_invalido
-echo.
-echo Destino invalido.
-pause
-goto inicio
-
-:grupos_iguais
-echo.
-echo A origem e o destino nao podem ser iguais.
-pause
-goto inicio
-
-:anime_invalido
-echo.
-echo O nome do anime nao pode ficar vazio.
-pause
-goto inicio
-
-
-:executar_movimento
-call :definir_grupo "%origem%" origem
-call :definir_grupo "%destino%" destino
-
-echo.
-echo Movendo "%anime%" de !origemNome! para !destinoNome!...
-echo.
-
-set "totalMovidos=0"
-
-for %%N in (1 2 3) do (
-    call set "pastaOrigem=%%origem%%N%%"
-    call set "pastaDestino=%%destino%%N%%"
-
-    if not exist "!pastaOrigem!\" (
-        echo Pasta de origem nao encontrada: !pastaOrigem!
-    ) else (
-        if not exist "!pastaDestino!\" mkdir "!pastaDestino!" >nul 2>&1
-
-        set "encontrouNestaPasta=0"
-
-        for /f "delims=" %%F in ('dir /b /a-d "!pastaOrigem!\*" 2^>nul') do (
-            if /i "%%~nF"=="%anime%" (
-                move /Y "!pastaOrigem!\%%F" "!pastaDestino!\%%F" >nul
-                if not errorlevel 1 (
-                    echo Movido: %%F
-                    set /a totalMovidos+=1
-                    set "encontrouNestaPasta=1"
-                ) else (
-                    echo ERRO ao mover: %%F
-                )
-            )
-        )
-
-        if "!encontrouNestaPasta!"=="0" (
-            echo Nao encontrado em: !pastaOrigem!
-        )
-    )
+:MOVER_DESTINO_OK
+if "%origem%"=="%destino%" (
+    call :PAUSA "A origem e o destino não podem ser iguais."
+    goto MENU
 )
 
-echo.
-if "!totalMovidos!"=="0" (
-    echo Nenhuma imagem foi movida.
-) else (
-    echo !totalMovidos! arquivo(s) movido(s) com sucesso.
+call :SET_GROUP "%origem%" origem
+call :SET_GROUP "%destino%" destino
+
+set "cand=%temp%\anime_cand.txt"
+break > "%cand%"
+for %%N in (1 2 3 4) do call :LIST_NAMES "!origem%%N!"
+
+call :ASK "ID ou nome do anime:" anime "%cand%"
+if "%esc%"=="1" goto MENU
+if not defined anime (
+    call :PAUSA "O nome do anime não pode ficar vazio."
+    goto MENU
 )
-echo.
-pause
-goto inicio
 
-
-:deletar
 cls
 echo.
-echo === DELETAR IMAGEM ===
+echo Anime : !origemName!  -^>  !destinoName!
+echo ID    : !anime!
+echo.
+
+set /a moved=0
+
+for %%N in (1 2 3) do (
+    set "src=!origem%%N!"
+    set "dst=!destino%%N!"
+    call :MOVE_MATCHING "!src!" "!dst!" "IMAGEM"
+)
+
+set "src=!origem4!"
+set "dst=!destino4!"
+call :MOVE_MATCHING "!src!" "!dst!" "BANNER"
+
+if !moved! EQU 0 (
+    echo Nenhum arquivo foi movido.
+) else (
+    echo.
+    if !moved! EQU 1 (
+        echo Total Movido: 1 arquivo.
+    ) else (
+        echo Total Movido: !moved! arquivos.
+    )
+)
+call :PAUSA_MENU_L
+goto MENU
+
+:DELETAR
+cls
 echo.
 echo 1 - Plan to Watch
 echo 2 - Watching Now
 echo 3 - MyRanks
 echo.
-
 set "grupo="
 set "anime="
-set /p "grupo=De qual grupo deseja deletar? "
-if not "%grupo%"=="1" if not "%grupo%"=="2" if not "%grupo%"=="3" goto grupo_invalido
 
-set /p "anime=Digite o ID/nome do anime: "
-if not defined anime goto anime_invalido
+call :ASK "Grupo:" grupo
+if "%esc%"=="1" goto MENU
+if "%grupo%"=="1" goto DELETE_GROUP_OK
+if "%grupo%"=="2" goto DELETE_GROUP_OK
+if "%grupo%"=="3" goto DELETE_GROUP_OK
+call :PAUSA "Grupo inválido."
+goto MENU
 
-call :definir_grupo "%grupo%" apagar
+:DELETE_GROUP_OK
+call :ASK "ID ou nome do anime:" anime
+if "%esc%"=="1" goto MENU
+if not defined anime (
+    call :PAUSA "O nome do anime não pode ficar vazio."
+    goto MENU
+)
 
-rem Primeiro verifica se o ID existe antes de pedir confirmacao.
-set "totalEncontrados=0"
+call :SET_GROUP "%grupo%" apagar
+
+cls
+echo.
+echo Grupo : !apagarName!
+echo ID    : !anime!
+echo.
+
+set /a found=0
+
+if "%grupo%"=="3" goto DELETE_MYRanks
 
 for %%N in (1 2 3) do (
-    call set "pasta=%%apagar%%N%%"
+    set "p=!apagar%%N!"
+    call :FIND_MATCHING "!p!"
+)
+goto DELETE_CHECK
 
-    if exist "!pasta!\" (
-        for /f "delims=" %%F in ('dir /b /a-d "!pasta!\*" 2^>nul') do (
-            if /i "%%~nF"=="%anime%" (
-                set /a totalEncontrados+=1
-            )
-        )
-    )
+:DELETE_MYRanks
+for %%N in (1 2 3 4) do (
+    set "p=!apagar%%N!"
+    call :FIND_MATCHING "!p!"
 )
 
-if "!totalEncontrados!"=="0" (
-    echo.
-    echo Nenhuma imagem encontrada com o ID "%anime%" em !apagarNome!.
-    echo Verifique se o nome foi digitado corretamente.
-    echo.
-    pause
-    goto inicio
+:DELETE_CHECK
+if !found! EQU 0 (
+    echo Nenhum arquivo encontrado.
+    call :PAUSA_MENU_L
+    goto MENU
 )
 
-echo.
-echo Encontrado(s): !totalEncontrados! arquivo(s).
-echo ATENCAO: isso vai apagar "%anime%" das pastas de !apagarNome!.
-set "confirmar="
-set /p "confirmar=Tem certeza? (S/N): "
-
-if /i not "%confirmar%"=="S" (
-    echo.
-    echo Exclusao cancelada.
-    pause
-    goto inicio
-)
-
-set "totalApagados=0"
-
-for %%N in (1 2 3) do (
-    call set "pasta=%%apagar%%N%%"
-
-    if exist "!pasta!\" (
-        for /f "delims=" %%F in ('dir /b /a-d "!pasta!\*" 2^>nul') do (
-            if /i "%%~nF"=="%anime%" (
-                del /Q "!pasta!\%%F"
-                if not errorlevel 1 (
-                    echo Deletado: %%F
-                    set /a totalApagados+=1
-                )
-            )
-        )
-    )
-)
-
-echo.
-if "!totalApagados!"=="0" (
-    echo Nenhuma imagem foi deletada.
+if !found! EQU 1 (
+    echo Encontrado: 1 arquivo
 ) else (
-    echo !totalApagados! arquivo(s) deletado(s) com sucesso.
+    echo Encontrados: !found! arquivos
 )
+echo A exclusão será permanente.
 echo.
-pause
-goto inicio
+set "confirm="
+call :ASK "Confirmar exclusão? S/N:" confirm
+if "%esc%"=="1" goto MENU
+if /i not "%confirm%"=="S" (
+    call :PAUSA "Exclusão cancelada."
+    goto MENU
+)
 
+set /a deleted=0
 
-:grupo_invalido
 echo.
-echo Grupo invalido.
-pause
-goto inicio
 
+if "%grupo%"=="3" goto DELETE_FOUR
 
-:definir_grupo
-set "numero=%~1"
-set "prefixo=%~2"
+for %%N in (1 2 3) do (
+    set "p=!apagar%%N!"
+    call :DELETE_MATCHING "!p!"
+)
+goto DELETE_END
 
-if "%numero%"=="1" (
-    set "%prefixo%Nome=Plan to Watch"
-    set "%prefixo%1=%base%\plantowatch-images\plantowatch"
-    set "%prefixo%2=%base%\plantowatch-images\plantowatch-search"
-    set "%prefixo%3=%base%\plantowatch-images\plantowatch-sequels"
-    goto :eof
+:DELETE_FOUR
+for %%N in (1 2 3 4) do (
+    set "p=!apagar%%N!"
+    call :DELETE_MATCHING "!p!"
 )
 
-if "%numero%"=="2" (
-    set "%prefixo%Nome=Watching Now"
-    set "%prefixo%1=%base%\watchingnow-images\watchingnow"
-    set "%prefixo%2=%base%\watchingnow-images\watchingnow-search"
-    set "%prefixo%3=%base%\watchingnow-images\watchingnow-sequels"
-    goto :eof
+:DELETE_END
+if !deleted! EQU 0 (
+    echo Nenhum arquivo foi deletado.
+) else (
+    echo.
+    if !deleted! EQU 1 (
+        echo Total deletado: 1 arquivo.
+    ) else (
+        echo Total deletado: !deleted! arquivos.
+    )
 )
+call :PAUSA_MENU_L
+goto MENU
 
-if "%numero%"=="3" (
-    set "%prefixo%Nome=MyRanks"
-    set "%prefixo%1=%base%\myranks-images\myranks"
-    set "%prefixo%2=%base%\myranks-images\myranks-search"
-    set "%prefixo%3=%base%\myranks-images\myranks-sequels"
-    goto :eof
-)
-
-goto :eof
-
-
-:fim
+:SAIR
+cls
+echo.
+echo      Anime Manager encerrado.
+echo.
 endlocal
+exit /b
+
+:SET_GROUP
+set "num=%~1"
+set "prefix=%~2"
+
+set "%prefix%1="
+set "%prefix%2="
+set "%prefix%3="
+set "%prefix%4="
+set "%prefix%Name="
+
+if "%num%"=="1" (
+    set "%prefix%Name=Plan to Watch"
+    set "%prefix%1=%base%\plantowatch-images\plantowatch"
+    set "%prefix%2=%base%\plantowatch-images\plantowatch-search"
+    set "%prefix%3=%base%\plantowatch-images\plantowatch-sequels"
+    set "%prefix%4=%base%\plantowatch-images\plantowatch-banner"
+    exit /b
+)
+
+if "%num%"=="2" (
+    set "%prefix%Name=Watching Now"
+    set "%prefix%1=%base%\watchingnow-images\watchingnow"
+    set "%prefix%2=%base%\watchingnow-images\watchingnow-search"
+    set "%prefix%3=%base%\watchingnow-images\watchingnow-sequels"
+    set "%prefix%4=%base%\watchingnow-images\watchingnow-banner"
+    exit /b
+)
+
+if "%num%"=="3" (
+    set "%prefix%Name=MyRanks"
+    set "%prefix%1=%base%\myranks-images\myranks"
+    set "%prefix%2=%base%\myranks-images\myranks-search"
+    set "%prefix%3=%base%\myranks-images\myranks-sequels"
+    set "%prefix%4=%base%\myranks-images\myranks-banner"
+    exit /b
+)
+exit /b
+
+:MOVE_MATCHING
+set "src=%~1"
+set "dst=%~2"
+set "label=%~3"
+if not exist "%src%\" exit /b
+if not exist "%dst%\" mkdir "%dst%" >nul 2>&1
+
+for /f "delims=" %%F in ('dir /b /a-d "%src%\*" 2^>nul') do (
+    if /i "%%~nF"=="%anime%" (
+        move /Y "%src%\%%F" "%dst%\%%F" >nul 2>&1
+        if not errorlevel 1 (
+            if /i "%label%"=="BANNER" (
+                echo [OK] Banner movido: %%F
+            ) else (
+                echo [OK] Imagem movida: %%F
+            )
+            set /a moved+=1
+        ) else (
+            echo [X] Erro ao mover: %%F
+        )
+    )
+)
+exit /b
+
+:FIND_MATCHING
+set "p=%~1"
+if not exist "%p%\" exit /b
+
+for /f "delims=" %%F in ('dir /b /a-d "%p%\*" 2^>nul') do (
+    if /i "%%~nF"=="%anime%" (
+        set /a found+=1
+    )
+)
+exit /b
+
+:DELETE_MATCHING
+set "p=%~1"
+if not exist "%p%\" exit /b
+
+for /f "delims=" %%F in ('dir /b /a-d "%p%\*" 2^>nul') do (
+    if /i "%%~nF"=="%anime%" (
+        del /Q "%p%\%%F" >nul 2>&1
+        if not errorlevel 1 (
+            echo [OK] Deletado: %%F
+            set /a deleted+=1
+        ) else (
+            echo [X] Não foi possível deletar: %%F
+        )
+    )
+)
+exit /b
+
+:PAUSA
+set "msg=%~1"
+echo.
+echo [^^!] %msg%
+pause >nul
+exit /b
+
+:LIST_NAMES
+set "p=%~1"
+if not exist "%p%\" exit /b
+for /f "delims=" %%F in ('dir /b /a-d "%p%\*" 2^>nul') do >>"%cand%" echo %%~nF
+exit /b
+
+:PAUSA_MENU_L
+echo Pressione qualquer tecla para voltar ao início...
+pause >nul
+exit /b
+
+:ASK
+set "esc=0"
+set "%~2="
+del "%res%" >nul 2>&1
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0ghost.ps1" -Prompt "%~1" -Candidates "%~3" -Result "%res%"
+if errorlevel 1 set "esc=1"
+if "%esc%"=="0" if exist "%res%" set /p "%~2=" <"%res%"
 exit /b
