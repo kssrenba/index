@@ -2516,7 +2516,43 @@ function getMetaFor(animeId) {
         });
       }
 
+      // ── Carrossel True Characters: arrastar com o mouse (PC). No touch o
+      // scroll nativo já funciona. Clique logo após um arrasto é ignorado. ──
       if (lightboxCharacters) {
+        let dragEl = null, startX = 0, startLeft = 0, moved = false;
+        lightboxCharacters.addEventListener('pointerdown', function(e) {
+          if (e.pointerType !== 'mouse' || e.button !== 0) return;
+          const grid = e.target.closest('.poster-lightbox-characters-grid');
+          if (!grid || grid.scrollWidth <= grid.clientWidth) return;
+          dragEl = grid; startX = e.clientX; startLeft = grid.scrollLeft; moved = false;
+        });
+        window.addEventListener('pointermove', function(e) {
+          if (!dragEl) return;
+          const dx = e.clientX - startX;
+          if (!moved && Math.abs(dx) > 5) { moved = true; dragEl.classList.add('is-dragging'); }
+          if (moved) dragEl.scrollLeft = startLeft - dx;
+        });
+        const endDrag = function() {
+          if (!dragEl) return;
+          dragEl.classList.remove('is-dragging');
+          dragEl = null;
+          if (moved) setTimeout(function() { moved = false; }, 0);
+        };
+        window.addEventListener('pointerup', endDrag);
+        window.addEventListener('pointercancel', endDrag);
+        // Remove o fade da direita quando a rolagem chega ao fim.
+        lightboxCharacters.addEventListener('scroll', function(e) {
+          const g = e.target;
+          if (!g || !g.classList || !g.classList.contains('poster-lightbox-characters-grid')) return;
+          g.classList.toggle('at-end', g.scrollLeft + g.clientWidth >= g.scrollWidth - 2);
+        }, true);
+        lightboxCharacters.addEventListener('click', function(e) {
+          if (moved) { e.preventDefault(); e.stopPropagation(); }
+        }, true);
+      }
+
+      if (lightboxCharacters) {
+
         lightboxCharacters.addEventListener('click', function(e) {
           if (e.target.closest('.poster-lightbox-characters-label')) {
             e.preventDefault();

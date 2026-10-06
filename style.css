@@ -13393,3 +13393,239 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
     html body > #categoryDrawer.category-drawer:not(.show) { visibility: hidden; pointer-events: none; }
     html body > #categoryDrawer.category-drawer:not(.show) * { animation-play-state: paused !important; }
   }
+
+  /* ── FIX MOBILE: posterlightbox + banner carregam instantâneo ──
+     Causas da demora: (1) filter:url(#lbBannerSharpen) (filtro SVG, roda na
+     CPU e bloqueia o paint), (2) backdrop-filter no banner e nos cards de
+     info (STUDIOS/STUDIO/YEAR/MAL SCORE/REWATCH) — o card espera o banner
+     pintar para borrar o fundo, então aparecem juntos e atrasados,
+     (3) máscara composta de 2 gradientes em elemento fixed de 38dvh.
+     No mobile trocamos por equivalentes baratos (GPU). */
+  @media (max-width: 760px) {
+    .poster-lightbox-banner {
+      transition: none !important;
+      transform: none !important;
+      will-change: opacity;
+      contain: paint;
+      /* uma máscara só, em vez de duas compostas */
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+      mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+      -webkit-mask-composite: initial;
+      mask-composite: initial;
+    }
+    .poster-lightbox.open .poster-lightbox-banner.ready {
+      transform: none !important;
+    }
+    /* sem filtro SVG; só brightness/saturate (aceleração por GPU) */
+    .poster-lightbox .poster-lightbox-banner img {
+      filter: brightness(0.32) saturate(1.1) !important;
+      image-rendering: auto;
+      transform: none !important;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    /* sem desfoque progressivo por backdrop-filter */
+    .poster-lightbox-banner::before { display: none !important; }
+    /* sem grão SVG (feTurbulence) no overlay: só os gradientes */
+    .poster-lightbox-banner::after {
+      background:
+        radial-gradient(ellipse 120% 110% at 50% 20%, transparent 30%, rgba(0,0,0,0.55) 100%),
+        linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 35%, rgba(0,0,0,0.6) 100%) !important;
+    }
+    /* Cards de info e tags: fundo sólido translúcido, SEM backdrop-filter,
+       então pintam no mesmo frame do lightbox, sem esperar o banner. */
+    .poster-lightbox.has-banner .rank-meta,
+    .poster-lightbox.has-banner .poster-lightbox-list .list-tag,
+    .poster-lightbox.has-banner .poster-lightbox-list .list-division,
+    .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    .poster-lightbox.has-banner .rank-meta {
+      background: rgba(10,10,14,0.72);
+    }
+    /* o blur de 6px do fundo do lightbox também custa caro no celular */
+    .poster-lightbox {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: rgba(0,0,0,0.85);
+      transition: none;
+    }
+    .poster-lightbox-figure { transition: none; }
+  }
+
+  /* ══ True Characters no lightbox — cards horizontais ADAPTÁVEIS ══
+     A largura de cada card depende da quantidade, então nunca sobra
+     espaço vazio: 1 = linha toda, 2 = metade, 3 = terço (cabe exato),
+     4+ = terço com a borda do próximo aparecendo -> vira carrossel
+     (arrastar com o mouse no PC, deslizar no mobile). */
+  .poster-lightbox { --lbc-gap: 10px; --lbc-h: 96px; --lbc-img: 80px; }
+  @media (max-width: 760px) {
+    .poster-lightbox { --lbc-h: 84px; --lbc-img: 68px; }
+  }
+
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters:not(:empty) {
+    overflow: hidden !important;
+    padding: 14px !important;
+  }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid {
+    --lbc-w: calc((100% - 2 * var(--lbc-gap)) / 3);
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    grid-template-columns: none !important;
+    align-items: stretch !important;
+    gap: var(--lbc-gap) !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 0 !important;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid::-webkit-scrollbar { display: none !important; }
+
+  /* quantidade -> largura do card */
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid:has(> .poster-lightbox-character-link:only-child) { --lbc-w: 100%; }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid:has(> .poster-lightbox-character-link:nth-child(2)):not(:has(> .poster-lightbox-character-link:nth-child(3))) {
+    --lbc-w: calc((100% - var(--lbc-gap)) / 2);
+  }
+  /* 4+: rola, com o próximo card aparecendo pela metade */
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid:has(> .poster-lightbox-character-link:nth-child(4)) {
+    --lbc-w: calc((100% - 2 * var(--lbc-gap)) / 3.3);
+    cursor: grab;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent 100%);
+  }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid.is-dragging * { pointer-events: none !important; }
+
+  @media (max-width: 760px) {
+    /* mobile: 1 = linha toda; 2+ = card largo com o próximo aparecendo */
+    .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid,
+    .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid:has(> .poster-lightbox-character-link:nth-child(2)):not(:has(> .poster-lightbox-character-link:nth-child(3))),
+    .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid:has(> .poster-lightbox-character-link:nth-child(4)) {
+      --lbc-w: 82%;
+      cursor: auto;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid:has(> .poster-lightbox-character-link:nth-child(2)) {
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+      mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent 100%);
+    }
+    .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid:has(> .poster-lightbox-character-link:only-child) { --lbc-w: 100%; }
+  }
+
+  /* Card horizontal: foto grande à esquerda, nome, #rank grande à direita */
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-link,
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid > .poster-lightbox-character-link,
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid .poster-lightbox-character-link:only-child {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    grid-template-columns: none !important;
+    flex: 0 0 var(--lbc-w) !important;
+    width: var(--lbc-w) !important;
+    min-width: var(--lbc-w) !important;
+    max-width: var(--lbc-w) !important;
+    height: var(--lbc-h) !important;
+    min-height: var(--lbc-h) !important;
+    gap: 12px !important;
+    padding: 8px 64px 8px 8px !important;
+    border-radius: 14px !important;
+    background: rgba(255,255,255,0.035) !important;
+    overflow: hidden !important;
+    scroll-snap-align: start;
+    transform: none !important;
+    box-shadow: none !important;
+    text-align: left !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-link:hover,
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-link:focus-visible,
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-link:active {
+    background: rgba(255,255,255,0.11) !important;
+    transform: none !important;
+  }
+
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-img {
+    display: block !important;
+    grid-column: auto !important;
+    width: var(--lbc-img) !important;
+    min-width: var(--lbc-img) !important;
+    max-width: var(--lbc-img) !important;
+    height: var(--lbc-img) !important;
+    min-height: var(--lbc-img) !important;
+    max-height: var(--lbc-img) !important;
+    flex: 0 0 var(--lbc-img) !important;
+    border-radius: 11px !important;
+    object-fit: cover !important;
+    object-position: center top;
+    box-shadow: none !important;
+  }
+
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-text {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    grid-column: auto !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-name {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    white-space: normal !important;
+    text-overflow: ellipsis !important;
+    text-align: left !important;
+    font: 750 14.5px/1.25 var(--font-title) !important;
+    color: #fff !important;
+  }
+
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-rank {
+    position: absolute !important;
+    top: 50% !important;
+    right: 14px !important;
+    left: auto !important;
+    bottom: auto !important;
+    grid-column: auto !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    color: rgba(255,255,255,0.18) !important;
+    font: 900 28px/1 var(--font-title) !important;
+    letter-spacing: -0.055em !important;
+    font-variant-numeric: tabular-nums !important;
+    transform: translateY(-50%) scaleY(1.85) !important;
+    transform-origin: center center !important;
+    text-shadow: none !important;
+    pointer-events: none !important;
+  }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-link.rank-gold .poster-lightbox-character-rank { color: #d4af37 !important; }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-link.rank-silver .poster-lightbox-character-rank { color: #b8bcc2 !important; }
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-link.rank-bronze .poster-lightbox-character-rank { color: #b0703f !important; }
+
+  /* Chegou ao fim do carrossel: tira o fade para o último card ficar nítido. */
+  .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid.at-end {
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }

@@ -650,8 +650,11 @@ const rawAnimeData = [
       { season: "S2", name: "Electric Circus" },
     ],
     airedSeason: "2024-?",
-    rewatch: "Yes",
-    mal: [{ label: "1ª temporada", episodes: 25, note: 8, malName: "Ao no Hako" }],
+    rewatch: "Season 1",
+    mal: [
+      { label: "1ª temporada", episodes: 25, note: 8, malName: "Ao no Hako" },
+      { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Ao no Hako" },
+    ],
   },
   {
     id: "mashle",
@@ -1349,6 +1352,7 @@ const rawWatchingData = [
     info: "2ª temporada", 
     season: "fall-2026",
     airedSeason: "2026",
+    seasons: [25, 12],
     url: "https://www.anime-planet.com/anime/blue-box-season-2",
     netflix: "",
     malUrl: "https://myanimelist.net/anime/61323/Ao_no_Hako_2nd_Season",
