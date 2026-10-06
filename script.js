@@ -532,7 +532,8 @@ if ('scrollRestoration' in history) {
       //  • erro temporário NÃO apaga a nota que já estava no cache.
       const JIKAN_MIN_GAP_MS = 400;
       const JIKAN_MAX_PER_MINUTE = 50;
-      const JIKAN_MAX_RETRIES = 3;
+      const JIKAN_MAX_RETRIES = 2;
+      const JIKAN_TIMEOUT_MS = 6000;
       let jikanQueueTail = Promise.resolve();
       let jikanRequestTimes = [];
       let jikanBlockedUntil = 0;
@@ -570,20 +571,82 @@ if ('scrollRestoration' in history) {
       // GET genérico no Jikan, já respeitando fila, limite e retry.
       // Resolve com o JSON, ou null se o recurso não existe (404).
       // Rejeita só quando a API está indisponível.
+      //
+      // Se a conexão DIRETA com api.jikan.moe falhar por rede (timeout,
+      // DNS, provedor/firewall bloqueando — ex: ERR_CONNECTION_TIMED_OUT),
+      // tenta o mesmo endereço por proxies CORS públicos. Quando um proxy
+      // funciona, o site passa a usá-lo por 5 minutos antes de tentar a
+      // conexão direta de novo. Para desligar: JIKAN_USE_PROXY_FALLBACK = false.
+      const JIKAN_BASE = 'https://api.jikan.moe/v4';
+      const JIKAN_USE_PROXY_FALLBACK = true;
+      const JIKAN_PROXIES = [
+        url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+        url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url)
+      ];
+      const JIKAN_PROXY_STICKY_MS = 5 * 60 * 1000;
+      let jikanPreferProxyUntil = 0;
+
+      // Uma tentativa de GET com timeout. Devolve { ok, json, status }
+      // (status = null quando não houve resposta: timeout/rede/bloqueio).
+      async function jikanFetchOnce(url, requireData) {
+        const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        const timer = ctrl ? setTimeout(() => ctrl.abort(), JIKAN_TIMEOUT_MS) : null;
+        try {
+          const res = await fetch(url, ctrl ? { signal: ctrl.signal } : undefined);
+          if (!res.ok) return { ok: false, json: null, status: res.status, res };
+          const json = await res.json();
+          // Proxies podem devolver páginas/erros em vez do JSON do Jikan.
+          if (requireData && !(json && typeof json === 'object' && 'data' in json)) {
+            return { ok: false, json: null, status: null };
+          }
+          return { ok: true, json, status: 200 };
+        } catch (e) {
+          return { ok: false, json: null, status: null };
+        } finally {
+          if (timer) clearTimeout(timer);
+        }
+      }
+
       async function jikanGetJson(path) {
+        const directUrl = JIKAN_BASE + path;
         for (let attempt = 0; attempt <= JIKAN_MAX_RETRIES; attempt++) {
           await waitForJikanSlot();
-          let res = null;
-          try {
-            res = await fetch('https://api.jikan.moe/v4' + path);
-          } catch (e) {
-            res = null; // sem internet / bloqueio de rede
+
+          const tryDirect = () => jikanFetchOnce(directUrl, false);
+          const tryProxies = async () => {
+            if (!JIKAN_USE_PROXY_FALLBACK) return null;
+            for (const build of JIKAN_PROXIES) {
+              const pr = await jikanFetchOnce(build(directUrl), true);
+              if (pr.ok) { jikanPreferProxyUntil = Date.now() + JIKAN_PROXY_STICKY_MS; return pr; }
+            }
+            return null;
+          };
+
+          let r;
+          if (Date.now() < jikanPreferProxyUntil) {
+            r = await tryProxies();
+            if (!r) { jikanPreferProxyUntil = 0; r = await tryDirect(); }
+          } else {
+            r = await tryDirect();
+            // Sem resposta nenhuma (rede/bloqueio): tenta pelos proxies.
+            if (!r.ok && r.status === null) {
+              const viaProxy = await tryProxies();
+              if (viaProxy) r = viaProxy;
+            }
           }
-          if (res && res.ok) return res.json();
-          if (res && res.status === 404) return null;
+          if (r.ok) return r.json;
+
+          window.__jikanLastError = {
+            path,
+            status: r.status === null ? 'sem resposta (timeout/rede/bloqueio)' : r.status,
+            attempt: attempt + 1,
+            at: new Date().toISOString()
+          };
+          try { console.warn('[MAL Score] falha ao consultar o Jikan:', window.__jikanLastError); } catch (e) {}
+          if (r.status === 404) return null;
           // Outros 4xx (fora o 429) não adianta repetir.
-          if (res && res.status !== 429 && res.status < 500) break;
-          const retryAfter = res ? parseInt(res.headers.get('Retry-After'), 10) : NaN;
+          if (r.status !== null && r.status !== 429 && r.status < 500) break;
+          const retryAfter = r.res ? parseInt(r.res.headers.get('Retry-After'), 10) : NaN;
           const backoff = Number.isFinite(retryAfter)
             ? retryAfter * 1000
             : Math.min(2000 * Math.pow(2, attempt), 15000);
@@ -628,18 +691,38 @@ if ('scrollRestoration' in history) {
         const ttl = (cached && cached.score == null) ? MAL_SCORE_NULL_TTL_MS : MAL_SCORE_CACHE_TTL_MS;
         const isFresh = cached && (Date.now() - cached.ts) < ttl;
         if (isFresh) return;
-        requestMalScore(malId).then(score => {
-          setCachedMalScore(malId, score);
-          if (!currentItem || currentItem.id !== animeId) return;
-          const liveEl = lightboxMeta && lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
-          if (liveEl) {
-            liveEl.textContent = formatMalScoreText(score);
-            liveEl.classList.toggle('empty', score == null);
-          }
-        }).catch(() => {
-          // API fora do ar ou limite estourado: mantém a nota antiga na
-          // tela e no cache; a próxima abertura do pôster tenta de novo.
-        });
+        const attemptFetch = (retriesLeft) => {
+          requestMalScore(malId).then(score => {
+            setCachedMalScore(malId, score);
+            if (!currentItem || currentItem.id !== animeId) return;
+            const liveEl = lightboxMeta && lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
+            if (liveEl) {
+              liveEl.textContent = formatMalScoreText(score);
+              liveEl.classList.toggle('empty', score == null);
+            }
+          }).catch(() => {
+            // API fora do ar ou limite estourado: mantém a nota antiga
+            // (se houver) e tenta de novo em alguns segundos, enquanto
+            // o pôster continuar aberto. Esgotadas as tentativas, troca
+            // o "…" por "–" em vez de ficar carregando pra sempre.
+            if (retriesLeft > 0) {
+              setTimeout(() => {
+                if (!currentItem || currentItem.id !== animeId) return;
+                attemptFetch(retriesLeft - 1);
+              }, 6000);
+              return;
+            }
+            if (!currentItem || currentItem.id !== animeId) return;
+            const liveEl = lightboxMeta && lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
+            if (liveEl && !getCachedMalScore(malId)) {
+              liveEl.textContent = formatMalScoreText(null);
+              liveEl.classList.add('empty');
+              const why = window.__jikanLastError;
+              if (why) liveEl.title = 'Não foi possível buscar a nota (status: ' + why.status + ')';
+            }
+          });
+        };
+        attemptFetch(1);
       }
 
       function loadAllMeta() {
@@ -1564,6 +1647,7 @@ function getMetaFor(animeId) {
           const neighborImg = neighbor && neighbor.querySelector('.poster-wrap img.thumb');
           const neighborSrc = neighborImg && neighborImg.getAttribute('data-poster-src');
           if (neighborSrc) preloadLightboxPoster(neighborSrc, mobileCarousel ? 'low' : (offset === -1 || offset === 1 ? 'high' : 'auto'));
+          preloadBannerFor(bannerSourceForItem(neighbor), 'high');
         });
       }
 
@@ -1616,35 +1700,329 @@ function getMetaFor(animeId) {
         return source && source.banner ? String(source.banner) : '';
       }
 
+      // ── Pré-carregamento dos banners ──
+      // Problemas corrigidos aqui:
+      //  1) As extensões eram testadas UMA POR VEZ (jpg → jpeg → png → webp…),
+      //     cada tentativa errada custando uma ida e volta de rede (404). Agora
+      //     todas são testadas em paralelo e a extensão que funcionou fica salva
+      //     (localStorage), então nas próximas visitas não há mais tentativa.
+      //  2) Os objetos Image do pré-carregamento eram descartados e o navegador
+      //     mobile liberava a imagem decodificada da memória. Agora ficam
+      //     retidos em "bannerImageStore" (limitado), já decodificados.
+      //  3) O pré-carregamento só começava no toque. Agora roda em segundo
+      //     plano (fila leve) para todos os itens e, ao abrir um pôster, os
+      //     vizinhos (anterior/próximo) ganham prioridade.
+      const BANNER_EXT_STORE_KEY = 'bannerResolvedExt:v1';
+      let bannerExtStore = {};
+      try { bannerExtStore = JSON.parse(localStorage.getItem(BANNER_EXT_STORE_KEY) || '{}') || {}; } catch (e) {}
+      function persistBannerExt(key, url) {
+        try {
+          if (bannerExtStore[key] === url) return;
+          bannerExtStore[key] = url;
+          localStorage.setItem(BANNER_EXT_STORE_KEY, JSON.stringify(bannerExtStore));
+        } catch (e) {}
+      }
+
+      const bannerImageStore = new Map(); // url -> { image, loaded, promise }
+      const BANNER_STORE_LIMIT = 24;
+      function loadBannerImage(url, priority = 'auto') {
+        let entry = bannerImageStore.get(url);
+        if (entry) {
+          if (priority === 'high' && entry.image && 'fetchPriority' in entry.image) entry.image.fetchPriority = 'high';
+          // reinsere para manter a ordem de uso recente (LRU)
+          bannerImageStore.delete(url);
+          bannerImageStore.set(url, entry);
+          return entry.promise;
+        }
+        const image = new Image();
+        image.decoding = 'async';
+        if ('fetchPriority' in image) image.fetchPriority = priority;
+        entry = { image, loaded: false, promise: null };
+        entry.promise = new Promise(resolve => {
+          image.onload = () => {
+            entry.loaded = true;
+            const done = () => resolve(true);
+            if (image.decode) image.decode().then(done, done); else done();
+          };
+          image.onerror = () => { bannerImageStore.delete(url); resolve(false); };
+        });
+        bannerImageStore.set(url, entry);
+        image.src = url;
+        if (bannerImageStore.size > BANNER_STORE_LIMIT) {
+          for (const [k, v] of bannerImageStore) {
+            if (k !== url && v.loaded) bannerImageStore.delete(k);
+            if (bannerImageStore.size <= BANNER_STORE_LIMIT) break;
+          }
+        }
+        return entry.promise;
+      }
+
+      // Resolve qual candidato existe (todos em paralelo; vence a ordem de prioridade).
+      const bannerResolving = new Map(); // key -> Promise<string>
+      function resolveBannerUrl(cands, priority = 'auto') {
+        const key = cands.join('|');
+        const known = bannerResolvedCache.get(key);
+        if (known !== undefined) return Promise.resolve(known);
+        if (bannerResolving.has(key)) return bannerResolving.get(key);
+
+        const saved = bannerExtStore[key];
+        const p = (async () => {
+          // 1) extensão já conhecida de visitas anteriores: tenta só ela
+          if (saved && cands.includes(saved)) {
+            const ok = await loadBannerImage(bannerFreshUrl(saved), priority);
+            if (ok) { bannerResolvedCache.set(key, saved); return saved; }
+          }
+          // 2) descoberta em paralelo
+          const results = await Promise.all(cands.map(c => loadBannerImage(bannerFreshUrl(c), priority)));
+          const idx = results.findIndex(Boolean);
+          if (idx === -1) { bannerResolvedCache.set(key, ''); return ''; }
+          const winner = cands[idx];
+          bannerResolvedCache.set(key, winner);
+          persistBannerExt(key, winner);
+          // libera da memória as variantes que não existiam (já falharam e foram removidas)
+          return winner;
+        })().finally(() => bannerResolving.delete(key));
+        bannerResolving.set(key, p);
+        return p;
+      }
+
       const bannerPreloaded = new Set();
-      function preloadBannerFor(source) {
+      function preloadBannerFor(source, priority = 'auto') {
         try {
           const cands = bannerCustomPath(source) ? [bannerCustomPath(source)] : bannerAutoCandidates(source);
           if (!cands.length) return;
           const key = cands.join('|');
-          if (bannerPreloaded.has(key) || bannerResolvedCache.get(key) === '') return;
+          if (bannerResolvedCache.get(key) === '') return;
+          if (bannerPreloaded.has(key) && priority !== 'high') return;
           bannerPreloaded.add(key);
-          const q = cands.slice();
-          const go = () => {
-            const next = q.shift();
-            if (!next) { bannerResolvedCache.set(key, ''); return; }
-            const im = new Image();
-            im.onload = () => { bannerResolvedCache.set(key, next); if (im.decode) im.decode().catch(() => {}); };
-            im.onerror = go;
-            im.src = bannerFreshUrl(next);
-          };
-          go();
+          resolveBannerUrl(cands, priority);
         } catch (e) {}
       }
+
+      // Fila em segundo plano: aquece os banners de todos os itens aos poucos,
+      // sem competir com a abertura do pôster (1 por vez, em tempo ocioso).
+      function warmAllBanners() {
+        try {
+          if (navigator.connection && navigator.connection.saveData) return;
+          const all = [].concat(animeData, watchingData, planToWatchData);
+          const queue = all.filter(Boolean);
+          const idle = window.requestIdleCallback
+            ? (fn) => window.requestIdleCallback(fn, { timeout: 2500 })
+            : (fn) => setTimeout(fn, 400);
+          const pump = () => {
+            // Dá prioridade à rede para o que o usuário está vendo: pausa
+            // enquanto a aba está oculta ou uma nota do MAL está sendo buscada.
+            if (document.hidden || jikanForegroundPending > 0) { setTimeout(pump, 1500); return; }
+            const batch = queue.splice(0, 1);
+            if (!batch.length) return;
+            const jobs = batch.map(src => {
+              const cands = bannerCustomPath(src) ? [bannerCustomPath(src)] : bannerAutoCandidates(src);
+              if (!cands.length) return Promise.resolve();
+              const key = cands.join('|');
+              if (bannerResolvedCache.get(key) !== undefined || bannerPreloaded.has(key)) return Promise.resolve();
+              bannerPreloaded.add(key);
+              return resolveBannerUrl(cands, 'low');
+            });
+            Promise.all(jobs).then(() => idle(pump), () => idle(pump));
+          };
+          idle(pump);
+        } catch (e) {}
+      }
+      if (document.readyState === 'complete') setTimeout(warmAllBanners, 1200);
+      else window.addEventListener('load', () => setTimeout(warmAllBanners, 1200), { once: true });
+
+      function bannerSourceForItem(li) {
+        if (!li || !li.id) return null;
+        return animeData.find(a => a.id === li.id)
+          || watchingData.find(a => a.id === li.id)
+          || planToWatchData.find(a => a.id === li.id)
+          || null;
+      }
+
       ['pointerover', 'touchstart'].forEach(evt => {
         document.addEventListener(evt, (e) => {
           const li = e.target && e.target.closest ? e.target.closest('li.anime-item') : null;
-          if (!li || !li.id) return;
-          const src = animeData.find(a => a.id === li.id)
-            || watchingData.find(a => a.id === li.id)
-            || planToWatchData.find(a => a.id === li.id);
-          if (src) preloadBannerFor(src);
+          const src = bannerSourceForItem(li);
+          if (src) preloadBannerFor(src, 'high');
         }, { passive: true });
+      });
+
+      // ── Botão "nome em japonês" (あ) ──
+      // Fica ao lado dos botões de busca/som/fechar. Ao clicar, troca o
+      // título do anime pelo PRIMEIRO "malName" cadastrado (nome romanizado
+      // do MyAnimeList, ex: "Code Geass: Hangyaku no Lelouch"); clicar de
+      // novo volta ao título normal. Vale para todos os tipos de pôster
+      // (inclusive o modo simples). Se não há malName, ou ele é igual ao
+      // título, o botão nem aparece. Usa só o 1º malName (ignora separadores).
+      const jpNameBtn = document.createElement('button');
+      jpNameBtn.type = 'button';
+      jpNameBtn.className = 'poster-lightbox-jpname';
+      jpNameBtn.setAttribute('aria-pressed', 'false');
+      jpNameBtn.setAttribute('aria-hidden', 'true');
+      jpNameBtn.tabIndex = -1;
+      (searchBtn && searchBtn.parentNode ? searchBtn.parentNode : lightbox)
+        .insertBefore(jpNameBtn, searchBtn || null);
+
+      let jpState = { id: '', title: '', jpName: '', active: false };
+      // Animes que o usuário deixou em japonês (um por um, pelo id). Fica
+      // só em memória: sobrevive a fechar/abrir o lightbox e a trocar de
+      // anime, mas é zerado ao fechar ou recarregar o site. Ligar em um
+      // anime NÃO afeta os outros.
+      const jpActiveIds = new Set();
+
+      function normalizeJpCompare(str) {
+        return String(str || '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      function firstJpNameOf(source) {
+        if (!source || !Array.isArray(source.mal)) return '';
+        for (const m of source.mal) {
+          if (!m || m.spacer) continue;
+          if (typeof m.malName === 'string' && m.malName.trim()) return m.malName.trim();
+        }
+        return '';
+      }
+
+      // Nome do MyAnimeList de um objeto de anime: o 1º "malName" da lista
+      // "mal" ou, se não houver, um campo "malName" direto no objeto (dá pra
+      // cadastrar assim em qualquer lista que não tenha o array "mal").
+      function jpNameOfSource(source) {
+        if (!source) return '';
+        const fromMal = firstJpNameOf(source);
+        if (fromMal) return fromMal;
+        return (typeof source.malName === 'string' && source.malName.trim()) ? source.malName.trim() : '';
+      }
+
+      // Procura o nome em TODAS as listas, na ordem de preferência. Começa
+      // pelas mesmas fontes usadas no bloco de temporadas (renderMalScores)
+      // e depois tenta o mesmo id nas demais listas — assim Watching Now,
+      // Plan to Watch, Announced Sequels etc. também acham o nome quando o
+      // mesmo anime tem malName em outra lista.
+      function jpNameFor(item) {
+        if (!item || !item.id) return '';
+        const id = item.id;
+        const isPlan = item.hasAttribute('data-plan-to-watch');
+        const isWatching = item.hasAttribute('data-watching-now');
+        const titleForId = (typeof ANIME_TITLE_BY_ID !== 'undefined') ? ANIME_TITLE_BY_ID[id] : undefined;
+        const inList = (list, pred) => (typeof list !== 'undefined' && Array.isArray(list)) ? list.find(pred) : null;
+        const byId = a => a && a.id === id;
+        const candidates = [
+          isPlan ? inList(typeof planToWatchData !== 'undefined' ? planToWatchData : undefined, byId) : null,
+          inList(typeof animeData !== 'undefined' ? animeData : undefined,
+            a => a.id === id || (isWatching && !isPlan && titleForId && a.title === titleForId)),
+          isWatching ? inList(typeof watchingData !== 'undefined' ? watchingData : undefined, byId) : null,
+          inList(typeof animeData !== 'undefined' ? animeData : undefined, byId),
+          inList(typeof watchingData !== 'undefined' ? watchingData : undefined, byId),
+          inList(typeof planToWatchData !== 'undefined' ? planToWatchData : undefined, byId),
+          inList(typeof trueCharactersData !== 'undefined' ? trueCharactersData : undefined, byId)
+        ];
+        for (const source of candidates) {
+          const name = jpNameOfSource(source);
+          if (name) return name;
+        }
+        return '';
+      }
+
+      // Encosta o botão à esquerda do botão mais à esquerda que estiver
+      // visível (busca / randomizer / calendário / som / fechar). Calculado
+      // na hora, pois as posições deles mudam conforme quais aparecem.
+      function positionJpNameBtn() {
+        if (!jpNameBtn.classList.contains('visible')) return;
+        const toggled = [randomizerLightboxBtn, calendarBtn, soundBtn];
+        let left = Infinity;
+        let ref = null;
+        [searchBtn, randomizerLightboxBtn, calendarBtn, soundBtn, closeBtn].forEach(b => {
+          if (!b) return;
+          if (toggled.includes(b) && !b.classList.contains('visible')) return;
+          const cs = getComputedStyle(b);
+          if (cs.display === 'none' || cs.visibility === 'hidden') return;
+          const r = b.getBoundingClientRect();
+          if (r.width <= 0 || r.height <= 0) return;
+          if (r.left < left) { left = r.left; ref = r; }
+        });
+        if (!ref) return;
+        const vw = document.documentElement.clientWidth;
+        jpNameBtn.style.width = ref.width + 'px';
+        jpNameBtn.style.height = ref.height + 'px';
+        jpNameBtn.style.top = ref.top + 'px';
+        jpNameBtn.style.right = Math.round(vw - left + 6) + 'px';
+      }
+      function schedulePositionJpNameBtn() {
+        requestAnimationFrame(() => {
+          positionJpNameBtn();
+          requestAnimationFrame(positionJpNameBtn);
+        });
+        setTimeout(positionJpNameBtn, 220);
+      }
+      window.addEventListener('resize', schedulePositionJpNameBtn, { passive: true });
+      if (typeof MutationObserver !== 'undefined') {
+        const jpObserver = new MutationObserver(schedulePositionJpNameBtn);
+        [searchBtn, randomizerLightboxBtn, calendarBtn, soundBtn].forEach(b => {
+          if (b) jpObserver.observe(b, { attributes: true, attributeFilter: ['class'] });
+        });
+      }
+
+      // Aparência do botão conforme o modo: no normal mostra "あ" (trocar
+      // para japonês); com o nome em japonês ativo vira "EN" (trocar para
+      // inglês). O tooltip usa o mesmo [data-tooltip] dos outros botões.
+      function setJpBtnMode(active) {
+        const label = active ? 'Name in English' : 'Name in Japanese';
+        jpNameBtn.innerHTML = '<span class="poster-lightbox-jpname-glyph">' + (active ? 'EN' : '\u3042') + '</span>';
+        jpNameBtn.dataset.tooltip = label;
+        jpNameBtn.setAttribute('aria-label', label);
+        jpNameBtn.removeAttribute('title');
+        jpNameBtn.classList.toggle('is-active', active);
+        jpNameBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      }
+      setJpBtnMode(false);
+
+      function applyJpTitle() {
+        if (!lightboxTitle && !lightboxSimpleCaption) return;
+        const shownTitle = jpState.active ? jpState.jpName : jpState.title;
+        if (lightboxTitle) lightboxTitle.innerHTML = escapeHtml(shownTitle);
+        // Modo simples (sem painel completo) mostra o nome na legenda.
+        const simpleTitle = lightboxSimpleCaption && lightboxSimpleCaption.querySelector('.poster-lightbox-simple-title');
+        if (simpleTitle) simpleTitle.textContent = shownTitle;
+        setJpBtnMode(jpState.active);
+      }
+
+      function hideJpNameBtn() {
+        jpState = { id: '', title: '', jpName: '', active: false };
+        jpNameBtn.classList.remove('visible');
+        setJpBtnMode(false);
+        jpNameBtn.setAttribute('aria-hidden', 'true');
+        jpNameBtn.tabIndex = -1;
+      }
+
+      // Chamado toda vez que o lightbox mostra um anime (já com o título
+      // normal aplicado): volta sempre ao nome original e decide se o
+      // botão deve aparecer.
+      function updateJpNameButton(item, title) {
+        hideJpNameBtn();
+        // Episódios favoritos mostram o nome do episódio, não do anime.
+        if (typeof currentCategory !== 'undefined' && currentCategory === 'favEpisodes') return;
+        const jpName = jpNameFor(item);
+        if (!jpName || normalizeJpCompare(jpName) === normalizeJpCompare(title)) return;
+        jpState = { id: item.id, title, jpName, active: jpActiveIds.has(item.id) };
+        if (jpState.active) applyJpTitle();
+        jpNameBtn.classList.add('visible');
+        jpNameBtn.setAttribute('aria-hidden', 'false');
+        jpNameBtn.tabIndex = 0;
+        schedulePositionJpNameBtn();
+      }
+
+      jpNameBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!jpState.jpName) return;
+        jpState.active = !jpState.active;
+        if (jpState.active) jpActiveIds.add(jpState.id); else jpActiveIds.delete(jpState.id);
+        applyJpTitle();
       });
 
       function hideLightboxBanner() {
@@ -1672,40 +2050,44 @@ function getMetaFor(animeId) {
         lightboxBannerImg.style.setProperty('--banner-shift-x', '');
         if (lightboxBannerImgBlur) lightboxBannerImgBlur.style.objectPosition = lightboxBannerImg.style.objectPosition;
 
-        const known = bannerResolvedCache.get(cacheKey);
-        const queue = known ? [known] : candidates.slice();
-        const tryNext = () => {
+        const show = (next) => {
           if (token !== bannerRenderToken) return;
-          const next = queue.shift();
-          if (!next) {
-            bannerResolvedCache.set(cacheKey, '');
-            hideLightboxBanner();
-            return;
-          }
+          if (!next) { hideLightboxBanner(); return; }
           const url = bannerFreshUrl(next);
-          lightboxBannerImg.onload = () => {
+          const reveal = () => {
             if (token !== bannerRenderToken) return;
             if (lightboxBannerImgBlur && lightboxBannerImgBlur.getAttribute('src') !== url) lightboxBannerImgBlur.src = url;
-            bannerResolvedCache.set(cacheKey, next);
             lightbox.classList.add('has-banner');
             lightboxBanner.classList.add('ready');
           };
-          lightboxBannerImg.onerror = tryNext;
+          lightboxBannerImg.onerror = () => {
+            if (token !== bannerRenderToken) return;
+            bannerResolvedCache.set(cacheKey, '');
+            hideLightboxBanner();
+          };
+          // Já exibindo essa mesma imagem: só garante a visibilidade.
           if (lightboxBannerImg.getAttribute('src') === url
               && lightboxBannerImg.complete && lightboxBannerImg.naturalWidth > 0) {
-            lightboxBannerImg.onload();
+            reveal();
             return;
           }
-          // Esconde o banner anterior enquanto o novo carrega/testa.
           lightbox.classList.remove('has-banner');
           lightboxBanner.classList.remove('ready');
+          lightboxBannerImg.onload = reveal;
           lightboxBannerImg.src = url;
-          // Imagem já em cache/pré-carregada: mostra na mesma hora (síncrono).
-          if (lightboxBannerImg.complete && lightboxBannerImg.naturalWidth > 0) {
-            lightboxBannerImg.onload();
-          }
+          // Imagem em memória (pré-carregada e decodificada): mostra na hora.
+          if (lightboxBannerImg.complete && lightboxBannerImg.naturalWidth > 0) reveal();
         };
-        tryNext();
+
+        // Caminho rápido: URL já resolvida e imagem já em memória → síncrono.
+        const known = bannerResolvedCache.get(cacheKey);
+        if (known) { show(known); return; }
+
+        // Caminho lento (primeira vez): resolve todas as extensões em paralelo
+        // com prioridade alta, em vez de tentar uma por vez.
+        lightbox.classList.remove('has-banner');
+        lightboxBanner.classList.remove('ready');
+        resolveBannerUrl(candidates, 'high').then(show);
       }
 
       function showItem(item) {
@@ -1923,6 +2305,7 @@ function getMetaFor(animeId) {
         if (lightboxTitle) {
           lightboxTitle.innerHTML = escapeHtml(title);
         }
+        updateJpNameButton(item, title);
         if (lightboxList) {
           const division = getDivisionInfo(item);
           const tags = getMembershipTags(item.id);
@@ -2316,6 +2699,7 @@ function getMetaFor(animeId) {
         lightbox.classList.remove('open');
         lightbox.setAttribute('aria-hidden', 'true');
         lightboxScrollIndicator?.classList.remove('visible', 'at-bottom');
+        hideJpNameBtn();
         if (randomizerLightboxBtn) {
           randomizerLightboxBtn.classList.remove('visible');
           randomizerLightboxBtn.setAttribute('aria-hidden', 'true');
@@ -2479,6 +2863,14 @@ function getMetaFor(animeId) {
           const query = (titleEl ? titleEl.textContent : lightboxImg.alt || '').trim();
           if (!query) return;
 
+          // Guarda de onde o usuário veio ANTES de fechar o lightbox
+          // (closeLightbox zera currentItem e as flags do randomizer).
+          window.__posterReturnAfterSearch = {
+            item: currentItem,
+            scrollY: __scrollLockY,
+            randomPlan: randomPlanNavigationLocked
+          };
+
           closeLightbox(true);
           openDrawer('search', { focus: false });
 
@@ -2491,6 +2883,14 @@ function getMetaFor(animeId) {
           requestAnimationFrame(() => searchInput.focus());
         });
       }
+
+      // Chamado pelo closeDrawer() quando o usuário sai da busca sem
+      // escolher nada: reabre o posterlightbox do anime de origem.
+      window.__reopenPosterAfterSearch = function(ret) {
+        if (!ret || !ret.item) return;
+        window.scrollTo(0, ret.scrollY || 0);
+        openLightbox(ret.item, { randomPlan: !!ret.randomPlan });
+      };
 
       closeBtn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -2933,8 +3333,9 @@ function getMetaFor(animeId) {
     // Itens sem "mal" simplesmente não mostram essa seção no modal.
 
     const WATCHING_NO_SEASON_LABEL = { text: "Non-Seasonal Anime", color: "#7dd3fc" };
-    const WATCHING_SEASON_ORDER = ["summer-2026", "spring-2026", "winter-2026", "on-hold",];
+    const WATCHING_SEASON_ORDER = ["fall-2026", "summer-2026", "spring-2026", "winter-2026", "on-hold",];
     const WATCHING_SEASON_LABELS = {
+      "fall-2026": { text: "Fall Season 2026", color: "#ef6a3a", url: "https://myanimelist.net/anime/season/2026/fall" }, // Laranja-avermelhado (outono)
       "summer-2026": { text: "Summer Season 2026", color: "#fbbf24", url: "https://myanimelist.net/anime/season/2026/summer" }, // Âmbar / Laranja Lighter
       "spring-2026": { text: "Spring Season 2026", color: "#f472b6", url: "https://myanimelist.net/anime/season/2026/spring" }, // Rosa Lighter
       "winter-2026": { text: "Winter Season 2026", color: "#FFFAFA", url: "https://myanimelist.net/anime/season/2026/winter" }, // Azul Claro Lighter
@@ -4494,6 +4895,14 @@ function getMetaFor(animeId) {
       const input = document.getElementById('searchDrawerInput');
       if (input) input.blur();
       saveDrawerStateSoon();
+
+      // Se o drawer foi aberto pelo botão de busca do posterlightbox e o
+      // usuário saiu sem escolher um resultado, volta pro posterlightbox.
+      const posterReturn = window.__posterReturnAfterSearch;
+      window.__posterReturnAfterSearch = null;
+      if (posterReturn && typeof window.__reopenPosterAfterSearch === 'function') {
+        window.__reopenPosterAfterSearch(posterReturn);
+      }
     }
 
     // ── Salvamento/restauração do estado do drawer (aberto/fechado, aba
@@ -4593,6 +5002,7 @@ function getMetaFor(animeId) {
         resetBtnEl.addEventListener('click', () => {
           const changed = currentCategory !== 'all';
           if (!changed) return;
+          window.__posterReturnAfterSearch = null;
 
           currentCategory = 'all';
 
@@ -4739,6 +5149,7 @@ function getMetaFor(animeId) {
 
       drawerItems.forEach(item => {
         item.addEventListener('click', () => {
+          window.__posterReturnAfterSearch = null;
           const mode = item.getAttribute('data-mode');
           
           if (currentCategory !== mode) {
@@ -6764,10 +7175,11 @@ function getMetaFor(animeId) {
 
       // ── Rotação da ordem das seções do "Watching Now" no comando "/all" ──
       // A cada vez que o comando "/all" é acionado (isto é, cada vez que o
-      // usuário "abre" o resultado com /all), a lista cíclica de 5 grupos
-      // [Summer, Spring, Winter, On Hold, Non-Seasonal] gira uma posição
-      // para trás: começa em Summer, depois em Non-Seasonal, depois em
-      // On Hold, depois em Winter, depois em Spring, e volta pra Summer.
+      // usuário "abre" o resultado com /all), a lista cíclica de 6 grupos
+      // [Fall, Summer, Spring, Winter, On Hold, Non-Seasonal] gira uma posição
+      // para trás: começa em Fall, depois em Non-Seasonal, depois em
+      // On Hold, depois em Winter, depois em Spring, depois em Summer, e
+      // volta pra Fall.
       const WATCHING_NO_SEASON_KEY = '__no-season__';
       const WATCHING_BASE_ORDER = [...WATCHING_SEASON_ORDER, WATCHING_NO_SEASON_KEY];
       const WATCHING_ROTATION_STORAGE_KEY = 'watchingAllRotationIndex';
@@ -7332,6 +7744,21 @@ function getMetaFor(animeId) {
         return SLASH_COMMANDS[norm] ? norm : null;
       }
 
+      // Primeiro "malName" cadastrado do anime: percorre a lista "mal" na
+      // ordem, ignora separadores (spacer) e entradas sem malName, e devolve
+      // o primeiro nome encontrado (normalmente o da 1ª temporada). Antes só
+      // olhava mal[0], então falhava quando o primeiro item era um separador
+      // ou não tinha malName. Os nomes das temporadas seguintes continuam
+      // fora da busca, pra não gerar falsos positivos entre animes diferentes.
+      function firstMalNameOf(anime) {
+        if (!anime || !Array.isArray(anime.mal)) return '';
+        for (const m of anime.mal) {
+          if (!m || m.spacer) continue;
+          if (typeof m.malName === 'string' && m.malName.trim()) return m.malName.trim();
+        }
+        return '';
+      }
+
       function renderResults(query) {
         const cmd = getSlashCommand(query);
         if (cmd) {
@@ -7360,9 +7787,7 @@ function getMetaFor(animeId) {
                 // (nome oficial/MAL da 1ª temporada) — só o primeiro, não
                 // os das outras temporadas, pra não gerar falsos positivos
                 // entre animes diferentes que compartilham palavras no MAL.
-                const firstMalName = Array.isArray(entry.anime.mal) && entry.anime.mal[0] && typeof entry.anime.mal[0].malName === 'string'
-                  ? entry.anime.mal[0].malName.trim()
-                  : '';
+                const firstMalName = firstMalNameOf(entry.anime);
                 const malScore = firstMalName ? fuzzyMatchScore(query, firstMalName) : 0;
                 let score = Math.max(titleScore, malScore);
                 entry.__matchedAlias = null;
@@ -7440,6 +7865,7 @@ function getMetaFor(animeId) {
       }
 
       function openSearchEntry(entry, targetCategory) {
+        window.__posterReturnAfterSearch = null;
         const targetId = entry.anime.id;
 
         closeSearchDrawer(true);

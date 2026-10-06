@@ -12547,7 +12547,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
       border: 0;
       background: none;
       color: rgba(255,255,255,0.64);
-      font: 800 11px/1.3 var(--font-title);
+      font: 800 15px/1.3 var(--font-title);
       letter-spacing: 0.055em;
       cursor: pointer;
       transition: color 0.2s ease;
@@ -12685,7 +12685,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
       margin: 0 0 10px;
       padding: 0;
       color: rgba(255,255,255,0.64);
-      font: 800 10px/1.3 var(--font-title);
+      font: 800 20px/1.3 var(--font-title);
       letter-spacing: 0.055em;
     }
 
@@ -13628,4 +13628,64 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
   .poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid.at-end {
     -webkit-mask-image: none !important;
     mask-image: none !important;
+  }
+
+  /* ── Botão "nome em japonês" (あ) do poster lightbox ──
+     Posição/tamanho (top/right/width/height) são calculados pelo JS
+     para encostar no botão mais à esquerda do topo (busca, randomizer,
+     calendário, som). Aqui só o visual, igual ao botão de busca. */
+  .poster-lightbox-jpname {
+    position: fixed;
+    top: 20px;
+    right: 190px;
+    z-index: 2;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 12px;
+    color: #cbd5e1;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
+  }
+
+  .poster-lightbox-jpname.visible {
+    display: inline-flex;
+  }
+
+  .poster-lightbox-jpname:hover {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    transform: scale(1.02);
+  }
+
+  .poster-lightbox-jpname:focus,
+  .poster-lightbox-jpname:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* A fonte do glifo fica só no span interno. Se ficasse no botão, o
+     tooltip ([data-tooltip]::after) herdaria essa fonte e ficaria
+     diferente dos tooltips dos outros botões. */
+  .poster-lightbox-jpname-glyph {
+    font: 700 21px/1 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', system-ui, sans-serif;
+    pointer-events: none;
+  }
+
+  /* Modo "japonês ativo": o botão vira "EN" (trocar para inglês). */
+  .poster-lightbox-jpname.is-active {
+    color: #fff;
+  }
+
+  .poster-lightbox-jpname.is-active .poster-lightbox-jpname-glyph {
+    font-size: 14px;
+    letter-spacing: 0.04em;
   }

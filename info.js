@@ -51,13 +51,13 @@ const rawAnimeData = [
   {
     id: "hxh",
     img: "myranks-images/myranks/hxh.webp",
-    title: "Hunter x Hunter (2011)",
+    title: "Hunter x Hunter",
     info: "1 temporada: 148 episódios",
     studio: "MADHOUSE",
     airedSeason: "2011-2014",
     rewatch: "2 Times",
     mal: [
-      { label: "1 temporada", episodes: 148, note: 10, malName: "Hunter x Hunter (2011)" },
+      { label: "Hunter x Hunter (2011)", episodes: 148, note: 10, malName: "Hunter x Hunter (2011)" },
       { spacer: true, text: "~70% Filler ( XP )" },
       { label: "Hunter x Hunter (1999)", episodes: 62, malName: "Hunter x Hunter", unwatched: true },
       { label: "Movie 1: Phantom Rouge", episodes: "1h36m", malName: "Hunter x Hunter Movie 1: Phantom Rouge", unwatched: true },
@@ -1342,7 +1342,7 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [10, 10],
     url: "https://www.anime-planet.com/anime/cyberpunk-edgerunners-2",
-    netflix: "",
+    netflix: "https://www.netflix.com/search?q=cyber&jbv=81054853",
     malUrl: "https://myanimelist.net/anime/61990/Cyberpunk_Edgerunners_2",
   },
   {
@@ -1354,7 +1354,7 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [25, 12],
     url: "https://www.anime-planet.com/anime/blue-box-season-2",
-    netflix: "",
+    netflix: "https://www.netflix.com/search?q=cyber&jbv=81663323",
     malUrl: "https://myanimelist.net/anime/61323/Ao_no_Hako_2nd_Season",
   },
   {
@@ -1365,7 +1365,7 @@ const rawWatchingData = [
     season: "fall-2026",
     airedSeason: "2026",
     url: "https://www.anime-planet.com/anime/chitose-is-in-the-ramune-bottle-part-ii",
-    crunchyroll: "",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00364783/chitose-is-in-the-ramune-bottle",
     malUrl: "https://myanimelist.net/anime/62484",
   },
 
@@ -1760,6 +1760,7 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/hanaori-san-still-wants-to-fight-in-the-next-life",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378066/hanaori-san-still-wants-to-fight-in-the-next-life",
     malUrl: "https://myanimelist.net/anime/62535/Hanaori-san_wa_Tensei_shitemo_Kenka_ga_Shitai",
+    mal: [{ label: "1 temporada", episodes: 12, malName: "Hanaori-san wa Tensei shitemo Kenka ga Shitai", unwatched: true }],
   },
   {
     id: "villainess",
@@ -1771,6 +1772,7 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/though-i-am-an-inept-villainess-tale-of-the-butterfly-rat-body-swap-in-the-maiden-court",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00371881/though-i-am-an-inept-villainess",
     malUrl: "https://myanimelist.net/anime/61240/Futsutsuka_na_Akujo_dewa_Gozaimasu_ga__Suuguu_Chouso_Torikae_Den",
+    mal: [{ label: "1 temporada", episodes: 11, malName: "Futsutsuka na Akujo dewa Gozaimasu ga: Suuguu Chouso Torikae Den", unwatched: true }],
   },
   {
     id: "exiled-heavy-knight",
@@ -1782,6 +1784,7 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/the-exiled-heavy-knight-knows-how-to-game-the-system",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378018/the-exiled-heavy-knight-knows-how-to-game-the-system",
     malUrl: "https://myanimelist.net/anime/59741/Tsuihou_sareta_Tensei_Juukishi_wa_Game_Chishiki_de_Musou_suru",
+    mal: [{ label: "1 temporada", episodes: 26, malName: "Tsuihou sareta Tensei Juukishi wa Game Chishiki de Musou suru", unwatched: true }],
   },
   {
     id: "tomb-raider-king",
@@ -1793,6 +1796,7 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/tomb-raider-king",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378123/tomb-raider-king",
     malUrl: "https://myanimelist.net/anime/63316/Dogulwang",
+    mal: [{ label: "1 temporada", episodes: 12, malName: "Dogulwang", unwatched: true }],
   },
   {
     id: "sparks-of-tomorrow",
@@ -1804,6 +1808,7 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/sparks-of-tomorrow",
     netflix: "https://www.netflix.com/title/81698957",
     malUrl: "https://myanimelist.net/anime/62856/Nijusseiki_Denki_Mokuroku__Eureka_Evrika",
+    mal: [{ label: "1 temporada", episodes: 13, malName: "Nijusseiki Denki Mokuroku: Eureka Evrika", unwatched: true }],
   },
   {
     id: "ghost-in-the-shell",
@@ -1815,6 +1820,7 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/the-ghost-in-the-shell",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/58929/Koukaku_Kidoutai_TV",
+    mal: [{ label: "1 temporada", episodes: 10, malName: "Koukaku Kidoutai TV", unwatched: true }],
   },
   {
     id: "overshadowed-to-overpowered",
@@ -1826,6 +1832,7 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00378115/from-overshadowed-to-overpowered-second-reincarnation-of-a-talentless-sage",
     malUrl: "https://myanimelist.net/anime/63508/Rakudai_Kenja_no_Gakuin_Musou__Nidome_no_Tensei_S-Rank_Cheat_Majutsushi_Boukenroku",
+    mal: [{ label: "1 temporada", episodes: 12, malName: "Rakudai Kenja no Gakuin Musou: Nidome no Tensei S-Rank Cheat Majutsushi Boukenroku", unwatched: true }],
   },
   {
     id: "saga-of-tanya-the-evil",
