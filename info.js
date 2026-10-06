@@ -1349,7 +1349,7 @@ const rawWatchingData = [
     id: "blue-box",
     img: "watchingnow-images/watchingnow/blue-box.webp",
     title: "Blue Box",
-    info: "2ª temporada", 
+    info: "2ª temporada: 12 episódios", 
     season: "fall-2026",
     airedSeason: "2026",
     seasons: [25, 12],
