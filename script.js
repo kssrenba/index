@@ -2697,6 +2697,16 @@ function getMetaFor(animeId) {
       // lista principal, como True Characters.
       window.__openPosterLightboxForAnime = openLightbox;
 
+      // Reaplica o título padrão da aba. Usado depois do history.go() interno
+      // da camada "voltar": o navegador restaura o título gravado na entrada
+      // antiga do histórico ("myhtml - anime"), então precisamos sobrescrever.
+      window.__resetPageTitleIfClosed = function() {
+        if (lightbox.classList.contains('open')) return;
+        stopTitleMarquee();
+        document.title = DEFAULT_PAGE_TITLE + '​';
+        document.title = DEFAULT_PAGE_TITLE;
+      };
+
       function closeLightbox(skipScrollRestore) {
         lightboxRenderToken++;
         pendingItem = null;
@@ -9121,7 +9131,14 @@ function getCalendarItems() {
       update();
     })();
 
+    // Usado pela camada do botão "voltar": depois de um history.go() interno,
+    // a URL volta pra da categoria antiga; isso a realinha com a categoria atual.
+    window.__syncCategoryUrl = () => updateURLForCategory(currentCategory);
+
     window.addEventListener('hashchange', () => {
+      // Ignora hashchange causado pelo history.go() interno da camada "voltar"
+      // (fechar drawer/lightbox), senão a lista volta pra categoria anterior.
+      if (Date.now() < (window.__suppressHashChangeUntil || 0)) return;
       const mode = getModeFromHash();
       if (mode && mode !== currentCategory) {
         currentCategory = mode;
@@ -9167,12 +9184,22 @@ function getCalendarItems() {
       const extra = depth - stack.length;
       depth = stack.length;
       ignorePops++;
+      window.__suppressHashChangeUntil = Date.now() + 800;
       history.go(-extra);
     }
   }
 
   window.addEventListener('popstate', () => {
-    if (ignorePops > 0) { ignorePops--; return; }
+    if (ignorePops > 0) {
+      ignorePops--;
+      // A URL voltou pra da categoria antiga: realinha com a categoria atual.
+      if (typeof window.__syncCategoryUrl === 'function') window.__syncCategoryUrl();
+      if (typeof window.__resetPageTitleIfClosed === 'function') {
+        window.__resetPageTitleIfClosed();
+        setTimeout(window.__resetPageTitleIfClosed, 60);
+      }
+      return;
+    }
     if (depth <= 0 || !stack.length) { depth = 0; return; }
     depth--;
     const key = stack[stack.length - 1];

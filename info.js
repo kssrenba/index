@@ -675,19 +675,6 @@ const rawAnimeData = [
     ],
   },
   {
-    id: "prison-school",
-    img: "myranks-images/myranks/prison-school.webp",
-    title: "Prison School",
-    info: "12 episódios",
-    studio: "J.C. Staff",
-    airedSeason: "2015-2016",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
-      { label: "OVA: Mad Wax", episodes: "25m", note: 7, malName: "Prison School: Mad Wax" },
-    ],
-  },
-  {
     id: "blue-box",
     img: "myranks-images/myranks/blue-box.webp",
     title: "Blue Box",
@@ -706,6 +693,18 @@ const rawAnimeData = [
     ],
   },
   {
+    id: "roshidere",
+    img: "myranks-images/myranks/roshidere.webp",
+    title: "Alya Sometimes Hides Her Feelings in Russian",
+    info: "1 temporada: 12 episódios",
+    studio: "Doga Kobo",
+    airedSeason: "2024-?",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
+    mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san" }],
+  },
+  {
     id: "mashle",
     img: "myranks-images/myranks/mashle.webp",
     title: "Mashle: Magic and Muscles",
@@ -721,16 +720,27 @@ const rawAnimeData = [
     ],
   },
   {
-    id: "roshidere",
-    img: "myranks-images/myranks/roshidere.webp",
-    title: "Alya Sometimes Hides Her Feelings in Russian",
-    info: "1 temporada: 12 episódios",
-    studio: "Doga Kobo",
-    airedSeason: "2024-?",
-    rewatchs: [
-      { season: 'S1', name: '1 Time' },
+    id: "nippon-sangoku",
+    img: "myranks-images/myranks/nippon-sangoku.webp",
+    title: "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+    info: "12 episódios",
+    studio: "Studio Kafka",
+    airedSeason: "2026",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Nippon Sangoku"}],
+  },
+  {
+    id: "prison-school",
+    img: "myranks-images/myranks/prison-school.webp",
+    title: "Prison School",
+    info: "12 episódios",
+    studio: "J.C. Staff",
+    airedSeason: "2015-2016",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
+      { label: "OVA: Mad Wax", episodes: "25m", note: 7, malName: "Prison School: Mad Wax" },
     ],
-    mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san" }],
   },
   {
     id: "cinderella-gray",
@@ -1383,22 +1393,6 @@ const rawAnimeData = [
 // Watching Now — animes em exibição/andamento, agrupados por temporada (season).
 const rawWatchingData = [
   // Non-Seasonal Anime
-  {
-    id: "nippon-sangoku",
-    img: "watchingnow-images/watchingnow/nippon-sangoku.webp",
-    title: "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
-    info: "12 episódios",
-    studio: "Studio Kafka",
-    season: null,
-    seasons: [12],
-    airedSeason: "2026",
-    url: "https://www.anime-planet.com/anime/nippon-sangoku-the-three-nations-of-the-crimson-sun",
-    crunchyroll: "",
-    malUrl: "https://myanimelist.net/anime/63375/Nippon_Sangoku",
-
-    mal: [{ label: "1 temporada", episodes: 12, malName: "Nippon Sangoku", unwatched: true }],
-  },
-
   {
     id: "astra-space",
     img: "watchingnow-images/watchingnow/astra-space.webp",
@@ -3512,6 +3506,7 @@ const nextSeasonMap = {
   "demon-slayer": { info: "2 Movies in Production" },
   "sentenced-hero": { info: "2nd Season in Production" },
   "makeine": { info: "2nd Season Announced" },
+  "nippon-sangoku": { info: "2nd Season Announced" },
   "tsukimichi": { info: "3rd Season in Production" },
   "healing-magic": { info: "2nd Season Announced" },
   "danmachi": { info: "Season 6 Announced" },
