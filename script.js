@@ -811,7 +811,23 @@ function getMetaFor(animeId) {
                 <span class="rank-meta-value rank-meta-studio-list" data-field="studio">
                   ${studioEntries.map(entry => `
                     <span class="rank-meta-studio-row">
-                      <span class="rank-meta-studio-season">${escapeHtml(entry.season)}</span>
+                      <span class="rank-meta-studio-season">${escapeHtml(entry.season).replace(/\b([IVXLCDM]+)\b/g, '<span class="rank-mal-roman">$1</span>')}</span>
+                      <span class="rank-meta-studio-name">${escapeHtml(entry.name)}</span>
+                    </span>`).join('')}
+                </span>
+              </div>`;
+          }
+          // "rewatchs" (opcional no info.js) segue o mesmo formato de "studios":
+          // rewatchs: [ { season: 'S1', name: 'One time' }, { season: 'S2', name: 'Two times' } ]
+          const rewatchEntries = field.key === 'rewatch' ? normalizeStudioEntries(metaObj.rewatchs) : [];
+          if (rewatchEntries.length) {
+            return `
+              <div class="rank-meta-item rank-meta-item--rewatch rank-meta-item--studios">
+                <span class="rank-meta-label">Rewatch</span>
+                <span class="rank-meta-value rank-meta-studio-list" data-field="rewatch">
+                  ${rewatchEntries.map(entry => `
+                    <span class="rank-meta-studio-row">
+                      <span class="rank-meta-studio-season">${escapeHtml(entry.season).replace(/\b([IVXLCDM]+)\b/g, '<span class="rank-mal-roman">$1</span>')}</span>
                       <span class="rank-meta-studio-name">${escapeHtml(entry.name)}</span>
                     </span>`).join('')}
                 </span>
@@ -856,11 +872,10 @@ function getMetaFor(animeId) {
         studioSeparatorResizeObserver?.disconnect();
         lightboxMeta.innerHTML = fieldsHtml;
         lightboxMeta.classList.remove('is-meta-expanded');
-        const studioList = lightboxMeta.querySelector('.rank-meta-studio-list');
-        if (studioList) {
-          studioSeparatorResizeObserver?.observe(studioList);
-          requestAnimationFrame(() => updateStudioSeparators(studioList));
-        }
+        lightboxMeta.querySelectorAll('.rank-meta-studio-list').forEach(list => {
+          studioSeparatorResizeObserver?.observe(list);
+          requestAnimationFrame(() => updateStudioSeparators(list));
+        });
 
         if (malId) {
           const scoreEl = lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
@@ -3389,6 +3404,7 @@ function getMetaFor(animeId) {
       if (a.studios) meta.studios = a.studios;
       if (a.airedSeason) meta.season = a.airedSeason;
       if (a.rewatch) meta.rewatch = a.rewatch;
+      if (a.rewatchs) meta.rewatchs = a.rewatchs;
       if (Object.keys(meta).length) {
         // O mesmo anime pode existir no MyRanks e no Watching Now.
         // Mescla os metadados para que a entrada do Watching Now não

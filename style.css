@@ -10579,7 +10579,7 @@
       height: 80px;
       min-height: 0;
       padding-inline: 7px;
-      background: color-mix(in srgb, var(--lb-accent, #e2e8f0) 16%, rgba(20,22,25,0.98));
+      background: transparent;
       box-shadow: 0 8px 20px rgba(0,0,0,0.28);
       cursor: pointer;
     }
@@ -12022,7 +12022,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
       box-sizing: border-box;
       padding-inline: 18px;
       border-right: 0;
-      background: color-mix(in srgb, var(--lb-accent, #e2e8f0) 13%, rgba(20,22,25,0.98));
+      background: transparent;
       cursor: pointer;
     }
 
@@ -13689,3 +13689,35 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
     font-size: 14px;
     letter-spacing: 0.04em;
   }
+/* Rewatch por temporada (rewatchs): fechado, a lista deve ter a mesma
+   altura do rewatch simples (1 linha de texto), senão o rótulo REWATCH
+   sobe alguns pixels. */
+@media (min-width: 761px) {
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch.rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
+    height: 1.21em !important;
+    max-height: 1.21em !important;
+    font-size: 14.5px;
+  }
+
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch.rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row {
+    height: 1.21em !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+/* Mobile: centraliza verticalmente S1/S2/S3... com o nome do studio ou
+   a quantidade de rewatch. Ajuste fino: mude o valor do translateY. */
+@media (max-width: 760px) {
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--studios .rank-meta-studio-season {
+    transform: translateY(-1px);
+  }
+}
+
+/* Mobile, expandido: o rótulo de temporada tem outra métrica vertical;
+   o ajuste do estado fechado não se aplica aqui. Ajuste fino no translateY. */
+@media (max-width: 760px) {
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--studios.is-meta-expanded .rank-meta-studio-season {
+    transform: translateY(1px);
+  }
+}

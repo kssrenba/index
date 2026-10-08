@@ -98,7 +98,9 @@ const rawAnimeData = [
     info: "3 temporadas: 59 episódios <br>1 Filme: 1h45m",
     studio: "MAPPA",
     airedSeason: "2020-?",
-    rewatch: "No 3rd Season",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 8, malName: "Jujutsu Kaisen" },
       { label: "Movie: Jujutsu Kaisen 0", episodes: "1h44m", note: 8, malName: "Jujutsu Kaisen 0 Movie" },
@@ -136,7 +138,9 @@ const rawAnimeData = [
     info: "3 temporadas: 35 episódios",
     studio: "Doga Kobo",
     airedSeason: "2023-?",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 11, note: 8, malName: "[Oshi No Ko]" },
       { label: "2ª temporada", episodes: 13, note: 7, malName: "[Oshi No Ko] 2nd Season" },
@@ -151,6 +155,11 @@ const rawAnimeData = [
     studio: "Production I.G",
     airedSeason: "2014-?",
     rewatch: "2 Times",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+      { season: 'S3-S4 I', name: '2 Times' },
+      { season: 'S4 II', name: '3 Times' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 25, note: 8, malName: "Haikyuu!!" },
       { label: "2ª temporada", episodes: 25, note: 8, malName: "Haikyuu!! Second Season" },
@@ -172,7 +181,9 @@ const rawAnimeData = [
     info: "3 temporadas: 61 episódios",
     studio: "Studio Bind",
     airedSeason: "2021-?",
-    rewatch: "First 2 Seasons",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+    ],
     mal: [
       {
         label: "1ª temporada I",
@@ -217,7 +228,9 @@ const rawAnimeData = [
     info: "4 temporadas: 85 episódios",
     studio: "White Fox",
     airedSeason: "2016-?",
-    rewatch: "Only Season 1",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 25, note: 9, malName: "Re:Zero kara Hajimeru Isekai Seikatsu" },
       { label: "2ª temporada I", episodes: 13, note: 8, malName: "Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season" },
@@ -233,7 +246,9 @@ const rawAnimeData = [
     info: "10 episódios",
     studio: "Trigger",
     airedSeason: "2022",
-    rewatch: "Season 1",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 10, note: 9, malName: "Cyberpunk: Edgerunners" },
       {label: "2ª temporada", episodes: 10, unwatched: true, malName: "Cyberpunk: Edgerunners 2" }
@@ -247,6 +262,10 @@ const rawAnimeData = [
     studio: "TMS Entertainment",
     airedSeason: "2019-2026",
     rewatch: "2 Times (Season 4 Not Yet)",
+    rewatchs: [
+      { season: 'S1-S2', name: '2 Times' },
+      { season: 'S3-S4 II', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 8, malName: "Dr. Stone" },
       { label: "2ª temporada", episodes: 11, note: 7, malName: "Dr. Stone: Stone Wars" },
@@ -285,7 +304,9 @@ const rawAnimeData = [
     info: "2 temporadas: 25 episódios",
     studio: "A-1 Pictures",
     airedSeason: "2024-?",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Ore dake Level Up na Ken" },
       { label: "2ª temporada", episodes: 13, note: 9, malName: "Ore dake Level Up na Ken Season 2: Arise from the Shadow" },
@@ -301,7 +322,9 @@ const rawAnimeData = [
       { season: "S4", name: "MAPPA" },
     ],
     airedSeason: "2013-2022",
-    rewatch: "First 3 Seasons",
+    rewatchs: [
+      { season: 'S1-S3', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 25, note: 9, malName: "Shingeki no Kyojin" },
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Shingeki no Kyojin Season 2" },
@@ -323,7 +346,9 @@ const rawAnimeData = [
       { season: "S3", name: "Zero-G and Saber Works" },
     ],
     airedSeason: "2018-?",
-    rewatch: "First 2 Seasons",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Grand Blue" },
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Grand Blue Season 2" },
@@ -337,7 +362,9 @@ const rawAnimeData = [
     info: "4 temporadas: 54 episódios",
     studio: "Lerche",
     airedSeason: "2017-?",
-    rewatch: "First 3 Seasons",
+    rewatchs: [
+      { season: 'S1-S3', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e" },
       { label: "2ª temporada", episodes: 13, note: 8, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 2nd Season" },
@@ -352,7 +379,9 @@ const rawAnimeData = [
     info: "8 temporadas: 170 episódios <br>3 Filmes: 5h10m",
     studio: "Bones",
     airedSeason: "2016-2025",
-    rewatch: "First 5 Seasons",
+    rewatchs: [
+      { season: 'S1-S5', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 7, malName: "Boku no Hero Academia" },
       { label: "2ª temporada", episodes: 25, note: 8, malName: "Boku no Hero Academia 2nd Season" },
@@ -414,7 +443,9 @@ const rawAnimeData = [
       { season: "S2-S3", name: "J.C. Staff" },
     ],
     airedSeason: "2015-?",
-    rewatch: "2 Times (Season 3 Never)",
+    rewatchs: [
+      { season: 'S1-S2', name: '2 Times' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 9, malName: "One Punch Man" },
       { label: "2ª temporada", episodes: 12, note: 6, malName: "One Punch Man 2nd Season" },
@@ -428,7 +459,9 @@ const rawAnimeData = [
     info: "2 temporadas: 32 episódios",
     studio: "Nexus",
     airedSeason: "2022-?",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 20, note: 8, malName: "Kage no Jitsuryokusha ni Naritakute!" },
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Kage no Jitsuryokusha ni Naritakute! 2nd Season" },
@@ -465,7 +498,9 @@ const rawAnimeData = [
     info: "2 temporadas: 25 episódios",
     studio: "MAPPA",
     airedSeason: "2023-?",
-    rewatch: "Season 1",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 8, malName: "Jigokuraku" },
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Jigokuraku 2nd Season" },
@@ -478,7 +513,9 @@ const rawAnimeData = [
     info: "2 temporadas: 26 episódios",
     studio: "CloverWorks",
     airedSeason: "2021-2023",
-    rewatch: "2 Times (1st Season)",
+    rewatchs: [
+      { season: 'S1', name: '2 Times' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 8, malName: "Horimiya" },
       { label: "2ª temporada", episodes: 13, note: 7, malName: "Horimiya: Piece" },
@@ -494,7 +531,9 @@ const rawAnimeData = [
       { season: "S2", name: "MAPPA" },
     ],
     airedSeason: "2019-2023",
-    rewatch: "Season 1",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 8, malName: "Vinland Saga" },
       { label: "2ª temporada", episodes: 24, note: 8, malName: "Vinland Saga Season 2" },
@@ -507,7 +546,9 @@ const rawAnimeData = [
     info: "13 episódios",
     studio: "CloverWorks",
     airedSeason: "2025-?",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [{ label: "1ª temporada", episodes: 13, note: 8, malName: "Kaoru Hana wa Rin to Saku" }],
   },
   {
@@ -530,7 +571,9 @@ const rawAnimeData = [
     info: "5 temporadas: 63 episódios <br>1 Filme: 2h35m",
     studio: "ufotable",
     airedSeason: "2019-?",
-    rewatch: "Season 1",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 26, note: 7, malName: "Kimetsu no Yaiba" },
       { label: "2ª temporada", episodes: 7, note: 7, malName: "Kimetsu no Yaiba: Mugen Ressha-hen" },
@@ -560,7 +603,9 @@ const rawAnimeData = [
     info: "(~~~) 1ª temporada: 13 episódios",
     studio: "CloverWorks",
     airedSeason: "2018-?",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 8, malName: "Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai" },
       {
@@ -611,7 +656,7 @@ const rawAnimeData = [
     info: "24 episódios",
     studio: "White Fox",
     airedSeason: "2014-2014",
-    rewatch: "Yes",
+    rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 24, note: 8, malName: "Akame ga Kill!" }],
   },
   {
@@ -621,7 +666,9 @@ const rawAnimeData = [
     info: "2 temporadas: 24 episódios",
     studio: "Bandai Filmworks / Actas",
     airedSeason: "2024-?",
-    rewatch: "Season 1",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Tsue to Tsurugi no Wistoria" },
       { label: "2ª temporada", episodes: 12, note: 8, malName: "Tsue to Tsurugi no Wistoria Season 2" },
@@ -650,7 +697,9 @@ const rawAnimeData = [
       { season: "S2", name: "Electric Circus" },
     ],
     airedSeason: "2024-?",
-    rewatch: "Season 1",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 25, note: 8, malName: "Ao no Hako" },
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Ao no Hako" },
@@ -663,7 +712,9 @@ const rawAnimeData = [
     info: "2 temporadas: 24 episódios",
     studio: "A-1 Pictures",
     airedSeason: "2023-?",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Mashle" },
       { label: "2ª temporada", episodes: 12, note: 7, malName: "Mashle: Shinkakusha Kouho Senbatsu Shiken-hen" },
@@ -676,7 +727,9 @@ const rawAnimeData = [
     info: "1 temporada: 12 episódios",
     studio: "Doga Kobo",
     airedSeason: "2024-?",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san" }],
   },
   {
@@ -699,7 +752,9 @@ const rawAnimeData = [
     info: "12 episódios",
     studio: "Bug Films",
     airedSeason: "2023",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto" }],
   },
   {
@@ -723,7 +778,9 @@ const rawAnimeData = [
     malSearch: "Food Wars",
     studio: "J.C. Staff",
     airedSeason: "2015-2020",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1-S5', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 7, malName: "Shokugeki no Souma" },
       { label: "2ª temporada", episodes: 13, note: 8, malName: "Shokugeki no Souma Ni no Sara" },
@@ -741,7 +798,9 @@ const rawAnimeData = [
     info: "(~) 4 temporadas: 59 episódios",
     studio: "J.C. Staff",
     airedSeason: "2015-?",
-    rewatch: "3 First Seasons",
+    rewatchs: [
+      { season: 'S1-S4', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 7, malName: "Dungeon ni Deai wo Motomeru no wa Machigatteiru Darou ka" },
       { label: "2ª temporada", episodes: 12, note: 5, malName: "Dungeon ni Deai wo Motomeru no wa Machigatteiru Darou ka II" },
@@ -796,7 +855,7 @@ const rawAnimeData = [
     info: "(~) 1ª temporada: 12 episódios",
     studio: "CloverWorks",
     airedSeason: "2022-?",
-    rewatch: "No",
+    rewatch: "Not Yet",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Sono Bisque Doll wa Koi wo Suru" },
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Sono Bisque Doll wa Koi wo Suru Season 2" },
@@ -871,7 +930,9 @@ const rawAnimeData = [
     info: "(~~~) 1ª temporada: 25 episódios",
     studio: "A-1 Pictures",
     airedSeason: "2012-?",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [{ label: "1ª temporada", episodes: 25, note: 7, malName: "Sword Art Online" }],
   },
   {
@@ -881,7 +942,7 @@ const rawAnimeData = [
     info: "(~~) 1 temporada: 27 episódios",
     studio: "Gainax",
     airedSeason: "2007",
-    rewatch: "Never",
+    rewatch: "No",
     mal: [
       { label: "1 temporada", episodes: 27, note: 7, malName: "Tengen Toppa Gurren Lagann" },
       { label: "Movie 1: Childhood's End", episodes: "1h52m", unwatched: true, malName: "Tengen Toppa Gurren Lagann Movie 1: Gurren-hen" },
@@ -926,7 +987,9 @@ const rawAnimeData = [
       { season: "S3-S4", name: "Studio Deen" },
     ],
     airedSeason: "2014-2021",
-    rewatch: "2 First Seasons",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 7, malName: "Nanatsu no Taizai" },
       { label: "1ª temporada II", episodes: 4, note: 7, malName: "Nanatsu no Taizai: Seisen no Shirushi" },
@@ -947,7 +1010,9 @@ const rawAnimeData = [
     info: "(~) 1 temporada: 12 episódios",
     studio: "Project No.9",
     airedSeason: "2023-?",
-    rewatch: "1st Season",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken" },
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken 2nd Season" },
@@ -1017,7 +1082,9 @@ const rawAnimeData = [
     info: "12 episódios",
     studio: "Project No.9",
     airedSeason: "2022",
-    rewatch: "Yes",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Fuufu Ijou, Koibito Miman." }],
   },
   {
@@ -1330,6 +1397,22 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/63375/Nippon_Sangoku",
 
     mal: [{ label: "1 temporada", episodes: 12, malName: "Nippon Sangoku", unwatched: true }],
+  },
+
+  {
+    id: "astra-space",
+    img: "watchingnow-images/watchingnow/astra-space.webp",
+    title: "Astra Lost in Space",
+    info: "12 episódios",
+    studio: "Lerche",
+    season: null,
+    seasons: [12],
+    airedSeason: "2019",
+    url: "https://www.anime-planet.com/anime/astra-lost-in-space",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GMEHMEWZM/astra-lost-in-space",
+    malUrl: "https://myanimelist.net/anime/39198/Kanata_no_Astra",
+
+    mal: [{ label: "1 temporada", episodes: 12, malName: "Kanata no Astra", unwatched: true }],
   },
 
   // Fall 2026
@@ -1850,19 +1933,6 @@ const rawPlanToWatchData = [
       { label: "The Movie", episodes: "1h38m", malName: "Youjo Senki Movie", unwatched: true },
       { label: "2ª temporada", episodes: 12, malName: "Youjo Senki II", unwatched: true }
     ],
-  },
-  {
-    id: "astra-space",
-    img: "plantowatch-images/plantowatch/astra-space.webp",
-    title: "Astra Lost in Space",
-    info: "12 episódios",
-    studio: "Lerche",
-    airedSeason: "2019",
-    url: "https://www.anime-planet.com/anime/astra-lost-in-space",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GMEHMEWZM/astra-lost-in-space",
-    malUrl: "https://myanimelist.net/anime/39198/Kanata_no_Astra",
-
-    mal: [{ label: "1 temporada", episodes: 12, malName: "Kanata no Astra", unwatched: true }],
   },
   {
     id: "bleach",
@@ -3045,12 +3115,6 @@ const trueCharactersData = [
     info: "Mushoku Tensei: Jobless Reincarnation",
   },
   {
-    id: "wang-jian",
-    img: "other-images/truecharacters/wang-jian.webp",
-    title: "Wang Jian (Ou Sen)",
-    info: "Kingdom",
-  },
-  {
     id: "ayanokoji",
     img: "other-images/truecharacters/ayanokoji.webp",
     title: "Kiyotaka Ayanokoji",
@@ -3247,6 +3311,12 @@ const trueCharactersData = [
     img: "other-images/truecharacters/kusuri.webp",
     title: "Kusuri Yakuzen",
     info: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
+  },
+  {
+    id: "wang-jian",
+    img: "other-images/truecharacters/wang-jian.webp",
+    title: "Wang Jian (Ou Sen)",
+    info: "Kingdom",
   },
   {
     id: "bokuto",
