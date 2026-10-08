@@ -216,17 +216,39 @@ if ('scrollRestoration' in history) {
           const expandableItem = event.target.closest('.rank-meta-item--studio, .rank-meta-item--rewatch');
           const expandedItem = lightboxMeta.querySelector('.rank-meta-item.is-meta-expanded');
 
+          // Retração animada: toca a animação de saída e só então remove as classes.
+          const collapseMeta = (item) => {
+            if (!item) {
+              lightboxMeta.classList.remove('is-meta-expanded');
+              requestAnimationFrame(refreshStudioSeparators);
+              return;
+            }
+            if (item.classList.contains('is-meta-collapsing')) return;
+            const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+            if (reduceMotion) {
+              lightboxMeta.classList.remove('is-meta-expanded');
+              item.classList.remove('is-meta-expanded');
+              requestAnimationFrame(refreshStudioSeparators);
+              return;
+            }
+            item.classList.add('is-meta-collapsing');
+            lightboxMeta.classList.add('is-meta-collapsing-all');
+            setTimeout(() => {
+              item.classList.remove('is-meta-collapsing', 'is-meta-expanded');
+              lightboxMeta.classList.remove('is-meta-collapsing-all', 'is-meta-expanded');
+              requestAnimationFrame(refreshStudioSeparators);
+            }, 200);
+          };
+
+          if (lightboxMeta.classList.contains('is-meta-collapsing-all')) return;
+
           if (!expandableItem) {
-            lightboxMeta.classList.remove('is-meta-expanded');
-            expandedItem?.classList.remove('is-meta-expanded');
-            requestAnimationFrame(refreshStudioSeparators);
+            collapseMeta(expandedItem);
             return;
           }
 
           if (expandedItem === expandableItem) {
-            lightboxMeta.classList.remove('is-meta-expanded');
-            expandableItem.classList.remove('is-meta-expanded');
-            requestAnimationFrame(refreshStudioSeparators);
+            collapseMeta(expandableItem);
             return;
           }
 
@@ -2875,7 +2897,13 @@ function getMetaFor(animeId) {
           e.stopPropagation();
 
           const titleEl = currentItem && currentItem.querySelector('.title-anime');
-          const query = (titleEl ? titleEl.textContent : lightboxImg.alt || '').trim();
+          let query = (titleEl ? titleEl.textContent : lightboxImg.alt || '').trim();
+          // Modo japonês ligado (botão あ/EN) neste anime? Então a pesquisa
+          // já abre com o nome em japonês (1º malName), em vez do título normal.
+          // Lido ANTES do closeLightbox, que zera o jpState.
+          if (currentItem && jpState.active && jpState.jpName && jpState.id === currentItem.id) {
+            query = jpState.jpName.trim();
+          }
           if (!query) return;
 
           // Guarda de onde o usuário veio ANTES de fechar o lightbox
@@ -4533,7 +4561,7 @@ function getMetaFor(animeId) {
       else if (currentCategory === 'romance') pageTitle.innerText = "romance anime ranking";
       else if (currentCategory === 'isekai') pageTitle.innerText = "isekai/reincarnation anime ranking";
       else if (currentCategory === 'incomplete') pageTitle.innerText = "anime that i have to finish watching";
-      else if (currentCategory === 'plan') pageTitle.innerText = "all animes i want to watch";
+      else if (currentCategory === 'plan') pageTitle.innerText = "animes i want to watch";
       else if (currentCategory === 'watching') pageTitle.innerText = "anime i'm watching right now";
       else if (currentCategory === 'sports') pageTitle.innerText = "sports anime ranking";
       else if (currentCategory === 'comedy') pageTitle.innerText = "comedy anime ranking";
@@ -9103,3 +9131,66 @@ function getCalendarItems() {
     });
 
   });
+// ── Botão "voltar" do celular ──
+// Com o posterlightbox, o zoom da imagem ou o drawer abertos, o "voltar" fecha
+// a camada (uma por vez) em vez de sair do site. Na lista de animes (nada
+// aberto) o comportamento normal do navegador continua.
+(function setupBackButtonLayers() {
+  if (!window.history || !history.pushState) return;
+  const layers = [
+    { key: 'zoom', el: () => document.getElementById('posterLightboxZoom') || document.querySelector('.poster-lightbox-zoom'),
+      isOpen: el => !!el && el.classList.contains('open'),
+      close: el => el.click() },
+    { key: 'lightbox', el: () => document.getElementById('posterLightbox'),
+      isOpen: el => !!el && el.classList.contains('open'),
+      close: () => document.getElementById('posterLightboxClose')?.click() },
+    { key: 'drawer', el: () => document.getElementById('categoryDrawer'),
+      isOpen: el => !!el && el.classList.contains('show'),
+      close: () => document.getElementById('drawerCloseBtn')?.click() }
+  ];
+  const stack = [];      // camadas abertas, da mais antiga para a mais recente
+  let depth = 0;         // entradas de histórico criadas por nós
+  let ignorePops = 0;    // popstates causados por nossos próprios history.go()
+
+  function sync() {
+    const open = layers.filter(l => l.isOpen(l.el()));
+    const openKeys = open.map(l => l.key);
+    for (let i = stack.length - 1; i >= 0; i--) {
+      if (!openKeys.includes(stack[i])) stack.splice(i, 1);
+    }
+    openKeys.forEach(k => { if (!stack.includes(k)) stack.push(k); });
+    while (depth < stack.length) {
+      try { history.pushState({ __layer: stack[depth] }, '', location.href); } catch (e) {}
+      depth++;
+    }
+    if (depth > stack.length) {
+      const extra = depth - stack.length;
+      depth = stack.length;
+      ignorePops++;
+      history.go(-extra);
+    }
+  }
+
+  window.addEventListener('popstate', () => {
+    if (ignorePops > 0) { ignorePops--; return; }
+    if (depth <= 0 || !stack.length) { depth = 0; return; }
+    depth--;
+    const key = stack[stack.length - 1];
+    const layer = layers.find(l => l.key === key);
+    const el = layer && layer.el();
+    if (layer && layer.isOpen(el)) layer.close(el);
+    // Se a camada não fechou (ex.: o clique foi ignorado), reequilibra.
+    setTimeout(sync, 0);
+  });
+
+  const observer = new MutationObserver(sync);
+  function attach() {
+    layers.forEach(l => {
+      const el = l.el();
+      if (el) observer.observe(el, { attributes: true, attributeFilter: ['class', 'aria-hidden'] });
+    });
+    sync();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach);
+  else attach();
+})();
