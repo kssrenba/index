@@ -3547,10 +3547,10 @@ function getMetaFor(animeId) {
     // Antecipa aproximadamente uma tela. Assim as capas logo abaixo já
     // chegam prontas sem disputar conexão com dezenas de cards distantes.
     const __posterAheadMargin = Math.max(
-      __mobilePosterLoading ? 900 : 950,
-      Math.round(window.innerHeight * (__mobilePosterLoading ? 1.4 : 1.15))
+      __mobilePosterLoading ? 600 : 950,
+      Math.round(window.innerHeight * (__mobilePosterLoading ? 1.0 : 1.15))
     );
-    const __posterBehindMargin = __mobilePosterLoading ? 500 : 400;
+    const __posterBehindMargin = __mobilePosterLoading ? 300 : 400;
 
     const posterObserver = ('IntersectionObserver' in window)
       ? new IntersectionObserver((entries, observer) => {
@@ -4765,8 +4765,14 @@ function getMetaFor(animeId) {
     }
 
     try {
-      if (localStorage.getItem(DRAWER_EXPANDED_KEY) === '1') setDrawerExpanded(true, false);
-    } catch (e) {}
+      // Padrão: expandido no desktop. Se o usuário já escolheu recolher
+      // (valor '0' salvo), essa escolha é respeitada.
+      const savedExpanded = localStorage.getItem(DRAWER_EXPANDED_KEY);
+      const isDesktopDrawer = window.matchMedia('(min-width: 1024px)').matches;
+      if (savedExpanded === '1' || (savedExpanded === null && isDesktopDrawer)) setDrawerExpanded(true, false);
+    } catch (e) {
+      if (window.matchMedia('(min-width: 1024px)').matches) setDrawerExpanded(true, false);
+    }
 
     const drawerActiveInit = drawerTabs.find(t => t.classList.contains('active'));
     if (drawer) drawer.setAttribute('data-active-tab', drawerActiveInit ? drawerActiveInit.getAttribute('data-tab') : 'ranks');
@@ -6689,7 +6695,10 @@ function getMetaFor(animeId) {
           .join('');
       }
 
-      const COUNT = Math.min(14, pool.length);
+      // No celular, 3 fileiras x 28 imagens (14 duplicadas pro loop) é
+      // muito pra decodificar e animar de uma vez — usa bem menos.
+      const __marqueeMobile = window.matchMedia('(max-width: 760px)').matches;
+      const COUNT = Math.min(__marqueeMobile ? 6 : 14, pool.length);
       buildRow(rowRight, pool, COUNT);
       buildRow(rowLeft, pool, COUNT);
       buildRow(rowRight2, pool, COUNT);
@@ -7094,7 +7103,15 @@ function getMetaFor(animeId) {
       }
 
       if (ALT_TITLES_AUTO_FETCH) {
-        const kickAltTitlesCrawl = () => setTimeout(runAltTitlesCrawl, 6000);
+        // No celular (ou com economia de dados) espera bem mais antes de
+        // começar, pra não disputar conexão e CPU com as capas da lista.
+        // O resultado fica em cache por 90 dias, então só atrasa a 1ª vez.
+        const __saveData = !!(navigator.connection && navigator.connection.saveData);
+        const __altMobile = window.matchMedia('(max-width: 760px)').matches;
+        const kickAltTitlesCrawl = () => {
+          if (__saveData) return;
+          setTimeout(runAltTitlesCrawl, __altMobile ? 60000 : 6000);
+        };
         if (document.readyState === 'complete') kickAltTitlesCrawl();
         else window.addEventListener('load', kickAltTitlesCrawl, { once: true });
       }
@@ -7542,8 +7559,13 @@ function getMetaFor(animeId) {
         const pieces = [];
         if (expandedLayout) {
           const rows = [];
+          // Tipo de cada linha ('tc' = True Characters, 'other' = o resto).
+          // Personagens nunca dividem linha com animes/episódios (e vice-versa),
+          // mesmo que sobre espaço — cada tipo fica na sua própria fileira.
+          const rowKinds = [];
           sections.forEach(section => {
             const isTc = section.items.every(e => e.tag === 'trueCharacters');
+            const kind = isTc ? 'tc' : 'other';
             const perRow = isTc ? Math.min(2, basePerRow) : basePerRow;
             const unit = 6 / perRow;
             let prevRow = -1;
@@ -7552,9 +7574,9 @@ function getMetaFor(animeId) {
               const units = chunk.length * unit;
               let r = -1;
               for (let j = first ? 0 : prevRow + 1; j < rows.length; j++) {
-                if (rows[j] >= units) { r = j; break; }
+                if (rowKinds[j] === kind && rows[j] >= units) { r = j; break; }
               }
-              if (r === -1) { rows.push(6); r = rows.length - 1; }
+              if (r === -1) { rows.push(6); rowKinds.push(kind); r = rows.length - 1; }
               rows[r] -= units;
               prevRow = r;
               pieces.push({ section, items: chunk, row: r, span: units, head: first });
@@ -7813,6 +7835,58 @@ function getMetaFor(animeId) {
         return '';
       }
 
+      // ── Busca por anime também mostra os True Characters dele ──
+      // Cada personagem em trueCharactersData guarda em "info" o título da
+      // obra de origem. Aqui montamos (uma vez, sob demanda) um mapa
+      // id do anime (em animeData) -> entradas de personagem do índice,
+      // usando a mesma regra do poster lightbox (findAllAnimeForCharacter).
+      let charactersByOriginIdCache = null;
+      function getCharactersByOriginId() {
+        if (charactersByOriginIdCache) return charactersByOriginIdCache;
+        const map = new Map();
+        searchIndex.forEach(entry => {
+          if (entry.tag !== 'trueCharacters') return;
+          let origin = null;
+          try { origin = findAllAnimeForCharacter(entry.anime.info); } catch (e) {}
+          if (!origin) return;
+          if (!map.has(origin.id)) map.set(origin.id, []);
+          map.get(origin.id).push(entry);
+        });
+        charactersByOriginIdCache = map;
+        return map;
+      }
+
+      // Recebe os resultados da busca e acrescenta (sem duplicar) os
+      // personagens das obras que apareceram bem colocadas. Os personagens
+      // herdam uma nota logo abaixo da do anime, então a seção "True
+      // Characters" fica logo depois da seção do anime.
+      const ORIGIN_CHARACTERS_MIN_SCORE = 450;
+      const ORIGIN_CHARACTERS_MAX_ANIME = 3;
+      const ORIGIN_CHARACTERS_MAX_TOTAL = 12;
+      function appendOriginCharacters(matches) {
+        const byOrigin = getCharactersByOriginId();
+        if (!byOrigin.size) return matches;
+        const present = new Set(matches.map(e => e.tag + '::' + e.anime.id));
+        const extra = [];
+        let animeCount = 0;
+        for (const entry of matches) {
+          if (entry.tag !== null && entry.tag !== 'watching') continue;
+          if ((entry.__searchScore || 0) < ORIGIN_CHARACTERS_MIN_SCORE) continue;
+          const chars = byOrigin.get(entry.anime.id);
+          if (!chars || !chars.length) continue;
+          if (++animeCount > ORIGIN_CHARACTERS_MAX_ANIME) break;
+          chars.forEach(c => {
+            const key = c.tag + '::' + c.anime.id;
+            if (present.has(key)) return;
+            present.add(key);
+            c.__matchedAlias = null;
+            c.__searchScore = (entry.__searchScore || 0) - 1;
+            extra.push(c);
+          });
+        }
+        return matches.concat(extra.slice(0, ORIGIN_CHARACTERS_MAX_TOTAL));
+      }
+
       function renderResults(query) {
         const cmd = getSlashCommand(query);
         if (cmd) {
@@ -7865,7 +7939,7 @@ function getMetaFor(animeId) {
               .map(x => x.entry)
           : [];
 
-        renderEntries(matches, query);
+        renderEntries(appendOriginCharacters(matches), query);
       }
 
       function setActiveResult(idx) {
@@ -9162,7 +9236,16 @@ function getCalendarItems() {
       isOpen: el => !!el && el.classList.contains('open'),
       close: () => document.getElementById('posterLightboxClose')?.click() },
     { key: 'drawer', el: () => document.getElementById('categoryDrawer'),
-      isOpen: el => !!el && el.classList.contains('show'),
+      // O openDrawer() só adiciona a classe "show" no próximo frame
+      // (requestAnimationFrame), mas já define aria-hidden="false" na hora.
+      // Ao abrir a busca a partir do posterlightbox, o lightbox fecha e o
+      // drawer abre no mesmo instante; se aqui só olhássemos "show", por um
+      // frame nenhuma camada parecia aberta, o histórico era desfeito
+      // (history.go) e logo depois refeito (pushState), e essa corrida
+      // deixava o "voltar" sem entrada própria, fechando o app. Usando
+      // aria-hidden, a troca lightbox -> drawer é vista como uma
+      // substituição, sem mexer no histórico.
+      isOpen: el => !!el && (el.classList.contains('show') || el.getAttribute('aria-hidden') === 'false'),
       close: () => document.getElementById('drawerCloseBtn')?.click() }
   ];
   const stack = [];      // camadas abertas, da mais antiga para a mais recente
