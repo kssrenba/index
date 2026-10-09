@@ -4996,25 +4996,12 @@ function getMetaFor(animeId) {
       } catch (e) {}
     }
 
+    // O drawer NÃO reabre mais ao recarregar/reabrir o site: ele sempre
+    // começa fechado. Só limpamos qualquer estado antigo salvo.
     function restoreDrawerState() {
       try {
-        const raw = localStorage.getItem(DRAWER_STATE_KEY) || sessionStorage.getItem(DRAWER_STATE_KEY);
-        if (!raw) return;
-        const state = JSON.parse(raw);
-        if (!state || !state.open) return;
-
-        const tab = state.tab || 'ranks';
-        openDrawer(tab, { focus: false });
-
-        if (tab === 'search' && state.query) {
-          const searchInputEl = document.getElementById('searchDrawerInput');
-          const searchBoxDrawerEl = document.getElementById('searchBoxDrawer');
-          if (searchInputEl) {
-            searchInputEl.value = state.query;
-            if (searchBoxDrawerEl) searchBoxDrawerEl.classList.toggle('has-value', state.query.length > 0);
-            searchInputEl.dispatchEvent(new Event('input'));
-          }
-        }
+        localStorage.removeItem(DRAWER_STATE_KEY);
+        sessionStorage.removeItem(DRAWER_STATE_KEY);
       } catch (e) {}
     }
 
