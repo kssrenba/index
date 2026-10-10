@@ -95,7 +95,7 @@ const rawAnimeData = [
     id: "jjk",
     img: "myranks-images/myranks/jjk.webp",
     title: "Jujutsu Kaisen",
-    info: "3 temporadas: 59 episódios <br>1 Filme: 1h45m",
+    info: "3 temporadas: 59 episódios <br>Movie: 1h45m",
     studio: "MAPPA",
     airedSeason: "2020-?",
     rewatchs: [
@@ -151,7 +151,7 @@ const rawAnimeData = [
     id: "haikyuu",
     img: "myranks-images/myranks/haikyuu.webp",
     title: "Haikyuu!!",
-    info: "4 temporadas: 85 episódios <br>1 Filme: 1h24m",
+    info: "4 temporadas: 85 episódios <br>Movie: 1h24m",
     studio: "Production I.G",
     airedSeason: "2014-?",
     rewatch: "2 Times",
@@ -376,7 +376,7 @@ const rawAnimeData = [
     id: "mha",
     img: "myranks-images/myranks/my-hero-academia.webp",
     title: "My Hero Academia",
-    info: "8 temporadas: 170 episódios <br>3 Filmes: 5h10m",
+    info: "8 temporadas: 170 episódios <br>3 Movies: 5h10m",
     studio: "Bones",
     airedSeason: "2016-2025",
     rewatchs: [
@@ -568,7 +568,7 @@ const rawAnimeData = [
     id: "demon-slayer",
     img: "myranks-images/myranks/demon-slayer.webp",
     title: "Demon Slayer: Kimetsu no Yaiba",
-    info: "5 temporadas: 63 episódios <br>1 Filme: 2h35m",
+    info: "5 temporadas: 63 episódios <br>Movie: 2h35m",
     studio: "ufotable",
     airedSeason: "2019-?",
     rewatchs: [
@@ -899,11 +899,11 @@ const rawAnimeData = [
     id: "silent-voice",
     img: "myranks-images/myranks/silent-voice.webp",
     title: "A Silent Voice",
-    info: "Filme: 2h10m",
+    info: "Movie: 2h10m",
     studio: "Kyoto Animation",
     airedSeason: "2016",
     rewatch: "No",
-    mal: [{ label: "Filme", episodes: "2h10m", note: 7, malName: "Koe no Katachi" }],
+    mal: [{ label: "Movie", episodes: "2h10m", note: 7, malName: "Koe no Katachi" }],
   },
   {
     id: "apothecary-diaries",
@@ -965,12 +965,7 @@ const rawAnimeData = [
     mal: [
       { label: "1 temporada", episodes: 27, note: 7, malName: "Tengen Toppa Gurren Lagann" },
       { label: "Movie 1: Childhood's End", episodes: "1h52m", unwatched: true, malName: "Tengen Toppa Gurren Lagann Movie 1: Gurren-hen" },
-      {
-        label: "Movie 2: The Lights in the Sky are Stars",
-        episodes: "2h05m",
-        unwatched: true,
-        malName: "Tengen Toppa Gurren Lagann Movie 2: Lagann-hen",
-      },
+      {label: "Movie 2: The Lights in the Sky are Stars", episodes: "2h05m", unwatched: true, malName: "Tengen Toppa Gurren Lagann Movie 2: Lagann-hen",},
     ],
   },
   {
@@ -1000,7 +995,7 @@ const rawAnimeData = [
     id: "nanatsu-no-taizai",
     img: "myranks-images/myranks/nanatsu-no-taizai.webp",
     title: "The Seven Deadly Sins: Nanatsu no Taizai",
-    info: "4 temporadas: 100 episódios <br>3 Filmes: 3h50m",
+    info: "4 temporadas: 100 episódios <br>3 Movies: 3h50m",
     studios: [
       { season: "S1-S2", name: "A-1 Pictures" },
       { season: "S3-S4", name: "Studio Deen" },
@@ -1251,11 +1246,11 @@ const rawAnimeData = [
     id: "no-game-no-life-zero",
     img: "myranks-images/myranks/no-game-no-life-zero.webp",
     title: "No Game No Life: Zero",
-    info: "Filme: 1h47m",
+    info: "Movie: 1h47m",
     studio: "MADHOUSE",
     airedSeason: "2017",
     rewatch: "No",
-    mal: [{ label: "Filme", episodes: "1h47m", note: 6, malName: "No Game No Life: Zero" }],
+    mal: [{ label: "Movie", episodes: "1h47m", note: 6, malName: "No Game No Life: Zero" }],
   },
   {
     id: "bottom-tier",
@@ -1274,11 +1269,11 @@ const rawAnimeData = [
     id: "bubble",
     img: "myranks-images/myranks/bubble.webp",
     title: "Bubble",
-    info: "Filme: 1h40m",
+    info: "Movie: 1h40m",
     studio: "Wit Studio",
     airedSeason: "2022",
     rewatch: "No",
-    mal: [{ label: "Filme", episodes: "1h40m", note: 6, malName: "Bubble" }],
+    mal: [{ label: "Movie", episodes: "1h40m", note: 6, malName: "Bubble" }],
   },
   {
     id: "magi-sinbad",
@@ -1562,7 +1557,7 @@ const rawWatchingData = [
     id: "tqq",
     img: "watchingnow-images/watchingnow/tqq.webp",
     title: "The Quintessential Quintuplets",
-    info: "2 temporadas: 24 episódios <br>1 Filme: 2h16m",
+    info: "2 temporadas: 24 episódios <br>Movie: 2h16m",
     studios: [
       { season: "S1", name: "Tezuka Productions" },
       { season: "S2-MOVIE", name: "Bibury Animation Studios" },
@@ -1874,7 +1869,7 @@ const rawPlanToWatchData = [
     id: "saga-of-tanya-the-evil",
     img: "plantowatch-images/plantowatch/saga-of-tanya-the-evil.webp",
     title: "Saga of Tanya the Evil",
-    info: "2 temporadas: 24 episódios <br>1 Filme: 1h38m",
+    info: "2 temporadas: 24 episódios <br>Movie: 1h38m",
     studio: "NUT",
     airedSeason: "2017-2019",
     url: "https://www.anime-planet.com/anime/saga-of-tanya-the-evil",
@@ -1998,7 +1993,7 @@ const rawPlanToWatchData = [
     id: "konosuba",
     img: "plantowatch-images/plantowatch/konosuba.webp",
     title: "Konosuba - God's Blessing on this Wonderful World",
-    info: "3 temporadas: 31 episódios <br>1 Filme: 1h30m",
+    info: "3 temporadas: 31 episódios <br>Movie: 1h30m",
     studios: [
       { season: "S1-S2", name: "Studio Deen" },
       { season: "MOVIE", name: "J.C. Staff" },
@@ -2043,7 +2038,7 @@ const rawPlanToWatchData = [
     id: "fruit-of-grisaia",
     img: "plantowatch-images/plantowatch/fruit-of-grisaia.webp",
     title: "The Fruit of Grisaia",
-    info: "3 temporadas: 33 episódios",
+    info: "3 temporadas: 33 episódios <br>2 Movies: 1h49m",
     studio: "8-Bit",
     airedSeason: "2014-2025",
     url: "https://www.anime-planet.com/anime/the-fruit-of-grisaia",
@@ -2100,7 +2095,7 @@ const rawPlanToWatchData = [
     id: "kurokos-basketball",
     img: "plantowatch-images/plantowatch/kurokos-basketball.webp",
     title: "Kuroko's Basketball",
-    info: "3 temporadas: 75 episódios <br>1 Filme: 1h30m",
+    info: "3 temporadas: 75 episódios <br>Movie: 1h30m",
     studio: "Production I.G",
     airedSeason: "2012-2017",
     url: "https://www.anime-planet.com/anime/kurokos-basketball",
@@ -2139,7 +2134,7 @@ const rawPlanToWatchData = [
     id: "evangelion",
     img: "plantowatch-images/plantowatch/evangelion.webp",
     title: "Neon Genesis Evangelion",
-    info: "1 temporada: 26 episódios <br>1 Filme: 1h27m",
+    info: "1 temporada: 26 episódios <br>Movie: 1h27m",
     studios: [
       { season: "S1", name: "Gainax and Tatsunoko Production" },
       { season: "MOVIE", name: "Gainax and Production I.G" },
@@ -2184,14 +2179,14 @@ const rawPlanToWatchData = [
     id: "i-want-to-eat-your-pancreas",
     img: "plantowatch-images/plantowatch/i-want-to-eat-your-pancreas.webp",
     title: "I Want to Eat Your Pancreas",
-    info: "Filme: 1h48m",
+    info: "Movie: 1h48m",
     studio: "Studio VOLN",
     airedSeason: "2018",
     url: "https://www.anime-planet.com/anime/i-want-to-eat-your-pancreas",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/36098/Kimi_no_Suizou_wo_Tabetai",
 
-    mal: [{ label: "Filme", episodes: "1h48m", malName: "Kimi no Suizou wo Tabetai", unwatched: true }],
+    mal: [{ label: "Movie", episodes: "1h48m", malName: "Kimi no Suizou wo Tabetai", unwatched: true }],
   },
   {
     id: "fate-zero",
@@ -2213,7 +2208,7 @@ const rawPlanToWatchData = [
     id: "fate-heavens-feel",
     img: "plantowatch-images/plantowatch/fate-heavens-feel.webp",
     title: "Fate Stay Night: Heaven's Feel",
-    info: "3 Filmes: 5h57m",
+    info: "3 Movies: 5h57m",
     studio: "ufotable",
     airedSeason: "2017-2020",
     url: "https://www.anime-planet.com/anime/fate-stay-night-heavens-feel-i-presage-flower",
@@ -2230,7 +2225,7 @@ const rawPlanToWatchData = [
     id: "chainsaw-man",
     img: "plantowatch-images/plantowatch/chainsaw-man.webp",
     title: "Chainsaw Man",
-    info: "1 temporada: 13 episódios <br>1 Filme: 1h40m",
+    info: "1 temporada: 13 episódios <br>Movie: 1h40m",
     studio: "MAPPA",
     airedSeason: "2022",
     url: "https://www.anime-planet.com/anime/chainsaw-man",
@@ -2246,7 +2241,7 @@ const rawPlanToWatchData = [
     id: "cowboy-bebop",
     img: "plantowatch-images/plantowatch/cowboy-bebop.webp",
     title: "Cowboy Bebop",
-    info: "1 temporada: 26 episódios <br>1 Filme: 1h55m",
+    info: "1 temporada: 26 episódios <br>Movie: 1h55m",
     studio: "Sunrise",
     airedSeason: "1998-2001",
     url: "https://www.anime-planet.com/anime/cowboy-bebop",
@@ -2262,14 +2257,14 @@ const rawPlanToWatchData = [
     id: "your-name",
     img: "plantowatch-images/plantowatch/your-name.webp",
     title: "your name",
-    info: "Filme: 1h50m",
+    info: "Movie: 1h50m",
     studio: "CoMix Wave Films",
     airedSeason: "2016",
     url: "https://www.anime-planet.com/anime/your-name",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/32281/Kimi_no_Na_wa",
 
-    mal: [{ label: "Filme", episodes: "1h50m", malName: "Kimi no Na wa.", unwatched: true }],
+    mal: [{ label: "Movie", episodes: "1h50m", malName: "Kimi no Na wa.", unwatched: true }],
   },
   {
     id: "heavenly-delusion",
@@ -2381,7 +2376,7 @@ const rawPlanToWatchData = [
     id: "the-tunnel-to-summer",
     img: "plantowatch-images/plantowatch/the-tunnel-to-summer.webp",
     title: "The Tunnel to Summer, the Exit of Goodbyes",
-    info: "Filme: 1h23m",
+    info: "Movie: 1h23m",
     studio: "CLAP",
     airedSeason: "2022",
     url: "https://www.anime-planet.com/anime/the-tunnel-to-summer-the-exit-of-goodbyes",
@@ -2392,7 +2387,7 @@ const rawPlanToWatchData = [
     id: "gintama",
     img: "plantowatch-images/plantowatch/gintama.webp",
     title: "Gintama",
-    info: "8 temporadas: 367 episódios <br>1 Filme: 1h44m",
+    info: "8 temporadas: 367 episódios <br>Movie: 1h44m",
     studios: [
       { season: "S1-S3", name: "Sunrise" },
       { season: "S4-S8", name: "Bandai Namco Pictures" },
@@ -2509,7 +2504,7 @@ const rawPlanToWatchData = [
     id: "100-meters",
     img: "plantowatch-images/plantowatch/100-meters.webp",
     title: "100 Meters",
-    info: "Filme: 1h47m",
+    info: "Movie: 1h47m",
     studio: "Rock'n Roll Mountain",
     airedSeason: "2025",
     url: "https://www.anime-planet.com/anime/100-meters",
@@ -2699,7 +2694,7 @@ const rawPlanToWatchData = [
     id: "aura-last-war",
     img: "plantowatch-images/plantowatch/aura-last-war.webp",
     title: "Aura: Koga Maryuin's Last War",
-    info: "Filme: 1h22m",
+    info: "Movie: 1h22m",
     studio: "AIC ASTA",
     airedSeason: "2013",
     url: "https://www.anime-planet.com/anime/aura-koga-maryuins-last-war",
@@ -2710,7 +2705,7 @@ const rawPlanToWatchData = [
     id: "afro-samurai",
     img: "plantowatch-images/plantowatch/afro-samurai.webp",
     title: "Afro Samurai",
-    info: "1 temporada: 5 episódios <br>1 Filme: 1h37m",
+    info: "1 temporada: 5 episódios <br>Movie: 1h37m",
     studio: "Gonzo",
     airedSeason: "2007-2009",
     url: "https://www.anime-planet.com/anime/afro-samurai",
@@ -2982,7 +2977,7 @@ const rawPlanToWatchData = [
     id: "love-chunibyo",
     img: "plantowatch-images/plantowatch/love-chunibyo.webp",
     title: "Love, Chunibyo & Other Delusions!",
-    info: "2 temporadas: 24 episódios <br>1 Filme: 1h34m",
+    info: "2 temporadas: 24 episódios <br>Movie: 1h34m",
     studio: "Kyoto Animation",
     airedSeason: "2012-2018",
     url: "https://www.anime-planet.com/anime/love-chunibyo-and-other-delusions",
@@ -3599,37 +3594,56 @@ const mechaIds = ["code-geass", "cyberpunk", "trapped-in-a-dating-sim", "eighty-
 
 // Next Season Map — status/anúncios de próximas temporadas por id.
 const nextSeasonMap = {
-  "shangri-la-frontier": { info: "3rd Season in Winter 2027" },
-  "mashle": { info: "3rd Season in Winter 2027" },
-  "the-worlds-finest-assassin": { info: "2nd Season in Winter 2027" },
+  // jan 27
+  "shangri-la-frontier": { info: "3rd Season in Jan 2027" },
+  "mashle": { info: "3rd Season in Jan 2027" },
+  "the-worlds-finest-assassin": { info: "2nd Season in Jan 2027" },
 
-  "mushoku": { info: "~Season 3 Part 2 in Spring 2027~" },
+  // apr 27
+  "mushoku": { info: "~3rd Season Part 2 in Apr 2027~" },
 
-  "tensei-shitara-slime": { info: "Season 4 Part 2 in Summer 2027" },
+  // jul 27
+  "tensei-shitara-slime": { info: "4th Season Part 2 in Jul 2027" },
 
+  // oct 27
+  "frieren": { info: "3rd Season in Oct 2027" },
+
+  // 27
   "haikyuu": { info: "New Movie in 2027" },
   "dan-da-dan": { info: "Season 3 in 2027" },
   "roshidere": { info: "Season 2 in 2027" },
   "one-piece": { info: "New Films in 2027/29" },
-  "frieren": { info: "3rd Season in 2027" },
   "shadow": { info: "New Movie in 2027" },
   "opm": { info: "3rd Season Part 2 in 2027" },
-  "midnight-heart": { info: "Season 2 in 2027" },
+  "midnight-heart": { info: "2nd Season in 2027" },
 
-  "grand-blue": { info: "4th Season Confirmed" },
-  "jjk": { info: "4th Season Announced" },
-  "oshi-no-ko": { info: "4th Season Announced" },
-  "solo-leveling": { info: "New Movie Announced" },
-  "kingdom": { info: "7th Season Announced" },
-  "cote": { info: "5th Season Announced" },
-  "gachiakuta": { info: "Season 2 in Production" },
-  "wistoria": { info: "3rd Season Announced" },
-  "demon-slayer": { info: "2 Movies in Production" },
-  "sentenced-hero": { info: "2nd Season in Production" },
-  "makeine": { info: "2nd Season Announced" },
-  "nippon-sangoku": { info: "2nd Season Announced" },
-  "tsukimichi": { info: "3rd Season in Production" },
-  "healing-magic": { info: "2nd Season Announced" },
-  "danmachi": { info: "Season 6 Announced" },
-  "i-got-a-cheat-skill": { info: "Season 2 in Production" },
+
+  // -8 seasons (mar 23 - mar 26)
+  "demon-slayer": { info: "2 Movies in Production" },//jun 24
+  "tsukimichi": { info: "3rd Season in Production" },//jun 24
+
+  "healing-magic": { info: "2nd Season Announced" },//ago 24
+
+  "solo-leveling": { info: "New Movie Announced" },//mar 25
+
+  "makeine": { info: "2nd Season Announced" },//apr 25
+
+  "kingdom": { info: "Season 7 Announced" },//dec 25
+  "gachiakuta": { info: "2nd Season in Production" },//dec 25
+
+  "danmachi": { info: "Season 6 Announced" },// fev 26
+
+  "jjk": { info: "4th Season in Production" },// mar 26
+  "oshi-no-ko": { info: "4th Season in Production" },//mar 26
+  "sentenced-hero": { info: "2nd Season Announced" },//mar 26
+  "i-got-a-cheat-skill": { info: "Season 2 in Production" },//mar 26
+
+  // -2 seasons (april 26 - sep 26 )
+  "cote": { info: "Season 5 Announced" },//jun 26
+  "wistoria": { info: "Season 3 Announced" },//jun 26
+  "nippon-sangoku": { info: "2nd Season Announced" },//jun 26
+  "grand-blue": { info: "Season 4 Announced" },//sep 26
+
+  // now 
+  "dr-stone": { info: "Terraforming Announced" },//oct 26
 };

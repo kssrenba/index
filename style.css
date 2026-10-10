@@ -2309,41 +2309,6 @@
     transition: none !important;
   }
 
-  /* Toque: diferente do mouse, :hover no touch não "solta" sozinho —
-    fica grudado no último card tocado até o próximo toque em outro
-    lugar, às vezes a rolagem inteira da lista. Isso deixava o wallpaper
-    borrado (.anime-item-ambient/.fav-ep-ambient) girando sem parar em
-    loop (ambientDrift/favEpAmbientDrift, 4s infinite) muito depois do
-    dedo sair da tela — composição + blur a cada frame, de graça, exatamente
-    o tipo de custo que o resto deste arquivo já evita durante o scroll.
-    Mesma ideia da regra (hover: none) que já existe pra .search-result-item,
-    estendida pros outros cards com o mesmo problema. */
-  @media (hover: none), (pointer: coarse) {
-    li.anime-item:hover {
-      will-change: auto;
-    }
-    li.anime-item:hover .anime-item-ambient.ready,
-    li.fav-ep-card:hover .fav-ep-ambient.ready {
-      animation: none !important;
-    }
-    ol.ranking.mode-true-characters li.anime-item:hover {
-      transform: none;
-      border-color: rgba(255,255,255,0.075);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
-    }
-    ol.ranking.mode-true-characters li.anime-item:hover .thumb {
-      transform: scale(1.01);
-      filter: saturate(0.92) contrast(1.03);
-    }
-    .release-calendar-card:hover .release-calendar-poster {
-      transform: none;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
-    }
-    .release-calendar-card:hover .release-calendar-poster img {
-      transform: none;
-    }
-  }
-
   /* Além de desligar durante o scroll (regra acima), cards que estão
     longe da área visível (ver ambientVisibilityObserver no JS) ficam com
     o wallpaper borrado totalmente pausado — não só sem o custo do blur,
@@ -14069,10 +14034,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
   .search-result-item:hover:not(.active) .search-result-thumb {
     transform: none;
-  }
-
-  .search-result-item:hover:not(.active) .search-result-ambient.ready {
-    animation: none !important;
   }
 
   .search-result-item:hover:not(.active) .search-result-meta {
