@@ -12685,7 +12685,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
       margin: 0 0 10px;
       padding: 0;
       color: rgba(255,255,255,0.64);
-      font: 800 20px/1.3 var(--font-title);
+      font: 800 15px/1.3 var(--font-title);
       letter-spacing: 0.055em;
     }
 
@@ -12886,7 +12886,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
       background: none !important;
       box-shadow: none !important;
       color: rgba(255,255,255,0.64) !important;
-      font: 800 11px/1.3 var(--font-title) !important;
+      font: 800 15px/1.3 var(--font-title) !important;
       letter-spacing: 0.055em !important;
       text-align: left;
     }
@@ -13678,6 +13678,17 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
   .poster-lightbox-jpname-glyph {
     font: 700 21px/1 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', system-ui, sans-serif;
     pointer-events: none;
+    display: inline-flex;
+  }
+
+  .poster-lightbox-jpname-glyph svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   /* Modo "japonês ativo": o botão vira "EN" (trocar para inglês). */
@@ -13788,5 +13799,249 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 @media (prefers-reduced-motion: reduce) {
   .poster-lightbox:not(.simple-mode) .rank-meta.is-meta-expanded .rank-meta-item {
     animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   HOVER v2 — cards normais (li.anime-item) e cards da busca (.search-result-item)
+
+   Fica no FIM do arquivo de propósito: vence as regras de hover antigas sem
+   precisar mexer nelas. Para voltar ao hover anterior, apague este bloco.
+
+   Ideia: um único gesto, coerente nos dois tipos de card — o card sobe, a
+   borda e o brilho assumem a cor da categoria (--item-hover-color / --acc),
+   o pôster dá um zoom leve e o título "acende" com um toque dessa cor.
+   Sem brilho varrendo o card, sem flash branco: o véu branco chapado do
+   hover antigo virou um degradê na cor da categoria.
+   ========================================================================== */
+
+:root {
+  --hv-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── 1) CARDS NORMAIS (desktop com mouse) ──────────────────────────────── */
+@media (hover: hover) and (pointer: fine) and (min-width: 601px) {
+
+  ol.ranking.mode-true-characters li.anime-item {
+    --hv: var(--item-hover-color, #e2e8f0);
+    /* Mesma quantidade de sombras no estado normal e no hover, na mesma
+       ordem (anel, queda, brilho, realce interno): assim o navegador
+       interpola tudo suavemente em vez de "pular" de um estado ao outro. */
+    box-shadow:
+      0 0 0 0 transparent,
+      0 0 0 0 transparent,
+      0 0 0 0 transparent,
+      inset 0 1px 0 rgba(255,255,255,0.025);
+    transition:
+      transform 0.34s var(--hv-ease),
+      border-color 0.28s ease,
+      box-shadow 0.34s var(--hv-ease),
+      background 0.3s ease;
+  }
+
+  /* O :not(.hidden-item) só sobe a especificidade para vencer as regras
+     antigas de hover (All, Watching, Announced etc.) sem usar !important.
+     body:not(.is-scrolling-ambient) desliga o efeito enquanto a página
+     rola, como o site já fazia, para o scroll continuar leve. */
+  body:not(.is-scrolling-ambient) ol.ranking.mode-true-characters li.anime-item:not(.hidden-item):hover {
+    transform: translateY(-4px) translateZ(0);
+    /* Borda NÃO muda no hover: mantém a mesma cor do estado normal. */
+    border-color: rgba(255,255,255,0.075);
+    box-shadow:
+      0 0 0 0 transparent,
+      0 22px 40px -22px rgba(0,0,0,0.9),
+      0 0 0 0 transparent,
+      inset 0 1px 0 rgba(255,255,255,0.05);
+    z-index: 2;
+  }
+
+  /* Véu do hover: em vez do branco chapado (que "lavava" o pôster), um
+     degradê na cor da categoria, mais forte do lado do pôster. */
+  ol.ranking.mode-true-characters li.anime-item::after {
+    background: linear-gradient(
+      110deg,
+      color-mix(in srgb, var(--hv) 17%, transparent) 0%,
+      color-mix(in srgb, var(--hv) 12%, transparent) 55%,
+      color-mix(in srgb, var(--hv) 9%, transparent) 100%
+    );
+    /* Abaixo do pôster e do texto: tinge só o fundo, nunca a imagem. */
+    z-index: 1;
+    transition: opacity 0.28s ease;
+  }
+
+  /* Pôster: zoom um pouco mais lento (sensação de "respirar") e leve ganho
+     de brilho/cor, para a capa destacar do resto da lista. */
+  body:not(.is-scrolling-ambient) ol.ranking.mode-true-characters li.anime-item:not(.hidden-item):hover .thumb {
+    transform: scale(1.06);
+    /* Cor da imagem NÃO muda no hover: mesmo filtro do estado normal. */
+    filter: saturate(0.92) contrast(1.03);
+  }
+
+  ol.ranking.mode-true-characters .thumb {
+    transition:
+      transform 0.6s var(--hv-ease),
+      filter 0.35s ease,
+      opacity 0.35s ease;
+  }
+
+  /* Título e subtítulo: o título ganha um toque da cor da categoria e o
+     subtítulo sai do cinza apagado. */
+  ol.ranking.mode-true-characters .title-anime {
+    transition: color 0.28s ease;
+  }
+
+  ol.ranking.mode-true-characters .info-row .info {
+    transition: color 0.28s ease;
+  }
+
+  body:not(.is-scrolling-ambient) ol.ranking.mode-true-characters li.anime-item:not(.hidden-item):hover .info-row .info {
+    color: rgba(255,255,255,0.68);
+  }
+
+  /* Watching Now: a barra de progresso responde ao hover (fica um pouco
+     mais grossa), reforçando que ela é interativa por causa do +/-. */
+  ol.ranking.category-watching .watch-progress-track {
+    transition: height 0.25s var(--hv-ease);
+  }
+
+  body:not(.is-scrolling-ambient) ol.ranking.category-watching li.anime-item:hover .watch-progress-track {
+    height: 8px;
+  }
+}
+
+
+/* ── 2) CARDS DA BUSCA ─────────────────────────────────────────────────── */
+
+.search-result-item {
+  --hv: var(--acc, #e2e8f0);
+  /* Anel, queda e brilho sempre presentes (transparentes) para a
+     transição interpolar sem saltos. */
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 0 0 0 transparent,
+    0 0 0 0 transparent;
+  transition:
+    transform 0.3s var(--hv-ease),
+    box-shadow 0.3s var(--hv-ease);
+}
+
+.search-result-item--ann {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.075),
+    0 0 0 0 transparent,
+    0 0 0 0 transparent;
+}
+
+.search-result-thumb {
+  transition:
+    transform 0.55s var(--hv-ease),
+    filter 0.3s ease;
+}
+
+.search-result-title {
+  transition: color 0.25s ease;
+}
+
+.search-result-meta {
+  transition: color 0.25s ease;
+}
+
+/* .active = item selecionado pelo teclado (setas): recebe o mesmo destaque
+   do mouse, em qualquer dispositivo. */
+.search-result-item.active {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 0 1.5px color-mix(in srgb, var(--hv) 72%, transparent),
+    0 14px 26px -14px rgba(0,0,0,0.85),
+    0 10px 26px -14px color-mix(in srgb, var(--hv) 55%, transparent);
+}
+
+.search-result-item.active .search-result-thumb {
+  transform: scale(1.06);
+  filter: brightness(1.08) saturate(1.08);
+}
+
+.search-result-item.active .search-result-title {
+  color: color-mix(in srgb, var(--hv) 24%, #ffffff);
+}
+
+.search-result-item.active .search-result-meta {
+  color: rgba(255,255,255,0.7);
+}
+
+/* Número do rank (cards comuns, posições fora do top 3): acende junto. */
+.search-result-rank {
+  transition: color 0.25s ease;
+}
+
+.search-result-item:not(.search-result-item--tc):not(.search-result-item--ann).active .search-result-rank.rank-plain {
+  color: rgba(255,255,255,0.32);
+}
+
+/* Mouse: mesmo destaque, só em quem realmente tem hover. */
+@media (hover: hover) and (pointer: fine) {
+  .search-result-item:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1.5px color-mix(in srgb, var(--hv) 72%, transparent),
+      0 14px 26px -14px rgba(0,0,0,0.85),
+      0 10px 26px -14px color-mix(in srgb, var(--hv) 55%, transparent);
+  }
+
+  .search-result-item:hover .search-result-thumb {
+    transform: scale(1.06);
+    filter: brightness(1.08) saturate(1.08);
+  }
+
+  .search-result-item:hover .search-result-title {
+    color: color-mix(in srgb, var(--hv) 24%, #ffffff);
+  }
+
+  .search-result-item:hover .search-result-meta {
+    color: rgba(255,255,255,0.7);
+  }
+
+  .search-result-item:not(.search-result-item--tc):not(.search-result-item--ann):hover .search-result-rank.rank-plain {
+    color: rgba(255,255,255,0.32);
+  }
+}
+
+/* Touch: sem hover "grudado" depois do toque (só o .active, via teclado,
+   continua com destaque). */
+@media (hover: none), (pointer: coarse) {
+  .search-result-item:hover:not(.active) {
+    transform: none;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.06),
+      0 0 0 0 transparent,
+      0 0 0 0 transparent;
+  }
+
+  .search-result-item:hover:not(.active) .search-result-thumb {
+    transform: none;
+    filter: none;
+  }
+}
+
+
+/* ── 3) Movimento reduzido ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  ol.ranking.mode-true-characters li.anime-item,
+  ol.ranking.mode-true-characters .thumb,
+  .search-result-item,
+  .search-result-thumb {
+    transition-duration: 0.01ms !important;
+  }
+
+  body:not(.is-scrolling-ambient) ol.ranking.mode-true-characters li.anime-item:not(.hidden-item):hover,
+  .search-result-item:hover,
+  .search-result-item.active {
+    transform: none;
+  }
+
+  body:not(.is-scrolling-ambient) ol.ranking.mode-true-characters li.anime-item:not(.hidden-item):hover .thumb,
+  .search-result-item:hover .search-result-thumb,
+  .search-result-item.active .search-result-thumb {
+    transform: none;
   }
 }

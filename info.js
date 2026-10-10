@@ -68,12 +68,12 @@ const rawAnimeData = [
     id: "one-piece",
     img: "myranks-images/myranks/one-piece.webp",
     title: "One Piece",
-    info: "1 temporada: 1176 episódios",
+    info: "1 temporada: 1180 episódios",
     studio: "Toei Animation",
     airedSeason: "1999-?",
     rewatch: "The One Piece",
     mal: [
-      { label: "1 temporada", episodes: 1176, note: 10, malName: "One Piece" },
+      { label: "1 temporada", episodes: 1180, note: 10, malName: "One Piece" },
 
       { spacer: true, text: "One Filler", watched: true },
       { label: "Film: Z", episodes: "1h47m", note: 7, malName: "One Piece Film: Z" },
@@ -943,7 +943,16 @@ const rawAnimeData = [
     rewatchs: [
       { season: 'S1', name: '1 Time' },
     ],
-    mal: [{ label: "1ª temporada", episodes: 25, note: 7, malName: "Sword Art Online" }],
+    mal: [
+      { label: "1ª temporada", episodes: 25, note: 7, malName: "Sword Art Online" },
+      { label: "Special: Extra Edition", episodes: "1h41m", unwatched: true, malName: "Sword Art Online: Extra Edition" },
+      { label: "2ª temporada", episodes: 24, unwatched: true, malName: "Sword Art Online II" },
+      { label: "Movie: Ordinal Scale", episodes: "1h59m", unwatched: true, malName: "Sword Art Online Movie: Ordinal Scale" },
+      { text: "Alicization", watched: false },
+      { label: "3ª temporada", episodes: 24, unwatched: true, malName: "Sword Art Online: Alicization" },
+      { label: "4ª temporada I", episodes: 12, unwatched: true, malName: "Sword Art Online: Alicization - War of Underworld" },
+      { label: "4ª temporada II", episodes: 11, unwatched: true, malName: "Sword Art Online: Alicization - War of Underworld 2nd Season" },
+    ],
   },
   {
     id: "gurren-lagann",
@@ -1445,6 +1454,21 @@ const rawWatchingData = [
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00364783/chitose-is-in-the-ramune-bottle",
     malUrl: "https://myanimelist.net/anime/62484",
   },
+  {
+    id: "student-council",
+    img: "watchingnow-images/watchingnow/student-council.webp",
+    title: "Even the Student Council Has Its Holes!",
+    info: "1 temporada",
+    season: "fall-2026",
+    studio: "Passione",
+    airedSeason: "2026",
+    seasons: [12],
+    url: "https://www.anime-planet.com/anime/even-the-student-council-has-its-holes",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00364783/chitose-is-in-the-ramune-bottle",
+    malUrl: "https://myanimelist.net/anime/61578/Seitokai_ni_mo_Ana_wa_Aru",
+
+    mal: [{ label: "1 temporada", episodes: 12, malName: "Seitokai ni mo Ana wa Aru!", unwatched: true }],
+  },
 
   // Summer 2026
   {
@@ -1584,8 +1608,8 @@ const rawWatchingData = [
 const favoriteEpisodesData = [
   {
     id: "code-geass",
-    anime: "Code Geass: Lelouch of the Rebellion",
-    episodeLabel: "T2.E25 — Zero Requiem",
+    anime: "T2.E25 — Zero Requiem",
+    episodeLabel: "Code Geass: Lelouch of the Rebellion",
     img: "other-images/peakepisodes/code-geass-1.webp",
     images: [
       "other-images/peakepisodes/code-geass-1.webp",
@@ -1602,8 +1626,8 @@ const favoriteEpisodesData = [
   },
   {
     id: "jjk",
-    anime: "Jujutsu Kaisen",
-    episodeLabel: "T3.E12 — Sendai Colony",
+    anime: "T3.E12 — Sendai Colony",
+    episodeLabel: "Jujutsu Kaisen",
     img: "other-images/peakepisodes/jjk-1.webp",
     images: [
       "other-images/peakepisodes/jjk-1.webp",
@@ -1623,8 +1647,8 @@ const favoriteEpisodesData = [
   },
   {
     id: "one-piece",
-    anime: "One Piece",
-    episodeLabel: "E1136 — Kuma's Life",
+    anime: "E1136 — Kuma's Life",
+    episodeLabel: "One Piece",
     img: "other-images/peakepisodes/one-piece-1.webp",
     images: [
       "other-images/peakepisodes/one-piece-1.webp",
@@ -1642,8 +1666,8 @@ const favoriteEpisodesData = [
   },
   {
     id: "oshi-no-ko",
-    anime: "[Oshi no Ko]",
-    episodeLabel: "T1.E1 — Mother and Children",
+    anime: "T1.E1 — Mother and Children",
+    episodeLabel: "[Oshi no Ko]",
     img: "other-images/peakepisodes/oshi-no-ko-1.webp",
     images: [
       "other-images/peakepisodes/oshi-no-ko-1.webp",
@@ -1666,8 +1690,8 @@ const favoriteEpisodesData = [
   {
     id: "mha",
     animeId: "mha",
-    anime: "My Hero Academia",
-    episodeLabel: "T8.E3 — The Final Boss",
+    anime: "T8.E3 — The Final Boss",
+    episodeLabel: "My Hero Academia",
     img: "other-images/peakepisodes/mha2-8.webp",
     images: [
       "other-images/peakepisodes/mha2-8.webp",
@@ -1688,8 +1712,8 @@ const favoriteEpisodesData = [
   {
     id: "re-zero-2",
     animeId: "re-zero",
-    anime: "Re:ZERO - Starting Life in Another World",
-    episodeLabel: "T2.E11 The Taste of Death",
+    anime: "T2.E11 The Taste of Death",
+    episodeLabel: "Re:ZERO - Starting Life in Another World",
     img: "other-images/peakepisodes/re-zero2-1.webp",
     images: [
       "other-images/peakepisodes/re-zero2-1.webp",
@@ -1707,8 +1731,8 @@ const favoriteEpisodesData = [
   {
     id: "mha-2",
     animeId: "mha",
-    anime: "My Hero Academia",
-    episodeLabel: "T4.E13 — Infinite 100%",
+    anime: "T4.E13 — Infinite 100%",
+    episodeLabel: "My Hero Academia",
     img: "other-images/peakepisodes/mha-1.webp",
     images: [
       "other-images/peakepisodes/mha-1.webp",
@@ -1725,8 +1749,8 @@ const favoriteEpisodesData = [
   },
   {
     id: "hxh",
-    anime: "Hunter x Hunter",
-    episodeLabel: "E131 — Anger × and × Light",
+    anime: "E131 — Anger × and × Light",
+    episodeLabel: "Hunter x Hunter",
     img: "other-images/peakepisodes/hxh-1.webp",
     images: [
       "other-images/peakepisodes/hxh-1.webp",
@@ -1743,8 +1767,8 @@ const favoriteEpisodesData = [
   },
   {
     id: "solo-leveling",
-    anime: "Solo Leveling",
-    episodeLabel: "T2.E12 — Are You the King of Humans",
+    anime: "T2.E12 — Are You the King of Humans",
+    episodeLabel: "Solo Leveling",
     img: "other-images/peakepisodes/solo-leveling-1.webp",
     images: [
       "other-images/peakepisodes/solo-leveling-1.webp",
@@ -1761,8 +1785,8 @@ const favoriteEpisodesData = [
   },
   {
     id: "re-zero",
-    anime: "Re:ZERO - Starting Life in Another World",
-    episodeLabel: "T1.E15 — Beyond Madness",
+    anime: "T1.E15 — Beyond Madness",
+    episodeLabel: "Re:ZERO - Starting Life in Another World",
     img: "other-images/peakepisodes/re-zero-2.webp",
     images: [
       "other-images/peakepisodes/re-zero-2.webp",
@@ -1780,8 +1804,8 @@ const favoriteEpisodesData = [
   },
   {
     id: "frieren",
-    anime: "Frieren: Beyond Journey's End",
-    episodeLabel: "T2.E8 — A Magnificent End",
+    anime: "T2.E8 — A Magnificent End",
+    episodeLabel: "Frieren: Beyond Journey's End",
     img: "other-images/peakepisodes/frieren-1.webp",
     images: [
       "other-images/peakepisodes/frieren-1.webp",
@@ -1799,8 +1823,8 @@ const favoriteEpisodesData = [
   },
   {
     id: "cote",
-    anime: "Classroom of the Elite",
-    episodeLabel: "T2.E12 — Force Without Wisdom Collapses Under Its Own Weight.",
+    anime: "T2.E12 — Force Without Wisdom Collapses Under Its Own Weight.",
+    episodeLabel: "Classroom of the Elite",
     img: "other-images/peakepisodes/cote-2.webp",
     images: ["other-images/peakepisodes/cote-2.webp", "other-images/peakepisodes/cote-1.webp", "other-images/peakepisodes/cote-3.webp", "other-images/peakepisodes/cote-4.webp"],
     rating: 9.6,
@@ -1827,6 +1851,22 @@ const rawReleaseCalendarData = [
 
 // Plan to Watch — fila de animes a assistir, em ordem de prioridade.
 const rawPlanToWatchData = [
+  {
+    id: "reincarnated-as-a-sword",
+    img: "plantowatch-images/plantowatch/reincarnated-as-a-sword.webp",
+    title: "Reincarnated as a Sword",
+    info: "1 temporadas: 12 episódios",
+    studio: "C2C",
+    airedSeason: "2022",
+    url: "https://www.anime-planet.com/anime/reincarnated-as-a-sword",
+    netflix: "https://www.netflix.com/title/81642998",
+    malUrl: "https://myanimelist.net/anime/49891/Tensei_shitara_Ken_deshita",
+
+    mal: [
+      { label: "1ª temporada", episodes: 12, malName: "Tensei shitara Ken deshita", unwatched: true },
+      { label: "2ª temporada", episodes: 12, malName: "Tensei shitara Ken deshita II", unwatched: true },
+    ],
+  },
   {
     id: "saga-of-tanya-the-evil",
     img: "plantowatch-images/plantowatch/saga-of-tanya-the-evil.webp",

@@ -1,3 +1,12 @@
+// Entradas do campo "mal" que NÃO são temporadas (não têm nota/episódios):
+//  - { spacer: true, text: "..." } -> divisor com espaço + texto
+//  - { text: "..." }               -> só o texto, sem espaço extra
+function isMalDividerEntry(entry) {
+  if (!entry) return false;
+  if (entry.spacer) return true;
+  return !entry.label && typeof entry.text === 'string' && entry.text.trim() !== '';
+}
+
 if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }
@@ -1202,7 +1211,7 @@ function getMetaFor(animeId) {
         // colocada por acidente é ignorada neste modo.
         if (isPlanToWatch && entries && entries.length) {
           entries = entries.map(entry => {
-            if (!entry || entry.spacer) return entry;
+            if (!entry || isMalDividerEntry(entry)) return entry;
             const { note, noRating, unwatched, ...rest } = entry;
             return { ...rest, unwatched: true };
           });
@@ -1249,11 +1258,11 @@ function getMetaFor(animeId) {
             const override = getWatchProgressOverride(animeId);
             const cur = override !== null ? override : baseCur;
             const boundaries = computeWatchingEntryBoundaries(watchItem);
-            const nonSpacerCount = entries.filter(entry => !entry.spacer).length;
+            const nonSpacerCount = entries.filter(entry => !isMalDividerEntry(entry)).length;
             if (boundaries && boundaries.length === nonSpacerCount && Number.isFinite(cur)) {
               let bIdx = 0;
               entries = entries.map(entry => {
-                if (entry.spacer) return entry;
+                if (isMalDividerEntry(entry)) return entry;
                 const boundary = boundaries[bIdx++];
                 const reached = cur >= boundary;
                 if (!reached) {
@@ -1276,7 +1285,7 @@ function getMetaFor(animeId) {
           }
         }
 
-        const ratedEntries = entries.filter(entry => !entry.spacer);
+        const ratedEntries = entries.filter(entry => !isMalDividerEntry(entry));
         lightboxMal.classList.toggle(
           'all-unwatched',
           ratedEntries.length > 0 && ratedEntries.every(entry => entry.unwatched)
@@ -1285,6 +1294,21 @@ function getMetaFor(animeId) {
         const MAL_NAME_ARROW_SVG = `<svg class="rank-mal-name-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>`;
 
         const rowEntries = entries.map(entry => {
+          // Só texto (sem "spacer"): mostra o título numa linha própria,
+          // sem o espaço de divisor e sem quebrar o grupo de alinhamento.
+          // margin-top/bottom (inline) equilibram o respiro: menos em cima,
+          // mais embaixo, pro título ficar no meio entre a linha anterior
+          // e a seguinte. Ajuste esses dois valores se quiser mais/menos.
+          if (!entry.spacer && isMalDividerEntry(entry)) {
+            const titleOnly = entry.text.trim();
+            return {
+              alignable: false,
+              html: `
+            <div class="rank-mal-row rank-mal-row-break rank-mal-title-only" style="margin-top: -8px; margin-bottom: 7px;">
+              <span class="rank-mal-spacer-title${entry.watched === true ? ' watched' : ''}" style="color: ${entry.watched === true ? 'var(--text)' : 'rgba(255,255,255,0.25)'} !important;">${escapeHtml(titleOnly)}</span>
+            </div>`
+            };
+          }
           if (entry.spacer) {
             const spacerTitle = typeof entry.text === 'string'
               ? entry.text.trim()
@@ -1919,7 +1943,7 @@ function getMetaFor(animeId) {
       function firstJpNameOf(source) {
         if (!source || !Array.isArray(source.mal)) return '';
         for (const m of source.mal) {
-          if (!m || m.spacer) continue;
+          if (!m || isMalDividerEntry(m)) continue;
           if (typeof m.malName === 'string' && m.malName.trim()) return m.malName.trim();
         }
         return '';
@@ -2004,12 +2028,14 @@ function getMetaFor(animeId) {
         });
       }
 
-      // Aparência do botão conforme o modo: no normal mostra "あ" (trocar
+      // Aparência do botão conforme o modo: no normal mostra o ícone de idiomas (trocar
       // para japonês); com o nome em japonês ativo vira "EN" (trocar para
       // inglês). O tooltip usa o mesmo [data-tooltip] dos outros botões.
+      // Ícone "idiomas" (traço, mesmo estilo dos botões de busca/som/fechar).
+      const JP_NAME_ICON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>';
       function setJpBtnMode(active) {
         const label = active ? 'Name in English' : 'Name in Japanese';
-        jpNameBtn.innerHTML = '<span class="poster-lightbox-jpname-glyph">' + (active ? 'EN' : '\u3042') + '</span>';
+        jpNameBtn.innerHTML = '<span class="poster-lightbox-jpname-glyph">' + (active ? 'EN' : JP_NAME_ICON_SVG) + '</span>';
         jpNameBtn.dataset.tooltip = label;
         jpNameBtn.setAttribute('aria-label', label);
         jpNameBtn.removeAttribute('title');
@@ -5388,7 +5414,7 @@ function getMetaFor(animeId) {
       let html = '';
 
       if (noSeason.length) {
-        html += `<li class="season-header season-header-novisual" style="--season-color: ${WATCHING_NO_SEASON_LABEL.color};">
+        html += `<li class="season-header season-header-novisual" data-season="__no-season__" style="--season-color: ${WATCHING_NO_SEASON_LABEL.color};">
                   <span class="season-text">${WATCHING_NO_SEASON_LABEL.text}</span>
                   <div class="season-line"></div>
                 </li>`;
@@ -5408,7 +5434,7 @@ function getMetaFor(animeId) {
         const seasonTextHtml = seasonObj.url
           ? `<a class="season-text season-text-link" href="${escSeason(seasonObj.url)}" target="_blank" rel="noopener">${escSeason(seasonObj.text)}</a>`
           : `<span class="season-text">${escSeason(seasonObj.text)}</span>`;
-        html += `<li class="season-header" style="--season-color: ${seasonObj.color};">
+        html += `<li class="season-header" data-season="${key}" style="--season-color: ${seasonObj.color};">
                   ${seasonTextHtml}
                   <div class="season-line"></div>
                 </li>`;
@@ -7296,6 +7322,7 @@ function getMetaFor(animeId) {
             sections.push({
               text: CATEGORY_LABEL.announced || 'Announced Sequels',
               color: CATEGORY_HOVER_COLOR.announced || '#34d399',
+              mode: 'announced',
               items: annEntries
             });
           }
@@ -7317,7 +7344,7 @@ function getMetaFor(animeId) {
           orderList.forEach(key => {
             if (!groups[key]) return;
             const labelObj = labelFor(key);
-            sections.push({ text: labelObj.text, color: labelObj.color, items: groups[key] });
+            sections.push({ text: labelObj.text, color: labelObj.color, mode: 'watching', seasonKey: key, items: groups[key] });
           });
 
           // Fallback: qualquer temporada não prevista em WATCHING_BASE_ORDER
@@ -7325,12 +7352,12 @@ function getMetaFor(animeId) {
           Object.keys(groups).sort().forEach(key => {
             if (orderList.includes(key)) return;
             const labelObj = labelFor(key);
-            sections.push({ text: labelObj.text, color: labelObj.color, items: groups[key] });
+            sections.push({ text: labelObj.text, color: labelObj.color, mode: 'watching', seasonKey: key, items: groups[key] });
           });
         }
 
         if (planEntries.length) {
-          sections.push({ text: 'Plan to Watch', color: CATEGORY_HOVER_COLOR.plan, items: planEntries });
+          sections.push({ text: 'Plan to Watch', color: CATEGORY_HOVER_COLOR.plan, mode: 'plan', items: planEntries });
         }
 
         // Global Ranking (e demais categorias forçadas) vem antes de Peak
@@ -7339,16 +7366,16 @@ function getMetaFor(animeId) {
         if (otherEntries.length) {
           const otherLabel = (forcedCategory && CATEGORY_LABEL[forcedCategory]) ? CATEGORY_LABEL[forcedCategory] : 'Global Ranking';
           const otherColor = (forcedCategory && CATEGORY_HOVER_COLOR[forcedCategory]) ? CATEGORY_HOVER_COLOR[forcedCategory] : '#7d8698';
-          sections.push({ text: otherLabel, color: otherColor, items: otherEntries });
+          sections.push({ text: otherLabel, color: otherColor, mode: forcedCategory || 'all', items: otherEntries });
         }
 
         if (favEpEntries.length) {
           const favEpLabel = forcedCategory === 'favEpisodes' ? CATEGORY_LABEL.favEpisodes : 'Peak Episodes';
-          sections.push({ text: favEpLabel, color: '#3b82f6', items: favEpEntries });
+          sections.push({ text: favEpLabel, color: '#3b82f6', mode: 'favEpisodes', items: favEpEntries });
         }
 
         if (trueCharEntries.length) {
-          sections.push({ text: CATEGORY_LABEL.trueCharacters, color: CATEGORY_HOVER_COLOR.trueCharacters, items: trueCharEntries });
+          sections.push({ text: CATEGORY_LABEL.trueCharacters, color: CATEGORY_HOVER_COLOR.trueCharacters, mode: 'trueCharacters', items: trueCharEntries });
         }
 
         // Em pesquisas normais, a relevância do título deve valer mais
@@ -7368,6 +7395,36 @@ function getMetaFor(animeId) {
       let currentMatches = [];
       const SEARCH_HISTORY_KEY = 'myhtml_search_history';
       const SEARCH_HISTORY_MAX = 50;
+
+      // Ao expandir/recolher o drawer com resultados já na tela, o HTML
+      // precisa ser remontado no layout certo (o expandido usa o wrapper
+      // .search-groups + grid-row/grid-column inline; o recolhido, não).
+      // Sem isso, o CSS do modo novo era aplicado em cima do HTML do modo
+      // antigo e os cards ficavam bagunçados.
+      (function watchDrawerLayoutChange() {
+        const drawerEl = searchResults && searchResults.closest('.category-drawer');
+        if (!drawerEl || !('MutationObserver' in window)) return;
+        let wasExpanded = drawerEl.classList.contains('expanded');
+        let settleTimer = 0;
+        const relayoutNow = () => {
+          if (!lastRenderedSections) return;
+          if (searchResults.classList.contains('is-empty-state')) return;
+          renderEntries(null, lastRenderedQuery, { relayout: true });
+        };
+        new MutationObserver(() => {
+          const nowExpanded = drawerEl.classList.contains('expanded');
+          if (nowExpanded === wasExpanded) return;
+          wasExpanded = nowExpanded;
+          relayoutNow();
+          // Se o drawer anima a largura, a medição imediata pode estar
+          // desatualizada: confere de novo depois da transição e só
+          // remonta se a largura realmente mudou.
+          clearTimeout(settleTimer);
+          settleTimer = setTimeout(() => {
+            if ((searchResults.clientWidth || 0) !== lastRenderedStageW) relayoutNow();
+          }, 400);
+        }).observe(drawerEl, { attributes: true, attributeFilter: ['class'] });
+      })();
 
       function loadSearchHistory() {
         try {
@@ -7480,15 +7537,27 @@ function getMetaFor(animeId) {
               </div>`;
       }
 
-      function renderEntries(entries, query) {
+      // Guarda as seções da última renderização pra poder remontar só o
+      // LAYOUT (ao expandir/recolher o drawer) sem refazer a busca, sem
+      // avançar a rotação do Watching Now e sem trocar as imagens.
+      let lastRenderedSections = null;
+      let lastRenderedQuery = '';
+      let lastRenderedStageW = 0;
+
+      function renderEntries(entries, query, opts) {
+        const relayout = !!(opts && opts.relayout && lastRenderedSections);
         const cmd = getSlashCommand(query);
         const shouldRotateWatching = !!(cmd && SLASH_COMMANDS[cmd].rotateWatching);
         const forcedCategory = cmd ? (CATEGORY_FOR_COMMAND[cmd] || null) : null;
-        const sections = groupEntriesIntoSections(entries, shouldRotateWatching, forcedCategory, !!normalize(query) && !cmd);
+        const sections = relayout
+          ? lastRenderedSections
+          : groupEntriesIntoSections(entries, shouldRotateWatching, forcedCategory, !!normalize(query) && !cmd);
         // Só avança a rotação depois de já ter montado as seções desta
         // renderização, pra próxima vez que o comando for acionado começar
         // do próximo grupo da lista cíclica.
-        if (shouldRotateWatching) advanceWatchingRotationIndex();
+        if (shouldRotateWatching && !relayout) advanceWatchingRotationIndex();
+        lastRenderedSections = sections.some(sec => sec.items.length) ? sections : null;
+        lastRenderedQuery = query;
         currentMatches = sections.flatMap(section => section.items);
         activeIndex = -1;
 
@@ -7534,14 +7603,11 @@ function getMetaFor(animeId) {
         // Só no drawer expandido (grade de 6 colunas; card normal = 2
         // colunas, True Characters = 3). Cada seção é quebrada em
         // "pedaços" de uma fileira; o 1º pedaço leva o título. Cada
-        // pedaço cai na primeira linha que ainda tem espaço — assim
-        // um card sozinho (ex: Kingdom) divide a linha com uma seção
-        // de 2 cards mais abaixo, e o card que sobrou de uma seção
-        // (ex: 4º do Global Ranking) divide a linha com a próxima.
-        // Pedaços de continuação nunca sobem acima do pedaço anterior
-        // da própria seção.
+        // categoria fica na(s) sua(s) própria(s) linha(s): nenhuma
+        // seção divide linha com outra, mesmo que sobre espaço.
         const expandedLayout = !!searchResults.closest('.category-drawer.expanded');
         const stageW = searchResults.clientWidth || 0;
+        lastRenderedStageW = stageW;
         const basePerRow = stageW && stageW <= 480 ? 1 : (stageW && stageW <= 760 ? 2 : 3);
         const pieces = [];
         if (expandedLayout) {
@@ -7559,11 +7625,11 @@ function getMetaFor(animeId) {
             for (let k = 0, first = true; k < section.items.length; k += perRow, first = false) {
               const chunk = section.items.slice(k, k + perRow);
               const units = chunk.length * unit;
-              let r = -1;
-              for (let j = first ? 0 : prevRow + 1; j < rows.length; j++) {
-                if (rowKinds[j] === kind && rows[j] >= units) { r = j; break; }
-              }
-              if (r === -1) { rows.push(6); rowKinds.push(kind); r = rows.length - 1; }
+              // Cada categoria ocupa suas próprias linhas: nunca divide
+              // linha com outra categoria (nem com sobras de outra), então
+              // todo pedaço abre uma linha nova.
+              rows.push(6); rowKinds.push(kind);
+              const r = rows.length - 1;
               rows[r] -= units;
               prevRow = r;
               pieces.push({ section, items: chunk, row: r, span: units, head: first });
@@ -7587,7 +7653,7 @@ function getMetaFor(animeId) {
         const piecesHtml = pieces.map(pc => {
           const isCont = expandedLayout && !pc.head && !rowsWithHead.has(pc.row);
           const headerHtml = (pc.head || (expandedLayout && !isCont)) ? `
-            <div class="search-section-header${pc.head ? '' : ' is-ghost'}" style="--section-color: ${pc.section.color};"${pc.head ? '' : ' aria-hidden="true"'}>
+            <div class="search-section-header${pc.head ? '' : ' is-ghost'}${pc.head && pc.section.mode ? ' is-link' : ''}" style="--section-color: ${pc.section.color};"${pc.head ? (pc.section.mode ? ` data-mode="${pc.section.mode}"${pc.section.seasonKey ? ` data-season="${pc.section.seasonKey}"` : ''} role="link" tabindex="0"`: '') : ' aria-hidden="true"'}>
               <span class="search-section-text">${pc.section.text}</span>
               <div class="search-section-line"></div>
             </div>` : '';
@@ -7630,6 +7696,123 @@ function getMetaFor(animeId) {
             const idx = parseInt(el.getAttribute('data-idx'), 10);
             selectResult(idx);
           });
+        });
+      }
+
+      // Clicar no título de uma categoria nos resultados (ex: "Spring
+      // Season 2026", "Plan to Watch", "Global Ranking", "Peak Episodes")
+      // leva direto pra lista dessa categoria. Reaproveita o clique do
+      // item correspondente do drawer (hash, scroll, render e fechar o
+      // drawer ficam idênticos a escolher a categoria no menu).
+      let __seasonJumpCancel = null;
+      function scrollToWatchingSeason(seasonKey) {
+        if (!seasonKey) return;
+        if (__seasonJumpCancel) __seasonJumpCancel();
+        const findHeader = () => {
+          const list = document.getElementById('animeRankingList');
+          return list && Array.from(list.querySelectorAll('.season-header[data-season]'))
+            .find(h => h.getAttribute('data-season') === seasonKey);
+        };
+        const html = document.documentElement;
+        const prevBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
+        let stopped = false;
+        let timer = 0;
+        const stop = () => {
+          if (stopped) return;
+          stopped = true;
+          clearInterval(timer);
+          html.style.scrollBehavior = prevBehavior;
+          ['wheel', 'touchstart', 'keydown'].forEach(t => window.removeEventListener(t, stop, true));
+          __seasonJumpCancel = null;
+        };
+        __seasonJumpCancel = stop;
+        // Se o usuário rolar/tocar por conta própria, para de corrigir.
+        ['wheel', 'touchstart', 'keydown'].forEach(t => window.addEventListener(t, stop, { capture: true, passive: true }));
+        const OFFSET = 90;
+        let ticks = 0;
+        const jump = () => {
+          const header = findHeader();
+          if (ticks === 0) console.log('[season-jump] temporada:', seasonKey, '| cabeçalho encontrado:', !!header);
+          if (header) {
+            if (document.body.style.position === 'fixed') releaseBodyScrollForNavigation();
+            // scrollIntoView funciona com qualquer contêiner rolável; depois
+            // sobe OFFSET px pra deixar o título respirando no topo.
+            header.scrollIntoView({ behavior: 'auto', block: 'start', inline: 'nearest' });
+            window.scrollBy(0, -OFFSET);
+          }
+          // Corrige por ~3s: fechar o drawer restaura o scroll antigo e as
+          // capas carregando mudam a altura da lista.
+          if (++ticks >= 30) stop();
+        };
+        jump();
+        timer = setInterval(jump, 100);
+      }
+
+      function openCategoryFromSearch(mode, seasonKey) {
+        if (!mode) return;
+        if (mode === 'watching' && seasonKey) {
+          openCategoryFromSearch(mode);
+          scrollToWatchingSeason(seasonKey);
+          return;
+        }
+        const targetItem = (typeof drawerItems !== 'undefined' && Array.isArray(drawerItems))
+          ? drawerItems.find(item => item.getAttribute('data-mode') === mode)
+          : document.querySelector(`.drawer-item[data-mode="${mode}"]:not([disabled])`);
+        if (targetItem) { targetItem.click(); return; }
+        // Categoria sem item no drawer: troca direto.
+        window.__posterReturnAfterSearch = null;
+        releaseBodyScrollForNavigation();
+        if (currentCategory !== mode) {
+          currentCategory = mode;
+          render();
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        closeSearchDrawer();
+      }
+
+      // Hover dos títulos de categoria da busca: igual ao do título de
+      // temporada do Watching Now — só o texto escurece (fade suave) e o
+      // cursor vira mãozinha. A linha ao lado não muda. Injetado aqui
+      // porque o CSS da página não faz parte deste arquivo.
+      if (!document.getElementById('searchSectionHeaderHoverStyle')) {
+        const hoverStyle = document.createElement('style');
+        hoverStyle.id = 'searchSectionHeaderHoverStyle';
+        hoverStyle.textContent = `
+          .search-section-header.is-link .search-section-text {
+            cursor: pointer;
+            transition: opacity .2s ease;
+          }
+          .search-section-header.is-link .search-section-text:hover,
+          .search-section-header.is-link:focus-visible .search-section-text {
+            opacity: .75;
+          }
+          .search-section-header.is-link:focus-visible { outline: none; }
+        `;
+        document.head.appendChild(hoverStyle);
+      }
+
+      if (searchResults && !searchResults.__sectionHeaderLinks) {
+        searchResults.__sectionHeaderLinks = true;
+        const headerFromEvent = (e) => {
+          const header = e.target.closest && e.target.closest('.search-section-header.is-link');
+          return header && searchResults.contains(header) ? header : null;
+        };
+        searchResults.addEventListener('click', (e) => {
+          const header = headerFromEvent(e);
+          if (!header) return;
+          // Só o texto do título é clicável (a linha ao lado não).
+          if (!e.target.closest('.search-section-text')) return;
+          const selection = window.getSelection();
+          if (selection && selection.toString().length > 0 && header.contains(selection.anchorNode)) return;
+          openCategoryFromSearch(header.getAttribute('data-mode'), header.getAttribute('data-season'));
+        });
+        searchResults.addEventListener('keydown', (e) => {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          const header = headerFromEvent(e);
+          if (!header || e.target !== header) return;
+          e.preventDefault();
+          openCategoryFromSearch(header.getAttribute('data-mode'), header.getAttribute('data-season'));
         });
       }
 
@@ -7816,7 +7999,7 @@ function getMetaFor(animeId) {
       function firstMalNameOf(anime) {
         if (!anime || !Array.isArray(anime.mal)) return '';
         for (const m of anime.mal) {
-          if (!m || m.spacer) continue;
+          if (!m || isMalDividerEntry(m)) continue;
           if (typeof m.malName === 'string' && m.malName.trim()) return m.malName.trim();
         }
         return '';
