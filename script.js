@@ -352,18 +352,33 @@ if ('scrollRestoration' in history) {
           '<svg class="icon-show" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 3.6A2 2 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.05-.22 1.4-.6"/><path d="M21 15V5a2 2 0 0 0-2-2H9"/><path d="M10.4 10.4a2 2 0 1 1-2.8-2.8"/><path d="M13.5 13.5L6 21"/><path d="M18 12l3 3"/><path d="M2 2l20 20"/></svg>';
         lightbox.appendChild(btn);
 
+        // O botão (e o efeito de esconder o pôster) só existem quando o anime
+        // tem banner. Sem banner o pôster fica sempre visível e o botão some.
+        // A escolha do usuário (userHidden) continua salva e volta a valer
+        // no próximo anime que tiver banner.
+        let userHidden = false;
+        function syncPosterHidden() {
+          const hasBanner = lightbox.classList.contains('has-banner');
+          lightbox.classList.toggle('poster-hidden', userHidden && hasBanner);
+          btn.style.display = hasBanner ? '' : 'none';
+        }
+        new MutationObserver(syncPosterHidden).observe(lightbox, { attributes: true, attributeFilter: ['class'] });
+
         function setHidden(hidden, save) {
-          lightbox.classList.toggle('poster-hidden', hidden);
+          userHidden = !!hidden;
+          syncPosterHidden();
           btn.setAttribute('aria-pressed', hidden ? 'true' : 'false');
           const label = hidden ? 'Mostrar pôster' : 'Esconder pôster';
           btn.setAttribute('aria-label', label);
           btn.title = label;
-          if (save) { try { localStorage.setItem(HIDE_KEY, hidden ? '1' : '0'); } catch (_) {} }
+          // A escolha vale só enquanto a página está aberta (vale para todos
+          // os animes e só muda quando o usuário mexe no botão). Ao sair e
+          // entrar de novo no site ou atualizar, o pôster volta visível.
         }
 
-        let saved = false;
-        try { saved = localStorage.getItem(HIDE_KEY) === '1'; } catch (_) {}
-        setHidden(saved, false);
+        // Limpa a preferência antiga que ficava salva entre visitas.
+        try { localStorage.removeItem(HIDE_KEY); } catch (_) {}
+        setHidden(false, false);
 
         // ── Animação (técnica FLIP) ──
         // Mede as posições antes e depois da troca e anima cada bloco do
@@ -451,6 +466,22 @@ if ('scrollRestoration' in history) {
           e.stopPropagation();
           toggleAnimated();
         });
+
+        // Atalho "B": esconde/mostra o pôster (mesma ação do botão). Só age
+        // com o lightbox aberto e quando o botão está disponível (anime com
+        // banner, layout em que o botão aparece).
+        document.addEventListener('keydown', function(e) {
+          if (e.key !== 'b' && e.key !== 'B') return;
+          if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+          if (!lightbox.classList.contains('open')) return;
+          const t = e.target;
+          const tag = (t && t.tagName) || '';
+          if (t && (t.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')) return;
+          if (window.getComputedStyle(btn).display === 'none') return;
+          e.preventDefault();
+          e.stopPropagation();
+          toggleAnimated();
+        }, true);
       })();
 
       let lastFocused = null;
@@ -938,6 +969,20 @@ function getMetaFor(animeId) {
 
         lightboxMeta.style.gridTemplateColumns = `repeat(${fields.length}, 1fr)`;
 
+        // Mobile: se o estúdio é curto (ex: "8-Bit", "MAPPA"), não precisa do
+        // layout com Studio em cima e dois campos embaixo — os 3 ficam lado a
+        // lado, igual ao desktop. A classe só tem efeito no CSS mobile.
+        const COMPACT_STUDIO_MAX_CHARS = 14;
+        const compactStudioRaw = String(metaObj.studio || '').trim();
+        const compactStudioParts = compactStudioRaw.split(/[\/,]/).map(s => s.trim()).filter(Boolean);
+        const hasStudioList = normalizeStudioEntries(metaObj.studios).length > 0;
+        const hasRewatchList = fields.some(f => f.key === 'rewatch') && normalizeStudioEntries(metaObj.rewatchs).length > 0;
+        const useCompactMeta = fields.length <= 3
+          && !hasStudioList
+          && !hasRewatchList
+          && compactStudioParts.length <= 1
+          && compactStudioRaw.length <= COMPACT_STUDIO_MAX_CHARS;
+
         const fieldsHtml = fields.map(field => {
           if (field.key === 'score') {
             const cached = getCachedMalScore(malId);
@@ -1018,6 +1063,7 @@ function getMetaFor(animeId) {
 
         studioSeparatorResizeObserver?.disconnect();
         lightboxMeta.innerHTML = fieldsHtml;
+        lightboxMeta.classList.toggle('rank-meta--compact', useCompactMeta);
         lightboxMeta.classList.remove('is-meta-expanded');
         lightboxMeta.querySelectorAll('.rank-meta-studio-list').forEach(list => {
           studioSeparatorResizeObserver?.observe(list);
@@ -2745,8 +2791,10 @@ function getMetaFor(animeId) {
             lightboxInfo.innerHTML = infoLines.map((line, index) => {
               if (index === 0) return line;
               const isMovieLine = /(?:^|\s)(?:\d+\s+)?Filmes?\b/i.test(line);
-              const keepOnDesktopLine = isMovieLine && window.matchMedia('(min-width: 761px)').matches;
-              return keepOnDesktopLine
+              // Linha de filme fica na mesma linha (separada por " - ") tanto no
+              // desktop quanto no mobile.
+              const keepOnSameLine = isMovieLine;
+              return keepOnSameLine
                 ? ` - ${line}`
                 : `<span class="poster-lightbox-info-break"></span>${line}`;
             }).join('');
@@ -2875,6 +2923,32 @@ function getMetaFor(animeId) {
       // API interna usada por contextos que representam um anime fora da
       // lista principal, como True Characters.
       window.__openPosterLightboxForAnime = openLightbox;
+
+      // ── Lightbox aberto sobrevive a reload (F5 / live reload) ──
+      // Guarda qual anime estava aberto + posição de scroll da página e do
+      // próprio lightbox. Fica só no sessionStorage: abrir o site de novo
+      // (nova aba/visita) continua começando limpo.
+      const LIGHTBOX_STATE_KEY = 'myanimerank_lightboxState';
+      function saveLightboxStateNow() {
+        try {
+          const el = currentItem;
+          if (!lightbox.classList.contains('open') || !el || !el.isConnected || !el.id || currentCategory === 'trueCharacters') {
+            sessionStorage.removeItem(LIGHTBOX_STATE_KEY);
+            return;
+          }
+          sessionStorage.setItem(LIGHTBOX_STATE_KEY, JSON.stringify({
+            id: el.id,
+            category: currentCategory,
+            scrollY: __scrollLockY,
+            figScroll: lightboxFigure ? lightboxFigure.scrollTop : 0
+          }));
+        } catch (e) {}
+      }
+      window.addEventListener('beforeunload', saveLightboxStateNow, { passive: true });
+      window.addEventListener('pagehide', saveLightboxStateNow, { passive: true });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') saveLightboxStateNow();
+      });
 
       // Reaplica o título padrão da aba. Usado depois do history.go() interno
       // da camada "voltar": o navegador restaura o título gravado na entrada
@@ -3433,11 +3507,25 @@ function getMetaFor(animeId) {
       let lbPullActive = false;
       let lbPullOffset = 0;
       let lbPullCloseTimer = 0;
+      let lbPullLastY = 0;
+      let lbPullLastTime = 0;
+      let lbPullVelocity = 0;
 
       const LB_SWIPE_MIN_DISTANCE = 40;
       const LB_SWIPE_MAX_OFF_AXIS = 60;
       const LB_SWIPE_MAX_TIME = 600;
-      const LB_PULL_TO_CLOSE_DISTANCE = 56;
+      const LB_PULL_TO_CLOSE_DISTANCE = 64;
+      const LB_PULL_MAX = 150;          // deslocamento máximo (rubber-band)
+      const LB_PULL_RESISTANCE = 190;   // quanto maior, mais "solto" no início
+      const LB_PULL_FLING_VELOCITY = 0.6; // px/ms — solta rápido fecha mesmo sem puxar muito
+
+      function applyMobilePullVars(offset) {
+        const progress = Math.min(offset / LB_PULL_MAX, 1);
+        lightbox.style.setProperty('--lb-pull-y', `${offset}px`);
+        lightbox.style.setProperty('--lb-pull-opacity', String(Math.max(0.55, 1 - progress * 0.45)));
+        lightbox.style.setProperty('--lb-pull-scale', String(1 - progress * 0.09));
+        lightbox.style.setProperty('--lb-pull-radius', `${progress * 28}px`);
+      }
 
       function resetMobilePull() {
         if (!lightbox) return;
@@ -3445,7 +3533,9 @@ function getMetaFor(animeId) {
         lightbox.classList.add('mobile-pull-rebounding');
         lightbox.style.removeProperty('--lb-pull-y');
         lightbox.style.removeProperty('--lb-pull-opacity');
-        window.setTimeout(() => lightbox.classList.remove('mobile-pull-rebounding'), 240);
+        lightbox.style.removeProperty('--lb-pull-scale');
+        lightbox.style.removeProperty('--lb-pull-radius');
+        window.setTimeout(() => lightbox.classList.remove('mobile-pull-rebounding'), 280);
         lbPullActive = false;
         lbPullOffset = 0;
       }
@@ -3461,7 +3551,7 @@ function getMetaFor(animeId) {
         lbPullCloseTimer = window.setTimeout(() => {
           lbPullCloseTimer = 0;
           closeLightbox();
-        }, 290);
+        }, 260);
       }
 
       lightbox.addEventListener('touchstart', function(e) {
@@ -3486,6 +3576,9 @@ function getMetaFor(animeId) {
         lbTouchStartX = e.touches[0].clientX;
         lbTouchStartY = e.touches[0].clientY;
         lbTouchStartTime = Date.now();
+        lbPullLastY = e.touches[0].clientY;
+        lbPullLastTime = lbTouchStartTime;
+        lbPullVelocity = 0;
         lbSwiping = true;
         lbPullToClose = false;
         lbPullActive = false;
@@ -3508,12 +3601,19 @@ function getMetaFor(animeId) {
         // pull-to-refresh nativo antes de ele alcançar a página.
         if (figureIsAtTop && dy > 0 && dy > Math.abs(dx)) {
           e.preventDefault();
+          const now = Date.now();
+          const dt = now - lbPullLastTime;
+          if (dt > 0) lbPullVelocity = (touch.clientY - lbPullLastY) / dt;
+          lbPullLastY = touch.clientY;
+          lbPullLastTime = now;
+
           lbPullActive = true;
-          lbPullOffset = Math.min(dy * 0.72, 112);
+          // Resistência tipo "rubber band": acompanha o dedo no começo e
+          // vai ficando mais duro, igual ao gesto de fechar do Instagram.
+          lbPullOffset = LB_PULL_MAX * (1 - Math.exp(-dy / LB_PULL_RESISTANCE));
           lightbox.classList.remove('mobile-pull-rebounding');
           lightbox.classList.add('mobile-pull-dragging');
-          lightbox.style.setProperty('--lb-pull-y', `${lbPullOffset}px`);
-          lightbox.style.setProperty('--lb-pull-opacity', String(Math.max(0.72, 1 - lbPullOffset / 440)));
+          applyMobilePullVars(lbPullOffset);
         }
       }, { capture: true, passive: false });
 
@@ -3521,7 +3621,8 @@ function getMetaFor(animeId) {
         if (!lightbox.classList.contains('open')) return;
         e.stopPropagation();
         if (lbPullActive) {
-          if (lbPullOffset >= LB_PULL_TO_CLOSE_DISTANCE) closeFromMobilePull();
+          const isFling = lbPullVelocity > LB_PULL_FLING_VELOCITY && lbPullOffset > 24;
+          if (lbPullOffset >= LB_PULL_TO_CLOSE_DISTANCE || isFling) closeFromMobilePull();
           else resetMobilePull();
           return;
         }
@@ -5105,6 +5206,7 @@ function getMetaFor(animeId) {
       if (!drawer) return;
       if (!item) {
         ['1','2','3'].forEach(n => drawer.style.removeProperty('--drawer-glow-' + n));
+        drawer.style.removeProperty('--glow-accent');
         hideHoverPreview();
         return;
       }
@@ -5115,6 +5217,9 @@ function getMetaFor(animeId) {
       drawer.style.setProperty('--drawer-glow-1', `rgba(${r}, ${g}, ${b}, 0.5)`);
       drawer.style.setProperty('--drawer-glow-2', `rgba(${r}, ${g}, ${b}, 0.3)`);
       drawer.style.setProperty('--drawer-glow-3', `rgba(${r}, ${g}, ${b}, 0.22)`);
+      // Bolinha e nome do cabeçalho acompanham a cor da lista em hover
+      // (mesma mistura usada em updateGlowColor).
+      drawer.style.setProperty('--glow-accent', `rgb(${Math.round(r * 0.5 + 78)}, ${Math.round(g * 0.5 + 81.5)}, ${Math.round(b * 0.5 + 87.5)})`);
     }
 
     function closeDrawer(skipScrollRestore) {
@@ -5177,11 +5282,29 @@ function getMetaFor(animeId) {
 
     // O drawer NÃO reabre mais ao recarregar/reabrir o site: ele sempre
     // começa fechado. Só limpamos qualquer estado antigo salvo.
+    // Exceção: num RELOAD (F5 / live reload ao editar o site) o drawer
+    // reabre na mesma aba e com a mesma busca, pra você não perder o lugar.
     function restoreDrawerState() {
+      let st = null;
       try {
+        const raw = sessionStorage.getItem(DRAWER_STATE_KEY);
         localStorage.removeItem(DRAWER_STATE_KEY);
         sessionStorage.removeItem(DRAWER_STATE_KEY);
+        if (raw && isReloadNavigation()) st = JSON.parse(raw);
       } catch (e) {}
+      if (!st || !st.open) return;
+      // Espera a restauração de scroll da lista terminar antes de abrir
+      // (no desktop o drawer trava o body na posição atual).
+      setTimeout(() => {
+        try {
+          openDrawer(st.tab || MODE_TAB[currentCategory] || 'ranks', { focus: false });
+          const input = document.getElementById('searchDrawerInput');
+          if (input && st.query) {
+            input.value = st.query;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        } catch (e) {}
+      }, 150);
     }
 
     // Mapa de qual aba do drawer ("ranks" ou "lists") contém cada
@@ -5308,17 +5431,31 @@ function getMetaFor(animeId) {
         const drawerContent = document.querySelector('#categoryDrawer .drawer-content');
         if (!drawer || !drawerContent) return;
 
-        const PULL_CLOSE_DISTANCE = 56;
+        const PULL_CLOSE_DISTANCE = 64;
+        const PULL_MAX = 150;          // deslocamento máximo (rubber-band)
+        const PULL_RESISTANCE = 190;   // quanto maior, mais "solto" no início
+        const PULL_FLING_VELOCITY = 0.6; // px/ms — solta rápido fecha mesmo sem puxar muito
         let startX = 0;
         let startY = 0;
         let pulling = false;
         let pullOffset = 0;
+        let pullLastY = 0;
+        let pullLastTime = 0;
+        let pullVelocity = 0;
         let closingTimer = 0;
+
+        const applyPullVars = (offset) => {
+          const progress = Math.min(offset / PULL_MAX, 1);
+          drawer.style.setProperty('--drawer-pull-y', `${offset}px`);
+          drawer.style.setProperty('--drawer-pull-opacity', String(Math.max(0.55, 1 - progress * 0.45)));
+          drawer.style.setProperty('--drawer-pull-scale', String(1 - progress * 0.06));
+        };
 
         const clearPullStyles = () => {
           drawer.classList.remove('mobile-pull-dragging', 'mobile-pull-rebounding', 'mobile-pull-closing', 'mobile-pull-closing-active');
           drawer.style.removeProperty('--drawer-pull-y');
           drawer.style.removeProperty('--drawer-pull-opacity');
+          drawer.style.removeProperty('--drawer-pull-scale');
         };
 
         const rebound = () => {
@@ -5326,13 +5463,17 @@ function getMetaFor(animeId) {
           drawer.classList.add('mobile-pull-rebounding');
           drawer.style.removeProperty('--drawer-pull-y');
           drawer.style.removeProperty('--drawer-pull-opacity');
-          window.setTimeout(() => drawer.classList.remove('mobile-pull-rebounding'), 240);
+          drawer.style.removeProperty('--drawer-pull-scale');
+          window.setTimeout(() => drawer.classList.remove('mobile-pull-rebounding'), 280);
         };
 
         drawer.addEventListener('touchstart', (e) => {
           if (!drawer.classList.contains('show') || !window.matchMedia('(max-width: 760px)').matches || e.touches.length !== 1) return;
           startX = e.touches[0].clientX;
           startY = e.touches[0].clientY;
+          pullLastY = startY;
+          pullLastTime = Date.now();
+          pullVelocity = 0;
           pulling = false;
           pullOffset = 0;
         }, { capture: true, passive: true });
@@ -5345,19 +5486,27 @@ function getMetaFor(animeId) {
 
           e.preventDefault();
           e.stopPropagation();
+          const now = Date.now();
+          const dt = now - pullLastTime;
+          if (dt > 0) pullVelocity = (e.touches[0].clientY - pullLastY) / dt;
+          pullLastY = e.touches[0].clientY;
+          pullLastTime = now;
+
           pulling = true;
-          pullOffset = Math.min(dy * 0.72, 112);
+          // Resistência tipo "rubber band": acompanha o dedo no começo e
+          // vai ficando mais duro, igual ao gesto de fechar do Instagram.
+          pullOffset = PULL_MAX * (1 - Math.exp(-dy / PULL_RESISTANCE));
           drawer.classList.remove('mobile-pull-rebounding');
           drawer.classList.add('mobile-pull-dragging');
-          drawer.style.setProperty('--drawer-pull-y', `${pullOffset}px`);
-          drawer.style.setProperty('--drawer-pull-opacity', String(Math.max(0.72, 1 - pullOffset / 440)));
+          applyPullVars(pullOffset);
         }, { capture: true, passive: false });
 
         drawer.addEventListener('touchend', (e) => {
           if (!pulling) return;
           e.stopPropagation();
           pulling = false;
-          if (pullOffset < PULL_CLOSE_DISTANCE) {
+          const isFling = pullVelocity > PULL_FLING_VELOCITY && pullOffset > 24;
+          if (pullOffset < PULL_CLOSE_DISTANCE && !isFling) {
             rebound();
             return;
           }
@@ -5369,7 +5518,7 @@ function getMetaFor(animeId) {
             closingTimer = 0;
             clearPullStyles();
             closeDrawer();
-          }, 290);
+          }, 260);
         }, { capture: true, passive: true });
       })();
 
@@ -6943,12 +7092,14 @@ function getMetaFor(animeId) {
           : [];
         const favEpSearchData = favoriteEpisodesData.map((ep, idx) => ({
           id: ep.id,
-          title: ep.episodeLabel,
-          subtitle: ep.anime,
+          // No info.js, "anime" guarda o episódio e "episodeLabel" guarda o nome do anime.
+          title: ep.anime,
+          subtitle: ep.episodeLabel,
           searchText: `${ep.anime || ''} ${ep.episodeLabel || ''}`,
           img: ep.img,
           images: Array.isArray(ep.images) && ep.images.length ? ep.images : (ep.img ? [ep.img] : []),
           peakRank: favEpRanks[idx] != null ? favEpRanks[idx] : (idx + 1),
+          animeId: ep.animeId || ep.id,
           favEpIndex: idx
         }));
         addToIndex(favEpSearchData, 'favep');
@@ -7159,8 +7310,47 @@ function getMetaFor(animeId) {
         return (typeof a === 'string' && a.trim()) ? [a] : [];
       }
 
+      // Peak Episodes: o card é de um episódio, mas quem tem os nomes
+      // alternativos (japonês/romaji etc.) é o ANIME dele. Acha a entrada do
+      // anime no índice (pelo id; se não achar, pelo nome) e reaproveita os
+      // nomes dela. Sem anime correspondente, usa o cache pelo nome do anime
+      // (preenchido pelo segundo plano — ver runAltTitlesCrawl).
+      let favEpAltSourceById = null;
+      let favEpAltSourceByTitle = null;
+      function favEpAltSourceFor(epAnime) {
+        if (!favEpAltSourceById) {
+          favEpAltSourceById = new Map();
+          favEpAltSourceByTitle = new Map();
+          const pref = { null: 0, watching: 1, plan: 2 };
+          searchIndex
+            .filter(e => e.tag !== 'favep' && e.tag !== 'trueCharacters')
+            .sort((a, b) => (pref[a.tag] ?? 3) - (pref[b.tag] ?? 3))
+            .forEach(e => {
+              if (!favEpAltSourceById.has(e.anime.id)) favEpAltSourceById.set(e.anime.id, e);
+              const k = normalize(e.anime.title);
+              if (k && !favEpAltSourceByTitle.has(k)) favEpAltSourceByTitle.set(k, e);
+            });
+        }
+        return favEpAltSourceById.get(epAnime.animeId || epAnime.id)
+          || favEpAltSourceById.get(epAnime.id)
+          || favEpAltSourceByTitle.get(normalize(epAnime.subtitle))
+          || null;
+      }
+
       function altNamesFor(entry) {
-        if (!entry || entry.tag === 'favep') return [];
+        if (!entry) return [];
+        if (entry.tag === 'favep') {
+          const src = favEpAltSourceFor(entry.anime);
+          if (src) {
+            // Inclui também o nome do MyAnimeList (malName) do anime de origem,
+            // senão buscar pelo nome em japonês não achava o episódio.
+            const jp = firstMalNameOf(src.anime);
+            const names = altNamesFor(src);
+            return jp ? [jp].concat(names) : names;
+          }
+          const cachedByName = altTitlesCache[normalize(entry.anime.subtitle)];
+          return (cachedByName && Array.isArray(cachedByName.t)) ? cachedByName.t : [];
+        }
         const manual = manualAliasesOf(entry.anime);
         if (entry.tag === 'trueCharacters') return manual; // personagens: só manual
         const cached = altTitlesCache[altTitleKey(entry.anime)];
@@ -7235,6 +7425,20 @@ function getMetaFor(animeId) {
               const ttl = cached && cached.miss ? ALT_TITLES_MISS_TTL_MS : ALT_TITLES_TTL_MS;
               if (cached && (Date.now() - cached.ts) < ttl) return;
               todo.push(e.anime);
+            });
+
+          // Peak Episodes cujo anime não está em nenhuma outra lista: busca
+          // os nomes pelo título do anime (ep.anime), guardado no mesmo cache.
+          searchIndex
+            .filter(e => e.tag === 'favep' && !favEpAltSourceFor(e.anime))
+            .forEach(e => {
+              const key = normalize(e.anime.subtitle);
+              if (!key || seen.has(key)) return;
+              seen.add(key);
+              const cached = altTitlesCache[key];
+              const ttl = cached && cached.miss ? ALT_TITLES_MISS_TTL_MS : ALT_TITLES_TTL_MS;
+              if (cached && (Date.now() - cached.ts) < ttl) return;
+              todo.push({ title: e.anime.subtitle });
             });
 
           for (const anime of todo) {
@@ -7642,9 +7846,12 @@ function getMetaFor(animeId) {
         closeDrawer(skipScrollRestore);
       }
 
-      function buildResultItemHtml(entry, i, acc, accGlow, query) {
+      // reserveNs: quando false, cards SEM faixa de "nova temporada" não reservam
+      // os 22px dela (usado no drawer expandido, quando nenhum card da fileira
+      // tem a faixa). Padrão (true) mantém o comportamento antigo.
+      function buildResultItemHtml(entry, i, acc, accGlow, query, reserveNs) {
             return `
-              <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? ' search-result-item--ann' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id]) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
+              <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? ' search-result-item--ann' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id] && reserveNs !== false) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
                 <div class="search-result-card-inner">
                   <div class="search-result-ambient" aria-hidden="true"></div>
                   <div class="search-result-ambient-shade" aria-hidden="true"></div>
@@ -7655,7 +7862,7 @@ function getMetaFor(animeId) {
                   <div class="search-result-info">
                     ${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? '<div class="search-result-title-row">' : ''}${buildSearchRankHtml(entry)}
                     <span class="search-result-title">${highlightTitle(entry.anime.title, query)}</span>${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? '</div>' : ''}
-                    ${entry.__matchedAlias ? `<span class="search-result-alias">aka: ${escapeHtml(entry.__matchedAlias)}</span>` : ''}
+                    ${(entry.__matchedAlias && entry.tag !== 'favep') ? `<span class="search-result-alias">aka: ${escapeHtml(entry.__matchedAlias)}</span>` : ''}
                     ${(() => {
                       if (entry.tag === 'favep') {
                         return entry.anime.subtitle ? `<span class="search-result-meta">${entry.anime.subtitle}</span>` : '';
@@ -7811,7 +8018,12 @@ function getMetaFor(animeId) {
               <div class="search-section-line"></div>
             </div>` : '';
           const { acc, accGlow } = accFor(pc.section);
-          const itemsHtml = pc.items.map(entry => buildResultItemHtml(entry, idxCounter++, acc, accGlow, query)).join('');
+          // Cada pedaço (piece) é uma fileira. Se ALGUM card da fileira tem a
+          // faixa de "nova temporada", todos reservam o espaço dela (ficam
+          // alinhados); se nenhum tem, ninguém reserva o espaço extra.
+          const rowHasNs = pc.items.some(e => e.tag !== 'favep' && !!nextSeasonMap[e.anime.id]);
+          const reserveNs = expandedLayout ? rowHasNs : true;
+          const itemsHtml = pc.items.map(entry => buildResultItemHtml(entry, idxCounter++, acc, accGlow, query, reserveNs)).join('');
           const style = expandedLayout
             ? ` style="grid-row: ${pc.row + 1}; grid-column: span ${pc.span}; --m: ${pc.items.length};"`
             : '';
@@ -8099,11 +8311,22 @@ function getMetaFor(animeId) {
         const picked = pairs.slice(0, limit);
         const html = [];
         let n = 0;
-        picked.forEach(({ section, entry }) => {
+        // Mesma mecânica da busca: se ALGUM card da fileira tem a faixa de
+        // "nova temporada", todos da fileira reservam o espaço dela; se
+        // nenhum tem, ninguém reserva. Fileira = grupo de `perRow` cards
+        // (3 por padrão; 2 em True Characters; menos em palco estreito).
+        const pvW = target.clientWidth || 0;
+        const pvBase = pvW && pvW <= 480 ? 1 : (pvW && pvW <= 760 ? 2 : 3);
+        const pvPerRow = mode === 'trueCharacters' ? Math.min(2, pvBase) : pvBase;
+        const pvRowHasNs = [];
+        for (let k = 0; k < picked.length; k += pvPerRow) {
+          pvRowHasNs.push(picked.slice(k, k + pvPerRow).some(p => p.entry.tag !== 'favep' && !!nextSeasonMap[p.entry.anime.id]));
+        }
+        picked.forEach(({ section, entry }, pi) => {
           const acc = section.color || '#e2e8f0';
           let accGlow = 'transparent';
           try { const { r, g, b } = hexToRgb(acc); accGlow = `rgba(${r}, ${g}, ${b}, 0.35)`; } catch (e) {}
-          html.push(buildResultItemHtml(entry, -1, acc, accGlow, ''));
+          html.push(buildResultItemHtml(entry, -1, acc, accGlow, '', pvRowHasNs[Math.floor(pi / pvPerRow)]));
           n++;
         });
         target.innerHTML = html.join('');
@@ -9157,7 +9380,12 @@ function getMetaFor(animeId) {
 
     function saveScrollPositionNow() {
       try {
-        const y = window.scrollY || window.pageYOffset || 0;
+        // Com lightbox/drawer aberto o body fica position:fixed e o
+        // window.scrollY vira 0. Salvar esse 0 era o que jogava a página
+        // pro topo depois de um reload. Nesse caso salva a posição real
+        // guardada pela trava de scroll.
+        const bodyLocked = document.body.style.position === 'fixed';
+        const y = bodyLocked ? __scrollLockY : (window.scrollY || window.pageYOffset || 0);
         const key = 'myanimerank_scrollY_' + currentCategory;
         sessionStorage.setItem(key, String(y));
         localStorage.setItem(key, String(y));
@@ -9231,6 +9459,88 @@ function getMetaFor(animeId) {
       } catch (e) { if (__cancelScrollRestore) __cancelScrollRestore(); }
     }
 
+
+    // ── Restauração da tela depois de um reload ──
+    // Reload (F5 ou live reload ao trocar uma imagem) mantém: scroll,
+    // lightbox aberto (anime + scroll interno), drawer (aba + busca) e o
+    // modo calendário. Abrir o site "do zero" continua começando limpo.
+    const LIGHTBOX_STATE_KEY = 'myanimerank_lightboxState';
+    const CALENDAR_STATE_KEY = 'myanimerank_calendarMode';
+
+    function isReloadNavigation() {
+      try {
+        const nav = performance.getEntriesByType('navigation')[0];
+        return !!nav && (nav.type === 'reload' || nav.type === 'back_forward');
+      } catch (e) { return false; }
+    }
+
+    function saveCalendarStateNow() {
+      try {
+        const on = !!(window.__isReleaseCalendarMode && window.__isReleaseCalendarMode());
+        sessionStorage.setItem(CALENDAR_STATE_KEY, on ? '1' : '0');
+      } catch (e) {}
+    }
+    window.addEventListener('beforeunload', saveCalendarStateNow, { passive: true });
+    window.addEventListener('pagehide', saveCalendarStateNow, { passive: true });
+
+    function restoreCalendarState() {
+      try {
+        const on = sessionStorage.getItem(CALENDAR_STATE_KEY) === '1';
+        sessionStorage.removeItem(CALENDAR_STATE_KEY);
+        if (on && isReloadNavigation() && window.__setReleaseCalendarMode) {
+          window.__setReleaseCalendarMode(true, { keepScroll: true });
+        }
+      } catch (e) {}
+    }
+
+    function restoreLightboxState() {
+      let st = null;
+      try {
+        const raw = sessionStorage.getItem(LIGHTBOX_STATE_KEY);
+        sessionStorage.removeItem(LIGHTBOX_STATE_KEY);
+        if (!raw || !isReloadNavigation()) return;
+        st = JSON.parse(raw);
+      } catch (e) { return; }
+      if (!st || !st.id) return;
+
+      if (st.category && st.category !== currentCategory) {
+        currentCategory = st.category;
+        render();
+      }
+
+      let triedExpand = false;
+      const findCard = () => {
+        const list = document.getElementById('animeRankingList');
+        if (!list) return null;
+        return Array.from(list.querySelectorAll('.anime-item')).find(it => it.id === st.id) || null;
+      };
+      const tryOpen = (attemptsLeft) => {
+        const card = findCard();
+        if (!card) {
+          // Card ainda escondido (lista recolhida): expande uma vez.
+          if (!triedExpand && typeof window.triggerExpand === 'function') {
+            triedExpand = true;
+            window.triggerExpand().then(() => tryOpen(attemptsLeft));
+            return;
+          }
+          if (attemptsLeft > 0) setTimeout(() => tryOpen(attemptsLeft - 1), 80);
+          return;
+        }
+        if (typeof window.__openPosterLightboxForAnime !== 'function') return;
+        if (__cancelScrollRestore) __cancelScrollRestore();
+        // Volta pra posição de antes e só então abre (o lightbox trava o
+        // body na posição atual; é pra ela que ele volta ao fechar).
+        window.scrollTo({ top: st.scrollY || 0, behavior: 'instant' });
+        requestAnimationFrame(() => {
+          window.__openPosterLightboxForAnime(card);
+          requestAnimationFrame(() => {
+            const fig = document.querySelector('#posterLightbox .poster-lightbox-figure');
+            if (fig && st.figScroll) fig.scrollTop = st.figScroll;
+          });
+        });
+      };
+      setTimeout(() => tryOpen(8), 150);
+    }
 
     // ── Calendário semanal de lançamentos ──
     function initReleaseCalendar() {
@@ -9419,8 +9729,10 @@ function getCalendarItems() {
     render();
     initReleaseCalendar();
     updatePageTexts();
+    restoreCalendarState();
     restoreScrollPosition();
     restoreDrawerState();
+    restoreLightboxState();
 
     // O conteúdo principal aparece primeiro. Carrosséis decorativos e a
     // sincronização do progresso começam depois, sem bloquear o primeiro

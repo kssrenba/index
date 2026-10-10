@@ -212,7 +212,7 @@ const rawAnimeData = [
       {
         label: "3ª temporada I",
         episodes: 14,
-        note: 8,
+        note: 9,
         malName: "Mushoku Tensei III: Isekai Ittara Honki Dasu",
       },
 
@@ -1318,11 +1318,14 @@ const rawAnimeData = [
     id: "trapped-in-a-dating-sim",
     img: "myranks-images/myranks/trapped-in-a-dating-sim.webp",
     title: "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs",
-    info: "1 temporada: 12 episódios",
+    info: "(~) 1ª temporada: 12 episódios",
     studio: "Project No.9",
     airedSeason: "2021-?",
     rewatch: "No",
-    mal: [{ label: "1ª temporada", episodes: 12, note: 4, malName: "Otome Game Sekai wa Mob ni Kibishii Sekai desu" }],
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 4, malName: "Otome Game Sekai wa Mob ni Kibishii Sekai desu" },
+      { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Otome Game Sekai wa Mob ni Kibishii Sekai desu 2" },
+    ],
   },
   {
     id: "4-cut",
@@ -1712,7 +1715,7 @@ const favoriteEpisodesData = [
   {
     id: "re-zero-2",
     animeId: "re-zero",
-    anime: "T2.E11 The Taste of Death",
+    anime: "T2.E11 — The Taste of Death",
     episodeLabel: "Re:ZERO - Starting Life in Another World",
     img: "other-images/peakepisodes/re-zero2-1.webp",
     images: [
@@ -3238,6 +3241,12 @@ const trueCharactersData = [
     info: "One Piece",
   },
   {
+    id: "priscilla",
+    img: "other-images/truecharacters/priscilla.webp",
+    title: "Priscilla Barielle",
+    info: "Re:ZERO - Starting Life in Another World",
+  },
+  {
     id: "lucy",
     img: "other-images/truecharacters/lucy.webp",
     title: "Lucyna Kushinada",
@@ -3248,12 +3257,6 @@ const trueCharactersData = [
     img: "other-images/truecharacters/zoro.webp",
     title: "Roronoa Zoro",
     info: "One Piece",
-  },
-  {
-    id: "elfaria",
-    img: "other-images/truecharacters/elfaria.webp",
-    title: "Elfaria Albis Serfort",
-    info: "Wistoria: Wand and Sword",
   },
   {
     id: "cc",
@@ -3274,22 +3277,10 @@ const trueCharactersData = [
     info: "You and I are Polar Opposites",
   },
   {
-    id: "law",
-    img: "other-images/truecharacters/law.webp",
-    title: "Trafalgar D. Water Law",
-    info: "One Piece",
-  },
-  {
     id: "gojo",
     img: "other-images/truecharacters/gojo.webp",
     title: "Satoru Gojo",
     info: "Jujutsu Kaisen",
-  },
-  {
-    id: "orsted",
-    img: "other-images/truecharacters/orsted.webp",
-    title: "Orsted",
-    info: "Mushoku Tensei: Jobless Reincarnation",
   },
   {
     id: "merlin",
@@ -3298,10 +3289,28 @@ const trueCharactersData = [
     info: "The Seven Deadly Sins: Nanatsu no Taizai",
   },
   {
-    id: "capella",
-    img: "other-images/truecharacters/capella.webp",
-    title: "Capella Emerada Lugunicai",
-    info: "Re:ZERO - Starting Life in Another World",
+    id: "law",
+    img: "other-images/truecharacters/law.webp",
+    title: "Trafalgar D. Water Law",
+    info: "One Piece",
+  },
+  {
+    id: "tatsumaki",
+    img: "other-images/truecharacters/tatsumaki.webp",
+    title: "Tatsumaki",
+    info: "One-Punch Man",
+  },
+  {
+    id: "elfaria",
+    img: "other-images/truecharacters/elfaria.webp",
+    title: "Elfaria Albis Serfort",
+    info: "Wistoria: Wand and Sword",
+  },
+  {
+    id: "mikasa",
+    img: "other-images/truecharacters/mikasa.webp",
+    title: "Mikasa Ackerman",
+    info: "Attack on Titan",
   },
   {
     id: "killua",
@@ -3310,15 +3319,15 @@ const trueCharactersData = [
     info: "Hunter x Hunter",
   },
   {
-    id: "robin",
-    img: "other-images/truecharacters/robin.webp",
-    title: "Nico Robin",
-    info: "One Piece",
-  },
-  {
     id: "hancock",
     img: "other-images/truecharacters/hancock.webp",
     title: "Boa Hancock",
+    info: "One Piece",
+  },
+  {
+    id: "robin",
+    img: "other-images/truecharacters/robin.webp",
+    title: "Nico Robin",
     info: "One Piece",
   },
   {
@@ -3328,16 +3337,16 @@ const trueCharactersData = [
     info: "Alya Sometimes Hides Her Feelings in Russian",
   },
   {
-    id: "bakugo",
-    img: "other-images/truecharacters/bakugo.webp",
-    title: "Katsuki Bakugou",
-    info: "My Hero Academia",
+    id: "escanor",
+    img: "other-images/truecharacters/escanor.webp",
+    title: "Escanor",
+    info: "The Seven Deadly Sins: Nanatsu no Taizai",
   },
   {
-    id: "gabimaru",
-    img: "other-images/truecharacters/gabimaru.webp",
-    title: "Gabimaru",
-    info: "Hell's Paradise: Jigokuraku",
+    id: "will",
+    img: "other-images/truecharacters/will.webp",
+    title: "Will Serfort",
+    info: "Wistoria: Wand and Sword",
   },
   {
     id: "toji",
@@ -3346,10 +3355,22 @@ const trueCharactersData = [
     info: "Jujutsu Kaisen",
   },
   {
+    id: "gabimaru",
+    img: "other-images/truecharacters/gabimaru.webp",
+    title: "Gabimaru",
+    info: "Hell's Paradise: Jigokuraku",
+  },
+  {
     id: "hinata",
     img: "other-images/truecharacters/hinata.webp",
     title: "Shoyo Hinata",
     info: "Haikyuu!!",
+  },
+  {
+    id: "chrome",
+    img: "other-images/truecharacters/chrome.webp",
+    title: "Chrome",
+    info: "Dr. Stone",
   },
   {
     id: "qiang-lei",
@@ -3358,28 +3379,28 @@ const trueCharactersData = [
     info: "Kingdom",
   },
   {
+    id: "orsted",
+    img: "other-images/truecharacters/orsted.webp",
+    title: "Orsted",
+    info: "Mushoku Tensei: Jobless Reincarnation",
+  },
+  {
     id: "cid",
     img: "other-images/truecharacters/shadow.webp",
     title: "Cid Kagenou",
     info: "The Eminence in Shadow",
   },
   {
-    id: "ryuusui",
-    img: "other-images/truecharacters/ryuusui.webp",
-    title: "Ryuusui Nanami",
-    info: "Dr. Stone",
+    id: "bakugo",
+    img: "other-images/truecharacters/bakugo.webp",
+    title: "Katsuki Bakugou",
+    info: "My Hero Academia",
   },
   {
-    id: "kurapika",
-    img: "other-images/truecharacters/kurapika.webp",
-    title: "Kurapika",
-    info: "Hunter x Hunter",
-  },
-  {
-    id: "xylo",
-    img: "other-images/truecharacters/xylo.webp",
-    title: "Xylo Forbartz",
-    info: "Sentenced to be a Hero",
+    id: "capella",
+    img: "other-images/truecharacters/capella.webp",
+    title: "Capella Emerada Lugunicai",
+    info: "Re:ZERO - Starting Life in Another World",
   },
   {
     id: "alya",
@@ -3394,16 +3415,10 @@ const trueCharactersData = [
     info: "Frieren: Beyond Journey's End",
   },
   {
-    id: "maki",
-    img: "other-images/truecharacters/maki.webp",
-    title: "Maki Zenin",
-    info: "Jujutsu Kaisen",
-  },
-  {
-    id: "hana",
-    img: "other-images/truecharacters/hana.webp",
-    title: "Hana Midorikawa",
-    info: "Prison School",
+    id: "julius",
+    img: "other-images/truecharacters/julius.webp",
+    title: "Julius Reinberg",
+    info: "Wistoria: Wand and Sword",
   },
   {
     id: "kusuri",
@@ -3412,16 +3427,40 @@ const trueCharactersData = [
     info: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
   },
   {
-    id: "wang-jian",
-    img: "other-images/truecharacters/wang-jian.webp",
-    title: "Wang Jian (Ou Sen)",
-    info: "Kingdom",
+    id: "rebecca",
+    img: "other-images/truecharacters/rebecca.webp",
+    title: "Rebecca",
+    info: "Cyberpunk: Edgerunners",
   },
   {
-    id: "bokuto",
-    img: "other-images/truecharacters/bokuto.webp",
-    title: "Kotaro Bokuto",
-    info: "Haikyuu!!",
+    id: "xylo",
+    img: "other-images/truecharacters/xylo.webp",
+    title: "Xylo Forbartz",
+    info: "Sentenced to be a Hero",
+  },
+  {
+    id: "mei-mei",
+    img: "other-images/truecharacters/mei-mei.webp",
+    title: "Mei Mei",
+    info: "Jujutsu Kaisen",
+  },
+  {
+    id: "maki",
+    img: "other-images/truecharacters/maki.webp",
+    title: "Maki Zenin",
+    info: "Jujutsu Kaisen",
+  },
+  {
+    id: "ryuusui",
+    img: "other-images/truecharacters/ryuusui.webp",
+    title: "Ryuusui Nanami",
+    info: "Dr. Stone",
+  },
+  {
+    id: "hana",
+    img: "other-images/truecharacters/hana.webp",
+    title: "Hana Midorikawa",
+    info: "Prison School",
   },
   {
     id: "okarun",
@@ -3436,16 +3475,10 @@ const trueCharactersData = [
     info: "Haikyuu!!",
   },
   {
-    id: "mahito",
-    img: "other-images/truecharacters/mahito.webp",
-    title: "Mahito",
-    info: "Jujutsu Kaisen",
-  },
-  {
-    id: "mei-mei",
-    img: "other-images/truecharacters/mei-mei.webp",
-    title: "Mei Mei",
-    info: "Jujutsu Kaisen",
+    id: "wang-jian",
+    img: "other-images/truecharacters/wang-jian.webp",
+    title: "Wang Jian (Ou Sen)",
+    info: "Kingdom",
   },
   {
     id: "tsukasa",
@@ -3460,22 +3493,40 @@ const trueCharactersData = [
     info: "Rascal Does Not Dream of Bunny Girl Senpai",
   },
   {
+    id: "ai",
+    img: "other-images/truecharacters/ai.webp",
+    title: "Ai Hoshino",
+    info: "[Oshi no Ko]",
+  },
+  {
+    id: "futaba",
+    img: "other-images/truecharacters/futaba.webp",
+    title: "Rio Futuba",
+    info: "Rascal Does Not Dream of Bunny Girl Senpai",
+  },
+  {
+    id: "delta",
+    img: "other-images/truecharacters/delta.webp",
+    title: "Delta",
+    info: "The Eminence in Shadow",
+  },
+  {
+    id: "yuki",
+    img: "other-images/truecharacters/yuki.webp",
+    title: "Yuki Suou",
+    info: "Alya Sometimes Hides Her Feelings in Russian",
+  },
+  {
     id: "sakuta",
     img: "other-images/truecharacters/sakuta.webp",
     title: "Sakuta Azusagawa",
     info: "Rascal Does Not Dream of Bunny Girl Senpai",
   },
   {
-    id: "akane",
-    img: "other-images/truecharacters/akane.webp",
-    title: "Akane Kurokawa",
-    info: "[Oshi no Ko]",
-  },
-  {
-    id: "ai",
-    img: "other-images/truecharacters/ai.webp",
-    title: "Ai Hoshino",
-    info: "[Oshi no Ko]",
+    id: "mahito",
+    img: "other-images/truecharacters/mahito.webp",
+    title: "Mahito",
+    info: "Jujutsu Kaisen",
   },
   {
     id: "ichinose",
@@ -3488,42 +3539,6 @@ const trueCharactersData = [
     img: "other-images/truecharacters/shizuku.webp",
     title: "Shizuku Murasaki",
     info: "Hunter x Hunter",
-  },
-  {
-    id: "perona",
-    img: "other-images/truecharacters/perona.webp",
-    title: "Perona",
-    info: "One Piece",
-  },
-  {
-    id: "futaba",
-    img: "other-images/truecharacters/futaba.webp",
-    title: "Rio Futuba",
-    info: "Rascal Does Not Dream of Bunny Girl Senpai",
-  },
-  {
-    id: "himmel",
-    img: "other-images/truecharacters/himmel.webp",
-    title: "Himmel",
-    info: "Frieren: Beyond Journey's End",
-  },
-  {
-    id: "chrollo",
-    img: "other-images/truecharacters/chrollo.webp",
-    title: "Chrollo Lucilfer",
-    info: "Hunter x Hunter",
-  },
-  {
-    id: "tsukishima",
-    img: "other-images/truecharacters/tsukishima.webp",
-    title: "Kei Tsukishima",
-    info: "Haikyuu!!",
-  },
-  {
-    id: "reinhard",
-    img: "other-images/truecharacters/reinhard.webp",
-    title: "Reinhard Van Astrea",
-    info: "Re:ZERO - Starting Life in Another World",
   },
 ];
 
@@ -3588,9 +3603,10 @@ const nextSeasonMap = {
   "mashle": { info: "3rd Season in Winter 2027" },
   "the-worlds-finest-assassin": { info: "2nd Season in Winter 2027" },
 
+  "mushoku": { info: "~Season 3 Part 2 in Spring 2027~" },
+
   "tensei-shitara-slime": { info: "Season 4 Part 2 in Summer 2027" },
 
-  "mushoku": { info: "Season 3 Part 2 in 2027" },
   "haikyuu": { info: "New Movie in 2027" },
   "dan-da-dan": { info: "Season 3 in 2027" },
   "roshidere": { info: "Season 2 in 2027" },
