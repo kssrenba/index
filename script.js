@@ -337,6 +337,122 @@ if ('scrollRestoration' in history) {
         });
       }
 
+      // ── Mobile: botão para esconder/mostrar o pôster. Com o pôster escondido,
+      // título e informações ocupam a largura toda (à esquerda) e o banner
+      // aparece inteiro. A escolha fica salva e vale para todos os animes. ──
+      (function initPosterHideToggle() {
+        const HIDE_KEY = 'posterLightboxHidePoster';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'poster-lightbox-hide-poster';
+        // Ícones no estilo dos demais (traço arredondado, 24x24): "imagem" com o
+        // pôster visível e "imagem riscada" com ele escondido.
+        btn.innerHTML =
+          '<svg class="icon-hide" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="9" cy="9" r="1.8"/><path d="M21 15.5l-3.6-3.6a2 2 0 0 0-2.8 0L6 20.5"/></svg>' +
+          '<svg class="icon-show" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 3.6A2 2 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.05-.22 1.4-.6"/><path d="M21 15V5a2 2 0 0 0-2-2H9"/><path d="M10.4 10.4a2 2 0 1 1-2.8-2.8"/><path d="M13.5 13.5L6 21"/><path d="M18 12l3 3"/><path d="M2 2l20 20"/></svg>';
+        lightbox.appendChild(btn);
+
+        function setHidden(hidden, save) {
+          lightbox.classList.toggle('poster-hidden', hidden);
+          btn.setAttribute('aria-pressed', hidden ? 'true' : 'false');
+          const label = hidden ? 'Mostrar pôster' : 'Esconder pôster';
+          btn.setAttribute('aria-label', label);
+          btn.title = label;
+          if (save) { try { localStorage.setItem(HIDE_KEY, hidden ? '1' : '0'); } catch (_) {} }
+        }
+
+        let saved = false;
+        try { saved = localStorage.getItem(HIDE_KEY) === '1'; } catch (_) {}
+        setHidden(saved, false);
+
+        // ── Animação (técnica FLIP) ──
+        // Mede as posições antes e depois da troca e anima cada bloco do
+        // lightbox do ponto antigo até o novo, em vez de "pular". O pôster
+        // some/aparece com fade + leve escala.
+        const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+        const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const canAnimate = () => typeof Element.prototype.animate === 'function' && !reduceMotion();
+
+        function flowItems() {
+          if (!lightboxFigure) return [];
+          return Array.from(lightboxFigure.querySelectorAll(
+            ':scope > *:not(.poster-lightbox-panel):not(.poster-lightbox-media), :scope > .poster-lightbox-panel > *'
+          ));
+        }
+
+        function toggleAnimated() {
+          const media = lightbox.querySelector('.poster-lightbox-media');
+          const willHide = !lightbox.classList.contains('poster-hidden');
+          if (lightboxFigure) lightboxFigure.scrollTop = 0;
+
+          if (!canAnimate() || !media || !lightboxFigure) {
+            setHidden(willHide, true);
+            return;
+          }
+
+          // FIRST: posições atuais
+          const items = flowItems();
+          const first = new Map();
+          items.forEach(el => first.set(el, el.getBoundingClientRect()));
+          const mediaRect = media.getBoundingClientRect();
+
+          // Ao esconder, o pôster real some do layout; uma cópia (ghost) fica no
+          // lugar só durante o fade-out.
+          let ghost = null;
+          if (willHide && mediaRect.width > 0) {
+            ghost = media.cloneNode(true);
+            ghost.removeAttribute('id');
+            ghost.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+            ghost.setAttribute('aria-hidden', 'true');
+            const lbRect = lightbox.getBoundingClientRect();
+            ghost.style.cssText =
+              'position:fixed;margin:0;overflow:hidden;pointer-events:none;z-index:2;' +
+              'left:' + (mediaRect.left - lbRect.left) + 'px;top:' + (mediaRect.top - lbRect.top) + 'px;' +
+              'width:' + mediaRect.width + 'px;height:' + mediaRect.height + 'px;';
+            ghost.style.setProperty('display', 'flex', 'important');
+            ghost.style.setProperty('visibility', 'visible', 'important');
+            lightbox.appendChild(ghost);
+          }
+
+          // LAST: aplica o novo estado e mede de novo
+          setHidden(willHide, true);
+          items.forEach(el => {
+            const f = first.get(el);
+            const l = el.getBoundingClientRect();
+            if (!f || (!f.width && !f.height) || (!l.width && !l.height)) return;
+            const dx = f.left - l.left;
+            const dy = f.top - l.top;
+            if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+            // INVERT + PLAY
+            el.animate(
+              [{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'translate(0,0)' }],
+              { duration: 320, easing: EASE }
+            );
+          });
+
+          if (ghost) {
+            const a = ghost.animate(
+              [{ opacity: 1, transform: 'translateX(0) scale(1)' }, { opacity: 0, transform: 'translateX(-14px) scale(0.94)' }],
+              { duration: 240, easing: EASE, fill: 'forwards' }
+            );
+            const cleanup = () => ghost.remove();
+            a.onfinish = cleanup;
+            a.oncancel = cleanup;
+          } else if (!willHide) {
+            media.animate(
+              [{ opacity: 0, transform: 'translateX(-14px) scale(0.94)' }, { opacity: 1, transform: 'translateX(0) scale(1)' }],
+              { duration: 320, easing: EASE }
+            );
+          }
+        }
+
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleAnimated();
+        });
+      })();
+
       let lastFocused = null;
       let currentItem = null;
       let sequelPosterDefaultSrc = '';
@@ -1784,6 +1900,40 @@ function getMetaFor(animeId) {
         } catch (e) {}
       }
 
+      // ── Itens SEM banner (cache negativo persistente) ──
+      // Quem não tem banner dava 404 em todas as extensões a cada carregamento
+      // da página (o aquecimento em segundo plano testa todos os itens), enchendo
+      // o console. Agora o "não existe" fica salvo; os preloads automáticos
+      // (segundo plano, hover/toque, vizinhos) pulam esses itens. Só ao ABRIR o
+      // pôster do item o banner é conferido de novo, então um banner novo
+      // aparece com um F5. Para refazer a checagem de todos: clearBannerMissCache().
+      const BANNER_MISS_KEY = 'bannerMissing:v1';
+      const BANNER_MISS_TTL = 7 * 24 * 60 * 60 * 1000; // 7 dias
+      let bannerMissStore = {};
+      try { bannerMissStore = JSON.parse(localStorage.getItem(BANNER_MISS_KEY) || '{}') || {}; } catch (e) {}
+      function persistBannerMisses() {
+        try { localStorage.setItem(BANNER_MISS_KEY, JSON.stringify(bannerMissStore)); } catch (e) {}
+      }
+      function bannerMissId(cands) { return cands && cands.length ? cands[0] : ''; }
+      function isBannerMissRecent(cands) {
+        const t = bannerMissStore[bannerMissId(cands)];
+        return !!t && (Date.now() - t) < BANNER_MISS_TTL;
+      }
+      function markBannerMiss(cands) {
+        const id = bannerMissId(cands);
+        if (!id) return;
+        bannerMissStore[id] = Date.now();
+        persistBannerMisses();
+      }
+      function clearBannerMiss(cands) {
+        const id = bannerMissId(cands);
+        if (id && bannerMissStore[id]) { delete bannerMissStore[id]; persistBannerMisses(); }
+      }
+      window.clearBannerMissCache = function() {
+        bannerMissStore = {};
+        try { localStorage.removeItem(BANNER_MISS_KEY); } catch (e) {}
+      };
+
       const bannerImageStore = new Map(); // url -> { image, loaded, promise }
       const BANNER_STORE_LIMIT = 24;
       function loadBannerImage(url, priority = 'auto') {
@@ -1836,10 +1986,11 @@ function getMetaFor(animeId) {
           // 2) descoberta em paralelo
           const results = await Promise.all(cands.map(c => loadBannerImage(bannerFreshUrl(c), priority)));
           const idx = results.findIndex(Boolean);
-          if (idx === -1) { bannerResolvedCache.set(key, ''); return ''; }
+          if (idx === -1) { bannerResolvedCache.set(key, ''); markBannerMiss(cands); return ''; }
           const winner = cands[idx];
           bannerResolvedCache.set(key, winner);
           persistBannerExt(key, winner);
+          clearBannerMiss(cands);
           // libera da memória as variantes que não existiam (já falharam e foram removidas)
           return winner;
         })().finally(() => bannerResolving.delete(key));
@@ -1854,6 +2005,7 @@ function getMetaFor(animeId) {
           if (!cands.length) return;
           const key = cands.join('|');
           if (bannerResolvedCache.get(key) === '') return;
+          if (isBannerMissRecent(cands)) return; // já se sabe que não tem banner
           if (bannerPreloaded.has(key) && priority !== 'high') return;
           bannerPreloaded.add(key);
           resolveBannerUrl(cands, priority);
@@ -1881,6 +2033,7 @@ function getMetaFor(animeId) {
               if (!cands.length) return Promise.resolve();
               const key = cands.join('|');
               if (bannerResolvedCache.get(key) !== undefined || bannerPreloaded.has(key)) return Promise.resolve();
+              if (isBannerMissRecent(cands)) return Promise.resolve(); // sem banner: não pede de novo
               bannerPreloaded.add(key);
               return resolveBannerUrl(cands, 'low');
             });
@@ -9373,6 +9526,114 @@ function getCalendarItems() {
       });
 
       update();
+    })();
+
+    // ── Mobile: barra de rolagem arrastável (fast scroll) das listas ──
+    // A barra nativa fica escondida no mobile; aqui aparece uma alça fina
+    // enquanto se rola a página. Segurar nela e arrastar rola a página
+    // proporcionalmente (bem mais rápido que arrastar o conteúdo).
+    (function initPageFastScroll() {
+      const doc = document.documentElement;
+      const thumb = document.createElement('div');
+      thumb.className = 'page-scrollthumb';
+      thumb.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(thumb);
+
+      const mq = window.matchMedia('(max-width: 760px)');
+      const TOP_INSET = 64;      // respiro no topo da trilha
+      const MIN_THUMB = 52;      // altura mínima da alça
+      const MIN_SCROLLABLE = 240; // só aparece se a página rola pelo menos isso
+
+      const modalOpen = () => {
+        const lb = document.getElementById('posterLightbox');
+        return !!(lb && lb.classList.contains('open'));
+      };
+
+      let geo = { trackTop: 0, trackH: 0, thumbH: 0, max: 0 };
+      let hideTimer = 0, dragging = false, raf = 0;
+      let startY = 0, startThumbY = 0;
+
+      function measure() {
+        const vh = window.innerHeight;
+        const total = Math.max(doc.scrollHeight, 1);
+        const max = total - vh;
+        const nav = document.getElementById('mobileBottomNav');
+        const navTop = nav ? nav.getBoundingClientRect().top : vh;
+        const bottomInset = Math.max(12, vh - navTop + 10);
+        const trackTop = TOP_INSET;
+        const trackH = Math.max(0, vh - TOP_INSET - bottomInset);
+        const thumbH = Math.min(trackH, Math.max(MIN_THUMB, trackH * vh / total));
+        geo = { trackTop, trackH, thumbH, max };
+        return mq.matches && max > MIN_SCROLLABLE && trackH > MIN_THUMB && !modalOpen();
+      }
+
+      function thumbY() {
+        const p = Math.min(1, Math.max(0, (window.scrollY || 0) / geo.max));
+        return geo.trackTop + p * (geo.trackH - geo.thumbH);
+      }
+
+      function position() {
+        if (!measure()) { thumb.classList.remove('active', 'dragging'); return false; }
+        thumb.style.height = geo.thumbH + 'px';
+        thumb.style.transform = 'translateY(' + thumbY() + 'px)';
+        return true;
+      }
+
+      function scheduleHide() {
+        clearTimeout(hideTimer);
+        if (dragging) return;
+        hideTimer = setTimeout(() => thumb.classList.remove('active'), 3000);
+      }
+
+      function reveal() {
+        if (!position()) return;
+        thumb.classList.add('active');
+        scheduleHide();
+      }
+
+      window.addEventListener('scroll', function() {
+        if (raf) return;
+        raf = requestAnimationFrame(() => { raf = 0; reveal(); });
+      }, { passive: true });
+
+      // O toque na alça não pode virar swipe de troca de lista nem pull-to-refresh.
+      thumb.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+      thumb.addEventListener('touchmove', e => { e.preventDefault(); e.stopPropagation(); }, { passive: false });
+      thumb.addEventListener('touchend', e => e.stopPropagation(), { passive: true });
+
+      thumb.addEventListener('pointerdown', function(e) {
+        if (!position()) return;
+        e.preventDefault();
+        e.stopPropagation();
+        dragging = true;
+        startY = e.clientY;
+        startThumbY = thumbY();
+        doc.style.scrollBehavior = 'auto';
+        clearTimeout(hideTimer);
+        thumb.classList.add('active', 'dragging');
+        try { thumb.setPointerCapture(e.pointerId); } catch (_) {}
+      });
+      thumb.addEventListener('pointermove', function(e) {
+        if (!dragging) return;
+        e.preventDefault();
+        measure(); // a página pode crescer durante o arraste (carrega mais itens)
+        const range = geo.trackH - geo.thumbH;
+        if (range <= 0 || geo.max <= 0) return;
+        const p = Math.min(1, Math.max(0, (startThumbY + (e.clientY - startY) - geo.trackTop) / range));
+        window.scrollTo(0, p * geo.max);
+      });
+      function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        doc.style.scrollBehavior = '';
+        thumb.classList.remove('dragging');
+        scheduleHide();
+      }
+      thumb.addEventListener('pointerup', endDrag);
+      thumb.addEventListener('pointercancel', endDrag);
+      thumb.addEventListener('lostpointercapture', endDrag);
+
+      window.addEventListener('resize', function() { if (thumb.classList.contains('active')) position(); }, { passive: true });
     })();
 
     // Usado pela camada do botão "voltar": depois de um history.go() interno,

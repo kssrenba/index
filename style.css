@@ -14045,3 +14045,188 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
     transform: none;
   }
 }
+
+/* ── Mobile: botão para esconder o pôster (.poster-lightbox-hide-poster) ──
+   Mesmo acabamento dos outros botões do posterlightbox (X, busca, etc.):
+   sem fundo/borda, cor #cbd5e1, ícone 22px com traço 2.2 e hover discreto.
+   Escondido: título e infos ficam na mesma altura, mas à esquerda, e o
+   banner fica inteiro e um pouco mais claro. */
+.poster-lightbox-hide-poster { display: none; }
+
+@media (max-width: 760px) {
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-hide-poster {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #cbd5e1;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+    outline: none;
+    z-index: 3;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
+  }
+  .poster-lightbox-hide-poster:focus,
+  .poster-lightbox-hide-poster:focus-visible { outline: none; box-shadow: none; }
+  .poster-lightbox-hide-poster svg {
+    width: 22px; height: 22px;
+    stroke: currentColor; stroke-width: 2.2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .poster-lightbox-hide-poster .icon-show { display: none; }
+  .poster-lightbox.poster-hidden .poster-lightbox-hide-poster .icon-hide { display: none; }
+  .poster-lightbox.poster-hidden .poster-lightbox-hide-poster .icon-show { display: block; }
+
+  /* Pôster escondido sai do fluxo: o resto do lightbox sobe e fica logo
+     abaixo das infos. Pra o título continuar na mesma altura de antes
+     (≈ meio da altura do pôster), ele ganha uma margem equivalente: a % da
+     margem é relativa à largura da coluna, e a altura do pôster é
+     proporcional a ela (2:3 × 41%), então acompanha a tela. Ajuste o
+     "41px" para subir/descer o título. */
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-media {
+    display: none !important;
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-title {
+    grid-area: auto;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    align-self: start;
+    margin-top: max(0px, calc(30.75% - 41px));
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-info {
+    grid-area: auto;
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  /* Banner inteiro e mais visível */
+  .poster-lightbox.poster-hidden .poster-lightbox-banner img {
+    filter: brightness(0.6) saturate(1.1) !important;
+  }
+}
+
+/* ── Mobile: botões do topo do posterlightbox sem "estado ativado" ──
+   No celular o :hover fica preso depois do toque e deixava o botão (あ,
+   busca, X, etc.) com um fundo diferente. Aqui o fundo fica sempre
+   transparente, sem destaque de hover/foco/toque. */
+@media (max-width: 760px) {
+  .poster-lightbox.poster-lightbox .poster-lightbox-jpname,
+  .poster-lightbox.poster-lightbox .poster-lightbox-jpname:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-jpname:active,
+  .poster-lightbox.poster-lightbox .poster-lightbox-jpname:focus,
+  .poster-lightbox.poster-lightbox .poster-lightbox-jpname:focus-visible,
+  .poster-lightbox.poster-lightbox .poster-lightbox-search:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-search:active,
+  .poster-lightbox.poster-lightbox .poster-lightbox-search:focus,
+  .poster-lightbox.poster-lightbox .poster-lightbox-randomizer:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-randomizer:active,
+  .poster-lightbox.poster-lightbox .poster-lightbox-randomizer:focus,
+  .poster-lightbox.poster-lightbox .poster-lightbox-close:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-close:active,
+  .poster-lightbox.poster-lightbox .poster-lightbox-close:focus,
+  .poster-lightbox.poster-lightbox .poster-lightbox-calendar:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-calendar:active,
+  .poster-lightbox.poster-lightbox .poster-lightbox-calendar:focus,
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound:active,
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound:focus,
+  .poster-lightbox.poster-lightbox .poster-lightbox-hide-poster,
+  .poster-lightbox.poster-lightbox .poster-lightbox-hide-poster:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-hide-poster:active,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-jpname,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-jpname:hover,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-jpname:active,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-search:hover,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-search:active,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-randomizer:hover,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-randomizer:active,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-close:hover,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-close:active,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:hover,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:active,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-sound:hover,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-sound:active,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-hide-poster:hover,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-hide-poster:active {
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+    outline: none !important;
+  }
+}
+
+/* ── Mobile: barra de rolagem arrastável da página (listas) ──
+   Alça fina que aparece ao rolar; segurar e arrastar rola a página
+   proporcionalmente (rápido). Ver initPageFastScroll no script.js.
+   A barra nativa fica escondida no mobile pra não duplicar. */
+.page-scrollthumb { display: none; }
+
+@media (max-width: 760px) {
+  html { scrollbar-width: none; scrollbar-gutter: auto; }
+  html::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+  .page-scrollthumb {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 2px;
+    width: 5px;
+    min-height: 52px;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--current-cat-color, #94a3b8) 55%, #ffffff);
+    box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3);
+    opacity: 0;
+    pointer-events: none;
+    touch-action: none;
+    z-index: 1050;
+    will-change: transform;
+    transition: opacity 0.2s ease, width 0.12s ease, filter 0.12s ease;
+  }
+  .page-scrollthumb.active {
+    opacity: 0.75;
+    pointer-events: auto;
+  }
+  /* área de toque maior que a alça visível */
+  .page-scrollthumb::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    left: -22px;
+    right: -2px;
+  }
+  .page-scrollthumb.dragging {
+    width: 8px;
+    opacity: 1;
+  }
+}
+
+/* ── Animações do botão de esconder pôster (mobile) ── */
+@media (max-width: 760px) {
+  /* o ícone dá um pequeno "pop" ao trocar */
+  .poster-lightbox-hide-poster svg { animation: hidePosterIconIn 0.24s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes hidePosterIconIn {
+    from { opacity: 0; transform: scale(0.7) rotate(-10deg); }
+    to   { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  /* o banner clareia/escurece suavemente em vez de trocar de uma vez */
+  .poster-lightbox.poster-lightbox .poster-lightbox-banner img {
+    transition: filter 0.32s ease !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster-lightbox-hide-poster svg { animation: none; }
+  .poster-lightbox.poster-lightbox .poster-lightbox-banner img { transition: none !important; }
+}
