@@ -1410,6 +1410,27 @@ const rawAnimeData = [
 // Watching Now — animes em exibição/andamento, agrupados por temporada (season).
 const rawWatchingData = [
   // Non-Seasonal Anime
+  {
+    id: "chainsaw-man",
+    img: "watchingnow-images/watchingnow/chainsaw-man.webp",
+    title: "Chainsaw Man",
+    info: "1 temporada: 12 episódios <br>Movie: 1h40m",
+    studio: "MAPPA",
+    airedSeason: "2022",
+
+    url: "https://www.anime-planet.com/anime/chainsaw-man",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GVDHX8QNW/chainsaw-man",
+    malUrl: "https://myanimelist.net/anime/44511/Chainsaw_Man",
+
+    seasons: [12, 1],
+    movieSeasons: [1],
+    movieDurations: { 1: "1h40m" },
+
+    mal: [
+      { label: "1 temporada", episodes: 12, malName: "Chainsaw Man", unwatched: true },
+      { label: "Movie: Reze Arc", episodes: "1h39m", malName: "Chainsaw Man Movie: Reze-hen", unwatched: true },
+    ],
+  },
 
   // Fall 2026
   {
@@ -2214,22 +2235,6 @@ const rawPlanToWatchData = [
       { label: "Movie: Heaven's Feel - I. Presage Flower", episodes: "2h00m", malName: "Fate/stay night Movie: Heaven's Feel - I. Presage Flower", unwatched: true },
       { label: "Movie: Heaven's Feel - II. Lost Butterfly", episodes: "1h57m", malName: "Fate/stay night Movie: Heaven's Feel - II. Lost Butterfly", unwatched: true },
       { label: "Movie: Heaven's Feel - III. Spring Song", episodes: "2h02m", malName: "Fate/stay night Movie: Heaven's Feel - III. Spring Song", unwatched: true },
-    ],
-  },
-  {
-    id: "chainsaw-man",
-    img: "plantowatch-images/plantowatch/chainsaw-man.webp",
-    title: "Chainsaw Man",
-    info: "1 temporada: 13 episódios <br>Movie: 1h40m",
-    studio: "MAPPA",
-    airedSeason: "2022",
-    url: "https://www.anime-planet.com/anime/chainsaw-man",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GVDHX8QNW/chainsaw-man",
-    malUrl: "https://myanimelist.net/anime/44511/Chainsaw_Man",
-
-    mal: [
-      { label: "1 temporada", episodes: 12, malName: "Chainsaw Man", unwatched: true },
-      { label: "Movie: Reze Arc", episodes: "1h39m", malName: "Chainsaw Man Movie: Reze-hen", unwatched: true },
     ],
   },
   {
