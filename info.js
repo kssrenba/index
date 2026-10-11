@@ -720,29 +720,6 @@ const rawAnimeData = [
     ],
   },
   {
-    id: "nippon-sangoku",
-    img: "myranks-images/myranks/nippon-sangoku.webp",
-    title: "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
-    info: "12 episódios",
-    studio: "Studio Kafka",
-    airedSeason: "2026",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Nippon Sangoku"}],
-  },
-  {
-    id: "prison-school",
-    img: "myranks-images/myranks/prison-school.webp",
-    title: "Prison School",
-    info: "12 episódios",
-    studio: "J.C. Staff",
-    airedSeason: "2015-2016",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
-      { label: "OVA: Mad Wax", episodes: "25m", note: 7, malName: "Prison School: Mad Wax" },
-    ],
-  },
-  {
     id: "cinderella-gray",
     img: "myranks-images/myranks/cinderella-gray.webp",
     title: "Uma Musume: Cinderella Gray",
@@ -778,6 +755,39 @@ const rawAnimeData = [
     mal: [
       { label: "1ª temporada I", episodes: 11, note: 7, malName: "86" },
       { label: "1ª temporada II", episodes: 12, note: 7, malName: "86 Part 2" },
+    ],
+  },
+  {
+    id: "astra-space",
+    img: "myranks-images/myranks/astra-space.webp",
+    title: "Astra Lost in Space",
+    info: "12 episódios",
+    studio: "Lerche",
+    airedSeason: "2019",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Kanata no Astra",}],
+  },
+  {
+    id: "nippon-sangoku",
+    img: "myranks-images/myranks/nippon-sangoku.webp",
+    title: "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+    info: "12 episódios",
+    studio: "Studio Kafka",
+    airedSeason: "2026",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Nippon Sangoku"}],
+  },
+  {
+    id: "prison-school",
+    img: "myranks-images/myranks/prison-school.webp",
+    title: "Prison School",
+    info: "12 episódios",
+    studio: "J.C. Staff",
+    airedSeason: "2015-2016",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
+      { label: "OVA: Mad Wax", episodes: "25m", note: 7, malName: "Prison School: Mad Wax" },
     ],
   },
   {
@@ -1400,21 +1410,6 @@ const rawAnimeData = [
 // Watching Now — animes em exibição/andamento, agrupados por temporada (season).
 const rawWatchingData = [
   // Non-Seasonal Anime
-  {
-    id: "astra-space",
-    img: "watchingnow-images/watchingnow/astra-space.webp",
-    title: "Astra Lost in Space",
-    info: "12 episódios",
-    studio: "Lerche",
-    season: null,
-    seasons: [12],
-    airedSeason: "2019",
-    url: "https://www.anime-planet.com/anime/astra-lost-in-space",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GMEHMEWZM/astra-lost-in-space",
-    malUrl: "https://myanimelist.net/anime/39198/Kanata_no_Astra",
-
-    mal: [{ label: "1 temporada", episodes: 12, malName: "Kanata no Astra", unwatched: true }],
-  },
 
   // Fall 2026
   {

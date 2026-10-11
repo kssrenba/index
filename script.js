@@ -337,7 +337,7 @@ if ('scrollRestoration' in history) {
         });
       }
 
-      // ── Mobile: botão para esconder/mostrar o pôster. Com o pôster escondido,
+      // ── Mobile e desktop: botão para esconder/mostrar o pôster. Com o pôster escondido,
       // título e informações ocupam a largura toda (à esquerda) e o banner
       // aparece inteiro. A escolha fica salva e vale para todos os animes. ──
       (function initPosterHideToggle() {
@@ -5043,6 +5043,63 @@ function getMetaFor(animeId) {
         setDrawerExpanded(!drawer.classList.contains('expanded'), true);
       });
     }
+
+    // ── Botões extras do drawer expandido (desktop): Calendário + Randomizer ──
+    (function initDrawerExtraActions() {
+      if (!drawerExpandBtn || !drawerExpandBtn.parentNode) return;
+      const actions = drawerExpandBtn.parentNode;
+      const makeBtn = (id, label, svg) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.id = id;
+        b.className = 'drawer-expand drawer-action-extra';
+        b.setAttribute('aria-label', label);
+        b.setAttribute('data-tooltip', label);
+        b.innerHTML = svg;
+        return b;
+      };
+      const calendarSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path></svg>';
+      const randomSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"></path><path d="m18 2 4 4-4 4"></path><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"></path><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"></path><path d="m18 14 4 4-4 4"></path></svg>';
+      const calBtn = makeBtn('drawerCalendarBtn', 'Seasonal Anime Calendar', calendarSvg);
+      const rndBtn = makeBtn('drawerRandomBtn', 'Random Plan to Watch', randomSvg);
+      actions.insertBefore(rndBtn, drawerExpandBtn);
+      actions.insertBefore(calBtn, rndBtn);
+      // Espelha EXATAMENTE o estado do botão de calendário do Watching Now
+      // (#calendarBtn): se ele estiver desabilitado, este também fica.
+      const syncCalBtnDisabled = () => {
+        const src = document.getElementById('calendarBtn');
+        const off = !src || src.disabled;
+        calBtn.disabled = off;
+        calBtn.setAttribute('aria-disabled', off ? 'true' : 'false');
+        if (src && off) {
+          ['title', 'data-tooltip', 'aria-label'].forEach(a => {
+            const v = src.getAttribute(a);
+            if (v) calBtn.setAttribute(a, v);
+          });
+        }
+      };
+      syncCalBtnDisabled();
+      const srcCalBtn = document.getElementById('calendarBtn');
+      if (srcCalBtn && typeof MutationObserver === 'function') {
+        new MutationObserver(syncCalBtnDisabled).observe(srcCalBtn, { attributes: true, attributeFilter: ['disabled'] });
+      }
+      calBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (calBtn.disabled) return;
+        const calendarOn = !!(window.__isReleaseCalendarMode && window.__isReleaseCalendarMode());
+        closeDrawer(true);
+        if (currentCategory !== 'watching') {
+          currentCategory = 'watching'; render();
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        if (typeof window.__setReleaseCalendarMode === 'function') window.__setReleaseCalendarMode(!calendarOn);
+      });
+      rndBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeDrawer(true);
+        const planRandomBtn = document.getElementById('randomPlanBtn');
+        if (planRandomBtn) planRandomBtn.click();
+      });
+    })();
 
     try {
       // Padrão: expandido no desktop. Se o usuário já escolheu recolher

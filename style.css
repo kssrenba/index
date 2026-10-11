@@ -1887,9 +1887,28 @@
     transform: scale(1.02);
   }
 
+  #drawerCalendarBtn:disabled,
+  #drawerCalendarBtn:disabled:hover,
+  #drawerCalendarBtn:disabled:active {
+    background: transparent;
+    color: rgba(255,255,255,0.22);
+    opacity: 0.62;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  #drawerCalendarBtn:disabled svg {
+    opacity: 0.72;
+  }
+
   .drawer-expand svg { width: 20px; height: 20px; stroke-width: 2.2; }
   .drawer-expand .icon-collapse { display: none; }
   .drawer-title-trio { display: none; }
+  .drawer-action-extra { display: none; }
+  @media (min-width: 1024px) {
+    .category-drawer.expanded .drawer-action-extra { display: inline-flex; }
+  }
 
   @media (min-width: 1024px) {
     .drawer-expand { display: inline-flex; }
