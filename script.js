@@ -357,10 +357,21 @@ if ('scrollRestoration' in history) {
         // A escolha do usuário (userHidden) continua salva e volta a valer
         // no próximo anime que tiver banner.
         let userHidden = false;
-        function syncPosterHidden() {
-          const hasBanner = lightbox.classList.contains('has-banner');
+        let bannerGoneTimer = 0;
+        function applyPosterHidden(hasBanner) {
           lightbox.classList.toggle('poster-hidden', userHidden && hasBanner);
           btn.style.display = hasBanner ? '' : 'none';
+        }
+        function syncPosterHidden() {
+          const hasBanner = lightbox.classList.contains('has-banner');
+          clearTimeout(bannerGoneTimer);
+          if (hasBanner) { applyPosterHidden(true); return; }
+          // Ao trocar de anime o banner some por um instante enquanto o novo
+          // carrega. Esperar um pouco evita o botão (e o layout sem pôster)
+          // "piscar" nesse intervalo; se o banner voltar logo, nada muda.
+          bannerGoneTimer = setTimeout(() => {
+            applyPosterHidden(lightbox.classList.contains('has-banner'));
+          }, 160);
         }
         new MutationObserver(syncPosterHidden).observe(lightbox, { attributes: true, attributeFilter: ['class'] });
 
@@ -370,7 +381,8 @@ if ('scrollRestoration' in history) {
           btn.setAttribute('aria-pressed', hidden ? 'true' : 'false');
           const label = hidden ? 'Mostrar pôster' : 'Esconder pôster';
           btn.setAttribute('aria-label', label);
-          btn.title = label;
+          btn.dataset.tooltip = hidden ? 'Show Poster  (B)' : 'Hide Poster  (B)';
+          btn.removeAttribute('title');
           // A escolha vale só enquanto a página está aberta (vale para todos
           // os animes e só muda quando o usuário mexe no botão). Ao sair e
           // entrar de novo no site ou atualizar, o pôster volta visível.
@@ -556,39 +568,80 @@ if ('scrollRestoration' in history) {
       onePieceSound.loop = false;
       const ONE_PIECE_IDS = ['one-piece'];
 
+      // ── Som especial ao abrir o poster-lightbox do Chainsaw Man (sem loop) ──
+      const csmSound = new Audio('assets/sounds/csm-reze.mp3');
+      csmSound.loop = false;
+      const CSM_IDS = ['chainsaw-man', 'csm'];
+
       // ── Controle global e persistente dos efeitos do poster lightbox ──
-      const POSTER_SOUND_MUTED_KEY = 'posterLightboxSoundMuted';
-      const posterSoundEffects = [rezeroSound, jjkSound, aotSound, onePieceSound];
-      let posterSoundMuted = false;
+      // O botão agora PAUSA/RETOMA o efeito (antes era mute). Estando pausado,
+      // nenhum efeito novo começa sozinho ao abrir/trocar de pôster.
+      const POSTER_SOUND_PAUSED_KEY = 'posterLightboxSoundPaused';
+      const posterSoundEffects = [rezeroSound, jjkSound, aotSound, onePieceSound, csmSound];
+      let posterSoundPaused = false;
       try {
-        posterSoundMuted = localStorage.getItem(POSTER_SOUND_MUTED_KEY) === 'true';
+        posterSoundPaused = localStorage.getItem(POSTER_SOUND_PAUSED_KEY) === 'true';
+        // Preferência antiga de mute: não vale mais.
+        localStorage.removeItem('posterLightboxSoundMuted');
       } catch (e) {}
+
+      // Ícones do botão (traço, mesmo estilo dos outros: o CSS já aplica
+      // stroke/size em ".poster-lightbox-sound svg"). Mostra a AÇÃO disponível:
+      // "pause" enquanto toca, "play" quando está pausado.
+      const SOUND_PAUSE_ICON_SVG = '<svg class="poster-lightbox-sound-pause" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>';
+      const SOUND_PLAY_ICON_SVG = '<svg class="poster-lightbox-sound-play" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>';
+      if (soundBtn) soundBtn.innerHTML = SOUND_PAUSE_ICON_SVG + SOUND_PLAY_ICON_SVG;
+
+      function soundForItem(item) {
+        if (!item || !item.id) return null;
+        if (REZERO_IDS.includes(item.id)) return rezeroSound;
+        if (JJK_IDS.includes(item.id)) return jjkSound;
+        if (AOT_IDS.includes(item.id)) return aotSound;
+        if (ONE_PIECE_IDS.includes(item.id)) return onePieceSound;
+        if (CSM_IDS.includes(item.id)) return csmSound;
+        return null;
+      }
 
       function itemHasPosterSound(item) {
         if (!item || !item.id) return false;
         return REZERO_IDS.includes(item.id)
           || JJK_IDS.includes(item.id)
           || AOT_IDS.includes(item.id)
-          || ONE_PIECE_IDS.includes(item.id);
+          || ONE_PIECE_IDS.includes(item.id)
+          || CSM_IDS.includes(item.id);
       }
 
       function updatePosterSoundButton() {
-        posterSoundEffects.forEach(audio => { audio.muted = posterSoundMuted; });
         if (!soundBtn) return;
-        const soundOnIcon = soundBtn.querySelector('.poster-lightbox-sound-on');
-        const soundOffIcon = soundBtn.querySelector('.poster-lightbox-sound-off');
-        if (soundOnIcon) soundOnIcon.style.display = posterSoundMuted ? 'none' : '';
-        if (soundOffIcon) soundOffIcon.style.display = posterSoundMuted ? '' : 'none';
-        soundBtn.setAttribute('aria-pressed', posterSoundMuted ? 'true' : 'false');
-        soundBtn.setAttribute('aria-label', posterSoundMuted ? 'Enable Sound Effects ' : 'Turn Off Sound Effects ');
-        soundBtn.dataset.tooltip = posterSoundMuted ? 'Enable  Sound Effects  (M)' : 'Turn Off Sound Effects  (M)';
+        const pauseIcon = soundBtn.querySelector('.poster-lightbox-sound-pause');
+        const playIcon = soundBtn.querySelector('.poster-lightbox-sound-play');
+        if (pauseIcon) pauseIcon.style.display = posterSoundPaused ? 'none' : '';
+        if (playIcon) playIcon.style.display = posterSoundPaused ? '' : 'none';
+        soundBtn.setAttribute('aria-pressed', posterSoundPaused ? 'true' : 'false');
+        soundBtn.setAttribute('aria-label', posterSoundPaused ? 'Play Sound Effects' : 'Pause Sound Effects');
+        soundBtn.dataset.tooltip = posterSoundPaused ? 'Play Sound Effects  (M)' : 'Pause Sound Effects  (M)';
       }
 
       function togglePosterSound() {
-        posterSoundMuted = !posterSoundMuted;
+        posterSoundPaused = !posterSoundPaused;
         try {
-          localStorage.setItem(POSTER_SOUND_MUTED_KEY, String(posterSoundMuted));
+          localStorage.setItem(POSTER_SOUND_PAUSED_KEY, String(posterSoundPaused));
         } catch (e) {}
+
+        if (posterSoundPaused) {
+          // Pausa o que estiver tocando, mantendo a posição (sem voltar ao início).
+          posterSoundEffects.forEach(audio => { if (!audio.paused) audio.pause(); });
+        } else if (lightbox.classList.contains('open')) {
+          // Retoma o efeito do pôster aberto: continua de onde parou, ou
+          // recomeça se ele já tinha terminado (ou nem tinha começado).
+          const audio = soundForItem(currentItem);
+          if (audio) {
+            try {
+              if (audio.ended) audio.currentTime = 0;
+              audio.play().catch(() => {});
+            } catch (e) {}
+          }
+        }
         updatePosterSoundButton();
       }
 
@@ -604,7 +657,12 @@ if ('scrollRestoration' in history) {
           clearInterval(existingTimer);
           _audioFadeTimers.delete(audio);
         }
-        if (audio.paused) return;
+        if (audio.paused) {
+          // Já estava pausado (pelo botão ou porque terminou): só volta ao
+          // início, pra próxima vez não retomar do meio.
+          audio.currentTime = 0;
+          return;
+        }
         const steps = 20;
         const stepTime = duration / steps;
         const startVolume = audio.volume > 0 ? audio.volume : 1;
@@ -2192,7 +2250,17 @@ function getMetaFor(animeId) {
       // visível (busca / randomizer / calendário / som / fechar). Calculado
       // na hora, pois as posições deles mudam conforme quais aparecem.
       function positionJpNameBtn() {
-        if (!jpNameBtn.classList.contains('visible')) return;
+        const jpVisible = jpNameBtn.classList.contains('visible');
+        // Botão de esconder/mostrar pôster: no desktop ele entra neste mesmo
+        // grupo (à esquerda do あ, ou do botão mais à esquerda se o あ não
+        // aparecer). No mobile ele continua no canto superior esquerdo (CSS).
+        const hideBtn = lightbox.querySelector('.poster-lightbox-hide-poster');
+        const isDesktopTop = window.matchMedia('(min-width: 761px)').matches;
+        if (hideBtn && !isDesktopTop) {
+          ['top', 'right', 'width', 'height'].forEach(p => hideBtn.style.removeProperty(p));
+        }
+        const hideShown = !!hideBtn && isDesktopTop && getComputedStyle(hideBtn).display !== 'none';
+        if (!jpVisible && !hideShown) return;
         const toggled = [randomizerLightboxBtn, calendarBtn, soundBtn];
         let left = Infinity;
         let ref = null;
@@ -2207,10 +2275,30 @@ function getMetaFor(animeId) {
         });
         if (!ref) return;
         const vw = document.documentElement.clientWidth;
-        jpNameBtn.style.width = ref.width + 'px';
-        jpNameBtn.style.height = ref.height + 'px';
-        jpNameBtn.style.top = ref.top + 'px';
-        jpNameBtn.style.right = Math.round(vw - left + 6) + 'px';
+        // Espaço entre os botões = o mesmo que já existe entre busca e X. Assim o あ
+        // e o de esconder pôster ficam exatamente na grade dos demais (antes eram
+        // 2px mais colados, e tudo "andava" ao alternar entre あ e o botão de som).
+        let gap = 8;
+        if (searchBtn && closeBtn) {
+          const sr = searchBtn.getBoundingClientRect();
+          const cr = closeBtn.getBoundingClientRect();
+          const g = Math.round(cr.left - sr.right);
+          if (sr.width > 0 && cr.width > 0 && g >= 0 && g <= 24) gap = g;
+        }
+        let leftEdge = left;
+        if (jpVisible) {
+          jpNameBtn.style.width = ref.width + 'px';
+          jpNameBtn.style.height = ref.height + 'px';
+          jpNameBtn.style.top = ref.top + 'px';
+          jpNameBtn.style.right = Math.round(vw - left + gap) + 'px';
+          leftEdge = left - ref.width - gap;
+        }
+        if (hideShown) {
+          hideBtn.style.width = ref.width + 'px';
+          hideBtn.style.height = ref.height + 'px';
+          hideBtn.style.top = ref.top + 'px';
+          hideBtn.style.right = Math.round(vw - leftEdge + gap) + 'px';
+        }
       }
       function schedulePositionJpNameBtn() {
         requestAnimationFrame(() => {
@@ -2221,7 +2309,11 @@ function getMetaFor(animeId) {
       }
       window.addEventListener('resize', schedulePositionJpNameBtn, { passive: true });
       if (typeof MutationObserver !== 'undefined') {
-        const jpObserver = new MutationObserver(schedulePositionJpNameBtn);
+        // Reposiciona já no microtask (antes do próximo frame) para os botões
+        // não darem um "pulo" quando outro botão do grupo aparece/some.
+        const jpObserver = new MutationObserver(() => { positionJpNameBtn(); schedulePositionJpNameBtn(); });
+        // O botão de esconder pôster aparece/some junto com o banner (classe has-banner).
+        jpObserver.observe(lightbox, { attributes: true, attributeFilter: ['class'] });
         [searchBtn, randomizerLightboxBtn, calendarBtn, soundBtn].forEach(b => {
           if (b) jpObserver.observe(b, { attributes: true, attributeFilter: ['class'] });
         });
@@ -2501,7 +2593,7 @@ function getMetaFor(animeId) {
           // o lightbox.
           isRezero ? stopAudioInstantly(rezeroSound) : fadeOutAudio(rezeroSound);
         }
-        if (isRezero && currentItem !== item) {
+        if (isRezero && currentItem !== item && !posterSoundPaused) {
           try {
             rezeroSound.play().catch(() => {});
           } catch (e) {}
@@ -2512,7 +2604,7 @@ function getMetaFor(animeId) {
         if (wasJjk && currentItem !== item) {
           isJjk ? stopAudioInstantly(jjkSound) : fadeOutAudio(jjkSound);
         }
-        if (isJjk && currentItem !== item) {
+        if (isJjk && currentItem !== item && !posterSoundPaused) {
           try {
             jjkSound.currentTime = 0;
             jjkSound.play().catch(() => {});
@@ -2524,7 +2616,7 @@ function getMetaFor(animeId) {
         if (wasAot && currentItem !== item) {
           isAot ? stopAudioInstantly(aotSound) : fadeOutAudio(aotSound);
         }
-        if (isAot && currentItem !== item) {
+        if (isAot && currentItem !== item && !posterSoundPaused) {
           try {
             aotSound.currentTime = 0;
             aotSound.play().catch(() => {});
@@ -2536,10 +2628,22 @@ function getMetaFor(animeId) {
         if (wasOnePiece && currentItem !== item) {
           isOnePiece ? stopAudioInstantly(onePieceSound) : fadeOutAudio(onePieceSound);
         }
-        if (isOnePiece && currentItem !== item) {
+        if (isOnePiece && currentItem !== item && !posterSoundPaused) {
           try {
             onePieceSound.currentTime = 0;
             onePieceSound.play().catch(() => {});
+          } catch (e) {}
+        }
+
+        const wasCsm = currentItem && CSM_IDS.includes(currentItem.id);
+        const isCsm = CSM_IDS.includes(item.id);
+        if (wasCsm && currentItem !== item) {
+          isCsm ? stopAudioInstantly(csmSound) : fadeOutAudio(csmSound);
+        }
+        if (isCsm && currentItem !== item && !posterSoundPaused) {
+          try {
+            csmSound.currentTime = 0;
+            csmSound.play().catch(() => {});
           } catch (e) {}
         }
 
@@ -2788,16 +2892,10 @@ function getMetaFor(animeId) {
               .replace(/[-–:]?\s*Progress:\s*(?:\d+|-)\s*\/\s*(?:\d+|-)\s*/gi, '')
               .trim();
             const infoLines = cleanedInfo.split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
-            lightboxInfo.innerHTML = infoLines.map((line, index) => {
-              if (index === 0) return line;
-              const isMovieLine = /(?:^|\s)(?:\d+\s+)?Filmes?\b/i.test(line);
-              // Linha de filme fica na mesma linha (separada por " - ") tanto no
-              // desktop quanto no mobile.
-              const keepOnSameLine = isMovieLine;
-              return keepOnSameLine
-                ? ` - ${line}`
-                : `<span class="poster-lightbox-info-break"></span>${line}`;
-            }).join('');
+            // Todas as linhas ficam na mesma linha, separadas por " - "
+            // (ex: "3 temporadas: 59 episódios - Movie: 1h45m"), no desktop e no
+            // mobile. Só quebra se não couber na largura.
+            lightboxInfo.innerHTML = infoLines.join(' - ');
           } else {
             lightboxInfo.innerHTML = '';
           }
@@ -2980,6 +3078,9 @@ function getMetaFor(animeId) {
         }
         if (currentItem && ONE_PIECE_IDS.includes(currentItem.id)) {
           fadeOutAudio(onePieceSound);
+        }
+        if (currentItem && CSM_IDS.includes(currentItem.id)) {
+          fadeOutAudio(csmSound);
         }
         stopTitleMarquee();
         document.title = DEFAULT_PAGE_TITLE;
@@ -4463,7 +4564,8 @@ function getMetaFor(animeId) {
         remainingInfo = (hasSeasonLine
           ? infoLinesArr.filter(line => !/\bFilmes?\b/i.test(line))
           : infoLinesArr
-        ).join('<br>');
+        ).slice(0, 1).join('');
+        // No card só aparece a 1ª linha (o que vem antes do <br>), sem reticências.
       }
       const topRankClass = rankIndex === 0 ? ' rank-gold'
         : rankIndex === 1 ? ' rank-silver'
@@ -4512,7 +4614,7 @@ function getMetaFor(animeId) {
       const watchNowMalUrlAttr = (isLinkableMode && anime.malUrl) ? ` data-watchnow-mal-url="${anime.malUrl}"` : '';
       const crAttr = (isLinkableMode && anime.crunchyroll) ? ` data-crunchyroll-url="${anime.crunchyroll}"` : '';
       const nfAttr = (isLinkableMode && anime.netflix) ? ` data-netflix-url="${anime.netflix}"` : '';
-      const navAllAttr = (mode !== 'watching' && mode !== 'plan' && mode !== 'all' && mode !== 'announced-unwatched' && mode !== 'trueCharacters') ? ` data-nav-all="1"` : '';
+      const navAllAttr = (mode !== 'watching' && mode !== 'plan' && mode !== 'all' && mode !== 'announced' && mode !== 'announced-unwatched' && mode !== 'trueCharacters') ? ` data-nav-all="1"` : '';
 
       const isMobileCard = window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
       const normalCardThumb = (mode === 'announced' || mode === 'announced-unwatched')
@@ -4795,6 +4897,48 @@ function getMetaFor(animeId) {
       trueCharacterAnimePreview.setAttribute('aria-hidden', 'true');
     }
 
+    // Peak Episodes: clicar no nome do anime abre o posterlightbox da obra
+    // (mesmo comportamento do nome da obra no True Characters).
+    function findAnimeForFavEpisode(ep) {
+      if (!ep) return null;
+      const id = ep.animeId || ep.id;
+      const byTitle = (list, t) => {
+        const wanted = normalizeAnimeLookupTitle(t);
+        return wanted ? list.find(a => normalizeAnimeLookupTitle(a.title) === wanted) : null;
+      };
+      return animeData.find(a => a.id === id)
+        || (typeof planToWatchData !== 'undefined' && planToWatchData.find(a => a.id === id))
+        || findAllAnimeForCharacter(ep.episodeLabel)
+        || byTitle(animeData, ep.episodeLabel)
+        || (typeof planToWatchData !== 'undefined' && byTitle(planToWatchData, ep.episodeLabel))
+        || findAllAnimeForCharacter(ep.anime)
+        || byTitle(animeData, ep.anime)
+        || null;
+    }
+
+    document.addEventListener('click', event => {
+      const nameEl = event.target.closest('.fav-ep-card .fav-ep-anime-name');
+      if (!nameEl) return;
+      const selection = window.getSelection();
+      if (selection && selection.toString().length > 0) return;
+      const card = nameEl.closest('.fav-ep-card');
+      const idx = parseInt(card && card.getAttribute('data-fav-ep-index'), 10);
+      const ep = (typeof favoriteEpisodesData !== 'undefined' && !isNaN(idx)) ? favoriteEpisodesData[idx] : null;
+      const anime = findAnimeForFavEpisode(ep);
+      if (!anime || typeof window.__openPosterLightboxForAnime !== 'function') return;
+      event.preventDefault();
+      event.stopPropagation();
+      const rankIndex = Math.max(0, (globalRankMap[anime.id] || 1) - 1);
+      const holder = document.createElement('ol');
+      holder.className = 'ranking mode-true-characters category-all';
+      holder.innerHTML = createAnimeCard(anime, 'all', null, rankIndex);
+      const originItem = holder.querySelector('li.anime-item');
+      if (originItem) {
+        originItem.dataset.lightboxRank = String(rankIndex + 1);
+        window.__openPosterLightboxForAnime(originItem);
+      }
+    });
+
     document.addEventListener('click', event => {
       // Mobile: tocar apenas na imagem do True Character a amplia em
       // tela cheia. O texto da obra continua reservado ao lightbox.
@@ -5059,9 +5203,23 @@ function getMetaFor(animeId) {
       };
       const calendarSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path></svg>';
       const randomSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"></path><path d="m18 2 4 4-4 4"></path><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"></path><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"></path><path d="m18 14 4 4-4 4"></path></svg>';
+      // Monograma "MAL" desenhado em traços (não depende de fonte).
+      const malListSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width:2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 18.5v-13l3.3 5.2 3.3-5.2v13"></path><path d="m10.2 18.5 3.2-13 3.2 13"></path><path d="M11.2 14.6h4.4"></path><path d="M18.4 5.5v13h4"></path></svg>';
+      // Link para a lista pessoal no MyAnimeList (abre em nova aba).
+      const malListBtn = document.createElement('a');
+      malListBtn.id = 'drawerMalListBtn';
+      malListBtn.className = 'drawer-expand drawer-action-extra';
+      malListBtn.href = 'https://myanimelist.net/animelist/ptbr';
+      malListBtn.target = '_blank';
+      malListBtn.rel = 'noopener noreferrer';
+      malListBtn.setAttribute('aria-label', 'MyAnimeList');
+      malListBtn.setAttribute('data-tooltip', 'MyAnimeList');
+      malListBtn.innerHTML = malListSvg;
+      malListBtn.addEventListener('click', (e) => e.stopPropagation());
       const calBtn = makeBtn('drawerCalendarBtn', 'Seasonal Anime Calendar', calendarSvg);
       const rndBtn = makeBtn('drawerRandomBtn', 'Random Plan to Watch', randomSvg);
-      actions.insertBefore(rndBtn, drawerExpandBtn);
+      actions.insertBefore(malListBtn, drawerExpandBtn);
+      actions.insertBefore(rndBtn, malListBtn);
       actions.insertBefore(calBtn, rndBtn);
       // Espelha EXATAMENTE o estado do botão de calendário do Watching Now
       // (#calendarBtn): se ele estiver desabilitado, este também fica.
@@ -5964,7 +6122,7 @@ function getMetaFor(animeId) {
           <div class="fav-ep-content">
             <div class="fav-ep-heading">
               <h3 class="fav-ep-anime"><span class="fav-ep-rank" aria-label="Posição ${rank != null ? rank : ''}">${rank != null ? `#${rank}` : ''}</span>${ep.anime || ''}</h3>
-              <span class="fav-ep-episode">${ep.episodeLabel || ''}</span>
+              <span class="fav-ep-episode fav-ep-anime-name">${ep.episodeLabel || ''}</span>
             </div>
             ${ratingRowHtml}
             <p class="fav-ep-note">${ep.note ? `<span class="fav-ep-quote-mark" aria-hidden="true">&ldquo;</span>${ep.note}<span class="fav-ep-quote-mark fav-ep-quote-mark-end" aria-hidden="true">&rdquo;</span>` : ''}</p>

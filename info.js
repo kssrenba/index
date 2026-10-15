@@ -75,7 +75,7 @@ const rawAnimeData = [
     mal: [
       { label: "1 temporada", episodes: 1180, note: 10, malName: "One Piece" },
 
-      { spacer: true, text: "One Filler", watched: true },
+      { spacer: true, text: "Others Piece", watched: true },
       { label: "Film: Z", episodes: "1h47m", note: 7, malName: "One Piece Film: Z" },
       { label: "Film: Gold", episodes: "2h0m", note: 7, malName: "One Piece Film: Gold" },
       { label: "Film: Stampede", episodes: "1h41m", note: 8, malName: "One Piece: Stampede" },
@@ -434,6 +434,59 @@ const rawAnimeData = [
     ],
   },
   {
+    id: "hells-paradise",
+    img: "myranks-images/myranks/hells-paradise.webp",
+    title: "Hell's Paradise: Jigokuraku",
+    info: "2 temporadas: 25 episódios",
+    studio: "MAPPA",
+    airedSeason: "2023-?",
+    rewatchs: [
+      { season: 'S1', name: '1 Time' },
+    ],
+    mal: [
+      { label: "1ª temporada", episodes: 13, note: 8, malName: "Jigokuraku" },
+      { label: "2ª temporada", episodes: 12, note: 8, malName: "Jigokuraku 2nd Season" },
+    ],
+  },
+  {
+    id: "chainsaw-man",
+    img: "myranks-images/myranks/chainsaw-man.webp",
+    title: "Chainsaw Man",
+    info: "1 temporada: 12 episódios <br>Movie: 1h40m",
+    studio: "MAPPA",
+    airedSeason: "2022",
+    rewatch: "No",
+    mal: [
+      { label: "1 temporada", episodes: 12, note: 8, malName: "Chainsaw Man"},
+      { label: "Movie: Reze Arc", episodes: "1h39m", note: 9, malName: "Chainsaw Man Movie: Reze-hen"},
+    ],
+  },
+  {
+    id: "shadow",
+    img: "myranks-images/myranks/shadow.webp",
+    title: "The Eminence in Shadow",
+    info: "2 temporadas: 32 episódios",
+    studio: "Nexus",
+    airedSeason: "2022-?",
+    rewatchs: [
+      { season: 'S1-S2', name: '1 Time' },
+    ],
+    mal: [
+      { label: "1ª temporada", episodes: 20, note: 8, malName: "Kage no Jitsuryokusha ni Naritakute!" },
+      { label: "2ª temporada", episodes: 12, note: 8, malName: "Kage no Jitsuryokusha ni Naritakute! 2nd Season" },
+    ],
+  },
+  {
+    id: "gachiakuta",
+    img: "myranks-images/myranks/gachiakuta.webp",
+    title: "Gachiakuta",
+    info: "1 temporada: 24 episódios",
+    studio: "Bones",
+    airedSeason: "2025-?",
+    rewatch: "Not Yet",
+    mal: [{ label: "1ª temporada", episodes: 24, note: 8, malName: "Gachiakuta" }],
+  },
+  {
     id: "opm",
     img: "myranks-images/myranks/opm.webp",
     title: "One-Punch Man",
@@ -453,21 +506,6 @@ const rawAnimeData = [
     ],
   },
   {
-    id: "shadow",
-    img: "myranks-images/myranks/shadow.webp",
-    title: "The Eminence in Shadow",
-    info: "2 temporadas: 32 episódios",
-    studio: "Nexus",
-    airedSeason: "2022-?",
-    rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
-    ],
-    mal: [
-      { label: "1ª temporada", episodes: 20, note: 8, malName: "Kage no Jitsuryokusha ni Naritakute!" },
-      { label: "2ª temporada", episodes: 12, note: 8, malName: "Kage no Jitsuryokusha ni Naritakute! 2nd Season" },
-    ],
-  },
-  {
     id: "hajime-no-ippo",
     img: "myranks-images/myranks/hajime-no-ippo.webp",
     title: "Hajime no Ippo: The Fighting",
@@ -479,31 +517,6 @@ const rawAnimeData = [
       { label: "1ª temporada", episodes: 75, note: 9, malName: "Hajime no Ippo" },
       { label: "2ª temporada", episodes: 26, note: 7, malName: "Hajime no Ippo: New Challenger" },
       { label: "3ª temporada", episodes: 25, unwatched: true, malName: "Hajime no Ippo: Rising" },
-    ],
-  },
-  {
-    id: "gachiakuta",
-    img: "myranks-images/myranks/gachiakuta.webp",
-    title: "Gachiakuta",
-    info: "1 temporada: 24 episódios",
-    studio: "Bones",
-    airedSeason: "2025-?",
-    rewatch: "Not Yet",
-    mal: [{ label: "1ª temporada", episodes: 24, note: 8, malName: "Gachiakuta" }],
-  },
-  {
-    id: "hells-paradise",
-    img: "myranks-images/myranks/hells-paradise.webp",
-    title: "Hell's Paradise: Jigokuraku",
-    info: "2 temporadas: 25 episódios",
-    studio: "MAPPA",
-    airedSeason: "2023-?",
-    rewatchs: [
-      { season: 'S1', name: '1 Time' },
-    ],
-    mal: [
-      { label: "1ª temporada", episodes: 13, note: 8, malName: "Jigokuraku" },
-      { label: "2ª temporada", episodes: 12, note: 8, malName: "Jigokuraku 2nd Season" },
     ],
   },
   {
@@ -839,7 +852,10 @@ const rawAnimeData = [
     studio: "feel",
     airedSeason: "2025-?",
     rewatch: "No",
-    mal: [{ label: "1ª temporada I", episodes: 13, note: 7, malName: "Chitose-kun wa Ramune Bin no Naka" }],
+    mal: [
+      { label: "1ª temporada I", episodes: 13, note: 7, malName: "Chitose-kun wa Ramune Bin no Naka" },
+      { label: "1ª temporada II", episodes: 11, unwatched: true, malName: "Chitose-kun wa Ramune Bin no Naka" },
+    ],
   },
   {
     id: "makeine",
@@ -1410,27 +1426,6 @@ const rawAnimeData = [
 // Watching Now — animes em exibição/andamento, agrupados por temporada (season).
 const rawWatchingData = [
   // Non-Seasonal Anime
-  {
-    id: "chainsaw-man",
-    img: "watchingnow-images/watchingnow/chainsaw-man.webp",
-    title: "Chainsaw Man",
-    info: "1 temporada: 12 episódios <br>Movie: 1h40m",
-    studio: "MAPPA",
-    airedSeason: "2022",
-
-    url: "https://www.anime-planet.com/anime/chainsaw-man",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GVDHX8QNW/chainsaw-man",
-    malUrl: "https://myanimelist.net/anime/44511/Chainsaw_Man",
-
-    seasons: [12, 1],
-    movieSeasons: [1],
-    movieDurations: { 1: "1h40m" },
-
-    mal: [
-      { label: "1 temporada", episodes: 12, malName: "Chainsaw Man", unwatched: true },
-      { label: "Movie: Reze Arc", episodes: "1h39m", malName: "Chainsaw Man Movie: Reze-hen", unwatched: true },
-    ],
-  },
 
   // Fall 2026
   {
@@ -1464,6 +1459,7 @@ const rawWatchingData = [
     info: "1ª temporada II",
     season: "fall-2026",
     airedSeason: "2026",
+    seasons: [13, 11],
     url: "https://www.anime-planet.com/anime/chitose-is-in-the-ramune-bottle-part-ii",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00364783/chitose-is-in-the-ramune-bottle",
     malUrl: "https://myanimelist.net/anime/62484",
@@ -3595,18 +3591,18 @@ const mechaIds = ["code-geass", "cyberpunk", "trapped-in-a-dating-sim", "eighty-
 // Next Season Map — status/anúncios de próximas temporadas por id.
 const nextSeasonMap = {
   // jan 27
-  "shangri-la-frontier": { info: "3rd Season in Jan 2027" },
-  "mashle": { info: "3rd Season in Jan 2027" },
-  "the-worlds-finest-assassin": { info: "2nd Season in Jan 2027" },
+  "shangri-la-frontier": { info: "Season 3 in Jan 2027" },
+  "mashle": { info: "Season 3 in Jan 2027" },
+  "the-worlds-finest-assassin": { info: "Season 2 in Jan 2027" },
 
   // apr 27
-  "mushoku": { info: "~3rd Season Part 2 in Apr 2027~" },
+  "mushoku": { info: "Season 3 Part 2 ~in Apr 2027" },
 
   // jul 27
-  "tensei-shitara-slime": { info: "4th Season Part 2 in Jul 2027" },
+  "tensei-shitara-slime": { info: "Season 4 Part 2 in Jul 2027" },
 
   // oct 27
-  "frieren": { info: "3rd Season in Oct 2027" },
+  "frieren": { info: "Season 3 in Oct 2027" },
 
   // 27
   "haikyuu": { info: "New Movie in 2027" },
@@ -3614,36 +3610,37 @@ const nextSeasonMap = {
   "roshidere": { info: "Season 2 in 2027" },
   "one-piece": { info: "New Films in 2027/29" },
   "shadow": { info: "New Movie in 2027" },
-  "opm": { info: "3rd Season Part 2 in 2027" },
-  "midnight-heart": { info: "2nd Season in 2027" },
+  "opm": { info: "Season 3 Part 2 in 2027" },
+  "midnight-heart": { info: "Season 2 in 2027" },
 
 
   // -8 seasons (mar 23 - mar 26)
   "demon-slayer": { info: "2 Movies in Production" },//jun 24
-  "tsukimichi": { info: "3rd Season in Production" },//jun 24
+  "tsukimichi": { info: "Season 3 in Production" },//jun 24
 
-  "healing-magic": { info: "2nd Season Announced" },//ago 24
+  "healing-magic": { info: "Season 2 in Production" },//ago 24
 
-  "solo-leveling": { info: "New Movie Announced" },//mar 25
+  "solo-leveling": { info: "New Movie in Production" },//mar 25
 
-  "makeine": { info: "2nd Season Announced" },//apr 25
+  "makeine": { info: "Season 2 in Production" },//apr 25
 
-  "kingdom": { info: "Season 7 Announced" },//dec 25
-  "gachiakuta": { info: "2nd Season in Production" },//dec 25
+  "chainsaw-man": { info: "Season 2 in Production" },//dec 25
+  "kingdom": { info: "Season 7 in Production" },//dec 25
+  "gachiakuta": { info: "Season 2 in Production" },//dec 25
 
-  "danmachi": { info: "Season 6 Announced" },// fev 26
+  "danmachi": { info: "Season 6 in Production" },// fev 26
 
-  "jjk": { info: "4th Season in Production" },// mar 26
-  "oshi-no-ko": { info: "4th Season in Production" },//mar 26
-  "sentenced-hero": { info: "2nd Season Announced" },//mar 26
+  "jjk": { info: "Season 4 in Production" },// mar 26
+  "oshi-no-ko": { info: "Season 4 in Production" },//mar 26
+  "sentenced-hero": { info: "Season 2 in Production" },//mar 26
   "i-got-a-cheat-skill": { info: "Season 2 in Production" },//mar 26
 
-  // -2 seasons (april 26 - sep 26 )
-  "cote": { info: "Season 5 Announced" },//jun 26
-  "wistoria": { info: "Season 3 Announced" },//jun 26
-  "nippon-sangoku": { info: "2nd Season Announced" },//jun 26
-  "grand-blue": { info: "Season 4 Announced" },//sep 26
+  // -2 seasons (april 26 - sep 26)
+  "cote": { info: "Season 5 in Production" },//jun 26
+  "wistoria": { info: "Season 3 in Production" },//jun 26
+  "nippon-sangoku": { info: "Season 2 in Production" },//jun 26
+  "grand-blue": { info: "Season 4 in Production" },//sep 26
 
-  // now 
-  "dr-stone": { info: "Terraforming Announced" },//oct 26
+  // now
+  "dr-stone": { info: "Terraforming in Production" },//oct 26
 };

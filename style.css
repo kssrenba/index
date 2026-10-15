@@ -1906,12 +1906,13 @@
   .drawer-expand .icon-collapse { display: none; }
   .drawer-title-trio { display: none; }
   .drawer-action-extra { display: none; }
+  a.drawer-action-extra { text-decoration: none; }
   @media (min-width: 1024px) {
     .category-drawer.expanded .drawer-action-extra { display: inline-flex; }
   }
 
   @media (min-width: 1024px) {
-    .drawer-expand { display: inline-flex; }
+    .drawer-expand:not(.drawer-action-extra) { display: inline-flex; }
 
     .category-drawer.expanded .drawer-expand .icon-expand { display: none; }
     .category-drawer.expanded .drawer-expand .icon-collapse { display: block; }
@@ -5783,8 +5784,8 @@
   ol.ranking.mode-true-characters {
     --true-character-poster-w: 156px;
     --true-character-card-h: 156px;
-    column-gap: 14px;
-    row-gap: 14px;
+    column-gap: 8px;
+    row-gap: 8px;
   }
 
   ol.ranking.mode-true-characters li.anime-item {
@@ -14317,3 +14318,296 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
   }
 }
 
+
+  /* ── Next Season: sem fundo/borda, texto à esquerda, estilo mono ───────── */
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta {
+    --ns-pad-x: 22px;
+    left: var(--ns-pad-x) !important;
+    right: 0 !important;
+    bottom: 10px !important;
+    height: 16px !important;
+    min-height: 16px !important;
+    padding: 0 !important;
+    justify-content: flex-start !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta::after {
+    display: none !important;
+  }
+
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta .announce-track {
+    --announce-rank-offset: 0px !important;
+    justify-content: flex-start !important;
+    transform: none;
+  }
+
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta:not([data-lines]) .announce-track {
+    width: 100% !important;
+    transform: none !important;
+  }
+
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta .announce-line,
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta:not([data-lines]) .announce-line {
+    height: 16px !important;
+    line-height: 16px !important;
+    padding: 0 !important;
+    text-align: left !important;
+    font-family: "Inter", sans-serif !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.88) !important;
+  }
+
+  /* Marquee (várias linhas): dá um respiro entre o fim e o reinício do texto */
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta[data-lines] .announce-line {
+    padding-right: 48px !important;
+  }
+
+  /* Mesmo recuo à esquerda do texto do card em cada breakpoint */
+  @media (max-width: 900px) {
+    ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta { --ns-pad-x: 18px; }
+  }
+  @media (max-width: 600px) {
+    ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta { --ns-pad-x: 16px; bottom: 8px !important; }
+    ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta .announce-line { font-size: 9px !important; }
+  }
+  @media (max-width: 380px) {
+    ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta { --ns-pad-x: 13px; }
+  }
+
+  /* ── Next Season vira a 3ª linha do bloco (nome → info → next season), desktop e mobile ── */
+  ol.ranking.mode-true-characters li.anime-item.has-next-season .meta {
+    min-height: 0 !important;
+    padding-bottom: 22px !important;
+  }
+
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    flex: 0 0 auto;
+    margin: 0 !important;
+    z-index: 1 !important;
+  }
+
+  @media (max-width: 600px) {
+    ol.ranking.mode-true-characters li.anime-item.has-next-season .meta {
+      padding-bottom: 16px !important;
+    }
+
+    ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta {
+      margin: 2px 0 0 !important;
+    }
+  }
+
+  /* ── Cards mais escuros (ajuste fino: mude só o 0.30 / os alphas do mobile) ── */
+  ol.ranking.mode-true-characters li.anime-item > .meta {
+    background-color: rgba(0, 0, 0, 0.30);
+  }
+
+  @media (max-width: 600px) {
+    ol.ranking.mode-true-characters li.anime-item > .meta {
+      background: linear-gradient(110deg, rgba(5,5,8,0.62), rgba(5,5,8,0.74) 58%, rgba(5,5,8,0.82)) !important;
+    }
+  }
+
+  /* Next Season: texto selecionável (antes a faixa tinha pointer-events: none,
+     então o clique "atravessava" e selecionava o info). */
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta,
+  ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta * {
+    pointer-events: auto !important;
+    -webkit-user-select: text;
+    user-select: text;
+    cursor: text;
+  }
+
+  /* ── Mobile: espaçamento idêntico entre as 3 linhas (nome → info → next season) ──
+     O gap do flex vira 0 e cada espaço é definido aqui (--meta-line-gap).
+     A linha de info e a do Next Season usam a mesma altura de linha. */
+  @media (max-width: 600px) {
+    ol.ranking.mode-true-characters li.anime-item > .meta {
+      --meta-line-gap: 5px;
+      gap: 0 !important;
+    }
+
+    ol.ranking.mode-true-characters li.anime-item > .meta > .info-row {
+      margin: var(--meta-line-gap) 0 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    ol.ranking.mode-true-characters li.anime-item > .meta > .info-row .info {
+      line-height: 14px !important;
+    }
+
+    ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta {
+      margin: var(--meta-line-gap) 0 0 !important;
+      height: 14px !important;
+      min-height: 14px !important;
+    }
+
+    ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta .announce-line,
+    ol.ranking.mode-true-characters li.anime-item .meta > .announce-strip.announce-strip--meta:not([data-lines]) .announce-line {
+      height: 14px !important;
+      line-height: 14px !important;
+    }
+  }
+
+  /* Announced Sequels: o card inteiro abre o poster lightbox */
+  ol.ranking.category-announced li.anime-item {
+    cursor: pointer !important;
+  }
+
+  /* Poster lightbox: fonte do Next Season igual à dos cards (Inter, maiúscula, 600, 0.06em) */
+  .poster-lightbox .poster-lightbox-announce .announce-line,
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-announce .announce-line {
+    font-family: "Inter", sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase;
+  }
+
+  /* True Characters: hover do nome do anime igual ao do título "Watched Animes"
+     (o texto escurece um pouco, opacity 0.75, sem deslocar nem clarear). */
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item .info-row {
+    transition: none;
+  }
+
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item .info-row .info {
+    transition: opacity 0.15s ease;
+  }
+
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item .info-row:hover {
+    transform: none !important;
+  }
+
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item .info-row:hover .info {
+    color: rgba(255, 255, 255, 0.78) !important;
+  }
+
+  /* Só o texto do nome reage (hover e clique abrem o poster lightbox da obra),
+     não a caixa inteira de 220px. */
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item .info-row .info {
+    width: fit-content !important;
+    max-width: 100% !important;
+  }
+
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item .info-row .info:hover {
+    opacity: 0.75;
+  }
+
+  /* Peak Episodes: nome do anime abre o posterlightbox, com o mesmo hover do
+     título "Watched Animes" (texto escurece um pouco). */
+  .fav-ep-card .fav-ep-anime-name {
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+
+  .fav-ep-card .fav-ep-anime-name:hover {
+    opacity: 0.75;
+  }
+
+  /* ── Cards das listas (anime-item) sem cantos arredondados ──
+     Fica no fim do arquivo, com !important, para vencer as muitas regras
+     por categoria/breakpoint que definem border-radius nos cards. */
+  li.anime-item,
+  li.anime-item::before,
+  li.anime-item::after,
+  li.anime-item > .anime-item-ambient,
+  li.anime-item > .anime-item-ambient-shade,
+  li.anime-item .poster-wrap,
+  li.anime-item .poster-wrap .thumb,
+  li.anime-item .poster-fallback {
+    border-radius: 0 !important;
+  }
+
+
+/* ── Desktop: botão para esconder/mostrar o pôster (.poster-lightbox-hide-poster) ──
+   No mobile ele já existia; aqui ele passa a existir também no desktop.
+   Fica no grupo de botões da direita (posição calculada pelo JS) e usa o mesmo
+   acabamento dos outros botões do topo. Sem pôster, as infos ocupam a
+   largura toda, o banner nítido vira o fundo inteiro e o bloco
+   "LINKS ABOUT" (que ficava embaixo da imagem) aparece no painel.
+   O botão só aparece em animes com banner (o JS controla o display). */
+@media (min-width: 761px) {
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-hide-poster {
+    position: fixed;
+    top: 24px;
+    right: 246px; /* posição final é calculada pelo JS (positionJpNameBtn) */
+    left: auto;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #cbd5e1;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+    outline: none;
+    z-index: 3;
+    transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-hide-poster:hover {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    transform: scale(1.02);
+  }
+
+  .poster-lightbox-hide-poster:focus,
+  .poster-lightbox-hide-poster:focus-visible { outline: none; box-shadow: none; }
+
+  .poster-lightbox-hide-poster svg {
+    width: 22px; height: 22px;
+    stroke: currentColor; stroke-width: 2.2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    animation: hidePosterIconInDesktop 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .poster-lightbox-hide-poster .icon-show { display: none; }
+  .poster-lightbox.poster-hidden .poster-lightbox-hide-poster .icon-hide { display: none; }
+  .poster-lightbox.poster-hidden .poster-lightbox-hide-poster .icon-show { display: block; }
+
+  @keyframes hidePosterIconInDesktop {
+    from { opacity: 0; transform: scale(0.7) rotate(-10deg); }
+    to   { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  /* Pôster escondido: sai do layout e o painel ocupa o espaço dele. */
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-media {
+    display: none !important;
+  }
+
+  /* O LINKS ABOUT de baixo da imagem some junto com ela; mostra a cópia do painel. */
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-more-info:not(:empty) {
+    display: flex !important;
+  }
+
+  /* Banner nítido passa a cobrir a largura toda e fica um pouco mais claro. */
+  .poster-lightbox.poster-hidden .poster-lightbox-banner { --lb-banner-split: 0%; }
+  .poster-lightbox.poster-hidden .poster-lightbox-banner img:not(.poster-lightbox-banner-blur) {
+    filter: brightness(0.6) saturate(1.1) !important;
+  }
+  .poster-lightbox.poster-lightbox .poster-lightbox-banner img {
+    transition: filter 0.32s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster-lightbox-hide-poster svg { animation: none !important; }
+}
