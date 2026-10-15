@@ -55,7 +55,7 @@ const rawAnimeData = [
     info: "1 temporada: 148 episódios",
     studio: "MADHOUSE",
     airedSeason: "2011-2014",
-    rewatch: "2 Times",
+    rewatch: "2 TIMES",
     mal: [
       { label: "Hunter x Hunter (2011)", episodes: 148, note: 10, malName: "Hunter x Hunter (2011)" },
       { spacer: true, text: "~70% Filler ( XP )" },
@@ -99,7 +99,7 @@ const rawAnimeData = [
     studio: "MAPPA",
     airedSeason: "2020-?",
     rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
+      { season: 'S1-S2', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 8, malName: "Jujutsu Kaisen" },
@@ -139,7 +139,7 @@ const rawAnimeData = [
     studio: "Doga Kobo",
     airedSeason: "2023-?",
     rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
+      { season: 'S1-S2', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 11, note: 8, malName: "[Oshi No Ko]" },
@@ -154,11 +154,11 @@ const rawAnimeData = [
     info: "4 temporadas: 85 episódios <br>Movie: 1h24m",
     studio: "Production I.G",
     airedSeason: "2014-?",
-    rewatch: "2 Times",
     rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
-      { season: 'S3-S4 I', name: '2 Times' },
-      { season: 'S4 II', name: '3 Times' },
+      { season: 'S1-S2', name: '1 TIME' },
+      { season: 'S3-S4 I', name: '2 TIMES' },
+      { season: 'S4 II', name: '3 TIMES' },
+      { season: 'MOVIE', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 25, note: 8, malName: "Haikyuu!!" },
@@ -182,7 +182,7 @@ const rawAnimeData = [
     studio: "Studio Bind",
     airedSeason: "2021-?",
     rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
+      { season: 'S1-S2', name: '1 TIME' },
     ],
     mal: [
       {
@@ -229,7 +229,7 @@ const rawAnimeData = [
     studio: "White Fox",
     airedSeason: "2016-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 25, note: 9, malName: "Re:Zero kara Hajimeru Isekai Seikatsu" },
@@ -247,7 +247,7 @@ const rawAnimeData = [
     studio: "Trigger",
     airedSeason: "2022",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 10, note: 9, malName: "Cyberpunk: Edgerunners" },
@@ -261,10 +261,9 @@ const rawAnimeData = [
     info: "4 temporadas: 94 episódios",
     studio: "TMS Entertainment",
     airedSeason: "2019-2026",
-    rewatch: "2 Times (Season 4 Not Yet)",
     rewatchs: [
-      { season: 'S1-S2', name: '2 Times' },
-      { season: 'S3-S4 II', name: '1 Time' },
+      { season: 'S1-S2', name: '2 TIMES' },
+      { season: 'S3-S4 II', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 8, malName: "Dr. Stone" },
@@ -305,7 +304,7 @@ const rawAnimeData = [
     studio: "A-1 Pictures",
     airedSeason: "2024-?",
     rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
+      { season: 'S1-S2', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Ore dake Level Up na Ken" },
@@ -323,7 +322,7 @@ const rawAnimeData = [
     ],
     airedSeason: "2013-2022",
     rewatchs: [
-      { season: 'S1-S3', name: '1 Time' },
+      { season: 'S1-S3', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 25, note: 9, malName: "Shingeki no Kyojin" },
@@ -347,7 +346,7 @@ const rawAnimeData = [
     ],
     airedSeason: "2018-?",
     rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
+      { season: 'S1-S2', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Grand Blue" },
@@ -363,7 +362,7 @@ const rawAnimeData = [
     studio: "Lerche",
     airedSeason: "2017-?",
     rewatchs: [
-      { season: 'S1-S3', name: '1 Time' },
+      { season: 'S1-S3', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e" },
@@ -380,7 +379,7 @@ const rawAnimeData = [
     studio: "Bones",
     airedSeason: "2016-2025",
     rewatchs: [
-      { season: 'S1-S5', name: '1 Time' },
+      { season: 'S1-S5', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 7, malName: "Boku no Hero Academia" },
@@ -441,7 +440,7 @@ const rawAnimeData = [
     studio: "MAPPA",
     airedSeason: "2023-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 8, malName: "Jigokuraku" },
@@ -469,7 +468,7 @@ const rawAnimeData = [
     studio: "Nexus",
     airedSeason: "2022-?",
     rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
+      { season: 'S1-S2', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 20, note: 8, malName: "Kage no Jitsuryokusha ni Naritakute!" },
@@ -497,7 +496,7 @@ const rawAnimeData = [
     ],
     airedSeason: "2015-?",
     rewatchs: [
-      { season: 'S1-S2', name: '2 Times' },
+      { season: 'S1-S2', name: '2 TIMES' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 9, malName: "One Punch Man" },
@@ -527,7 +526,7 @@ const rawAnimeData = [
     studio: "CloverWorks",
     airedSeason: "2021-2023",
     rewatchs: [
-      { season: 'S1', name: '2 Times' },
+      { season: 'S1', name: '2 TIMES' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 8, malName: "Horimiya" },
@@ -545,7 +544,7 @@ const rawAnimeData = [
     ],
     airedSeason: "2019-2023",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 8, malName: "Vinland Saga" },
@@ -560,7 +559,7 @@ const rawAnimeData = [
     studio: "CloverWorks",
     airedSeason: "2025-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [{ label: "1ª temporada", episodes: 13, note: 8, malName: "Kaoru Hana wa Rin to Saku" }],
   },
@@ -585,7 +584,7 @@ const rawAnimeData = [
     studio: "ufotable",
     airedSeason: "2019-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 26, note: 7, malName: "Kimetsu no Yaiba" },
@@ -617,7 +616,7 @@ const rawAnimeData = [
     studio: "CloverWorks",
     airedSeason: "2018-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 8, malName: "Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai" },
@@ -680,7 +679,7 @@ const rawAnimeData = [
     studio: "Bandai Filmworks / Actas",
     airedSeason: "2024-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Tsue to Tsurugi no Wistoria" },
@@ -698,7 +697,7 @@ const rawAnimeData = [
     ],
     airedSeason: "2024-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 25, note: 8, malName: "Ao no Hako" },
@@ -713,7 +712,7 @@ const rawAnimeData = [
     studio: "Doga Kobo",
     airedSeason: "2024-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san" }],
   },
@@ -725,7 +724,7 @@ const rawAnimeData = [
     studio: "A-1 Pictures",
     airedSeason: "2023-?",
     rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
+      { season: 'S1-S2', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Mashle" },
@@ -753,7 +752,7 @@ const rawAnimeData = [
     studio: "Bug Films",
     airedSeason: "2023",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto" }],
   },
@@ -812,7 +811,7 @@ const rawAnimeData = [
     studio: "J.C. Staff",
     airedSeason: "2015-2020",
     rewatchs: [
-      { season: 'S1-S5', name: '1 Time' },
+      { season: 'S1-S5', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 7, malName: "Shokugeki no Souma" },
@@ -832,7 +831,7 @@ const rawAnimeData = [
     studio: "J.C. Staff",
     airedSeason: "2015-?",
     rewatchs: [
-      { season: 'S1-S4', name: '1 Time' },
+      { season: 'S1-S4', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 7, malName: "Dungeon ni Deai wo Motomeru no wa Machigatteiru Darou ka" },
@@ -967,7 +966,7 @@ const rawAnimeData = [
     studio: "A-1 Pictures",
     airedSeason: "2012-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 25, note: 7, malName: "Sword Art Online" },
@@ -1028,7 +1027,7 @@ const rawAnimeData = [
     ],
     airedSeason: "2014-2021",
     rewatchs: [
-      { season: 'S1-S2', name: '1 Time' },
+      { season: 'S1-S2', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 24, note: 7, malName: "Nanatsu no Taizai" },
@@ -1051,7 +1050,7 @@ const rawAnimeData = [
     studio: "Project No.9",
     airedSeason: "2023-?",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken" },
@@ -1123,7 +1122,7 @@ const rawAnimeData = [
     studio: "Project No.9",
     airedSeason: "2022",
     rewatchs: [
-      { season: 'S1', name: '1 Time' },
+      { season: 'S1', name: '1 TIME' },
     ],
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Fuufu Ijou, Koibito Miman." }],
   },
@@ -3594,12 +3593,14 @@ const nextSeasonMap = {
   "shangri-la-frontier": { info: "Season 3 in Jan 2027" },
   "mashle": { info: "Season 3 in Jan 2027" },
   "the-worlds-finest-assassin": { info: "Season 2 in Jan 2027" },
+  "i-got-a-cheat-skill": { info: "Season 2 in Jan 2027" },
+  "opm": { info: "Season 3 II in Jan 2027" },
 
   // apr 27
-  "mushoku": { info: "Season 3 Part 2 ~in Apr 2027" },
+  "mushoku": { info: "Season 3 II ~in Apr 2027" },
 
   // jul 27
-  "tensei-shitara-slime": { info: "Season 4 Part 2 in Jul 2027" },
+  "tensei-shitara-slime": { info: "Season 4 II in Jul 2027" },
 
   // oct 27
   "frieren": { info: "Season 3 in Oct 2027" },
@@ -3610,7 +3611,6 @@ const nextSeasonMap = {
   "roshidere": { info: "Season 2 in 2027" },
   "one-piece": { info: "New Films in 2027/29" },
   "shadow": { info: "New Movie in 2027" },
-  "opm": { info: "Season 3 Part 2 in 2027" },
   "midnight-heart": { info: "Season 2 in 2027" },
 
 
@@ -3633,7 +3633,6 @@ const nextSeasonMap = {
   "jjk": { info: "Season 4 in Production" },// mar 26
   "oshi-no-ko": { info: "Season 4 in Production" },//mar 26
   "sentenced-hero": { info: "Season 2 in Production" },//mar 26
-  "i-got-a-cheat-skill": { info: "Season 2 in Production" },//mar 26
 
   // -2 seasons (april 26 - sep 26)
   "cote": { info: "Season 5 in Production" },//jun 26

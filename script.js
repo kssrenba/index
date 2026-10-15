@@ -12,6 +12,15 @@ if ('scrollRestoration' in history) {
   }
 
   document.addEventListener("DOMContentLoaded", async function() {
+    // No Next Season Map, o "II" que vem depois de "Season X" usa Times New Roman.
+    // O helper é compartilhado pelo lightbox, pelos cards e pela busca.
+    function formatNextSeasonText(text) {
+      return String(text ?? '').replace(
+        /(\bSeason\s+\d+\s+)(II)\b/gi,
+        '$1<span style="font-family: Times New Roman, Times, serif;">$2</span>'
+      );
+    }
+
     // ── Trava de scroll compartilhada por todos os drawers/lightbox ──
     // Importante: NUNCA muda "overflow" de html/body. Em vez disso, fixa o
     // body na posição atual (position:fixed + top negativo). Como a
@@ -212,8 +221,35 @@ if ('scrollRestoration' in history) {
         ? new ResizeObserver(entries => entries.forEach(entry => updateStudioSeparators(entry.target)))
         : null;
 
+      // Mobile (layout em 2 linhas): se o Rewatch aberto não couber na linha 2,
+      // ele ganha .is-meta-tall e passa a cobrir também a linha do Studio.
+      function updateRewatchTall() {
+        if (!lightboxMeta) return;
+        const item = lightboxMeta.querySelector('.rank-meta-item--rewatch.is-meta-expanded');
+        lightboxMeta.querySelectorAll('.rank-meta-item--rewatch.is-meta-tall').forEach(el => {
+          if (el !== item) el.classList.remove('is-meta-tall');
+        });
+        if (!item) return;
+        const isMobileTwoRows = window.matchMedia?.('(max-width: 760px)').matches
+          && !lightboxMeta.classList.contains('rank-meta--compact');
+        if (!isMobileTwoRows) {
+          item.classList.remove('is-meta-tall');
+          return;
+        }
+        // Mede na altura de 1 linha (sem .is-meta-tall) pra decidir se cabe.
+        item.classList.remove('is-meta-tall');
+        const cs = getComputedStyle(item);
+        const gap = parseFloat(cs.rowGap) || 0;
+        const kids = Array.from(item.children);
+        const contentH = kids.reduce((sum, el) => sum + el.scrollHeight, 0)
+          + gap * Math.max(0, kids.length - 1)
+          + (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+        if (contentH > item.clientHeight + 1) item.classList.add('is-meta-tall');
+      }
+
       function refreshStudioSeparators() {
         lightboxMeta?.querySelectorAll('.rank-meta-studio-list').forEach(list => updateStudioSeparators(list));
+        updateRewatchTall();
       }
       window.addEventListener('resize', () => requestAnimationFrame(refreshStudioSeparators), { passive: true });
 
@@ -236,14 +272,14 @@ if ('scrollRestoration' in history) {
             const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
             if (reduceMotion) {
               lightboxMeta.classList.remove('is-meta-expanded');
-              item.classList.remove('is-meta-expanded');
+              item.classList.remove('is-meta-expanded', 'is-meta-tall');
               requestAnimationFrame(refreshStudioSeparators);
               return;
             }
             item.classList.add('is-meta-collapsing');
             lightboxMeta.classList.add('is-meta-collapsing-all');
             setTimeout(() => {
-              item.classList.remove('is-meta-collapsing', 'is-meta-expanded');
+              item.classList.remove('is-meta-collapsing', 'is-meta-expanded', 'is-meta-tall');
               lightboxMeta.classList.remove('is-meta-collapsing-all', 'is-meta-expanded');
               requestAnimationFrame(refreshStudioSeparators);
             }, 200);
@@ -261,7 +297,7 @@ if ('scrollRestoration' in history) {
             return;
           }
 
-          expandedItem?.classList.remove('is-meta-expanded');
+          expandedItem?.classList.remove('is-meta-expanded', 'is-meta-tall');
           expandableItem.classList.add('is-meta-expanded');
           lightboxMeta.classList.add('is-meta-expanded');
           requestAnimationFrame(refreshStudioSeparators);
@@ -573,11 +609,16 @@ if ('scrollRestoration' in history) {
       csmSound.loop = false;
       const CSM_IDS = ['chainsaw-man', 'csm'];
 
+      // ── Som especial ao abrir o poster-lightbox de Code Geass (sem loop) ──
+      const codeGeassSound = new Audio('assets/sounds/cg-lelouch.mp3');
+      codeGeassSound.loop = false;
+      const CODE_GEASS_IDS = ['code-geass'];
+
       // ── Controle global e persistente dos efeitos do poster lightbox ──
       // O botão agora PAUSA/RETOMA o efeito (antes era mute). Estando pausado,
       // nenhum efeito novo começa sozinho ao abrir/trocar de pôster.
       const POSTER_SOUND_PAUSED_KEY = 'posterLightboxSoundPaused';
-      const posterSoundEffects = [rezeroSound, jjkSound, aotSound, onePieceSound, csmSound];
+      const posterSoundEffects = [rezeroSound, jjkSound, aotSound, onePieceSound, csmSound, codeGeassSound];
       let posterSoundPaused = false;
       try {
         posterSoundPaused = localStorage.getItem(POSTER_SOUND_PAUSED_KEY) === 'true';
@@ -599,6 +640,7 @@ if ('scrollRestoration' in history) {
         if (AOT_IDS.includes(item.id)) return aotSound;
         if (ONE_PIECE_IDS.includes(item.id)) return onePieceSound;
         if (CSM_IDS.includes(item.id)) return csmSound;
+        if (CODE_GEASS_IDS.includes(item.id)) return codeGeassSound;
         return null;
       }
 
@@ -608,7 +650,8 @@ if ('scrollRestoration' in history) {
           || JJK_IDS.includes(item.id)
           || AOT_IDS.includes(item.id)
           || ONE_PIECE_IDS.includes(item.id)
-          || CSM_IDS.includes(item.id);
+          || CSM_IDS.includes(item.id)
+          || CODE_GEASS_IDS.includes(item.id);
       }
 
       function updatePosterSoundButton() {
@@ -2647,6 +2690,18 @@ function getMetaFor(animeId) {
           } catch (e) {}
         }
 
+        const wasCodeGeass = currentItem && CODE_GEASS_IDS.includes(currentItem.id);
+        const isCodeGeass = CODE_GEASS_IDS.includes(item.id);
+        if (wasCodeGeass && currentItem !== item) {
+          isCodeGeass ? stopAudioInstantly(codeGeassSound) : fadeOutAudio(codeGeassSound);
+        }
+        if (isCodeGeass && currentItem !== item && !posterSoundPaused) {
+          try {
+            codeGeassSound.currentTime = 0;
+            codeGeassSound.play().catch(() => {});
+          } catch (e) {}
+        }
+
         currentItem = item;
 
         // Mostra o atalho do calendário somente para animes que fazem
@@ -2877,7 +2932,7 @@ function getMetaFor(animeId) {
           const ns = sequelInfo;
           if (ns && ns.info) {
             const lines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
-            lightboxAnnounce.innerHTML = `<span class="announce-line">${escapeHtml(lines.join('  •  '))}</span>`;
+            lightboxAnnounce.innerHTML = `<span class="announce-line">${formatNextSeasonText(escapeHtml(lines.join('  •  ')))}</span>`;
           } else {
             lightboxAnnounce.innerHTML = '';
           }
@@ -3081,6 +3136,9 @@ function getMetaFor(animeId) {
         }
         if (currentItem && CSM_IDS.includes(currentItem.id)) {
           fadeOutAudio(csmSound);
+        }
+        if (currentItem && CODE_GEASS_IDS.includes(currentItem.id)) {
+          fadeOutAudio(codeGeassSound);
         }
         stopTitleMarquee();
         document.title = DEFAULT_PAGE_TITLE;
@@ -4582,7 +4640,7 @@ function getMetaFor(animeId) {
         }
       }
       const ns = nextSeasonMap[anime.id];
-      const nsLines = ns ? String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean) : [];
+      const nsLines = ns ? String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => formatNextSeasonText(s.trim())).filter(Boolean) : [];
       const isMulti = nsLines.length > 1;
 
       const stripHtml = ns ? `
@@ -8065,6 +8123,23 @@ function getMetaFor(animeId) {
       // os 22px dela (usado no drawer expandido, quando nenhum card da fileira
       // tem a faixa). Padrão (true) mantém o comportamento antigo.
       function buildResultItemHtml(entry, i, acc, accGlow, query, reserveNs) {
+            // Next Season vira a 3ª linha dentro do bloco de texto (como nas listas),
+            // em todos os cards da busca, exceto Peak Episodes e True Characters.
+            const nestNs = entry.tag !== 'favep' && entry.tag !== 'trueCharacters';
+            const nsStripHtml = (() => {
+                      // No card de Peak Episodes (favep) não mostramos a faixa de
+                      // "nova temporada anunciada" — ela não faz sentido nesse
+                      // contexto (o card é sobre um episódio específico, não sobre
+                      // o anime como um todo).
+                      if (entry.tag === 'favep') return '';
+                      const ns = nextSeasonMap[entry.anime.id];
+                      if (!ns) return '';
+                      const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => formatNextSeasonText(s.trim())).filter(Boolean);
+                      const isMulti = nsLines.length > 1;
+                      return `<div class="announce-strip search-result-next-season"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
+                                <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
+                              </div>`;
+                    })();
             return `
               <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? ' search-result-item--ann' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id] && reserveNs !== false) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
                 <div class="search-result-card-inner">
@@ -8092,21 +8167,9 @@ function getMetaFor(animeId) {
                       const metaHtml = remaining ? `<span class="search-result-meta">${remaining}</span>` : '';
                       return metaHtml + buildSearchProgressHtml(entry.anime, acc);
                     })()}
+                    ${nestNs ? nsStripHtml : ''}
                   </div>
-                    ${(() => {
-                      // No card de Peak Episodes (favep) não mostramos a faixa de
-                      // "nova temporada anunciada" — ela não faz sentido nesse
-                      // contexto (o card é sobre um episódio específico, não sobre
-                      // o anime como um todo).
-                      if (entry.tag === 'favep') return '';
-                      const ns = nextSeasonMap[entry.anime.id];
-                      if (!ns) return '';
-                      const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
-                      const isMulti = nsLines.length > 1;
-                      return `<div class="announce-strip search-result-next-season"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
-                                <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
-                              </div>`;
-                    })()}
+                    ${nestNs ? '' : nsStripHtml}
                 </div>
                 <svg class="search-result-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
               </div>`;
@@ -8193,8 +8256,10 @@ function getMetaFor(animeId) {
           const rowKinds = [];
           sections.forEach(section => {
             const isTc = section.items.every(e => e.tag === 'trueCharacters');
-            const kind = isTc ? 'tc' : 'other';
-            const perRow = isTc ? Math.min(2, basePerRow) : basePerRow;
+            // Announced Sequels: 2 por fileira (pôster mantém o tamanho de antes).
+            const isAnn = !isTc && section.items.every(e => e.forcedCategory === 'announced' && e.tag !== 'favep' && e.tag !== 'trueCharacters');
+            const kind = isTc ? 'tc' : (isAnn ? 'ann' : 'other');
+            const perRow = (isTc || isAnn) ? Math.min(2, basePerRow) : basePerRow;
             const unit = 6 / perRow;
             let prevRow = -1;
             for (let k = 0, first = true; k < section.items.length; k += perRow, first = false) {
@@ -8207,7 +8272,7 @@ function getMetaFor(animeId) {
               const r = rows.length - 1;
               rows[r] -= units;
               prevRow = r;
-              pieces.push({ section, items: chunk, row: r, span: units, head: first });
+              pieces.push({ section, items: chunk, row: r, span: units, head: first, ann: isAnn && basePerRow === 3 });
             }
           });
           // Ordem visual: por linha (estável) — assim as setas ↑/↓ e o
@@ -8240,7 +8305,7 @@ function getMetaFor(animeId) {
           const reserveNs = expandedLayout ? rowHasNs : true;
           const itemsHtml = pc.items.map(entry => buildResultItemHtml(entry, idxCounter++, acc, accGlow, query, reserveNs)).join('');
           const style = expandedLayout
-            ? ` style="grid-row: ${pc.row + 1}; grid-column: span ${pc.span}; --m: ${pc.items.length};"`
+            ? ` style="grid-row: ${pc.row + 1}; grid-column: span ${pc.span}; --m: ${pc.items.length};${pc.ann ? ' --ann-poster-col: 27.6%;' : ''}"`
             : '';
           return `<div class="search-section-group${isCont ? ' is-cont' : ''}"${style}>${headerHtml}${itemsHtml}</div>`;
         }).join('');
@@ -8532,7 +8597,7 @@ function getMetaFor(animeId) {
         // (3 por padrão; 2 em True Characters; menos em palco estreito).
         const pvW = target.clientWidth || 0;
         const pvBase = pvW && pvW <= 480 ? 1 : (pvW && pvW <= 760 ? 2 : 3);
-        const pvPerRow = mode === 'trueCharacters' ? Math.min(2, pvBase) : pvBase;
+        const pvPerRow = (mode === 'trueCharacters' || mode === 'announced') ? Math.min(2, pvBase) : pvBase;
         const pvRowHasNs = [];
         for (let k = 0; k < picked.length; k += pvPerRow) {
           pvRowHasNs.push(picked.slice(k, k + pvPerRow).some(p => p.entry.tag !== 'favep' && !!nextSeasonMap[p.entry.anime.id]));
@@ -10010,9 +10075,12 @@ function getCalendarItems() {
         if (ambientScrollTimeout) clearTimeout(ambientScrollTimeout);
         ambientScrollTimeout = setTimeout(finishAmbientScrolling, 120);
       }
-      window.addEventListener('scroll', markAmbientScrolling, { passive: true });
+      // capture: true — o scroll NÃO borbulha de elementos internos (ex: o
+      // .search-drawer-results rola por conta própria), então sem captura
+      // esta proteção só ligava na rolagem da página e nunca na do search.
+      window.addEventListener('scroll', markAmbientScrolling, { passive: true, capture: true });
       if ('onscrollend' in window) {
-        window.addEventListener('scrollend', finishAmbientScrolling, { passive: true });
+        window.addEventListener('scrollend', finishAmbientScrolling, { passive: true, capture: true });
       }
     })();
 

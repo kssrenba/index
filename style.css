@@ -914,7 +914,10 @@
 
   /* Sem faixa de "nova temporada": reserva a altura dela (22px) pra o card
     ficar do mesmo tamanho dos que têm a faixa. */
-  .search-result-item--no-ns .search-result-card-inner { padding-bottom: 22px; }
+  /* A reserva fica DENTRO do .search-result-info (padding-bottom = 14px + 22px da faixa),
+    e não no card-inner. Assim o bloco de texto e o #rank (centralizado no info) ficam
+    exatamente na mesma altura em todos os cards, com ou sem Next Season. */
+  .search-result-item--no-ns .search-result-info { padding-bottom: 36px; }
 
   .search-result-card-inner:has(.search-result-next-season) .search-result-info {
     border-radius: 0;
@@ -962,7 +965,7 @@
 
   .search-result-item--ann .search-result-card-inner {
     display: grid;
-    grid-template-columns: 42% minmax(0, 1fr);
+    grid-template-columns: var(--ann-poster-col, 42%) minmax(0, 1fr);
     grid-template-rows: 1fr auto;
     padding-bottom: 0;
     border-radius: 16px;
@@ -1270,10 +1273,11 @@
     }
 
     .category-drawer.expanded .search-hover-preview > .search-result-item--tc { --per-row: 2; }
-    .category-drawer.expanded .search-hover-preview > .search-result-item--ann { --per-row: 3; }
+    .category-drawer.expanded .search-hover-preview > .search-result-item--ann { --per-row: 2; --ann-poster-col: 27.6%; }
 
     @container (max-width: 760px) {
       .category-drawer.expanded .search-hover-preview > .search-result-item { --per-row: 2; }
+      .category-drawer.expanded .search-hover-preview > .search-result-item--ann { --ann-poster-col: 42%; }
     }
 
     @container (max-width: 480px) {
@@ -2152,7 +2156,7 @@
       pôster 2:3 à esquerda, wallpaper borrado + texto à direita. */
     .category-drawer.expanded .search-section-group > .search-result-item--ann > .search-result-card-inner {
       display: grid;
-      grid-template-columns: 42% minmax(0, 1fr);
+      grid-template-columns: var(--ann-poster-col, 42%) minmax(0, 1fr);
       grid-template-rows: 1fr auto;
       flex: 1 1 auto;
     }
@@ -9621,6 +9625,47 @@
     animation-play-state: paused !important;
   }
 
+  /* ── Search: rolagem fluida ──────────────────────────────────────
+     O search rola dentro do próprio container, com dezenas de cards. O que
+     pesa a cada frame: (1) backdrop-filter da faixa de Next Season em cada
+     card (precisa re-borrar o que está atrás toda vez que algo se mexe),
+     (2) o wallpaper com blur(24px) + deriva infinita, e (3) o hover que
+     dispara conforme os cards passam por baixo do mouse (transform, sombra,
+     zoom do pôster, animação). Tudo isso pausa enquanto rola e volta quando
+     a rolagem para. */
+  body.is-scrolling-ambient .search-drawer-results .search-result-next-season,
+  body.is-scrolling-ambient .search-drawer-results .announce-strip {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body.is-scrolling-ambient .search-drawer-results .search-result-ambient {
+    animation: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+
+  /* Sem hover enquanto rola: o mouse parado cruzando cards em movimento
+     não dispara transform/sombra/zoom/animação em cadeia. */
+  /* Só nos cards (não no container): assim a barra de rolagem continua
+     arrastável e a roda do mouse cai direto no container. */
+  body.is-scrolling-ambient .search-drawer-results .search-result-item {
+    pointer-events: none;
+  }
+
+  body.is-scrolling-ambient .search-drawer-results .search-result-item,
+  body.is-scrolling-ambient .search-drawer-results .search-result-item::after,
+  body.is-scrolling-ambient .search-drawer-results .search-result-thumb,
+  body.is-scrolling-ambient .search-drawer-results .search-result-meta {
+    transition: none !important;
+  }
+
+  /* Cada card vira uma camada própria e estável (o blur é rasterizado uma
+     vez e só desliza durante o scroll, em vez de repintar junto). */
+  .search-drawer-results .search-result-ambient {
+    backface-visibility: hidden;
+  }
+
   .poster-lightbox-hero-rank { display: none; }
 
   /* ── Poster lightbox desktop: pôster amplo à esquerda + ficha à direita ── */
@@ -13807,6 +13852,32 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
     width: 0;
     height: 0;
   }
+
+  /* Rewatch que não cabe na linha 2: expande até a linha do Studio
+     (o JS aplica .is-meta-tall só quando falta espaço). */
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta.is-meta-expanded .rank-meta-item--rewatch.is-meta-expanded.is-meta-tall {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta.is-meta-expanded:has(.rank-meta-item--rewatch.is-meta-tall.is-meta-expanded) .rank-meta-item--studio:not(.is-meta-expanded) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta.is-meta-expanded .rank-meta-item--rewatch.is-meta-expanded.is-meta-tall .rank-meta-studio-list {
+    max-height: 96px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
 }
 
 /* ==========================================================================
@@ -14610,4 +14681,110 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
 @media (prefers-reduced-motion: reduce) {
   .poster-lightbox-hide-poster svg { animation: none !important; }
+}
+
+/* ==========================================================================
+   Busca (todos os cards): Next Season igual ao das listas principais —
+   sem fundo/borda, texto à esquerda em caixa alta, como a 3ª linha do bloco
+   (nome → info → next season). O JS coloca a faixa dentro de .search-result-info.
+   ========================================================================== */
+.search-result-info .search-result-next-season {
+  position: relative !important;
+  inset: auto !important;
+  display: flex;
+  width: 100%;
+  height: 16px;
+  min-height: 16px;
+  flex: 0 0 auto;
+  margin: 4px 0 0;
+  padding: 0;
+  justify-content: flex-start;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* No Announced Sequels o info já tem gap de 8px. */
+.search-result-item--ann .search-result-info .search-result-next-season {
+  margin-top: 0;
+}
+
+.search-result-info .search-result-next-season .announce-track {
+  justify-content: flex-start;
+}
+
+.search-result-info .search-result-next-season:not([data-lines]) .announce-track {
+  width: 100%;
+}
+
+.search-result-info .search-result-next-season .announce-line {
+  height: 16px;
+  line-height: 16px;
+  padding: 0;
+  text-align: left;
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* Marquee (várias linhas): respiro entre o fim e o reinício do texto */
+.search-result-info .search-result-next-season[data-lines] .announce-line {
+  padding-right: 48px;
+}
+
+@media (max-width: 600px) {
+  .search-result-info .search-result-next-season {
+    height: 14px;
+    min-height: 14px;
+  }
+  .search-result-info .search-result-next-season .announce-line {
+    height: 14px;
+    line-height: 14px;
+    font-size: 9px;
+  }
+}
+
+/* ==========================================================================
+   TODOS os cards do site sem border-radius (listas, busca, preview e os
+   cards de informação do lightbox). Fica no fim, com !important, pra vencer
+   as regras por categoria/breakpoint.
+   ========================================================================== */
+.poster-wrap,
+.fav-ep-media-main .thumb,
+.fav-ep-media-main .poster-fallback,
+li.anime-item .meta::before,
+li.anime-item .info-row,
+li.anime-item .info-row .info,
+.search-result-item,
+.search-result-item::after,
+.search-result-card-inner,
+.search-result-thumb-wrap,
+.search-result-thumb,
+.search-result-info,
+.search-result-ambient,
+.search-result-ambient-shade,
+.search-result-item--ann,
+.search-result-item--ann .search-result-card-inner,
+.search-result-item--ann .search-result-thumb-wrap,
+.search-result-item--ann .search-result-info,
+.search-result-item--tc .search-result-thumb-wrap,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-media-watchnow,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-more-info .watch-now-links,
+.rank-mal .watch-now-links,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-characters:not(:empty),
+.poster-lightbox:not(.simple-mode) .poster-lightbox-character-link,
+.poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-link,
+.poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-img {
+  border-radius: 0 !important;
 }
