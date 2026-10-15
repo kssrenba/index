@@ -936,7 +936,9 @@ if ('scrollRestoration' in history) {
 
       // Resolve com número (nota) ou null (anime sem nota / não existe).
       async function fetchMalScoreFromApi(malId) {
-        const json = await jikanGetJson(`/anime/${malId}`);
+        // ids com prefixo "m" (ex: "m141120") são páginas de mangá/manhwa
+        const isManga = String(malId).charAt(0) === 'm';
+        const json = await jikanGetJson(isManga ? `/manga/${String(malId).slice(1)}` : `/anime/${malId}`);
         const score = json && json.data ? json.data.score : null;
         return (typeof score === 'number') ? score : null;
       }
@@ -1170,6 +1172,62 @@ function getMetaFor(animeId) {
           studioSeparatorResizeObserver?.observe(list);
           requestAnimationFrame(() => updateStudioSeparators(list));
         });
+
+        if (malId) {
+          const scoreEl = lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
+          updateLiveMalScore(animeId, malId, scoreEl);
+        }
+      }
+
+      // ── Upcoming Animes: Source / MAL Score / Studio / Year ──
+      // Dados vêm do rawUpcomingAnimeData (info.js):
+      //   source: "Manhwa", studios: [{ name, url }], airedSeason: "TBA", malUrl
+      function renderUpcomingMeta(animeId, malUrl) {
+        if (!lightboxMeta) return;
+        const anime = upcomingAnimeData.find(a => a.id === animeId) || {};
+
+        // "studios" aceita [{ name, url }]; "studio" aceita texto simples
+        // ("Studio Jemi, breccia") e é separado por vírgula ou "/".
+        const studios = (Array.isArray(anime.studios) ? anime.studios
+          : (anime.studio ? String(anime.studio).split(/[\/,]/).map(x => x.trim()).filter(Boolean) : []))
+          .map(entry => (typeof entry === 'string' ? { name: entry } : entry))
+          .filter(entry => entry && entry.name);
+        const studioHtml = studios.map(entry => entry.url
+          ? `<a href="${escapeHtml(entry.url)}" target="_blank" rel="noopener">${escapeHtml(entry.name)}</a>`
+          : escapeHtml(entry.name));
+        const studioText = studioHtml.length >= 3
+          ? studioHtml.slice(0, -1).join(', ') + ' and ' + studioHtml[studioHtml.length - 1]
+          : studioHtml.join(' and ');
+
+        // Aceita link de anime OU da obra original (mangá/manhwa), que é
+        // o que existe no MAL antes do anime sair.
+        const mangaMatch = String(malUrl || '').match(/myanimelist\.net\/manga\/(\d+)/i);
+        const malId = extractMalId(malUrl) || (mangaMatch ? 'm' + mangaMatch[1] : null);
+        const sourceText = String(anime.source || '').trim();
+        const cached = malId ? getCachedMalScore(malId) : null;
+        const scoreText = cached ? formatMalScoreText(cached.score) : (malId ? '…' : '–');
+        const scoreInner = malId
+          ? `<a class="rank-meta-value rank-meta-value--score${cached && cached.score == null ? ' empty' : ''}" data-field="score" href="${escapeHtml(malUrl)}" target="_blank" rel="noopener">${scoreText}</a>`
+          : `<span class="rank-meta-value rank-meta-value--score empty" data-field="score">–</span>`;
+
+        const item = (cls, label, inner) => `
+          <div class="rank-meta-item rank-meta-item--${cls}">
+            <span class="rank-meta-label">${label}</span>
+            ${inner}
+          </div>`;
+
+        // Studio usa as mesmas classes do Studio normal (--studio + --clamp),
+        // então o clique para expandir/retrair funciona igual.
+        const fieldsHtml = [
+          item('score', 'MAL Score', scoreInner),
+          item('source', 'Source', `<span class="rank-meta-value${sourceText ? '' : ' empty'}" data-field="source">${sourceText ? escapeHtml(sourceText) : '–'}</span>`),
+          item('studio rank-meta-item--upcoming-studio', studios.length > 1 ? 'Studios' : 'Studio', `<span class="rank-meta-value rank-meta-value--clamp${studios.length ? '' : ' empty'}" data-field="studio">${studioText || '–'}</span>`)
+        ].join('');
+
+        studioSeparatorResizeObserver?.disconnect();
+        lightboxMeta.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        lightboxMeta.innerHTML = fieldsHtml;
+        lightboxMeta.classList.remove('rank-meta--compact', 'is-meta-expanded');
 
         if (malId) {
           const scoreEl = lightboxMeta.querySelector('.rank-meta-value[data-field="score"]');
@@ -2509,12 +2567,13 @@ function getMetaFor(animeId) {
         sequelPosterDefaultSrc = src;
         const sequelAnimeSource = animeData.find(a => a.id === item.id)
           || watchingData.find(a => a.id === item.id)
-          || planToWatchData.find(a => a.id === item.id);
-        const sequelInfo = nextSeasonMap[item.id];
+          || planToWatchData.find(a => a.id === item.id)
+          || upcomingAnimeData.find(a => a.id === item.id);
+        const sequelInfo = nextSeasonMap[item.getAttribute('data-ns-key') || item.id];
         // Banner: automático pela pasta (ou manual via "banner" no info.js)
         applyLightboxBanner(sequelAnimeSource);
         sequelPosterAltSrc = sequelInfo && sequelAnimeSource && sequelAnimeSource.img
-          ? sequelsThumbSrc(sequelAnimeSource.img)
+          ? sequelsThumbSrc(sequelAnimeSource.img, item.getAttribute('data-ns-key'))
           : '';
         if (lightboxAnnounce) {
           const canToggleSequelPoster = Boolean(sequelInfo && sequelInfo.info && sequelPosterAltSrc);
@@ -2556,7 +2615,10 @@ function getMetaFor(animeId) {
         // temporada), em vez do modo simples antigo (só pôster + tag de
         // anúncio) — ver atributo "data-rich-panel" no createAnimeCard.
         const isAnnouncedRichPanel = item.hasAttribute('data-rich-panel');
-        const isRichPanel = isWatchingNow || isPlanToWatch || isAnnouncedRichPanel;
+        // Upcoming Animes: painel completo, mas com campos próprios
+        // (Source / MAL Score / Studio / Year) — ver renderUpcomingMeta.
+        const isUpcoming = item.hasAttribute('data-upcoming');
+        const isRichPanel = isWatchingNow || isPlanToWatch || isAnnouncedRichPanel || isUpcoming;
         // Aceita tanto a pasta original (myranks-images/myranks/) quanto
         // a pasta "-sequels" usada pelos cards "watched" de Announced
         // Sequels (ver sequelsThumbSrc), senão esses itens caíam no
@@ -2570,6 +2632,19 @@ function getMetaFor(animeId) {
         lightbox.classList.toggle('simple-mode', !(isMyRanks || isRichPanel));
         lightbox.classList.toggle('watching-now-mode', isWatchingNow);
         lightbox.classList.toggle('plan-to-watch-mode', isPlanToWatch);
+        lightbox.classList.toggle('upcoming-mode', isUpcoming);
+        // Upcoming Animes: sem botão de pesquisar no search.
+        if (searchBtn) {
+          if (isUpcoming) {
+            searchBtn.style.setProperty('display', 'none', 'important');
+            searchBtn.setAttribute('aria-hidden', 'true');
+            searchBtn.tabIndex = -1;
+          } else {
+            searchBtn.style.removeProperty('display');
+            searchBtn.removeAttribute('aria-hidden');
+            searchBtn.removeAttribute('tabindex');
+          }
+        }
         lightbox.classList.toggle('announced-mode', currentCategory === 'announced');
         lightbox.classList.remove('plan-to-watch-carousel');
 
@@ -2583,7 +2658,7 @@ function getMetaFor(animeId) {
         if (lightboxHeroRank) {
           // Watching Now / Plan to Watch / Incomplete / Announced usam apenas
           // a posição (01, 02, 03...), igual aos cards: sem # e sem Top 3 colorido.
-          const plainNumberRank = ['watching', 'plan', 'incomplete', 'announced'].includes(currentCategory);
+          const plainNumberRank = ['watching', 'plan', 'incomplete', 'announced', 'upcoming'].includes(currentCategory);
           lightboxHeroRank.className = `poster-lightbox-hero-rank${plainNumberRank ? '' : searchRankBadgeClass(rankPos)}`;
           lightboxHeroRank.innerHTML = rankPos != null
             ? `${plainNumberRank ? '' : '<span class="poster-lightbox-hero-rank-hash">#</span>'}<span>${String(rankPos).padStart(2, '0')}</span>`
@@ -2604,7 +2679,7 @@ function getMetaFor(animeId) {
           if (lightboxMediaCategory) lightboxMediaCategory.innerHTML = '';
         }
         if (lightboxSimpleCaption) {
-          const plainNumberRank = ['watching', 'plan', 'incomplete', 'announced'].includes(currentCategory);
+          const plainNumberRank = ['watching', 'plan', 'incomplete', 'announced', 'upcoming'].includes(currentCategory);
           lightboxSimpleCaption.innerHTML =
             (rankPos != null ? `<span class="poster-lightbox-rank">${plainNumberRank ? '' : '#'}${String(rankPos).padStart(2, '0')}</span>` : '') +
             `<span class="poster-lightbox-simple-title">${escapeHtml(title)}</span>`;
@@ -2793,6 +2868,38 @@ function getMetaFor(animeId) {
             mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(item.id)}" data-mobile-label="${escapeHtml(mobileWatchingLabel)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-part">Watching Now:</span><span class="list-tag-part">${escapeHtml(division.text)}</span></button>`;
           }
 
+          // Announced Sequels: a tag "Announced Sequels" e a divisão de data
+          // (ex: "TBA", "Apr 2027") viram UMA tag só, com largura de duas
+          // e a cor do mês/grupo (ex: Apr 2027 = rosa da primavera).
+          let mergedAnnouncedTagHtml = '';
+          // Padrão em QUALQUER entrada do lightbox (MyRanks, Watching Now,
+          // Plan to Watch etc.): se o anime está em Announced Sequels, a
+          // tag vira "Announced Sequels: <data>" (ex: "Oct 2027") com a cor
+          // do grupo. Quando aberto pelo próprio Announced, usa a divisão
+          // do card; nos demais casos calcula a data via nextSeasonMap.
+          let announcedDivision = (currentCategory === 'announced') ? division : null;
+          const announcedMergeTag = effectiveTags.find(t => t.key === 'announced') || null;
+          if (!announcedDivision && announcedMergeTag) {
+            const nsKeys = getAnnouncedKeys(item.id);
+            const preferredKey = item.getAttribute('data-ns-key');
+            const groups = nsKeys.map(k => getAnnouncedDateGroup(k));
+            let g = null;
+            if (preferredKey && nsKeys.includes(preferredKey)) {
+              g = getAnnouncedDateGroup(preferredKey);
+            } else if (groups.length) {
+              g = groups.reduce((a, b) => (b.sortKey < a.sortKey ? b : a));
+            }
+            if (g) announcedDivision = { text: g.label, color: g.color };
+          }
+          if (announcedDivision && announcedMergeTag) {
+            const division = announcedDivision;
+            const annColor = division.color || (announcedMergeTag && announcedMergeTag.color) || 'var(--glow-accent)';
+            const annTextColor = (announcedMergeTag && announcedMergeTag.color) || CATEGORY_HOVER_COLOR.announced || '#34d399';
+            const annLabel = String((announcedMergeTag && announcedMergeTag.label) || CATEGORY_LABEL.announced || 'Announced Sequels').replace(/:\s*$/, '');
+            effectiveTags = effectiveTags.filter(t => t.key !== 'announced');
+            mergedAnnouncedTagHtml = `<button type="button" class="list-tag list-tag-split list-tag-announced-merged" data-mode="announced" data-target-id="${escapeHtml((announcedMergeTag && announcedMergeTag.targetId) || item.id)}" data-mobile-label="${escapeHtml(annLabel + ': ' + division.text)}" style="--tag-color:${annColor};--tag-color-2:${annTextColor}"><span class="list-tag-part">${escapeHtml(annLabel)}:</span><span class="list-tag-part">${escapeHtml(division.text)}</span></button>`;
+          }
+
           const tagToHtml = t => `<button type="button" class="list-tag" data-mode="${t.key}" data-target-id="${escapeHtml(t.targetId || item.id)}" style="--tag-color:${t.color || 'var(--glow-accent)'}"><span class="list-tag-content">${t.position != null ? `<span class="list-tag-rank${t.key === 'all' ? ' list-tag-rank--all' : ''}">#${t.position}</span>` : ''}<span class="list-tag-name">${escapeHtml(t.label)}</span></span></button>`;
 
           // Peak Episodes: quando o mesmo anime tem dois (ou mais)
@@ -2856,11 +2963,13 @@ function getMetaFor(animeId) {
           const orderedTagParts = [
             renderTagSequence(beforeWatching),
             ...(mergedWatchingTagHtml ? [mergedWatchingTagHtml] : []),
-            renderTagSequence(afterWatching)
+            renderTagSequence(afterWatching.filter(t => (renderedLightboxTagOrder[t.key] ?? 999) < renderedLightboxTagOrder.announced)),
+            ...(mergedAnnouncedTagHtml ? [mergedAnnouncedTagHtml] : []),
+            renderTagSequence(afterWatching.filter(t => (renderedLightboxTagOrder[t.key] ?? 999) >= renderedLightboxTagOrder.announced))
           ].filter(Boolean);
           const tagsHtml = orderedTagParts.join('<span class="list-sep"></span>');
 
-          const divisionHtml = (division && !hideDivision && !isUnwatchedDivision && !watchingEntry && !mergedWatchingTagHtml)
+          const divisionHtml = (division && !hideDivision && !isUnwatchedDivision && !watchingEntry && !mergedWatchingTagHtml && !(mergedAnnouncedTagHtml && currentCategory === 'announced'))
             ? `<span class="list-sep"></span><span class="list-division"><span class="list-tag-name">${escapeHtml(division.text)}</span></span>`
             : '';
 
@@ -2941,7 +3050,8 @@ function getMetaFor(animeId) {
         if (lightboxInfo) {
           const source = animeData.find(a => a.id === item.id)
             || watchingData.find(a => a.id === item.id)
-            || planToWatchData.find(a => a.id === item.id);
+            || planToWatchData.find(a => a.id === item.id)
+            || upcomingAnimeData.find(a => a.id === item.id);
           if (source && source.info) {
             const cleanedInfo = String(source.info)
               .replace(/[-–:]?\s*Progress:\s*(?:\d+|-)\s*\/\s*(?:\d+|-)\s*/gi, '')
@@ -2950,13 +3060,21 @@ function getMetaFor(animeId) {
             // Todas as linhas ficam na mesma linha, separadas por " - "
             // (ex: "3 temporadas: 59 episódios - Movie: 1h45m"), no desktop e no
             // mobile. Só quebra se não couber na largura.
-            lightboxInfo.innerHTML = infoLines.join(' - ');
+            // No mobile, a linha do filme ("Movie: ...") quebra para baixo;
+            // no desktop continua tudo na mesma linha (ver CSS .info-line-*).
+            lightboxInfo.innerHTML = infoLines.map((line, i) => {
+              if (i === 0) return line;
+              return /^(movies?|filmes?)\b/i.test(line)
+                ? `<span class="info-line-sep"> - </span><br class="info-line-br">${line}`
+                : ` - ${line}`;
+            }).join('');
           } else {
             lightboxInfo.innerHTML = '';
           }
         }
 
-        renderMeta(item.id, isRichPanel, watchNowMalUrl, isWatchingNow || isPlanToWatch);
+        if (isUpcoming) renderUpcomingMeta(item.id, watchNowMalUrl);
+        else renderMeta(item.id, isRichPanel, watchNowMalUrl, isWatchingNow || isPlanToWatch);
         renderMalScores(item.id, isRichPanel, animePlanetUrl, crunchyrollUrl, watchNowMalUrl, netflixUrl, isPlanToWatch);
       }
 
@@ -3852,6 +3970,15 @@ function getMetaFor(animeId) {
         info: normalizeTilde(item.info)
       }));
 
+    // Upcoming Animes — animes novos (não são continuações) que ainda vão lançar.
+    const upcomingAnimeData = (typeof rawUpcomingAnimeData !== 'undefined' && Array.isArray(rawUpcomingAnimeData)
+      ? rawUpcomingAnimeData
+      : []
+    ).map(item => ({
+      ...item,
+      info: normalizeTilde(item.info)
+    }));
+
     // Posição de cada anime dentro do próprio rank do plan-to-watch,
     // exibida como número menor nos cards.
     const planRankMap = {};
@@ -3961,6 +4088,7 @@ function getMetaFor(animeId) {
       incomplete: 'incomplete',
       plan: 'plan-to-watch',
       announced: 'announced-sequels',
+      upcoming: 'upcoming-animes',
       favEpisodes: 'favorite-episodes',
       trueCharacters: 'true-characters',
     };
@@ -4299,6 +4427,7 @@ function getMetaFor(animeId) {
       plan: '#f59e0b',
       incomplete: '#f87171',
       announced: '#34d399',
+      upcoming: '#a3e635',
       favEpisodes: '#7fb2ff',
       trueCharacters: '#f472b6',
     };
@@ -4315,6 +4444,7 @@ function getMetaFor(animeId) {
       plan: 'Plan to Watch',
       incomplete: 'Incomplete',
       announced: 'Announced Sequels:',
+      upcoming: 'Upcoming Animes',
       favEpisodes: 'Peak Episodes',
       trueCharacters: 'True Characters',
     };
@@ -4555,10 +4685,16 @@ function getMetaFor(animeId) {
     // marqueeThumbSrc), só que pra pasta "-sequels" — usada nos cards
     // de "Announced Sequels" (mode 'announced' e 'announced-unwatched'),
     // que usam uma imagem diferente da original.
-    function sequelsThumbSrc(originalPath) {
+    function sequelsThumbSrc(originalPath, nsKey) {
       if (!originalPath) return originalPath;
       const path = String(originalPath);
-      const filename = path.split('/').pop();
+      let filename = path.split('/').pop();
+      // Entradas extras de nextSeasonMap ("one-piece#2") usam a própria
+      // imagem "one-piece#2.webp" (o # vai codificado como %23 na URL).
+      if (nsKey && String(nsKey).includes('#')) {
+        const ext = filename.includes('.') ? filename.slice(filename.lastIndexOf('.')) : '';
+        filename = encodeURIComponent(String(nsKey)) + ext;
+      }
       let baseFolder = 'myranks-images';
       let folder = 'myranks-sequels';
       if (path.startsWith('watchingnow-images/watchingnow/')) { baseFolder = 'watchingnow-images'; folder = 'watchingnow-sequels'; }
@@ -4571,7 +4707,7 @@ function getMetaFor(animeId) {
     function mobileCardSearchThumbSrc(originalPath) {
       if (!originalPath) return originalPath;
       const path = String(originalPath);
-      if (path.startsWith('other-images/peakepisodes/') || path.startsWith('other-images/truecharacters/')) return path;
+      if (path.startsWith('other-images/peakepisodes/') || path.startsWith('other-images/truecharacters/') || path.startsWith('upcoming-images/')) return path;
       const filename = path.split('/').pop();
       let baseFolder = 'myranks-images';
       let folder = 'myranks-search';
@@ -4639,7 +4775,7 @@ function getMetaFor(animeId) {
           secondaryRankHtml = `<span class="rank-secondary">#${globalRank}</span>`;
         }
       }
-      const ns = nextSeasonMap[anime.id];
+      const ns = nextSeasonMap[anime.nsKey || anime.id];
       const nsLines = ns ? String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => formatNextSeasonText(s.trim())).filter(Boolean) : [];
       const isMulti = nsLines.length > 1;
 
@@ -4660,7 +4796,7 @@ function getMetaFor(animeId) {
       const colorMode = mode === 'announced-unwatched' ? 'announced' : mode;
       const hoverColor = CATEGORY_HOVER_COLOR[colorMode] || seasonColor || null;
       const hoverStyle = hoverColor ? ` style="--item-hover-color: ${hoverColor};"` : '';
-      const isLinkableMode = (mode === 'watching' || mode === 'plan' || mode === 'announced-unwatched');
+      const isLinkableMode = (mode === 'watching' || mode === 'plan' || mode === 'announced-unwatched' || mode === 'upcoming');
       // Watching Now não usa data-anime-planet-url pro clique do card em
       // si (isso mudaria a área clicável do card inteiro pra só o
       // poster-wrap, igual acontece em plan/announced-unwatched) — usa um
@@ -4668,15 +4804,15 @@ function getMetaFor(animeId) {
       // do lightbox (ver showItem/renderMalScores).
       const isAnimePlanetLinkable = (mode === 'plan' || mode === 'announced-unwatched');
       const urlAttr = (isAnimePlanetLinkable && anime.url) ? ` data-anime-planet-url="${anime.url}"` : '';
-      const watchNowUrlAttr = (mode === 'watching' && anime.url) ? ` data-watchnow-anime-planet-url="${anime.url}"` : '';
+      const watchNowUrlAttr = ((mode === 'watching' || mode === 'upcoming') && anime.url) ? ` data-watchnow-anime-planet-url="${anime.url}"` : '';
       const watchNowMalUrlAttr = (isLinkableMode && anime.malUrl) ? ` data-watchnow-mal-url="${anime.malUrl}"` : '';
       const crAttr = (isLinkableMode && anime.crunchyroll) ? ` data-crunchyroll-url="${anime.crunchyroll}"` : '';
       const nfAttr = (isLinkableMode && anime.netflix) ? ` data-netflix-url="${anime.netflix}"` : '';
-      const navAllAttr = (mode !== 'watching' && mode !== 'plan' && mode !== 'all' && mode !== 'announced' && mode !== 'announced-unwatched' && mode !== 'trueCharacters') ? ` data-nav-all="1"` : '';
+      const navAllAttr = (mode !== 'watching' && mode !== 'plan' && mode !== 'all' && mode !== 'announced' && mode !== 'announced-unwatched' && mode !== 'trueCharacters' && mode !== 'upcoming') ? ` data-nav-all="1"` : '';
 
       const isMobileCard = window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
       const normalCardThumb = (mode === 'announced' || mode === 'announced-unwatched')
-        ? sequelsThumbSrc(anime.img)
+        ? sequelsThumbSrc(anime.img, anime.nsKey)
         : anime.img;
       let cardThumbSrc = isMobileCard && mode !== 'announced' && mode !== 'announced-unwatched'
         ? mobileCardSearchThumbSrc(anime.img)
@@ -4830,7 +4966,7 @@ function getMetaFor(animeId) {
       }
 
       return `
-        <li class="anime-item${subClass}${topRankClass}${ns ? ' has-next-season' : ''}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${nfAttr}${navAllAttr}${characterOriginAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}${mode === 'plan' ? ' data-plan-to-watch="1"' : ''}${mode === 'announced-unwatched' ? ' data-rich-panel="1"' : ''}>
+        <li class="anime-item${subClass}${topRankClass}${ns ? ' has-next-season' : ''}" id="${anime.id}"${hoverStyle}${urlAttr}${watchNowUrlAttr}${watchNowMalUrlAttr}${crAttr}${nfAttr}${navAllAttr}${characterOriginAttr}${mode === 'watching' ? ' data-watching-now="1"' : ''}${mode === 'plan' ? ' data-plan-to-watch="1"' : ''}${mode === 'upcoming' ? ' data-upcoming="1"' : ''}${mode === 'announced-unwatched' ? ' data-rich-panel="1"' : ''}${anime.nsKey ? ` data-ns-key="${anime.nsKey}"` : ''}>
           <div class="anime-item-ambient" aria-hidden="true"${ambientInlineStyle}></div>
           <div class="anime-item-ambient-shade" aria-hidden="true"></div>
           <div class="rank-wrap">
@@ -5059,6 +5195,7 @@ function getMetaFor(animeId) {
       else if (currentCategory === 'comedy') pageTitle.innerText = "comedy anime ranking";
       else if (currentCategory === 'mecha') pageTitle.innerText = "mecha/cyberpunk anime ranking";
       else if (currentCategory === 'announced') pageTitle.innerText = "anime with announced sequels or movies";
+      else if (currentCategory === 'upcoming') pageTitle.innerText = "new animes coming in the future";
       else if (currentCategory === 'favEpisodes') pageTitle.innerText = "episodes that are absolute cinema for me";
       else if (currentCategory === 'trueCharacters') pageTitle.innerText = "characters that are absolutely peak";
     }
@@ -5587,7 +5724,7 @@ function getMetaFor(animeId) {
     // (o que fazia, por ex., a Watching Now abrir o drawer em "Ranks").
     const MODE_TAB = {
       all: 'ranks', romance: 'ranks', isekai: 'ranks', sports: 'ranks', comedy: 'ranks', mecha: 'ranks',
-      watching: 'lists', plan: 'lists', incomplete: 'lists', announced: 'lists',
+      watching: 'lists', plan: 'lists', incomplete: 'lists', announced: 'lists', upcoming: 'lists',
       favEpisodes: 'lists', trueCharacters: 'lists'
     };
 
@@ -5925,7 +6062,19 @@ function getMetaFor(animeId) {
         watchedAnnounced.sort(byNextSeasonOrder);
         watchingAnnounced.sort(byNextSeasonOrder);
         planAnnounced.sort(byNextSeasonOrder);
-        return [...watchedAnnounced, ...watchingAnnounced, ...planAnnounced];
+        // Ordena por data prevista de lançamento (Jan 2027, Apr 2027, ... 2027, TBA);
+        // empates mantêm a ordem original de nextSeasonMap.
+        const combinedAnnounced = [...watchedAnnounced, ...watchingAnnounced, ...planAnnounced];
+        const orderIdx = new Map(combinedAnnounced.map((a, i) => [a, i]));
+        combinedAnnounced.sort((a, b) => {
+          const ka = getAnnouncedDateGroup(a.id).sortKey;
+          const kb = getAnnouncedDateGroup(b.id).sortKey;
+          if (ka !== kb) return ka === Infinity ? 1 : kb === Infinity ? -1 : ka - kb;
+          return orderIdx.get(a) - orderIdx.get(b);
+        });
+        return combinedAnnounced;
+      } else if (mode === 'upcoming') {
+        return upcomingAnimeData;
       } else if (mode === 'favEpisodes') {
         return (typeof favoriteEpisodesData !== 'undefined' && Array.isArray(favoriteEpisodesData))
           ? favoriteEpisodesData
@@ -6019,59 +6168,60 @@ function getMetaFor(animeId) {
       return html;
     }
 
-    function renderAnnouncedList(data) {
-      const watchedList = [];
-      const watchingList = [];
-      const planningList = [];
+    // Descobre o grupo de data prevista a partir do texto de nextSeasonMap
+    // (ex: "Season 3 in Jan 2027" -> "Jan 2027"; "... in 2027" -> "2027";
+    // "in Production"/sem data -> "TBA").
+    function getAnnouncedDateGroup(key) {
+      const info = String((nextSeasonMap[key] || {}).info || '');
+      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+      const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const m = info.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+(20\d{2})/i);
+      if (m) {
+        const mi = months.indexOf(m[1].toLowerCase());
+        const year = parseInt(m[2], 10);
+        const colors = ['#FFFAFA', '#FFFAFA', '#f472b6', '#f472b6', '#f472b6', '#fbbf24', '#fbbf24', '#fbbf24', '#ef6a3a', '#ef6a3a', '#ef6a3a', '#FFFAFA'];
+        return { key: `${names[mi]} ${year}`, label: `${names[mi]} ${year}`, color: colors[mi], sortKey: year * 100 + mi };
+      }
+      const y = info.match(/\b(20\d{2})\b/);
+      if (y) {
+        const year = parseInt(y[1], 10);
+        return { key: String(year), label: String(year), color: '#34d399', sortKey: year * 100 + 13 };
+      }
+      return { key: 'TBA', label: 'TBA', color: '#94a3b8', sortKey: Infinity };
+    }
 
+    const ANNOUNCED_LIST_URL = "https://www.anime-planet.com/users/ptbr/lists/announced-sequels-1484121";
+
+    // Um anime pode ter mais de uma entrada em nextSeasonMap usando chaves
+    // "id", "id#2", "id#3"... (ex: "one-piece" e "one-piece#2"). Cada chave
+    // vira um card, no grupo da sua própria data.
+    function getAnnouncedKeys(id) {
+      return Object.keys(nextSeasonMap).filter(k => k === id || k.startsWith(id + '#'));
+    }
+
+    function renderAnnouncedList(data) {
+      const groups = new Map();
       data.forEach(anime => {
-        // Classifica pela origem real do objeto, não apenas pelo ID.
-        // Um anime pode ter o mesmo ID no MyRanks e no Watching Now
-        // (como DanMachi): a entrada de 4 temporadas pertence ao
-        // MyRanks, enquanto a de 5ª temporada pertence ao Watching Now.
-        if (watchingData.includes(anime)) {
-          watchingList.push(anime);
-        } else if (planToWatchData.includes(anime)) {
-          planningList.push(anime);
-        } else {
-          watchedList.push(anime);
-        }
+        const unwatched = watchingData.includes(anime) || planToWatchData.includes(anime);
+        getAnnouncedKeys(anime.id).forEach(key => {
+          const g = getAnnouncedDateGroup(key);
+          if (!groups.has(g.key)) groups.set(g.key, { g, items: [] });
+          groups.get(g.key).items.push({ card: key === anime.id ? anime : { ...anime, nsKey: key }, unwatched });
+        });
       });
 
+      const ordered = [...groups.values()].sort((x, y) =>
+        x.g.sortKey === y.g.sortKey ? 0 : x.g.sortKey === Infinity ? 1 : y.g.sortKey === Infinity ? -1 : x.g.sortKey - y.g.sortKey);
+
       let html = '';
-
-      if (watchedList.length) {
-        const g = ANNOUNCED_GROUP_LABELS.watched;
-        // Mesmo comportamento dos cabeçalhos de temporada do Watching Now:
-        // se o grupo tem "url", o título vira um link que abre em nova aba.
-        const watchedTextHtml = g.url
-          ? `<a class="season-text season-text-link" href="${g.url}" target="_blank" rel="noopener">${g.text}</a>`
-          : `<span class="season-text">${g.text}</span>`;
+      ordered.forEach(({ g, items }) => {
         html += `<li class="season-header" style="--season-color: ${g.color};">
-                  ${watchedTextHtml}
+                  <a class="season-text season-text-link" href="${ANNOUNCED_LIST_URL}" target="_blank" rel="noopener">${g.label}</a>
                   <div class="season-line"></div>
                 </li>`;
-        html += watchedList.map(anime => createAnimeCard(anime, 'announced', g.color)).join('');
-      }
-
-      if (watchingList.length) {
-        const g = ANNOUNCED_GROUP_LABELS.watching;
-        html += `<li class="season-header" style="--season-color: ${g.color};">
-                  <span class="season-text">${g.text}</span>
-                  <div class="season-line"></div>
-                </li>`;
-        html += watchingList.map(anime => createAnimeCard(anime, 'announced-unwatched', g.color)).join('');
-      }
-
-      if (planningList.length) {
-        const g = ANNOUNCED_GROUP_LABELS.planning;
-        html += `<li class="season-header" style="--season-color: ${g.color};">
-                  <span class="season-text">${g.text}</span>
-                  <div class="season-line"></div>
-                </li>`;
-        html += planningList.map(anime => createAnimeCard(anime, 'announced-unwatched', g.color)).join('');
-      }
-
+        html += items.map(({ card, unwatched }) =>
+          createAnimeCard(card, unwatched ? 'announced-unwatched' : 'announced', g.color)).join('');
+      });
       return html;
     }
 
@@ -6456,7 +6606,7 @@ function getMetaFor(animeId) {
       return b > a ? 1 : -1;
     }
 
-    function playWorkspaceSwitch(oldList, newList, dir) {
+    function playWorkspaceSwitch(oldList, newList, dir, axis = 'x') {
       if (!oldList || !newList || !dir || !container.animate) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       if (__workspaceAnimCleanup) __workspaceAnimCleanup();
@@ -6484,14 +6634,32 @@ function getMetaFor(animeId) {
       } catch (e) {}
 
       const opts = { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' };
-      const outAnim = ghost.animate([
-        { transform: 'translateX(0) scale(1)', opacity: 1 },
-        { transform: `translateX(${-dir * 100}%) scale(0.96)`, opacity: 0 }
-      ], opts);
-      const inAnim = newList.animate([
-        { transform: `translateX(${dir * 100}%) scale(0.96)`, opacity: 0 },
-        { transform: 'translateX(0) scale(1)', opacity: 1 }
-      ], opts);
+      // Troca pelo drawer: vertical. dir > 0 (lista mais abaixo no drawer)
+      // = a nova lista surge por baixo; dir < 0 = surge por cima.
+      // Setas/swipe continuam na horizontal.
+      let outFrames, inFrames;
+      if (axis === 'y') {
+        const dist = 90;
+        outFrames = [
+          { transform: 'translateY(0) scale(1)', opacity: 1 },
+          { transform: `translateY(${-dir * dist}px) scale(0.98)`, opacity: 0 }
+        ];
+        inFrames = [
+          { transform: `translateY(${dir * dist}px) scale(0.98)`, opacity: 0 },
+          { transform: 'translateY(0) scale(1)', opacity: 1 }
+        ];
+      } else {
+        outFrames = [
+          { transform: 'translateX(0) scale(1)', opacity: 1 },
+          { transform: `translateX(${-dir * 100}%) scale(0.96)`, opacity: 0 }
+        ];
+        inFrames = [
+          { transform: `translateX(${dir * 100}%) scale(0.96)`, opacity: 0 },
+          { transform: 'translateX(0) scale(1)', opacity: 1 }
+        ];
+      }
+      const outAnim = ghost.animate(outFrames, opts);
+      const inAnim = newList.animate(inFrames, opts);
 
       let done = false;
       const cleanup = () => {
@@ -6554,11 +6722,20 @@ function getMetaFor(animeId) {
       while (__listDomCache.size > 4) __listDomCache.delete(__listDomCache.keys().next().value);
       const __prevList = container.firstElementChild;
       let __slideDir = getWorkspaceSlideDirection(__lastRenderedCategory, currentCategory);
-      if (__slideDir !== 0 && __forcedSlideDir !== 0) __slideDir = __forcedSlideDir;
+      const __fromKeys = __forcedSlideDir !== 0;
+      let __slideAxis = 'x';
+      if (__slideDir !== 0 && __fromKeys) __slideDir = __forcedSlideDir;
+      else if (__slideDir !== 0) {
+        // Drawer/menu: sempre pela ordem do drawer, animação vertical.
+        __slideAxis = 'y';
+        const __dOrder = drawerItems.map(el => el.getAttribute('data-mode'));
+        const __da = __dOrder.indexOf(__lastRenderedCategory), __db = __dOrder.indexOf(currentCategory);
+        if (__da !== -1 && __db !== -1 && __da !== __db) __slideDir = __db > __da ? 1 : -1;
+      }
       __forcedSlideDir = 0;
       if (__workspaceAnimCleanup && __slideDir === 0) __workspaceAnimCleanup();
       if (container.firstElementChild !== list) container.replaceChildren(list);
-      if (__slideDir && __prevList && __prevList !== list) playWorkspaceSwitch(__prevList, list, __slideDir);
+      if (__slideDir && __prevList && __prevList !== list) playWorkspaceSwitch(__prevList, list, __slideDir, __slideAxis);
       __lastRenderedCategory = currentCategory;
       updatePageTexts();
       selectDrawerItem(currentCategory);
@@ -7851,7 +8028,7 @@ function getMetaFor(animeId) {
         // caso, True Characters caía no fallback "myranks-search" (pasta
         // que não existe pra essas imagens) e o thumb do resultado
         // simplesmente não carregava.
-        if (path.startsWith('other-images/peakepisodes/') || path.startsWith('other-images/truecharacters/')) return path;
+        if (path.startsWith('other-images/peakepisodes/') || path.startsWith('other-images/truecharacters/') || path.startsWith('upcoming-images/')) return path;
         const filename = path.split('/').pop();
         let baseFolder = 'myranks-images';
         let folder = 'myranks-search';
@@ -9600,6 +9777,67 @@ function getMetaFor(animeId) {
         e.preventDefault();
         switchCategory(-1, isMobileListNavigation ? MOBILE_SWIPE_NAV_ORDER : ARROW_NAV_ORDER);
       }
+    });
+
+    // ── ↑/↓ percorrem todas as listas (com o drawer fechado ou aberto), na ordem em
+    // que aparecem no drawer (All → Romance → Isekai → Comedy → Sport → Mecha →
+    // Watching → Plan → Incomplete → Announced → Upcoming → Peak Episodes →
+    // True Characters → volta pro All, e o inverso ao subir). ──
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+
+      const t = e.target;
+      const tag = (t && t.tagName) || '';
+      if (t && (t.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')) return;
+
+      const lightboxEl = document.getElementById('posterLightbox');
+      if (lightboxEl && lightboxEl.classList.contains('open')) return;
+
+      const order = drawerItems.map(el => el.getAttribute('data-mode')).filter(Boolean);
+      if (order.length < 2) return;
+
+      e.preventDefault();
+
+      const idx = order.indexOf(currentCategory);
+      const step = e.key === 'ArrowDown' ? 1 : -1;
+      const nextIdx = idx === -1
+        ? (step > 0 ? 0 : order.length - 1)
+        : (idx + step + order.length) % order.length;
+      const mode = order[nextIdx];
+      if (!mode || mode === currentCategory) return;
+
+      if (window.__isReleaseCalendarMode && window.__isReleaseCalendarMode()) {
+        window.__setReleaseCalendarMode(false, { keepScroll: true });
+      }
+
+      currentCategory = mode;
+
+      // Mantém a aba do drawer (Ranks/Lists) em sincronia com a lista nova.
+      const nextTab = MODE_TAB[mode] || 'ranks';
+      const activeTabEl = isDrawerOpen ? drawerTabs.find(tb => tb.classList.contains('active')) : null;
+      if (activeTabEl && activeTabEl.getAttribute('data-tab') !== nextTab
+          && activeTabEl.getAttribute('data-tab') !== 'search') {
+        switchDrawerTab(nextTab, { focus: false });
+      }
+
+      try {
+        const kS = 'myanimerank_scrollY_' + currentCategory;
+        const kE = 'myanimerank_expanded_' + currentCategory;
+        localStorage.removeItem(kS);
+        sessionStorage.removeItem(kS);
+        localStorage.removeItem(kE);
+        sessionStorage.removeItem(kE);
+      } catch (err) {}
+
+      render();
+      // O drawer trava o body na posição atual; ao fechar ele restaura
+      // __scrollLockY. Zera pra a nova lista abrir no topo.
+      if (isDrawerOpen && drawerUsesScrollLock) __scrollLockY = 0;
+      else window.scrollTo({ top: 0, behavior: 'instant' });
+
+      const selectedEl = isDrawerOpen ? drawerItems.find(el => el.getAttribute('data-mode') === mode) : null;
+      if (selectedEl) selectedEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
 
     document.addEventListener('mousedown', () => document.body.classList.add('using-mouse'));

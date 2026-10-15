@@ -3125,6 +3125,85 @@ const rawPlanToWatchData = [
   },
 ];
 
+// Upcoming Animes — animes NOVOS (não são continuações) que ainda vão lançar.
+// Campos:
+//   id, img, title, info (texto curto que aparece no card, ex: "TBA")
+//   source:     origem da obra — "Manhwa", "Manga", "Light Novel", "Web Novel"...
+//   studios:    lista de estúdios; cada um pode ter link: { name, url }
+//   airedSeason: quando vai sair — "TBA", "2027", "Jan 2027"...
+//   malUrl:     (opcional) link do anime no MyAnimeList — liga a nota ao vivo
+//               (MAL Score) e o botão do MAL. Sem ele, o score fica "–".
+//   crunchyroll / netflix / url: (opcional) botões de link no lightbox
+const rawUpcomingAnimeData = [
+  {
+    id: "now-that-we-draw",
+    img: "other-images/upcoming/now-that-we-draw.webp",
+    title: "Now That We Draw",
+    info: "Airing in January 2027",
+    source: "Manga",
+    studio: "ROLL2",
+
+    malUrl: "https://myanimelist.net/anime/62989/Kakunaru_Ue_wa",
+    url: "https://www.anime-planet.com/anime/now-that-we-draw"
+  },
+  {
+    id: "wasnt-a-guy-at-all",
+    img: "other-images/upcoming/wasnt-a-guy-at-all.webp",
+    title: "The Guy She Was Interested in Wasn't a Guy at All",
+    info: "Airing in January 2027",
+    source: "Web Manga",
+    studio: "CloverWorks",
+
+    malUrl: "https://myanimelist.net/anime/61035/Kininatteru_Hito_ga_Otoko_ja_Nakatta",
+    url: "https://www.anime-planet.com/anime/the-guy-she-was-interested-in-wasnt-a-guy-at-all"
+  },
+  {
+    id: "sss-class",
+    img: "other-images/upcoming/sss-class.webp",
+    title: "SSS-Class Revival Hunter",
+    info: "Airing in January 2027",
+    source: "Web Manga",
+    studio: "Studio Fu",
+
+    malUrl: "https://myanimelist.net/anime/64950/Shishite_Ikiru_SSS-kyuu_Hunter",
+    url: "https://www.anime-planet.com/anime/sss-class-revival-hunter"
+  },
+  {
+    id: "bless",
+    img: "other-images/upcoming/bless.webp",
+    title: "Bless",
+    info: "Airing in January 2027",
+    source: "Manga",
+    studio: "A-1 Pictures",
+
+    malUrl: "https://myanimelist.net/anime/63640/Bless",
+    url: "https://www.anime-planet.com/anime/bless"
+  },
+  {
+    id: "kagurabachi",
+    img: "other-images/upcoming/kagurabachi.webp",
+    title: "Kagurabachi",
+    info: "Airing in April 2027",
+    source: "Manga",
+    studio: "Cypic",
+
+    malUrl: "https://myanimelist.net/anime/64058/Kagurabachi",
+    url: "https://www.anime-planet.com/anime/kagurabachi"
+  },
+  {
+    id: "the-boxer",
+    img: "other-images/upcoming/the-boxer.webp",
+    title: "The Boxer",
+    info: "TBA",
+    source: "Manhwa",
+    studio: "Studio Jemi, breccia",
+    airedSeason: "TBA",
+
+    malUrl: "https://myanimelist.net/manga/141120/The_Boxer",
+    url: "https://www.anime-planet.com/anime/the-boxer"
+  },
+];
+
 // True Characters — mesma estrutura de objeto usada em animeData (id/img/title/info),
 // renderizada com o mesmo card do All Animes.
 const trueCharactersData = [
@@ -3600,6 +3679,7 @@ const nextSeasonMap = {
   "mushoku": { info: "Season 3 II ~in Apr 2027" },
 
   // jul 27
+  "one-piece": { info: "New Film: God Valley in Jul 2027" },
   "tensei-shitara-slime": { info: "Season 4 II in Jul 2027" },
 
   // oct 27
@@ -3609,12 +3689,13 @@ const nextSeasonMap = {
   "haikyuu": { info: "New Movie in 2027" },
   "dan-da-dan": { info: "Season 3 in 2027" },
   "roshidere": { info: "Season 2 in 2027" },
-  "one-piece": { info: "New Films in 2027/29" },
   "shadow": { info: "New Movie in 2027" },
   "midnight-heart": { info: "Season 2 in 2027" },
 
+  // 29
+  "one-piece#2": { info: "New Film: Baad in 2029" },
 
-  // -8 seasons (mar 23 - mar 26)
+  // tba
   "demon-slayer": { info: "2 Movies in Production" },//jun 24
   "tsukimichi": { info: "Season 3 in Production" },//jun 24
 

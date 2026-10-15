@@ -119,22 +119,23 @@
     text-transform: lowercase;
   }
 
-  h1.title{
-    margin:0;
-    margin-bottom: 10px;
-    font-size: 36px;
-    font-weight:800;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    font-family: var(--font-title);
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    background: linear-gradient(100deg, #ffffff 0%, #ffffff 55%, color-mix(in srgb, var(--glow-accent) 70%, #ffffff) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    position: relative;
-    width: fit-content;
-  }
+h1.title { 
+  margin: 0; 
+  margin-bottom: 10px; 
+  font-size: 36px; 
+  font-weight: 800; 
+  letter-spacing: -0.02em; 
+  line-height: 1.1; 
+  font-family: var(--font-title); 
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+  position: relative; 
+  width: fit-content; 
+  
+  /* Alterações para deixar branco */
+  color: #ffffff;
+  background: none;
+  -webkit-text-fill-color: initial;
+}
 
   .subtitle {
     color: var(--muted);
@@ -3065,7 +3066,8 @@
        bloco dos links, com a mesma largura exata do pôster. */
     .poster-lightbox.watching-now-mode:not(.simple-mode) .poster-lightbox-media-watchnow,
     .poster-lightbox.plan-to-watch-mode:not(.simple-mode) .poster-lightbox-media-watchnow,
-    .poster-lightbox.announced-mode:not(.simple-mode) .poster-lightbox-media-watchnow {
+    .poster-lightbox.announced-mode:not(.simple-mode) .poster-lightbox-media-watchnow,
+    .poster-lightbox.upcoming-mode:not(.simple-mode) .poster-lightbox-media-watchnow {
       margin-top: 14px;
       min-height: 0;
       padding: 0;
@@ -3079,7 +3081,8 @@
 
     .poster-lightbox.watching-now-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links,
     .poster-lightbox.plan-to-watch-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links,
-    .poster-lightbox.announced-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links {
+    .poster-lightbox.announced-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links,
+    .poster-lightbox.upcoming-mode:not(.simple-mode) .poster-lightbox-media-watchnow .watch-now-links {
       justify-content: safe center;
     }
 
@@ -5955,6 +5958,7 @@
   /* Watching Now, Plan to Watch, Incomplete e Announced não exibem ranking no card. */
   ol.ranking.category-watching .meta::before,
   ol.ranking.category-plan .meta::before,
+  ol.ranking.category-upcoming .meta::before,
   ol.ranking.category-incomplete .meta::before,
   ol.ranking.category-announced .meta::before {
     content: none;
@@ -6102,6 +6106,7 @@
     ol.ranking.mode-true-characters .rank-secondary { font-size: 13px; }
     ol.ranking.category-watching .meta::before,
     ol.ranking.category-plan .meta::before,
+    ol.ranking.category-upcoming .meta::before,
     ol.ranking.category-incomplete .meta::before,
     ol.ranking.category-announced .meta::before { font-size: 13px; }
   }
@@ -6134,6 +6139,7 @@
     ol.ranking.mode-true-characters .rank-secondary { font-size: 11px; }
     ol.ranking.category-watching .meta::before,
     ol.ranking.category-plan .meta::before,
+    ol.ranking.category-upcoming .meta::before,
     ol.ranking.category-incomplete .meta::before,
     ol.ranking.category-announced .meta::before { font-size: 11px; }
   }
@@ -6150,6 +6156,7 @@
     ol.ranking.mode-true-characters .rank-secondary { font-size: 10px; }
     ol.ranking.category-watching .meta::before,
     ol.ranking.category-plan .meta::before,
+    ol.ranking.category-upcoming .meta::before,
     ol.ranking.category-incomplete .meta::before,
     ol.ranking.category-announced .meta::before { font-size: 10px; }
   }
@@ -7218,7 +7225,7 @@
     .category-mecha,
     .category-sports,
     .category-watching,
-    .category-plan,
+    .category-plan,.category-upcoming,
     .category-announced,
     .category-incomplete
   ) li.anime-item {
@@ -7235,7 +7242,7 @@
     .category-mecha,
     .category-sports,
     .category-watching,
-    .category-plan,
+    .category-plan,.category-upcoming,
     .category-announced,
     .category-incomplete
   ) li.anime-item .poster-wrap {
@@ -7246,8 +7253,8 @@
   }
 
   @media (max-width: 1100px) {
-    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item,
-    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
+    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-upcoming,.category-announced,.category-incomplete) li.anime-item,
+    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-upcoming,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
       height: 192px !important;
       min-height: 192px !important;
       max-height: 192px !important;
@@ -7255,8 +7262,8 @@
   }
 
   @media (max-width: 900px) {
-    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item,
-    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
+    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-upcoming,.category-announced,.category-incomplete) li.anime-item,
+    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-upcoming,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
       height: 165px !important;
       min-height: 165px !important;
       max-height: 165px !important;
@@ -7264,8 +7271,8 @@
   }
 
   @media (max-width: 600px) {
-    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item,
-    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
+    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-upcoming,.category-announced,.category-incomplete) li.anime-item,
+    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-upcoming,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
       height: 134px !important;
       min-height: 134px !important;
       max-height: 134px !important;
@@ -7273,8 +7280,8 @@
   }
 
   @media (max-width: 380px) {
-    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item,
-    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
+    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-upcoming,.category-announced,.category-incomplete) li.anime-item,
+    ol.ranking:is(.category-all,.category-romance,.category-isekai,.category-comedy,.category-mecha,.category-sports,.category-watching,.category-plan,.category-upcoming,.category-announced,.category-incomplete) li.anime-item .poster-wrap {
       height: 115px !important;
       min-height: 115px !important;
       max-height: 115px !important;
@@ -7538,7 +7545,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) {
@@ -7556,7 +7563,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) li.anime-item {
@@ -7592,7 +7599,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) li.anime-item::after {
@@ -7615,7 +7622,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) li.anime-item:active {
@@ -7631,7 +7638,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .poster-wrap {
@@ -7656,7 +7663,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .thumb {
@@ -7676,7 +7683,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .meta {
@@ -7707,7 +7714,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .title-row {
@@ -7723,7 +7730,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .title-anime {
@@ -7745,7 +7752,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .info-row .info {
@@ -7973,7 +7980,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) {
@@ -7990,7 +7997,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .poster-wrap {
@@ -8007,7 +8014,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .meta {
@@ -8034,7 +8041,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .title-anime {
@@ -8078,7 +8085,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8098,7 +8105,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8127,7 +8134,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8153,7 +8160,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8169,7 +8176,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8185,7 +8192,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8212,7 +8219,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8238,7 +8245,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8257,7 +8264,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8287,7 +8294,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8300,7 +8307,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8316,7 +8323,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8341,7 +8348,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8489,7 +8496,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8506,7 +8513,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8522,7 +8529,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8655,7 +8662,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .thumb {
@@ -8703,7 +8710,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8726,7 +8733,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8739,7 +8746,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8755,7 +8762,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8783,7 +8790,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8806,7 +8813,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8840,7 +8847,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8858,7 +8865,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8973,7 +8980,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -8991,7 +8998,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9017,7 +9024,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9152,7 +9159,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9183,7 +9190,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9201,7 +9208,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9223,7 +9230,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9240,7 +9247,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9267,7 +9274,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9291,7 +9298,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9315,7 +9322,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9332,7 +9339,7 @@
       .category-mecha,
       .category-sports,
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced,
       .category-trueCharacters
@@ -9396,7 +9403,7 @@
   @media (max-width: 600px) {
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .meta::before {
@@ -9419,7 +9426,7 @@
 
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) li.anime-item:hover .meta::before {
@@ -9428,13 +9435,13 @@
 
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .title-row,
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .info-row,
@@ -9446,7 +9453,7 @@
   @media (max-width: 380px) {
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .meta::before {
@@ -9459,7 +9466,7 @@
 
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) li.anime-item:hover .meta::before {
@@ -9470,7 +9477,7 @@
   /* ── Cards v12: 01/02 também no desktop, sem Top 3 colorido ───── */
   ol.ranking.mode-true-characters:is(
     .category-watching,
-    .category-plan,
+    .category-plan,.category-upcoming,
     .category-incomplete,
     .category-announced
   ) .meta::before {
@@ -9482,7 +9489,7 @@
   /* Nessas listas a ordem é apenas informativa: sem ouro, prata ou bronze. */
   ol.ranking.mode-true-characters:is(
     .category-watching,
-    .category-plan,
+    .category-plan,.category-upcoming,
     .category-incomplete,
     .category-announced
   ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze)::before {
@@ -9491,7 +9498,7 @@
 
   ol.ranking.mode-true-characters:is(
     .category-watching,
-    .category-plan,
+    .category-plan,.category-upcoming,
     .category-incomplete,
     .category-announced
   ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze) .meta::before {
@@ -9501,7 +9508,7 @@
 
   ol.ranking.mode-true-characters:is(
     .category-watching,
-    .category-plan,
+    .category-plan,.category-upcoming,
     .category-incomplete,
     .category-announced
   ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze):hover .meta::before {
@@ -9511,13 +9518,13 @@
   @media (min-width: 601px) {
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .title-row,
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .info-row {
@@ -9528,7 +9535,7 @@
   @media (max-width: 600px) {
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze) .meta::before {
@@ -9537,7 +9544,7 @@
 
     ol.ranking.mode-true-characters:is(
       .category-watching,
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) li.anime-item:is(.rank-gold, .rank-silver, .rank-bronze):hover .meta::before {
@@ -9548,7 +9555,7 @@
   /* ── Desktop cards v13: números altos de ponta a ponta ─────────── */
   @media (min-width: 601px) {
     ol.ranking.mode-true-characters:is(
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) li.anime-item {
@@ -9556,7 +9563,7 @@
     }
 
     ol.ranking.mode-true-characters:is(
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .meta::before {
@@ -9572,7 +9579,7 @@
     }
 
     ol.ranking.mode-true-characters:is(
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) li.anime-item:hover .meta::before {
@@ -9580,7 +9587,7 @@
     }
 
     ol.ranking.mode-true-characters:is(
-      .category-plan,
+      .category-plan,.category-upcoming,
       .category-incomplete,
       .category-announced
     ) .title-row {
@@ -12248,7 +12255,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
   }
 
   /* Outras listas e calendário sem #X/01/02 também podem usar toda a faixa. */
-  ol.ranking:is(.category-plan, .category-incomplete, .category-announced, .release-calendar-list)
+  ol.ranking:is(.category-plan,.category-upcoming, .category-incomplete, .category-announced, .release-calendar-list)
     .meta > .announce-strip.announce-strip--meta {
     right: 0 !important;
   }
@@ -12283,7 +12290,7 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
       --announce-rank-offset: 0px;
     }
 
-    ol.ranking:is(.category-watching, .category-plan, .category-incomplete, .category-announced, .release-calendar-list)
+    ol.ranking:is(.category-watching, .category-plan,.category-upcoming, .category-incomplete, .category-announced, .release-calendar-list)
       .meta > .announce-strip.announce-strip--meta {
       right: 0 !important;
     }
@@ -14786,5 +14793,60 @@ li.anime-item .info-row .info,
 .poster-lightbox:not(.simple-mode) .poster-lightbox-character-link,
 .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-link,
 .poster-lightbox.open:not(.simple-mode) .poster-lightbox-character-img {
+  border-radius: 11px !important;
+}
+/* Announced Sequels: tag "Announced Sequels: <data>" fundida, com largura de
+   duas tags e cor de fundo/texto da data (mês/trimestre) do grupo. */
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-announced-merged {
+  min-width: 0;
+  background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 9%, rgba(255,255,255,0.025));
+}
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-announced-merged:hover,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-announced-merged:focus-visible {
+  background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 14%, rgba(255,255,255,0.035));
+}
+
+/* Info do poster lightbox: no mobile, a linha "Movie: ..." desce para baixo
+   (sem o " - "); no desktop continua na mesma linha. */
+.poster-lightbox .info-line-br { display: none; }
+@media (max-width: 760px) {
+  .poster-lightbox .info-line-sep { display: none; }
+  .poster-lightbox .info-line-br { display: inline; }
+}
+
+/* Poster do lightbox sem border-radius (imagem, wrapper, overlay de brilho
+   e a barra do "NEW FILM/SEASON" no rodapé do pôster). */
+.poster-lightbox img,
+.poster-lightbox-zoom img,
+.poster-lightbox .poster-lightbox-image-wrap,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap::before,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap > img,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-figure .poster-lightbox-media img,
+.poster-lightbox .poster-lightbox-announce {
   border-radius: 0 !important;
+}
+
+.poster-lightbox.open:not(.simple-mode) .poster-lightbox-characters-grid .poster-lightbox-character-link .poster-lightbox-character-img {
+  border-radius: 11px !important;
+}
+
+/* ── Upcoming Animes: Source / MAL Score / Studio / Year ── */
+.poster-lightbox.upcoming-mode:not(.simple-mode) .rank-meta-item--source,
+.poster-lightbox.upcoming-mode:not(.simple-mode) .rank-meta-item--upcoming-studio {
+  min-width: 0;
+}
+
+.rank-meta-item--upcoming-studio .rank-meta-value a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.35);
+  text-underline-offset: 3px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.rank-meta-item--upcoming-studio .rank-meta-value a:hover,
+.rank-meta-item--upcoming-studio .rank-meta-value a:focus-visible {
+  color: var(--lb-accent, #a3e635);
+  text-decoration-color: currentColor;
 }
