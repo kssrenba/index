@@ -2171,7 +2171,7 @@ function getMetaFor(animeId) {
       //   watchingnow-images/watchingnow-banner/<nome>.*
       //   plantowatch-images/plantowatch-banner/<nome>.*
       // Se o item tiver "banner" no info.js, esse caminho tem prioridade.
-      const BANNER_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+      const BANNER_EXTENSIONS = ['webp'];
       const bannerResolvedCache = new Map(); // chave -> url que carregou ('' = não existe)
       let bannerRenderToken = 0;
       // Mantém o estado enquanto o banner da obra atual ainda está sendo

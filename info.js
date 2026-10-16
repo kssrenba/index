@@ -639,6 +639,12 @@ const rawAnimeData = [
         malName: "Seishun Buta Yarou wa Randoseru Girl no Yume wo Minai",
       },
       { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Seishun Buta Yarou wa Santa Claus no Yume wo Minai" },
+      {
+        label: "Movie 4: Rascal Does Not Dream of Dear Friend",
+        episodes: "1h58m",
+        unwatched: true,
+        malName: "Seishun Buta Yarou wa Dear Friend no Yume wo Minai",
+      },
     ],
   },
   {
@@ -1426,6 +1432,41 @@ const rawAnimeData = [
 const rawWatchingData = [
   // Non-Seasonal Anime
   {
+    id: "golden-boy",
+    img: "watchingnow-images/watchingnow/golden-boy.webp",
+    title: "Golden Boy",
+    info: "6 episódios",
+    studio: "APPP",
+    airedSeason: "1995-1996",
+
+    season: null,
+    seasons: [6],
+
+    url: "https://www.anime-planet.com/anime/golden-boy",
+    crunchyroll: "https://www.youtube.com/playlist?list=PLud1Y7nEL_d7BojMHk9Y6s6wsFeB6BmGz",
+    malUrl: "https://myanimelist.net/anime/268/Golden_Boy",
+
+    mal: [{ label: "1 temporada", episodes: 6, malName: "Golden Boy", unwatched: true }],
+  },
+  {
+    id: "gto",
+    img: "watchingnow-images/watchingnow/gto.webp",
+    title: "Great Teacher Onizuka",
+    info: "43 episódios",
+    studio: "Studio Pierrot",
+    airedSeason: "1999-2000",
+
+    season: null,
+    seasons: [43],
+
+    url: "https://www.anime-planet.com/anime/great-teacher-onizuka",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRQ4QG4GY/gto---the-animation",
+    malUrl: "https://myanimelist.net/anime/245/Great_Teacher_Onizuka",
+
+    mal: [{ label: "1 temporada", episodes: 43, malName: "Great Teacher Onizuka", unwatched: true }],
+  },
+  
+  {
     id: "no-game-no-life",
     img: "watchingnow-images/watchingnow/no-game-no-life.webp",
     title: "No Game No Life",
@@ -1896,6 +1937,45 @@ const rawReleaseCalendarData = [
 // Plan to Watch — fila de animes a assistir, em ordem de prioridade.
 const rawPlanToWatchData = [
   {
+    id: "sbr",
+    img: "plantowatch-images/plantowatch/sbr.webp",
+    title: "Steel Ball Run: JoJo's Bizarre Adventure",
+    info: "Parte 7 de JoJo's Bizarre Adventure (2012)",
+    studio: "David Production",
+    airedSeason: "2026",
+    url: "https://www.anime-planet.com/anime/jojos-bizarre-adventure-steel-ball-run-1st-stage",
+    netflix: "https://www.netflix.com/title/82116553",
+    malUrl: "https://myanimelist.net/anime/61469/Steel_Ball_Run__JoJo_no_Kimyou_na_Bouken",
+
+    mal: [
+      { label: "1st Stage", episodes: "47m", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 1st Stage", unwatched: true },
+      { label: "2nd Stage", episodes: "TBA", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 2nd Stage", unwatched: true },
+    ],
+  },
+  {
+    id: "jojo",
+    img: "plantowatch-images/plantowatch/jojo.webp",
+    title: "JoJo's Bizarre Adventure (2012)",
+    info: "6 Partes: 190 episódios",
+    studio: "David Production",
+    airedSeason: "2013",
+    url: "https://www.anime-planet.com/anime/jojos-bizarre-adventure",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYP8DP1MY/jojos-bizarre-adventure",
+    malUrl: "https://myanimelist.net/anime/14719/JoJo_no_Kimyou_na_Bouken_TV",
+
+    mal: [
+      { label: "Parte 1", episodes: 9, malName: "JoJo no Kimyou na Bouken (TV)", unwatched: true },
+      { label: "Parte 2", episodes: 17, malName: "JoJo no Kimyou na Bouken (TV)", unwatched: true },
+      { label: "Parte 3 I: Stardust Crusaders", episodes: 24, malName: "JoJo no Kimyou na Bouken Part 3: Stardust Crusaders", unwatched: true },
+      { label: "Parte 3 II: Stardust Crusaders - Battle in Egypt", episodes: 24, malName: "JoJo no Kimyou na Bouken Part 3: Stardust Crusaders - Egypt-hen", unwatched: true },
+      { label: "Parte 4: Diamond Is Unbreakable", episodes: 39, malName: "JoJo no Kimyou na Bouken Part 4: Diamond wa Kudakenai", unwatched: true },
+      { label: "Parte 5: Golden Wind", episodes: 39, malName: "JoJo no Kimyou na Bouken Part 5: Ougon no Kaze", unwatched: true },
+      { label: "Parte 6 I: Stone Ocean", episodes: 12, malName: "JoJo no Kimyou na Bouken Part 6: Stone Ocean", unwatched: true },
+      { label: "Parte 6 II: Stone Ocean", episodes: 12, malName: "JoJo no Kimyou na Bouken Part 6: Stone Ocean Part 2", unwatched: true },
+      { label: "Parte 6 III: Stone Ocean", episodes: 14, malName: "JoJo no Kimyou na Bouken Part 6: Stone Ocean Part 3", unwatched: true },
+    ],
+  },
+  {
     id: "reincarnated-as-a-sword",
     img: "plantowatch-images/plantowatch/reincarnated-as-a-sword.webp",
     title: "Reincarnated as a Sword",
@@ -2022,19 +2102,7 @@ const rawPlanToWatchData = [
       { label: "4ª temporada: Hero", episodes: 12, malName: "High School DxD Hero", unwatched: true },
     ],
   },
-  {
-    id: "golden-boy",
-    img: "plantowatch-images/plantowatch/golden-boy.webp",
-    title: "Golden Boy",
-    info: "6 episódios",
-    studio: "APPP",
-    airedSeason: "1995-1996",
-    url: "https://www.anime-planet.com/anime/golden-boy",
-    crunchyroll: "https://www.youtube.com/playlist?list=PLud1Y7nEL_d7BojMHk9Y6s6wsFeB6BmGz",
-    malUrl: "https://myanimelist.net/anime/268/Golden_Boy",
 
-    mal: [{ label: "1 temporada", episodes: 6, malName: "Golden Boy", unwatched: true }],
-  },
   {
     id: "konosuba",
     img: "plantowatch-images/plantowatch/konosuba.webp",
@@ -2436,17 +2504,6 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/link-click",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GP5HJ8E81/link-click",
     malUrl: "https://myanimelist.net/anime/44074/Shiguang_Dailiren",
-  },
-  {
-    id: "jojo",
-    img: "plantowatch-images/plantowatch/jojo.webp",
-    title: "JoJo's Bizarre Adventure (2012)",
-    info: "5 Partes: 193 episódios",
-    studio: "David Production",
-    airedSeason: "2013",
-    url: "https://www.anime-planet.com/anime/jojos-bizarre-adventure",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYP8DP1MY/jojos-bizarre-adventure",
-    malUrl: "https://myanimelist.net/anime/14719/JoJo_no_Kimyou_na_Bouken_TV",
   },
   {
     id: "ranking-of-kings",
@@ -3701,6 +3758,7 @@ const nextSeasonMap = {
   "roshidere": { info: "Season 2 in 2027" },
   "shadow": { info: "New Movie: Lost Echoes in 2027" },
   "midnight-heart": { info: "Season 2 in 2027" },
+  "shield-hero": { info: "Season 5 in 2027" },
 
   // 29
   "one-piece#2": { info: "New Film: Baad in 2029" },
