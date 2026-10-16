@@ -14850,3 +14850,729 @@ li.anime-item .info-row .info,
   color: var(--lb-accent, #a3e635);
   text-decoration-color: currentColor;
 }
+
+/* ── Poster lightbox mobile ──
+   A imagem principal fica quadrada como no desktop; somente a imagem do
+   zoom fullscreen separado mantém cantos arredondados. */
+@media (max-width: 760px) {
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap {
+    overflow: hidden;
+  }
+  .poster-lightbox-zoom img {
+    border-radius: 14px !important;
+  }
+}
+
+/* ── Announced Sequels (mobile): a tag "Announced Sequels: <data>" SEMPRE
+   ocupa a largura de duas tags (linha inteira), esteja sozinha ou junto
+   de outras tags de ranking. ── */
+@media (max-width: 760px) {
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-announced-merged,
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list.has-three-ranking-tags .list-tag-announced-merged {
+    flex: 0 0 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+/* ── Upcoming Animes (mobile): mesmo tamanho e mesma imagem do card de Announced Sequels ──
+   Altura do card = largura do pôster x 1.5 (pôster 2:3, object-fit: cover,
+   sem zoom), igual ao Announced Sequels mobile. */
+@media (max-width: 600px) {
+  ol.ranking.mode-true-characters.category-upcoming {
+    --announced-poster-w: clamp(148px, 44vw, 184px);
+    --announced-card-h: calc(var(--announced-poster-w) * 1.5);
+    --mobile-poster-w: var(--announced-poster-w);
+    --mobile-card-h: var(--announced-card-h);
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming li.anime-item {
+    grid-template-columns: var(--announced-poster-w) minmax(0, 1fr) !important;
+    grid-template-rows: auto !important;
+    height: auto !important;
+    min-height: var(--announced-card-h) !important;
+    max-height: none !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming li.anime-item::after {
+    content: none !important;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming li.anime-item > .poster-wrap {
+    position: relative !important;
+    inset: auto !important;
+    display: block;
+    width: var(--announced-poster-w) !important;
+    height: 100% !important;
+    min-height: var(--announced-card-h) !important;
+    max-height: none !important;
+    aspect-ratio: 2 / 3 !important;
+    align-self: stretch;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming li.anime-item > .poster-wrap > .thumb {
+    position: absolute !important;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    object-position: center !important;
+    transform: none !important;
+    filter: saturate(0.92) contrast(1.03) !important;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming .meta {
+    min-height: var(--announced-card-h) !important;
+  }
+}
+
+/* ── Upcoming Animes (mobile): número antes do título e fundo borrado, como no Announced Sequels ── */
+@media (max-width: 600px) {
+  ol.ranking.mode-true-characters.category-upcoming li.anime-item {
+    border: 1px solid rgba(255,255,255,0.075) !important;
+    background: linear-gradient(110deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012) 58%), rgba(8,8,10,0.88) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.025) !important;
+    transform: none !important;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming li.anime-item > .poster-wrap {
+    z-index: 2;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming li.anime-item > .anime-item-ambient {
+    position: absolute !important;
+    top: -24px;
+    right: -24px;
+    bottom: -24px;
+    left: calc(var(--announced-poster-w) - 24px);
+    z-index: 1;
+    display: block !important;
+    width: auto;
+    height: auto;
+    background-size: cover;
+    background-position: center;
+    filter: blur(14px) brightness(0.78) saturate(1.12);
+    opacity: 1 !important;
+    transform: scale(1.08);
+    pointer-events: none;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming li.anime-item > .anime-item-ambient-shade {
+    display: none !important;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming .meta {
+    position: relative !important;
+    inset: auto !important;
+    z-index: 2;
+    display: flex;
+    min-width: 0;
+    padding: 22px 16px 38px !important;
+    gap: 8px !important;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(110deg, rgba(5,5,8,0.32), rgba(5,5,8,0.52) 58%, rgba(5,5,8,0.66)), rgba(5,5,8,0.28) !important;
+  }
+
+  /* Remove o "01" grande à direita; o número passa a ficar antes do título. */
+  ol.ranking.mode-true-characters.category-upcoming .meta::before {
+    content: none !important;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming .title-row,
+  ol.ranking.mode-true-characters.category-upcoming .info-row {
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming .title-row {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming .title-row::before {
+    content: counter(item, decimal-leading-zero);
+    display: inline-block;
+    margin-right: 7px;
+    color: color-mix(in srgb, var(--item-hover-color, #34d399) 78%, #fff);
+    font: 900 16px/1 var(--font-title);
+    font-variant-numeric: tabular-nums;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming .title-anime {
+    display: inline;
+    max-width: 100% !important;
+    overflow: visible;
+    white-space: normal;
+    color: #fff;
+    font-size: 16px !important;
+    font-weight: 800;
+    line-height: 1.16 !important;
+    text-shadow: none !important;
+  }
+
+  ol.ranking.mode-true-characters.category-upcoming .info-row .info {
+    max-width: 100% !important;
+    color: rgba(255,255,255,0.55) !important;
+    font-size: 11px !important;
+    line-height: 1.35;
+    white-space: normal;
+    text-shadow: none !important;
+  }
+}
+
+/* ── Mobile: sem border-radius nos cards de Announced Sequels, Upcoming e em todos os resultados da busca ── */
+@media (max-width: 600px) {
+  ol.ranking.mode-true-characters:is(.category-announced, .category-upcoming) li.anime-item,
+  ol.ranking.mode-true-characters:is(.category-announced, .category-upcoming) li.anime-item > .poster-wrap,
+  ol.ranking.mode-true-characters:is(.category-announced, .category-upcoming) li.anime-item > .poster-wrap > .thumb,
+  ol.ranking.mode-true-characters:is(.category-announced, .category-upcoming) li.anime-item > .anime-item-ambient,
+  ol.ranking.mode-true-characters:is(.category-announced, .category-upcoming) li.anime-item .meta,
+  ol.ranking.mode-true-characters:is(.category-announced, .category-upcoming) li.anime-item .info-row,
+  ol.ranking.mode-true-characters:is(.category-announced, .category-upcoming) li.anime-item .info-row .info,
+  .search-result-item,
+  .search-result-item::after,
+  .search-result-card-inner,
+  .search-result-thumb-wrap,
+  .search-result-thumb,
+  .search-result-info,
+  .search-result-ambient,
+  .search-result-ambient-shade,
+  .search-result-next-season,
+  .search-result-item--ann,
+  .search-result-item--ann .search-result-card-inner,
+  .search-result-item--ann .search-result-thumb-wrap,
+  .search-result-item--ann .search-result-info,
+  .search-result-item--ann .search-result-next-season,
+  .search-result-item--tc,
+  .search-result-item--tc .search-result-thumb-wrap,
+  .search-result-item--tc .search-result-card-inner,
+  .search-result-item.active .search-result-thumb {
+    border-radius: 0 !important;
+  }
+}
+
+/* ── Desktop: sem border-radius em todos os resultados da busca ── */
+@media (min-width: 601px) {
+  .search-result-item,
+  .search-result-item::after,
+  .search-result-card-inner,
+  .search-result-thumb-wrap,
+  .search-result-thumb,
+  .search-result-info,
+  .search-result-ambient,
+  .search-result-ambient-shade,
+  .search-result-next-season,
+  .search-result-item--ann,
+  .search-result-item--ann .search-result-card-inner,
+  .search-result-item--ann .search-result-thumb-wrap,
+  .search-result-item--ann .search-result-info,
+  .search-result-item--ann .search-result-next-season,
+  .search-result-item--tc,
+  .search-result-item--tc .search-result-thumb-wrap,
+  .search-result-item--tc .search-result-card-inner,
+  .search-result-item.active .search-result-thumb,
+  .search-result-item:hover .search-result-thumb {
+    border-radius: 0 !important;
+  }
+}
+
+/* ── Mobile: sem border-radius nos cards do Peak Episodes ── */
+@media (max-width: 600px) {
+  li.fav-ep-card,
+  li.fav-ep-card::after,
+  li.fav-ep-card .fav-ep-ambient,
+  li.fav-ep-card .fav-ep-ambient-shade,
+  li.fav-ep-card .fav-ep-media,
+  li.fav-ep-card .fav-ep-media-main,
+  li.fav-ep-card .fav-ep-media-main.poster-wrap,
+  li.fav-ep-card .fav-ep-media-main .thumb,
+  li.fav-ep-card .fav-ep-media-main .poster-fallback,
+  li.fav-ep-card .fav-ep-thumb,
+  li.fav-ep-card .fav-ep-thumb img,
+  li.fav-ep-card .fav-ep-thumbnav-arrow,
+  li.fav-ep-card .fav-ep-content,
+  .fav-ep-empty {
+    border-radius: 0 !important;
+  }
+}
+
+/* ── Mobile: sem border-radius nos cards do True Characters ── */
+@media (max-width: 600px) {
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item,
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item::after,
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item > .poster-wrap,
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item > .poster-wrap > .thumb,
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item .poster-fallback,
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item > .anime-item-ambient,
+  ol.ranking.mode-true-characters.category-trueCharacters li.anime-item > .anime-item-ambient-shade,
+  ol.ranking.mode-true-characters.category-trueCharacters .meta,
+  ol.ranking.mode-true-characters.category-trueCharacters .meta::before,
+  ol.ranking.mode-true-characters.category-trueCharacters .info-row,
+  ol.ranking.mode-true-characters.category-trueCharacters .info-row .info {
+    border-radius: 0 !important;
+  }
+}
+
+/* ── Desktop: sem border-radius nos cards do Peak Episodes ── */
+@media (min-width: 601px) {
+  li.fav-ep-card,
+  li.fav-ep-card::after,
+  li.fav-ep-card .fav-ep-ambient,
+  li.fav-ep-card .fav-ep-ambient-shade,
+  li.fav-ep-card .fav-ep-media,
+  li.fav-ep-card .fav-ep-media-main,
+  li.fav-ep-card .fav-ep-media-main.poster-wrap,
+  li.fav-ep-card .fav-ep-media-main .thumb,
+  li.fav-ep-card .fav-ep-media-main .poster-fallback,
+  li.fav-ep-card .fav-ep-thumb,
+  li.fav-ep-card .fav-ep-thumb img,
+  li.fav-ep-card .fav-ep-thumbnav-arrow,
+  li.fav-ep-card .fav-ep-content,
+  .fav-ep-empty {
+    border-radius: 0 !important;
+  }
+}
+/* ── True Characters: nome do anime cortado na esquerda ──
+   O .info usa overflow:hidden (necessário pro line-clamp), o que corta o
+   lado esquerdo da primeira letra (o "R" de "Rascal"). Damos 3px de folga
+   por dentro da caixa e compensamos com margem negativa, então o texto
+   continua alinhado com o nome do personagem. */
+ol.ranking.mode-true-characters.category-trueCharacters li.anime-item .info-row .info {
+  box-sizing: border-box !important;
+  padding: 1px 3px 1px 3px !important;
+  margin-left: -3px !important;
+  max-width: calc(100% + 3px) !important;
+}
+
+/* ── Poster lightbox DESKTOP (todas as listas): caixas sem border-radius ──
+   Tags de ranking (#32 All Animes, Incomplete...), caixa Studio/Year/Rewatch,
+   bloco do MyAnimeList (e a nota 8/10), botões de links e o card/fotos do
+   True Characters. Vale a partir de 761px; o override mobile equivalente vem depois deste bloco.
+   O seletor repete .poster-lightbox várias vezes só para ganhar dos overrides
+   antigos que usam !important. Os botões de ícone do topo (fechar, buscar,
+   traduzir) ficam como estão. */
+@media (min-width: 761px) {
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag-part,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag-content,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag-combined,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag-combined > .list-tag,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-division,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-meta,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-meta-item,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-mal,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-mal-label,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox [class*="rank-mal-note"],
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .watch-now-links,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .watch-now-links a,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .watch-now-links button,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .mal-btn-logo,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .anime-planet-btn-logo,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .crunchyroll-btn-logo,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .netflix-btn-logo,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-media-watchnow,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-more-info,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters-grid,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-link,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-link:only-child,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-img,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-rank,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters-label,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-meta::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-meta::after,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-mal::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-mal::after,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag::after,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters:not(:empty)::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters:not(:empty)::after,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-link::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-link::after {
+    border-radius: 0 !important;
+  }
+}
+/* ── Ícone da lista repetido em diagonal no fundo das tags de ranking ──
+   O <span class="list-tag-bg"> é criado em tagToHtml() (script.js). Ele fica
+   atrás do texto (z-index:-1 dentro de um stacking context próprio da tag) e
+   usa o ícone como máscara, pintado com a própria cor da lista (--tag-color).
+   Ajuste a intensidade em "opacity" e o tamanho em "mask-size". */
+.poster-lightbox-list .list-tag {
+  position: relative;
+  isolation: isolate;
+}
+.poster-lightbox-list .list-tag > .list-tag-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--tag-color, currentColor);
+  opacity: 0.12;
+  -webkit-mask-image: var(--tag-bg-icon);
+  mask-image: var(--tag-bg-icon);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-size: 46px 46px;
+  mask-size: 46px 46px;
+  -webkit-mask-position: center;
+  mask-position: center;
+  transition: opacity 0.2s ease;
+}
+.poster-lightbox-list .list-tag:hover > .list-tag-bg,
+.poster-lightbox-list .list-tag:focus-visible > .list-tag-bg {
+  opacity: 0.18;
+}
+
+.poster-lightbox-list .list-tag[data-mode="all"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M12 2 2 7l10 5 10-5-10-5Z%22/%3E%3Cpath d=%22m2 17 10 5 10-5%22/%3E%3Cpath d=%22m2 12 10 5 10-5%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M12 2 2 7l10 5 10-5-10-5Z%22/%3E%3Cpath d=%22m2 17 10 5 10-5%22/%3E%3Cpath d=%22m2 12 10 5 10-5%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="romance"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M12 21s-6.7-4.35-9.3-8.2C1 10 1.6 6.6 4.4 5.2 6.6 4.1 9 4.9 12 8c3-3.1 5.4-3.9 7.6-2.8 2.8 1.4 3.4 4.8 1.7 7.6C18.7 16.65 12 21 12 21Z%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M12 21s-6.7-4.35-9.3-8.2C1 10 1.6 6.6 4.4 5.2 6.6 4.1 9 4.9 12 8c3-3.1 5.4-3.9 7.6-2.8 2.8 1.4 3.4 4.8 1.7 7.6C18.7 16.65 12 21 12 21Z%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="isekai"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8%22/%3E%3Cpath d=%22M3 3v5h5%22/%3E%3Cpath d=%22M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16%22/%3E%3Cpath d=%22M16 16h5v5%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8%22/%3E%3Cpath d=%22M3 3v5h5%22/%3E%3Cpath d=%22M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16%22/%3E%3Cpath d=%22M16 16h5v5%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="sports"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229%22/%3E%3Cpath d=%22M12 3v18M3 12h18M6 6l12 12M18 6 6 18%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229%22/%3E%3Cpath d=%22M12 3v18M3 12h18M6 6l12 12M18 6 6 18%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="comedy"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229%22/%3E%3Cpath d=%22M8 14s1.5 2 4 2 4-2 4-2%22/%3E%3Cpath d=%22M9 9h.01M15 9h.01%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229%22/%3E%3Cpath d=%22M8 14s1.5 2 4 2 4-2 4-2%22/%3E%3Cpath d=%22M9 9h.01M15 9h.01%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="mecha"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M12 8V4H8%22/%3E%3Crect x=%224%22 y=%228%22 width=%2216%22 height=%2212%22 rx=%222%22/%3E%3Cpath d=%22M2 14h2%22/%3E%3Cpath d=%22M20 14h2%22/%3E%3Cpath d=%22M15 13v2%22/%3E%3Cpath d=%22M9 13v2%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M12 8V4H8%22/%3E%3Crect x=%224%22 y=%228%22 width=%2216%22 height=%2212%22 rx=%222%22/%3E%3Cpath d=%22M2 14h2%22/%3E%3Cpath d=%22M20 14h2%22/%3E%3Cpath d=%22M15 13v2%22/%3E%3Cpath d=%22M9 13v2%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="incomplete"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22/%3E%3Cpath d=%22M12 6v6l4 2%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22/%3E%3Cpath d=%22M12 6v6l4 2%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="announced"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Crect x=%223%22 y=%224%22 width=%2218%22 height=%2217%22 rx=%222%22/%3E%3Cpath d=%22M16 2v4M8 2v4M3 10h18%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Crect x=%223%22 y=%224%22 width=%2218%22 height=%2217%22 rx=%222%22/%3E%3Cpath d=%22M16 2v4M8 2v4M3 10h18%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="favEpisodes"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Crect x=%222.5%22 y=%225%22 width=%2219%22 height=%2213%22 rx=%222%22/%3E%3Cpath d=%22M8 21h8%22/%3E%3Cpath d=%22M12 18v3%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Crect x=%222.5%22 y=%225%22 width=%2219%22 height=%2213%22 rx=%222%22/%3E%3Cpath d=%22M8 21h8%22/%3E%3Cpath d=%22M12 18v3%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="watching"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22/%3E%3Cpath d=%22M10 8.5v7l6-3.5-6-3.5Z%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22/%3E%3Cpath d=%22M10 8.5v7l6-3.5-6-3.5Z%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="plan"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16Z%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16Z%22/%3E%3C/g%3E%3C/svg%3E"); }
+.poster-lightbox-list .list-tag[data-mode="upcoming"] > .list-tag-bg { --tag-bg-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2246%22 height=%2246%22 viewBox=%220 0 46 46%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate%2812 12%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z%22/%3E%3C/g%3E%3Cg transform=%22translate%2835 35%29 rotate%28-14%29 scale%28.75%29 translate%28-12 -12%29%22%3E%3Cpath d=%22M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z%22/%3E%3C/g%3E%3C/svg%3E"); }
+/* ── Mobile poster lightbox: blocos quadrados, iguais ao desktop ──
+   Inclui tags de ranking, MyAnimeList/MAL Score, Studios, links e True
+   Characters. A especificidade reforçada vence os raios antigos de 11/14px. */
+@media (max-width: 760px) {
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag-part,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag-content,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag-combined,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag-combined > .list-tag,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-division,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-sep,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-meta,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-meta-item,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-mal,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-mal-label,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox [class*="rank-mal-note"],
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .watch-now-links,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .watch-now-links a,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .watch-now-links button,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .mal-btn-logo,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .anime-planet-btn-logo,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .crunchyroll-btn-logo,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .netflix-btn-logo,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-media-watchnow,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-more-info,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters-grid,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-link,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-img,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-rank,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters-label,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-meta::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-meta::after,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-mal::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .rank-mal::after,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .list-tag::after,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters:not(:empty)::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-characters:not(:empty)::after,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-link::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-character-link::after {
+    border-radius: 0 !important;
+  }
+
+  /* A imagem principal e o wrapper também ficam retos no mobile.
+     O zoom fullscreen separado mantém o acabamento próprio. */
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap::before,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-image-wrap > img,
+  .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-figure .poster-lightbox-media img {
+    border-radius: 0 !important;
+  }
+}
+
+/* Peak Episodes: hover sutil na cor da lista, sem mudar a borda nem criar
+   contorno/brilho colorido. Mantém apenas a sombra neutra dos outros cards. */
+li.fav-ep-card[style*="--item-hover-color"]:hover {
+  background: color-mix(in srgb, var(--item-hover-color) 8%, transparent) !important;
+  border-color: transparent !important;
+  box-shadow: 0 12px 32px -8px rgba(0,0,0,0.7) !important;
+}
+
+
+/* ── Multi-entry Announced Sequels: duas datas em uma única tag de ranking ──
+   O conjunto inteiro se eleva no hover, sem separar as duas metades. Cada
+   metade transiciona a própria cor de fundo suavemente quando o cursor passa
+   de uma data para a outra. */
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced {
+  flex: var(--announced-count, 2) 1 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(var(--announced-count, 2), minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+  min-height: 38px;
+  padding: 0 !important;
+  overflow: hidden;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--tag-color, #34d399) 4%, rgba(255,255,255,0.018));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035), 0 2px 7px rgba(0,0,0,0.08);
+  transform: translateY(0) !important;
+  transform-origin: center;
+  filter: none !important;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 260ms ease, background 300ms ease;
+  will-change: transform;
+}
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag {
+  flex: none !important;
+  width: 100% !important;
+  min-width: 0;
+  min-height: 38px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: color-mix(in srgb, var(--tag-color, #34d399) 4%, rgba(255,255,255,0.018)) !important;
+  box-shadow: none !important;
+  padding: 5px 11px !important;
+  transform: none !important;
+  filter: none !important;
+  transition: background 300ms cubic-bezier(0.16, 1, 0.3, 1), color 240ms ease, filter 240ms ease;
+}
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag + .list-tag {
+  border-left: 1px solid rgba(255,255,255,0.10) !important;
+}
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced:hover,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced:focus-within {
+  background: color-mix(in srgb, var(--tag-color, #34d399) 5%, rgba(255,255,255,0.02));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045), 0 8px 18px rgba(0,0,0,0.17);
+  transform: translateY(-2px) !important;
+  filter: none !important;
+}
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag:hover,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag:focus-visible {
+  background: color-mix(in srgb, var(--tag-color, #34d399) 8%, rgba(255,255,255,0.035)) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  z-index: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced,
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag {
+    transition-duration: 0.01ms !important;
+  }
+}
+@media (max-width: 760px) {
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced {
+    flex: 0 0 100% !important;
+    flex-basis: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-auto-rows: minmax(34px, auto);
+    gap: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    align-self: stretch !important;
+    box-sizing: border-box !important;
+  }
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag {
+    display: flex !important;
+    width: 100% !important;
+    min-height: 34px !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+    padding: 5px 6px !important;
+  }
+  /* As duas linhas ficam encostadas; só uma divisória fina, sem gap. */
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag + .list-tag {
+    border-left: 0 !important;
+    border-top: 1px solid rgba(255,255,255,0.075) !important;
+  }
+}
+
+/* As tags combinadas ficam mais discretas: menor intensidade do fundo e do padrão,
+   mantendo a transição suave entre as duas cores no hover. */
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag > .list-tag-bg {
+  opacity: 0.055 !important;
+  transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), background-color 300ms ease;
+}
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag:hover > .list-tag-bg,
+.poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--announced > .list-tag:focus-visible > .list-tag-bg {
+  opacity: 0.085 !important;
+}
+
+/* ── Mobile ranking tags: All/Isekai and On Hold/Incomplete pair layouts ──
+   Announced Sequels keeps its dedicated full-width row. With All + Isekai,
+   those two share the first row and Incomplete gets its own row. When the
+   Watching Now membership is specifically On Hold, All stays full width and
+   On Hold pairs with Incomplete underneath Announced Sequels. */
+@media (max-width: 760px) {
+  /* Layout: #All Animes + Isekai side-by-side; Announced and Incomplete full width. */
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag[data-mode="all"]):has(.list-tag[data-mode="isekai"]):has(.list-tag[data-mode="incomplete"]):not(:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"])) .list-tag-mobile-wide {
+    order: 0 !important;
+    flex: 1 1 calc(50% - 4px) !important;
+    flex-basis: calc(50% - 4px) !important;
+    width: auto !important;
+    max-width: calc(50% - 4px) !important;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag[data-mode="all"]):has(.list-tag[data-mode="isekai"]):has(.list-tag[data-mode="incomplete"]):not(:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"])) .list-tag-announced-merged,
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag[data-mode="all"]):has(.list-tag[data-mode="isekai"]):has(.list-tag[data-mode="incomplete"]):not(:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"])) .list-tag-combined--announced {
+    order: 1 !important;
+    flex: 0 0 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag[data-mode="all"]):has(.list-tag[data-mode="isekai"]):has(.list-tag[data-mode="incomplete"]):not(:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"])) .list-tag[data-mode="incomplete"] {
+    order: 2 !important;
+    flex: 0 0 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Layout with On Hold: All full width, Announced full width, then
+     On Hold + Incomplete side-by-side. Override the legacy mobile-wide flag. */
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag-mobile-wide {
+    order: 0 !important;
+    flex: 1 1 calc(50% - 4px) !important;
+    flex-basis: calc(50% - 4px) !important;
+    width: auto !important;
+    max-width: calc(50% - 4px) !important;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag[data-mode="all"] {
+    order: 0 !important;
+    flex: 0 0 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag-announced-merged,
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag-combined--announced {
+    order: 1 !important;
+    flex: 0 0 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag-split[data-mode="watching"][data-mobile-label="On Hold"],
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag[data-mode="incomplete"] {
+    flex: 1 1 calc(50% - 4px) !important;
+    flex-basis: calc(50% - 4px) !important;
+    width: auto !important;
+    max-width: calc(50% - 4px) !important;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag-split[data-mode="watching"][data-mobile-label="On Hold"] {
+    order: 2 !important;
+  }
+
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag[data-mode="incomplete"] {
+    order: 3 !important;
+  }
+}
+
+
+/* ── Desktop: título alinhado ao rank quando o pôster está escondido ──
+   O modo poster-hidden remove a coluna de mídia; define explicitamente
+   a primeira linha do painel para manter o número e o nome lado a lado.
+   O LINKS ABOUT transferido para o painel passa a usar o mesmo cartão
+   (largura, padding, fundo e hover) do bloco de temporadas do MyAnimeList. */
+@media (min-width: 761px) {
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel {
+    grid-template-columns: max-content minmax(0, 1fr) !important;
+    column-gap: 22px;
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-hero-rank {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    align-self: center;
+    margin: 0;
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-title {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: auto !important;
+    min-width: 0;
+    max-width: none;
+    align-self: center;
+    margin: 0 !important;
+    text-align: left;
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-info {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    width: 100%;
+    margin-top: -8px;
+    text-align: left;
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-list,
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .rank-meta,
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-more-info,
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .rank-mal,
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-characters {
+    grid-column: 1 / -1 !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-more-info:not(:empty) {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 15px 18px 17px;
+    margin: 0;
+    min-height: 64px;
+    border: 0;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.055);
+    box-shadow: none;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-more-info:not(:empty):hover {
+    background: rgba(255,255,255,0.09);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 24px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-more-info .watch-now-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-height: 60px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .poster-lightbox.poster-hidden:not(.simple-mode) .poster-lightbox-panel > .poster-lightbox-more-info .watch-now-links:hover {
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+}

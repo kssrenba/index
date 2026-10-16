@@ -402,12 +402,26 @@ if ('scrollRestoration' in history) {
           const hasBanner = lightbox.classList.contains('has-banner');
           clearTimeout(bannerGoneTimer);
           if (hasBanner) { applyPosterHidden(true); return; }
-          // Ao trocar de anime o banner some por um instante enquanto o novo
-          // carrega. Esperar um pouco evita o botão (e o layout sem pôster)
-          // "piscar" nesse intervalo; se o banner voltar logo, nada muda.
-          bannerGoneTimer = setTimeout(() => {
-            applyPosterHidden(lightbox.classList.contains('has-banner'));
-          }, 160);
+          // Ao navegar, o banner pode desaparecer enquanto a nova imagem é
+          // resolvida. Só saímos do poster-hidden quando sabemos que não há
+          // banner; isso evita uma troca seca de layout em banners mais lentos.
+          const settleMissingBanner = () => {
+            if (lightbox.classList.contains('has-banner')) {
+              applyPosterHidden(true);
+              return;
+            }
+            if (bannerPending && lightbox.classList.contains('open')) {
+              bannerGoneTimer = setTimeout(settleMissingBanner, 80);
+              return;
+            }
+            if (userHidden && lightbox.classList.contains('open')
+                && lightbox.classList.contains('poster-hidden')) {
+              animatePosterHiddenFallback();
+            } else {
+              applyPosterHidden(false);
+            }
+          };
+          bannerGoneTimer = setTimeout(settleMissingBanner, 160);
         }
         new MutationObserver(syncPosterHidden).observe(lightbox, { attributes: true, attributeFilter: ['class'] });
 
@@ -441,6 +455,53 @@ if ('scrollRestoration' in history) {
           return Array.from(lightboxFigure.querySelectorAll(
             ':scope > *:not(.poster-lightbox-panel):not(.poster-lightbox-media), :scope > .poster-lightbox-panel > *'
           ));
+        }
+
+        // Quando o próximo anime não possui banner, o posterlightbox precisa
+        // voltar do layout expandido para o layout com pôster. Fazemos a mesma
+        // técnica FLIP da alternância manual: os blocos deslizam da posição
+        // anterior para a nova, enquanto o pôster entra com fade + escala leve.
+        function animatePosterHiddenFallback() {
+          const media = lightbox.querySelector('.poster-lightbox-media');
+          if (!lightbox.classList.contains('poster-hidden')
+              || !lightbox.classList.contains('open')
+              || !canAnimate() || !media || !lightboxFigure) {
+            applyPosterHidden(false);
+            return;
+          }
+
+          const items = flowItems();
+          const firstRects = new Map();
+          items.forEach(el => firstRects.set(el, el.getBoundingClientRect()));
+
+          applyPosterHidden(false);
+          // Força o recálculo do layout antes de obter as posições finais.
+          const mediaRect = media.getBoundingClientRect();
+          items.forEach(el => {
+            const first = firstRects.get(el);
+            const last = el.getBoundingClientRect();
+            if (!first || (!first.width && !first.height) || (!last.width && !last.height)) return;
+            const dx = first.left - last.left;
+            const dy = first.top - last.top;
+            if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+            el.animate(
+              [
+                { transform: `translate(${dx}px, ${dy}px)`, opacity: 0.84 },
+                { transform: 'translate(0, 0)', opacity: 1 }
+              ],
+              { duration: 420, easing: EASE }
+            );
+          });
+
+          if (mediaRect.width > 0 && mediaRect.height > 0) {
+            media.animate(
+              [
+                { opacity: 0, transform: 'translateX(-18px) scale(0.965)' },
+                { opacity: 1, transform: 'translateX(0) scale(1)' }
+              ],
+              { duration: 420, easing: EASE }
+            );
+          }
         }
 
         function toggleAnimated() {
@@ -534,10 +595,45 @@ if ('scrollRestoration' in history) {
 
       let lastFocused = null;
       let currentItem = null;
+      // One Piece e Haikyuu têm duas entradas de Next Season Map. O índice
+      // só avança quando a sessão do posterlightbox é fechada, nunca durante
+      // a navegação interna entre cards.
+      const ANNOUNCED_OVERLAY_CYCLE_IDS = new Set(['one-piece', 'haikyuu']);
+      const announcedOverlayCycleIndexes = new Map();
+      let lightboxOpeningCycleId = null;
+      let lightboxOpeningCycleIndex = null;
       let sequelPosterDefaultSrc = '';
       let sequelPosterAltSrc = '';
       let sequelPosterActive = false;
       let sequelPosterToggleToken = 0;
+      // Hover temporário nas tags de Watching Now / Announced Sequels:
+      // mostra o pôster usado pela categoria e restaura o pôster ativo ao sair.
+      let categoryTagPreviewActive = false;
+      let categoryTagPreviewMode = '';
+      let categoryTagPreviewToken = 0;
+      let categoryTagPointerX = NaN;
+      let categoryTagPointerY = NaN;
+      document.addEventListener('pointermove', event => {
+        if (event.pointerType === 'touch') return;
+        categoryTagPointerX = event.clientX;
+        categoryTagPointerY = event.clientY;
+      }, { passive: true });
+      function getCategoryTagAtPointer() {
+        if (!lightboxList) return null;
+        let node = Number.isFinite(categoryTagPointerX) && Number.isFinite(categoryTagPointerY)
+          ? document.elementFromPoint(categoryTagPointerX, categoryTagPointerY)
+          : null;
+        let tag = node && node.closest
+          ? node.closest('.list-tag[data-mode="watching"], .list-tag[data-mode="announced"]')
+          : null;
+        if (tag && lightboxList.contains(tag)) return tag;
+        return lightboxList.querySelector(
+          '.list-tag[data-mode="watching"]:hover, .list-tag[data-mode="announced"]:hover'
+        );
+      }
+      // Referência compartilhada para a renderização do lightbox, já que o
+      // listener delegado das tags vive em um bloco de escopo separado.
+      let previewCategoryTagPosterFromRenderer = null;
       let randomPlanNavigation = false;
       // Quando o poster-lightbox é aberto pelo randomizer, ele fica
       // travado neste anime: sem navegação lateral por setas ou swipe.
@@ -1913,7 +2009,7 @@ function getMetaFor(animeId) {
         // uma. Fica depois do "Peak Episodes" de propósito, pra essa
         // tag aparecer antes do "Incomplete" (ex: "#10 Peak Episodes"
         // antes de "Incomplete").
-        ['incomplete', 'plan', 'announced', 'watching'].forEach(key => {
+        ['incomplete', 'plan', 'announced', 'upcoming', 'watching'].forEach(key => {
           const list = (typeof getFilteredData === 'function') ? getFilteredData(key) : [];
           if (list.some(a => a.id === animeId)) {
             const label = String(CATEGORY_LABEL[key] || '').replace(/:\s*$/, '');
@@ -1934,6 +2030,7 @@ function getMetaFor(animeId) {
           watching: 30,
           plan: 40,
           announced: 50,
+          upcoming: 55,
           incomplete: 60
         };
         tags.sort((a, b) =>
@@ -2000,17 +2097,28 @@ function getMetaFor(animeId) {
         return { posterSrc, instantSrc, title, cardImg };
       }
 
-      function setLightboxPosterInstantly(item, posterSrc, title) {
-        // Se o original já estiver pronto, usa-o direto. Caso contrário,
-        // mostra imediatamente a thumb que já está na tela e troca pelo
-        // pôster vertical assim que ele terminar, sem quadro vazio.
-        const primed = primeLightboxVisual(item, posterSrc, title);
-        if (!primed) return;
-        updateAmbientFromPoster(primed.instantSrc || posterSrc);
+      function setLightboxPosterInstantly(item, posterSrc, title, preserveCategoryPreview = false) {
+        // Ao navegar com o cursor ainda sobre uma tag de categoria, não mostre
+        // nem por um frame o pôster padrão do anime novo. A prévia correspondente
+        // será aplicada assim que as tags do novo item forem renderizadas.
+        let primed = null;
+        if (preserveCategoryPreview) {
+          lightboxImg.alt = title || '';
+          if (lightboxTitle) lightboxTitle.textContent = title || '';
+        } else {
+          // Se o original já estiver pronto, usa-o direto. Caso contrário,
+          // mostra imediatamente a thumb que já está na tela e troca pelo
+          // pôster vertical assim que ele terminar, sem quadro vazio.
+          primed = primeLightboxVisual(item, posterSrc, title);
+          if (!primed) return;
+          updateAmbientFromPoster(primed.instantSrc || posterSrc);
+        }
 
         preloadLightboxPoster(posterSrc, 'high').then(loaded => {
           if (!loaded || currentItem !== item || !lightbox.classList.contains('open')) return;
-          if (sequelPosterActive && currentItem === item) return;
+          // Não deixe o carregamento atrasado do pôster original sobrescrever
+          // a prévia que o mouse está mostrando em uma tag de categoria.
+          if (categoryTagPreviewActive || (sequelPosterActive && currentItem === item)) return;
           lightboxImg.src = posterSrc;
           updateAmbientFromPoster(posterSrc);
         });
@@ -2066,6 +2174,10 @@ function getMetaFor(animeId) {
       const BANNER_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
       const bannerResolvedCache = new Map(); // chave -> url que carregou ('' = não existe)
       let bannerRenderToken = 0;
+      // Mantém o estado enquanto o banner da obra atual ainda está sendo
+      // procurado. Isso impede que o poster-hidden saia e volte de repente
+      // quando a resolução do banner demora mais que o primeiro intervalo.
+      let bannerPending = false;
 
       function bannerAutoCandidates(source) {
         if (!source || !source.img) return [];
@@ -2481,6 +2593,7 @@ function getMetaFor(animeId) {
       });
 
       function hideLightboxBanner() {
+        bannerPending = false;
         lightbox.classList.remove('has-banner');
         lightboxBanner.classList.remove('ready');
         lightboxBannerImg.onload = null;
@@ -2492,6 +2605,7 @@ function getMetaFor(animeId) {
       function applyLightboxBanner(source) {
         if (!lightboxBanner || !lightboxBannerImg) return;
         const token = ++bannerRenderToken;
+        bannerPending = false;
         const candidates = bannerCustomPath(source)
           ? [bannerCustomPath(source)]
           : bannerAutoCandidates(source);
@@ -2500,6 +2614,7 @@ function getMetaFor(animeId) {
           hideLightboxBanner();
           return;
         }
+        bannerPending = true;
         lightboxBannerImg.style.objectPosition = (source && source.bannerPosition) || '';
         lightboxBannerImg.style.transformOrigin = '';
         lightboxBannerImg.style.setProperty('--banner-shift-x', '');
@@ -2511,12 +2626,14 @@ function getMetaFor(animeId) {
           const url = bannerFreshUrl(next);
           const reveal = () => {
             if (token !== bannerRenderToken) return;
+            bannerPending = false;
             if (lightboxBannerImgBlur && lightboxBannerImgBlur.getAttribute('src') !== url) lightboxBannerImgBlur.src = url;
             lightbox.classList.add('has-banner');
             lightboxBanner.classList.add('ready');
           };
           lightboxBannerImg.onerror = () => {
             if (token !== bannerRenderToken) return;
+            bannerPending = false;
             bannerResolvedCache.set(cacheKey, '');
             hideLightboxBanner();
           };
@@ -2550,6 +2667,21 @@ function getMetaFor(animeId) {
         const posterWrap = item.querySelector('.poster-wrap');
         const img = posterWrap ? posterWrap.querySelector('.thumb') : null;
         if (!img) return;
+
+        // Se o usuário navega para outro anime mantendo o mouse exatamente
+        // sobre a tag Watching Now / Announced Sequels, o DOM antigo ainda
+        // identifica essa posição. Preserva a prévia quando o próximo anime
+        // também tem uma tag de categoria, para o pôster original não piscar.
+        const hoveredCategoryTagBeforeChange = getCategoryTagAtPointer();
+        const nextItemHasCategoryPreview = hoveredCategoryTagBeforeChange
+          && getMembershipTags(item.id).some(tag => tag.key === 'watching' || tag.key === 'announced');
+        const preserveCategoryPreviewForNextItem = Boolean(nextItemHasCategoryPreview);
+        categoryTagPreviewActive = preserveCategoryPreviewForNextItem;
+        categoryTagPreviewMode = preserveCategoryPreviewForNextItem
+          ? hoveredCategoryTagBeforeChange.dataset.mode
+          : '';
+        // Invalida qualquer carregamento da prévia pertencente à obra anterior.
+        categoryTagPreviewToken++;
         // No All Ranks desktop, o card pode estar usando um blob reduzido
         // para ficar tão leve quanto o Plan to Watch. O lightbox sempre
         // abre o data-src original, mantendo resolução e identificação
@@ -2569,11 +2701,26 @@ function getMetaFor(animeId) {
           || watchingData.find(a => a.id === item.id)
           || planToWatchData.find(a => a.id === item.id)
           || upcomingAnimeData.find(a => a.id === item.id);
-        const sequelInfo = nextSeasonMap[item.getAttribute('data-ns-key') || item.id];
+        const explicitNextSeasonKey = item.getAttribute('data-ns-key') || '';
+        let selectedNextSeasonKey = explicitNextSeasonKey || item.id;
+        // Fora da própria lista Announced Sequels, One Piece e Haikyuu
+        // alternam entre a entrada principal (#1) e a #2. O índice fica
+        // congelado enquanto o lightbox está aberto e só muda ao fechá-lo.
+        if (!explicitNextSeasonKey
+            && currentCategory !== 'announced'
+            && ANNOUNCED_OVERLAY_CYCLE_IDS.has(item.id)) {
+          const announcedKeys = getAnnouncedKeys(item.id);
+          if (announcedKeys.length > 1) {
+            const orderedKeys = [item.id, ...announcedKeys.filter(key => key !== item.id)];
+            const cycleIndex = (announcedOverlayCycleIndexes.get(item.id) || 0) % orderedKeys.length;
+            selectedNextSeasonKey = orderedKeys[cycleIndex];
+          }
+        }
+        const sequelInfo = nextSeasonMap[selectedNextSeasonKey];
         // Banner: automático pela pasta (ou manual via "banner" no info.js)
         applyLightboxBanner(sequelAnimeSource);
         sequelPosterAltSrc = sequelInfo && sequelAnimeSource && sequelAnimeSource.img
-          ? sequelsThumbSrc(sequelAnimeSource.img, item.getAttribute('data-ns-key'))
+          ? sequelsThumbSrc(sequelAnimeSource.img, selectedNextSeasonKey)
           : '';
         if (lightboxAnnounce) {
           const canToggleSequelPoster = Boolean(sequelInfo && sequelInfo.info && sequelPosterAltSrc);
@@ -2633,17 +2780,12 @@ function getMetaFor(animeId) {
         lightbox.classList.toggle('watching-now-mode', isWatchingNow);
         lightbox.classList.toggle('plan-to-watch-mode', isPlanToWatch);
         lightbox.classList.toggle('upcoming-mode', isUpcoming);
-        // Upcoming Animes: sem botão de pesquisar no search.
+        // O botão Search também fica disponível nos posterlightbox de Upcoming Animes.
+        // Limpa qualquer estado de ocultação para manter o botão acessível em todas as listas.
         if (searchBtn) {
-          if (isUpcoming) {
-            searchBtn.style.setProperty('display', 'none', 'important');
-            searchBtn.setAttribute('aria-hidden', 'true');
-            searchBtn.tabIndex = -1;
-          } else {
-            searchBtn.style.removeProperty('display');
-            searchBtn.removeAttribute('aria-hidden');
-            searchBtn.removeAttribute('tabindex');
-          }
+          searchBtn.style.removeProperty('display');
+          searchBtn.removeAttribute('aria-hidden');
+          searchBtn.removeAttribute('tabindex');
         }
         lightbox.classList.toggle('announced-mode', currentCategory === 'announced');
         lightbox.classList.remove('plan-to-watch-carousel');
@@ -2797,7 +2939,7 @@ function getMetaFor(animeId) {
           calendarBtn.tabIndex = isInCalendar ? 0 : -1;
         }
 
-        setLightboxPosterInstantly(item, src, title);
+        setLightboxPosterInstantly(item, src, title, preserveCategoryPreviewForNextItem);
         if (lightboxTitle) {
           lightboxTitle.innerHTML = escapeHtml(title);
         }
@@ -2854,7 +2996,7 @@ function getMetaFor(animeId) {
             const mobileWatchingLabel = !seasonKey || String(seasonLabel.text).trim().toLowerCase() === 'non-seasonal anime'
               ? 'Watching Now'
               : seasonLabel.text;
-            mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(watchingEntry.id)}" data-mobile-label="${escapeHtml(mobileWatchingLabel)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-part">Watching Now:</span><span class="list-tag-part">${escapeHtml(seasonLabel.text)}</span></button>`;
+            mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(watchingEntry.id)}" data-mobile-label="${escapeHtml(mobileWatchingLabel)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-bg" aria-hidden="true"></span><span class="list-tag-part">Watching Now:</span><span class="list-tag-part">${escapeHtml(seasonLabel.text)}</span></button>`;
           } else if (watchingTag && division && !hideDivision) {
             // Fallback para o card aberto diretamente em Watching Now caso
             // a entrada não seja encontrada no array por algum motivo.
@@ -2865,42 +3007,69 @@ function getMetaFor(animeId) {
             const mobileWatchingLabel = divisionText.toLowerCase() === 'non-seasonal anime'
               ? 'Watching Now'
               : divisionText;
-            mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(item.id)}" data-mobile-label="${escapeHtml(mobileWatchingLabel)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-part">Watching Now:</span><span class="list-tag-part">${escapeHtml(division.text)}</span></button>`;
+            mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(item.id)}" data-mobile-label="${escapeHtml(mobileWatchingLabel)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-bg" aria-hidden="true"></span><span class="list-tag-part">Watching Now:</span><span class="list-tag-part">${escapeHtml(division.text)}</span></button>`;
           }
 
-          // Announced Sequels: a tag "Announced Sequels" e a divisão de data
-          // (ex: "TBA", "Apr 2027") viram UMA tag só, com largura de duas
-          // e a cor do mês/grupo (ex: Apr 2027 = rosa da primavera).
+          // Announced Sequels: uma entrada gera a tag combinada padrão.
+          // Quando um anime tem várias entradas no Next Season Map (ex.:
+          // One Piece e One Piece #2), o All Ranking mostra uma tag por data,
+          // agrupadas numa única pill com a largura equivalente a duas tags.
           let mergedAnnouncedTagHtml = '';
-          // Padrão em QUALQUER entrada do lightbox (MyRanks, Watching Now,
-          // Plan to Watch etc.): se o anime está em Announced Sequels, a
-          // tag vira "Announced Sequels: <data>" (ex: "Oct 2027") com a cor
-          // do grupo. Quando aberto pelo próprio Announced, usa a divisão
-          // do card; nos demais casos calcula a data via nextSeasonMap.
+          let combinedAnnouncedTagsHtml = '';
           let announcedDivision = (currentCategory === 'announced') ? division : null;
           const announcedMergeTag = effectiveTags.find(t => t.key === 'announced') || null;
-          if (!announcedDivision && announcedMergeTag) {
-            const nsKeys = getAnnouncedKeys(item.id);
-            const preferredKey = item.getAttribute('data-ns-key');
-            const groups = nsKeys.map(k => getAnnouncedDateGroup(k));
-            let g = null;
-            if (preferredKey && nsKeys.includes(preferredKey)) {
-              g = getAnnouncedDateGroup(preferredKey);
-            } else if (groups.length) {
-              g = groups.reduce((a, b) => (b.sortKey < a.sortKey ? b : a));
-            }
-            if (g) announcedDivision = { text: g.label, color: g.color };
-          }
-          if (announcedDivision && announcedMergeTag) {
-            const division = announcedDivision;
-            const annColor = division.color || (announcedMergeTag && announcedMergeTag.color) || 'var(--glow-accent)';
-            const annTextColor = (announcedMergeTag && announcedMergeTag.color) || CATEGORY_HOVER_COLOR.announced || '#34d399';
-            const annLabel = String((announcedMergeTag && announcedMergeTag.label) || CATEGORY_LABEL.announced || 'Announced Sequels').replace(/:\s*$/, '');
+          const announcedKeysForItem = getAnnouncedKeys(item.id);
+          const explicitAnnouncedKey = item.getAttribute('data-ns-key') || '';
+          const showAllAnnouncedEntries = Boolean(
+            announcedMergeTag && !explicitAnnouncedKey && currentCategory !== 'announced'
+              && announcedKeysForItem.length > 1
+          );
+
+          if (showAllAnnouncedEntries) {
+            const annTextColor = announcedMergeTag.color || CATEGORY_HOVER_COLOR.announced || '#34d399';
+            const annLabel = String(announcedMergeTag.label || CATEGORY_LABEL.announced || 'Announced Sequels').replace(/:\s*$/, '');
             effectiveTags = effectiveTags.filter(t => t.key !== 'announced');
-            mergedAnnouncedTagHtml = `<button type="button" class="list-tag list-tag-split list-tag-announced-merged" data-mode="announced" data-target-id="${escapeHtml((announcedMergeTag && announcedMergeTag.targetId) || item.id)}" data-mobile-label="${escapeHtml(annLabel + ': ' + division.text)}" style="--tag-color:${annColor};--tag-color-2:${annTextColor}"><span class="list-tag-part">${escapeHtml(annLabel)}:</span><span class="list-tag-part">${escapeHtml(division.text)}</span></button>`;
+            const announcedParts = announcedKeysForItem.map(key => {
+              const group = getAnnouncedDateGroup(key);
+              const annColor = group.color || announcedMergeTag.color || 'var(--glow-accent)';
+              // No mobile, cada metade mostra só a data para caber dentro
+              // da própria célula; no desktop, o rótulo completo continua visível.
+              return `<button type="button" class="list-tag list-tag-split list-tag-announced-merged" data-mode="announced" data-target-id="${escapeHtml((announcedMergeTag && announcedMergeTag.targetId) || item.id)}" data-ns-key="${escapeHtml(key)}" data-mobile-label="${escapeHtml(annLabel + ': ' + group.label)}" style="--tag-color:${annColor};--tag-color-2:${annTextColor}"><span class="list-tag-bg" aria-hidden="true"></span><span class="list-tag-part">${escapeHtml(annLabel)}:</span><span class="list-tag-part">${escapeHtml(group.label)}</span></button>`;
+            });
+            if (announcedParts.length > 1) {
+              combinedAnnouncedTagsHtml = `<span class="list-tag list-tag-combined list-tag-combined--announced" style="--announced-count:${announcedParts.length};--tag-color:${announcedMergeTag.color || CATEGORY_HOVER_COLOR.announced || '#34d399'}">${announcedParts.join('')}</span>`;
+            } else {
+              mergedAnnouncedTagHtml = announcedParts[0] || '';
+            }
+          } else {
+            // Padrão para uma única entrada ou quando o lightbox foi aberto
+            // diretamente por um card específico de Announced Sequels.
+            let selectedAnnouncedKey = explicitAnnouncedKey || (nextSeasonMap[item.id] ? item.id : '');
+            if (!announcedDivision && announcedMergeTag) {
+              const preferredKey = getPreferredAnnouncedKey(
+                item.id,
+                announcedKeysForItem,
+                explicitAnnouncedKey
+              );
+              selectedAnnouncedKey = preferredKey || selectedAnnouncedKey;
+              let group = preferredKey ? getAnnouncedDateGroup(preferredKey) : null;
+              if (!group && announcedKeysForItem.length) {
+                const groups = announcedKeysForItem.map(k => getAnnouncedDateGroup(k));
+                group = groups.reduce((a, b) => (b.sortKey < a.sortKey ? b : a));
+              }
+              if (group) announcedDivision = { text: group.label, color: group.color };
+            }
+            if (announcedDivision && announcedMergeTag) {
+              const division = announcedDivision;
+              const annColor = division.color || announcedMergeTag.color || 'var(--glow-accent)';
+              const annTextColor = announcedMergeTag.color || CATEGORY_HOVER_COLOR.announced || '#34d399';
+              const annLabel = String(announcedMergeTag.label || CATEGORY_LABEL.announced || 'Announced Sequels').replace(/:\s*$/, '');
+              effectiveTags = effectiveTags.filter(t => t.key !== 'announced');
+              mergedAnnouncedTagHtml = `<button type="button" class="list-tag list-tag-split list-tag-announced-merged" data-mode="announced" data-target-id="${escapeHtml((announcedMergeTag && announcedMergeTag.targetId) || item.id)}" data-ns-key="${escapeHtml(selectedAnnouncedKey)}" data-mobile-label="${escapeHtml(annLabel + ': ' + division.text)}" style="--tag-color:${annColor};--tag-color-2:${annTextColor}"><span class="list-tag-bg" aria-hidden="true"></span><span class="list-tag-part">${escapeHtml(annLabel)}:</span><span class="list-tag-part">${escapeHtml(division.text)}</span></button>`;
+            }
           }
 
-          const tagToHtml = t => `<button type="button" class="list-tag" data-mode="${t.key}" data-target-id="${escapeHtml(t.targetId || item.id)}" style="--tag-color:${t.color || 'var(--glow-accent)'}"><span class="list-tag-content">${t.position != null ? `<span class="list-tag-rank${t.key === 'all' ? ' list-tag-rank--all' : ''}">#${t.position}</span>` : ''}<span class="list-tag-name">${escapeHtml(t.label)}</span></span></button>`;
+          const tagToHtml = t => `<button type="button" class="list-tag" data-mode="${t.key}" data-target-id="${escapeHtml(t.targetId || item.id)}" style="--tag-color:${t.color || 'var(--glow-accent)'}"><span class="list-tag-bg" aria-hidden="true"></span><span class="list-tag-content">${t.position != null ? `<span class="list-tag-rank${t.key === 'all' ? ' list-tag-rank--all' : ''}">#${t.position}</span>` : ''}<span class="list-tag-name">${escapeHtml(t.label)}</span></span></button>`;
 
           // Peak Episodes: quando o mesmo anime tem dois (ou mais)
           // episódios favoritos, eles viram UMA única pill visual, com
@@ -2951,6 +3120,7 @@ function getMetaFor(animeId) {
             watching: 30,
             plan: 40,
             announced: 50,
+            upcoming: 55,
             incomplete: 60
           };
           const watchingOrder = renderedLightboxTagOrder.watching;
@@ -2965,6 +3135,7 @@ function getMetaFor(animeId) {
             ...(mergedWatchingTagHtml ? [mergedWatchingTagHtml] : []),
             renderTagSequence(afterWatching.filter(t => (renderedLightboxTagOrder[t.key] ?? 999) < renderedLightboxTagOrder.announced)),
             ...(mergedAnnouncedTagHtml ? [mergedAnnouncedTagHtml] : []),
+            ...(combinedAnnouncedTagsHtml ? [combinedAnnouncedTagsHtml] : []),
             renderTagSequence(afterWatching.filter(t => (renderedLightboxTagOrder[t.key] ?? 999) >= renderedLightboxTagOrder.announced))
           ].filter(Boolean);
           const tagsHtml = orderedTagParts.join('<span class="list-sep"></span>');
@@ -2981,7 +3152,7 @@ function getMetaFor(animeId) {
           // deixar costura visível. No desktop a 2ª cópia (aria-hidden)
           // fica escondida via CSS e tudo continua igual a antes.
           // Plan to Watch: 1 tag = estática centralizada; 2+ tags = carrossel.
-          const planToWatchTagCount = (mergedWatchingTagHtml ? 1 : 0) + effectiveTags.length;
+          const planToWatchTagCount = (mergedWatchingTagHtml ? 1 : 0) + (combinedAnnouncedTagsHtml ? 1 : 0) + (mergedAnnouncedTagHtml ? 1 : 0) + effectiveTags.length;
           lightbox.classList.toggle('plan-to-watch-carousel', isPlanToWatch && planToWatchTagCount > 1);
 
           const listContent = tagsHtml + divisionHtml;
@@ -3000,7 +3171,7 @@ function getMetaFor(animeId) {
 
           const primaryTagGroup = lightboxList.querySelector('.poster-lightbox-list-group:not([aria-hidden="true"])');
           const primaryRankingTags = primaryTagGroup
-            ? Array.from(primaryTagGroup.querySelectorAll(':scope > .list-tag'))
+            ? Array.from(primaryTagGroup.querySelectorAll(':scope > .list-tag:not(.list-tag-announced-merged):not(.list-tag-combined--announced)'))
             : [];
 
           if (primaryRankingTags.length === 3) {
@@ -3015,6 +3186,28 @@ function getMetaFor(animeId) {
                 }
               });
             }
+          }
+
+          // O cursor pode continuar parado na mesma coordenada após a troca
+          // de anime; pointerover nem sempre dispara para o novo botão. Reavalia
+          // o hover após o DOM atualizar e aplica diretamente a prévia do novo
+          // anime, sem mostrar antes o seu pôster original.
+          if (preserveCategoryPreviewForNextItem) {
+            requestAnimationFrame(() => {
+              if (currentItem !== item || !lightbox.classList.contains('open')) return;
+              const hoveredCategoryTag = getCategoryTagAtPointer();
+              if (hoveredCategoryTag) {
+                categoryTagPreviewMode = hoveredCategoryTag.dataset.mode || '';
+                if (previewCategoryTagPosterFromRenderer) {
+                  previewCategoryTagPosterFromRenderer(hoveredCategoryTag);
+                }
+              } else {
+                categoryTagPreviewActive = false;
+                categoryTagPreviewMode = '';
+                categoryTagPreviewToken++;
+                setLightboxPosterInstantly(item, src, title);
+              }
+            });
           }
         }
         if (lightboxCharacters) {
@@ -3165,6 +3358,23 @@ function getMetaFor(animeId) {
       }
 
       function openLightbox(item, options = {}) {
+        // Inicia o ciclo apenas em uma abertura nova. Se trocar de anime
+        // usando setas/swipe enquanto o lightbox está aberto, não reinicia
+        // nem avança esse estado até a camada ser fechada.
+        if (!lightbox.classList.contains('open')) {
+          lightboxOpeningCycleId = null;
+          lightboxOpeningCycleIndex = null;
+          const explicitNextSeasonKey = item && item.getAttribute('data-ns-key');
+          if (item && !explicitNextSeasonKey && currentCategory !== 'announced'
+              && ANNOUNCED_OVERLAY_CYCLE_IDS.has(item.id)) {
+            const announcedKeys = getAnnouncedKeys(item.id);
+            if (announcedKeys.length > 1) {
+              const orderedKeys = [item.id, ...announcedKeys.filter(key => key !== item.id)];
+              lightboxOpeningCycleId = item.id;
+              lightboxOpeningCycleIndex = (announcedOverlayCycleIndexes.get(item.id) || 0) % orderedKeys.length;
+            }
+          }
+        }
         // Renderiza a imagem e os dados antes de abrir a camada, evitando
         // qualquer quadro vazio ou atraso perceptível na abertura.
         randomPlanNavigation = options.randomPlan === true;
@@ -3232,6 +3442,17 @@ function getMetaFor(animeId) {
       };
 
       function closeLightbox(skipScrollRestore) {
+        const wasLightboxOpen = lightbox.classList.contains('open');
+        if (wasLightboxOpen && lightboxOpeningCycleId && lightboxOpeningCycleIndex != null) {
+          const cycleId = lightboxOpeningCycleId;
+          const announcedKeys = getAnnouncedKeys(cycleId);
+          const orderedKeys = [cycleId, ...announcedKeys.filter(key => key !== cycleId)];
+          if (orderedKeys.length > 1) {
+            announcedOverlayCycleIndexes.set(cycleId, (lightboxOpeningCycleIndex + 1) % orderedKeys.length);
+          }
+        }
+        lightboxOpeningCycleId = null;
+        lightboxOpeningCycleIndex = null;
         lightboxRenderToken++;
         pendingItem = null;
         sequelPosterToggleToken++;
@@ -3485,6 +3706,96 @@ function getMetaFor(animeId) {
       });
 
       if (lightboxList) {
+        function getCategoryTagPosterSrc(mode, tag = null) {
+          if (!currentItem) return '';
+          const cardImg = currentItem.querySelector('.poster-wrap img.thumb');
+          const titleEl = currentItem.querySelector('.title-anime');
+          const itemTitle = titleEl ? titleEl.textContent.trim() : (cardImg?.alt || '');
+
+          if (mode === 'watching') {
+            // A entrada de Watching Now possui seu próprio pôster vertical.
+            // Usa ID primeiro e título normalizado como fallback para entradas
+            // equivalentes que foram cadastradas com IDs diferentes.
+            const watchEntry = watchingData.find(a => a.id === currentItem.id)
+              || watchingData.find(a => normalizeAnimeLookupTitle(a.title) === normalizeAnimeLookupTitle(itemTitle));
+            return watchEntry?.img || '';
+          }
+
+          if (mode === 'announced') {
+            // Announced Sequels usa a arte da pasta -sequels, a mesma mostrada
+            // pelo card dessa categoria; respeita também entradas extras (#2...).
+            const originalSrc = cardImg && (cardImg.getAttribute('data-poster-src')
+              || cardImg.getAttribute('data-src') || cardImg.currentSrc || cardImg.src);
+            const keys = getAnnouncedKeys(currentItem.id);
+            const nsKey = getPreferredAnnouncedKey(
+              currentItem.id,
+              keys,
+              (tag && tag.getAttribute('data-ns-key')) || currentItem.getAttribute('data-ns-key') || ''
+            );
+            return originalSrc && nsKey ? sequelsThumbSrc(originalSrc, nsKey) : '';
+          }
+
+          return '';
+        }
+
+        function previewCategoryTagPoster(tag) {
+          const mode = tag?.getAttribute('data-mode');
+          if (mode !== 'watching' && mode !== 'announced') return;
+          const item = currentItem;
+          const src = getCategoryTagPosterSrc(mode, tag);
+          if (!item || !src || !lightbox.classList.contains('open')) return;
+
+          categoryTagPreviewActive = true;
+          categoryTagPreviewMode = mode;
+          const token = ++categoryTagPreviewToken;
+          preloadLightboxPoster(src, 'high').then(loaded => {
+            if (!loaded || token !== categoryTagPreviewToken || !categoryTagPreviewActive
+              || currentItem !== item || !lightbox.classList.contains('open')) return;
+            lightboxImg.src = src;
+            updateAmbientFromPoster(src);
+          });
+        }
+
+        previewCategoryTagPosterFromRenderer = previewCategoryTagPoster;
+
+        function restorePosterAfterCategoryTagPreview() {
+          if (!categoryTagPreviewActive) {
+            categoryTagPreviewMode = '';
+            return;
+          }
+          categoryTagPreviewActive = false;
+          categoryTagPreviewMode = '';
+          categoryTagPreviewToken++;
+          if (!currentItem || !lightbox.classList.contains('open')) return;
+          const src = (sequelPosterActive && sequelPosterAltSrc)
+            ? sequelPosterAltSrc
+            : sequelPosterDefaultSrc;
+          if (!src) return;
+          lightboxImg.src = src;
+          updateAmbientFromPoster(src);
+        }
+
+        // No desktop, passar o mouse sobre Watching Now ou Announced Sequels
+        // pré-visualiza o pôster usado naquela categoria. A navegação por clique
+        // continua intacta; eventos de toque não simulam hover no mobile.
+        lightboxList.addEventListener('pointerover', function(e) {
+          if (e.pointerType === 'touch') return;
+          const tag = e.target.closest('.list-tag[data-mode="watching"], .list-tag[data-mode="announced"]');
+          if (!tag || !lightboxList.contains(tag) || (e.relatedTarget && tag.contains(e.relatedTarget))) return;
+          previewCategoryTagPoster(tag);
+        });
+        lightboxList.addEventListener('pointerout', function(e) {
+          if (e.pointerType === 'touch') return;
+          const tag = e.target.closest('.list-tag[data-mode="watching"], .list-tag[data-mode="announced"]');
+          if (!tag || !lightboxList.contains(tag) || (e.relatedTarget && tag.contains(e.relatedTarget))) return;
+          const nextCategoryTag = e.relatedTarget && e.relatedTarget.closest
+            ? e.relatedTarget.closest('.list-tag[data-mode="watching"], .list-tag[data-mode="announced"]')
+            : null;
+          if (nextCategoryTag && lightboxList.contains(nextCategoryTag)
+            && nextCategoryTag.dataset.mode === tag.dataset.mode) return;
+          restorePosterAfterCategoryTagPreview();
+        });
+
         lightboxList.addEventListener('click', function(e) {
           const btn = e.target.closest('.list-tag');
           if (!btn) return;
@@ -4707,7 +5018,7 @@ function getMetaFor(animeId) {
     function mobileCardSearchThumbSrc(originalPath) {
       if (!originalPath) return originalPath;
       const path = String(originalPath);
-      if (path.startsWith('other-images/peakepisodes/') || path.startsWith('other-images/truecharacters/') || path.startsWith('upcoming-images/')) return path;
+      if (path.startsWith('other-images/peakepisodes/') || path.startsWith('other-images/truecharacters/') || path.startsWith('other-images/upcoming/') || path.startsWith('upcoming-images/')) return path;
       const filename = path.split('/').pop();
       let baseFolder = 'myranks-images';
       let folder = 'myranks-search';
@@ -5548,7 +5859,7 @@ function getMetaFor(animeId) {
     const HOVER_PREVIEW_COMMANDS = {
       all: '/ranking', romance: '/romance', isekai: '/isekai', sports: '/sport',
       comedy: '/comedy', mecha: '/mecha', watching: '/watching', plan: '/planwatch',
-      incomplete: '/incomplete', announced: '/announced',
+      incomplete: '/incomplete', announced: '/announced', upcoming: '/upcoming',
       favEpisodes: '/episodes', trueCharacters: '/characters'
     };
     let hoverPreviewEl = null;
@@ -6197,6 +6508,20 @@ function getMetaFor(animeId) {
     // vira um card, no grupo da sua própria data.
     function getAnnouncedKeys(id) {
       return Object.keys(nextSeasonMap).filter(k => k === id || k.startsWith(id + '#'));
+    }
+
+    // Define qual entrada do Next Season Map alimenta a prévia de Announced
+    // Sequels no posterlightbox. Um item vindo diretamente da lista mantém
+    // sua própria chave. No All Ranking, One Piece e Haikyuu priorizam a
+    // entrada extra (#2) quando o código precisa de UMA arte padrão; quando
+    // ambos têm várias entradas, todas as datas continuam aparecendo juntas
+    // na tag combinada e cada metade mantém sua própria prévia.
+    function getPreferredAnnouncedKey(id, keys = getAnnouncedKeys(id), explicitKey = '') {
+      if (explicitKey && keys.includes(explicitKey)) return explicitKey;
+      if ((id === 'one-piece' || id === 'haikyuu') && keys.includes(id + '#2')) {
+        return id + '#2';
+      }
+      return keys[0] || null;
     }
 
     function renderAnnouncedList(data) {
@@ -7514,6 +7839,9 @@ function getMetaFor(animeId) {
       }
       addToIndex(watchingData, 'watching');
       addToIndex(planToWatchData, 'plan');
+      // Upcoming Animes também participa da busca e mantém sua própria categoria
+      // para que clicar no resultado abra a lista correta.
+      addToIndex(upcomingAnimeData, 'upcoming');
       addToIndex(animeData, null);
       // True Characters (trueCharactersData) usa os mesmos nomes de campo
       // do "all animes" (id/img/title/info), então entra direto no índice
@@ -7579,12 +7907,13 @@ function getMetaFor(animeId) {
       // mais de uma lista com o mesmo id.
       const searchSourceRankMaps = {
         watching: new Map(watchingData.map((anime, idx) => [anime, idx + 1])),
-        plan: new Map(planToWatchData.map((anime, idx) => [anime, idx + 1]))
+        plan: new Map(planToWatchData.map((anime, idx) => [anime, idx + 1])),
+        upcoming: new Map(upcomingAnimeData.map((anime, idx) => [anime, idx + 1]))
       };
       const searchCategoryRankMaps = new Map();
       [
         'romance', 'isekai', 'sports', 'comedy', 'mecha',
-        'incomplete', 'announced'
+        'incomplete', 'announced', 'upcoming'
       ].forEach(category => {
         searchCategoryRankMaps.set(
           category,
@@ -7600,6 +7929,9 @@ function getMetaFor(animeId) {
           rank = entry.anime.peakRank;
         } else if (entry.tag === 'trueCharacters') {
           rank = trueCharRankById.get(entry.anime.id);
+        } else if (entry.tag === 'upcoming') {
+          rank = searchSourceRankMaps.upcoming.get(entry.anime);
+          usesHash = false;
         } else if (entry.forcedCategory && searchCategoryRankMaps.has(entry.forcedCategory)) {
           rank = searchCategoryRankMaps.get(entry.forcedCategory).get(entry.anime);
           usesHash = !['incomplete', 'announced'].includes(entry.forcedCategory);
@@ -7942,6 +8274,7 @@ function getMetaFor(animeId) {
         if (entry.forcedCategory) return entry.forcedCategory;
         if (entry.tag === 'watching') return 'watching';
         if (entry.tag === 'plan') return 'plan';
+        if (entry.tag === 'upcoming') return 'upcoming';
         if (entry.tag === 'favep') return 'favEpisodes';
         if (entry.tag === 'trueCharacters') return 'trueCharacters';
         return 'all';
@@ -8028,7 +8361,7 @@ function getMetaFor(animeId) {
         // caso, True Characters caía no fallback "myranks-search" (pasta
         // que não existe pra essas imagens) e o thumb do resultado
         // simplesmente não carregava.
-        if (path.startsWith('other-images/peakepisodes/') || path.startsWith('other-images/truecharacters/') || path.startsWith('upcoming-images/')) return path;
+        if (path.startsWith('other-images/peakepisodes/') || path.startsWith('other-images/truecharacters/') || path.startsWith('other-images/upcoming/') || path.startsWith('upcoming-images/')) return path;
         const filename = path.split('/').pop();
         let baseFolder = 'myranks-images';
         let folder = 'myranks-search';
@@ -8108,9 +8441,10 @@ function getMetaFor(animeId) {
       function groupEntriesIntoSections(entries, rotateWatchingOrder, forcedCategory, prioritizeSearchMatches) {
         const watchingEntries = entries.filter(e => e.tag === 'watching');
         const planEntries = entries.filter(e => e.tag === 'plan');
+        const upcomingEntries = entries.filter(e => e.tag === 'upcoming');
         const favEpEntries = entries.filter(e => e.tag === 'favep');
         const trueCharEntries = entries.filter(e => e.tag === 'trueCharacters');
-        const otherEntries = entries.filter(e => e.tag !== 'watching' && e.tag !== 'plan' && e.tag !== 'favep' && e.tag !== 'trueCharacters');
+        const otherEntries = entries.filter(e => e.tag !== 'watching' && e.tag !== 'plan' && e.tag !== 'upcoming' && e.tag !== 'favep' && e.tag !== 'trueCharacters');
 
         // Sempre (re)define forcedCategory nas entries desta renderização —
         // inclusive limpando (null) quando não há comando ativo — pra não
@@ -8120,6 +8454,21 @@ function getMetaFor(animeId) {
         entries.forEach(e => { e.forcedCategory = forcedCategory || null; });
 
         const sections = [];
+
+        // Upcoming Animes: uma seção própria, sem misturar esses títulos
+        // com o Global Ranking. Também mantém a prévia do drawer na categoria.
+        if (forcedCategory === 'upcoming') {
+          const upcomingOnly = entries.filter(e => e.tag === 'upcoming');
+          if (upcomingOnly.length) {
+            sections.push({
+              text: CATEGORY_LABEL.upcoming || 'Upcoming Animes',
+              color: CATEGORY_HOVER_COLOR.upcoming || '#a3e635',
+              mode: 'upcoming',
+              items: upcomingOnly
+            });
+          }
+          return sections;
+        }
 
         // Announced Sequels: uma seção só, na ordem recebida (ordem da
         // lista), em vez de separar por Watching/Plan/Global.
@@ -8165,6 +8514,15 @@ function getMetaFor(animeId) {
 
         if (planEntries.length) {
           sections.push({ text: 'Plan to Watch', color: CATEGORY_HOVER_COLOR.plan, mode: 'plan', items: planEntries });
+        }
+
+        if (upcomingEntries.length) {
+          sections.push({
+            text: CATEGORY_LABEL.upcoming || 'Upcoming Animes',
+            color: CATEGORY_HOVER_COLOR.upcoming || '#a3e635',
+            mode: 'upcoming',
+            items: upcomingEntries
+          });
         }
 
         // Global Ranking (e demais categorias forçadas) vem antes de Peak
@@ -8300,15 +8658,19 @@ function getMetaFor(animeId) {
       // os 22px dela (usado no drawer expandido, quando nenhum card da fileira
       // tem a faixa). Padrão (true) mantém o comportamento antigo.
       function buildResultItemHtml(entry, i, acc, accGlow, query, reserveNs) {
+            // Upcoming Animes reaproveita o layout visual de Announced Sequels
+            // (pôster vertical à esquerda e texto sobre ambient à direita).
+            const usesAnnouncedCardStyle = entry.tag === 'upcoming' ||
+              (entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters');
             // Next Season vira a 3ª linha dentro do bloco de texto (como nas listas),
             // em todos os cards da busca, exceto Peak Episodes e True Characters.
-            const nestNs = entry.tag !== 'favep' && entry.tag !== 'trueCharacters';
+            const nestNs = entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && entry.tag !== 'upcoming';
             const nsStripHtml = (() => {
                       // No card de Peak Episodes (favep) não mostramos a faixa de
                       // "nova temporada anunciada" — ela não faz sentido nesse
                       // contexto (o card é sobre um episódio específico, não sobre
                       // o anime como um todo).
-                      if (entry.tag === 'favep') return '';
+                      if (entry.tag === 'favep' || entry.tag === 'upcoming') return '';
                       const ns = nextSeasonMap[entry.anime.id];
                       if (!ns) return '';
                       const nsLines = String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => formatNextSeasonText(s.trim())).filter(Boolean);
@@ -8318,7 +8680,7 @@ function getMetaFor(animeId) {
                               </div>`;
                     })();
             return `
-              <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? ' search-result-item--ann' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id] && reserveNs !== false) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
+              <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${usesAnnouncedCardStyle ? ' search-result-item--ann' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id] && reserveNs !== false) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
                 <div class="search-result-card-inner">
                   <div class="search-result-ambient" aria-hidden="true"></div>
                   <div class="search-result-ambient-shade" aria-hidden="true"></div>
@@ -8327,8 +8689,8 @@ function getMetaFor(animeId) {
 
                   </div>
                   <div class="search-result-info">
-                    ${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? '<div class="search-result-title-row">' : ''}${buildSearchRankHtml(entry)}
-                    <span class="search-result-title">${highlightTitle(entry.anime.title, query)}</span>${(entry.forcedCategory === 'announced' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters') ? '</div>' : ''}
+                    ${usesAnnouncedCardStyle ? '<div class="search-result-title-row">' : ''}${buildSearchRankHtml(entry)}
+                    <span class="search-result-title">${highlightTitle(entry.anime.title, query)}</span>${usesAnnouncedCardStyle ? '</div>' : ''}
                     ${(entry.__matchedAlias && entry.tag !== 'favep') ? `<span class="search-result-alias">aka: ${escapeHtml(entry.__matchedAlias)}</span>` : ''}
                     ${(() => {
                       if (entry.tag === 'favep') {
@@ -8434,7 +8796,10 @@ function getMetaFor(animeId) {
           sections.forEach(section => {
             const isTc = section.items.every(e => e.tag === 'trueCharacters');
             // Announced Sequels: 2 por fileira (pôster mantém o tamanho de antes).
-            const isAnn = !isTc && section.items.every(e => e.forcedCategory === 'announced' && e.tag !== 'favep' && e.tag !== 'trueCharacters');
+            const isAnn = !isTc && section.items.every(e =>
+              (e.forcedCategory === 'announced' || e.tag === 'upcoming') &&
+              e.tag !== 'favep' && e.tag !== 'trueCharacters'
+            );
             const kind = isTc ? 'tc' : (isAnn ? 'ann' : 'other');
             const perRow = (isTc || isAnn) ? Math.min(2, basePerRow) : basePerRow;
             const unit = 6 / perRow;
@@ -8680,7 +9045,7 @@ function getMetaFor(animeId) {
       );
       const SLASH_COMMANDS = {
         '/all':         { filter: () => true,                         rotateWatching: true  },
-        '/ranking':     { filter: entry => entry.tag !== 'watching' && entry.tag !== 'plan' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters', rotateWatching: false },
+        '/ranking':     { filter: entry => entry.tag !== 'watching' && entry.tag !== 'plan' && entry.tag !== 'upcoming' && entry.tag !== 'favep' && entry.tag !== 'trueCharacters', rotateWatching: false },
         '/watching':    { filter: entry => entry.tag === 'watching',  rotateWatching: true  },
         '/planwatch':   { filter: entry => entry.tag === 'plan',      rotateWatching: false },
         '/romance':     { filter: entry => isSubCategoryEntry(entry, 'romance'), rotateWatching: false },
@@ -8699,6 +9064,7 @@ function getMetaFor(animeId) {
             if (entry.tag === 'watching') return !ANNOUNCED_RANKED_IDS.has(id);
             return entry.tag === 'plan';
           }, rotateWatching: false },
+        '/upcoming':    { filter: entry => entry.tag === 'upcoming', rotateWatching: false },
         '/episodes':        { filter: entry => entry.tag === 'favep', rotateWatching: false },
         '/characters':      { filter: entry => entry.tag === 'trueCharacters', rotateWatching: false }
       };
@@ -8714,6 +9080,7 @@ function getMetaFor(animeId) {
         '/mecha':      'mecha',
         '/incomplete': 'incomplete',
         '/announced':  'announced',
+        '/upcoming':   'upcoming',
         '/episodes':       'favEpisodes',
         '/characters':     'trueCharacters'
       };
@@ -8733,12 +9100,13 @@ function getMetaFor(animeId) {
         plan:          SLASH_COMMANDS['/planwatch'].filter,
         incomplete:    SLASH_COMMANDS['/incomplete'].filter,
         announced:     SLASH_COMMANDS['/announced'].filter,
+        upcoming:      entry => entry.tag === 'upcoming',
         favEpisodes:   SLASH_COMMANDS['/episodes'].filter,
         trueCharacters: SLASH_COMMANDS['/characters'].filter
       };
       const PREVIEW_MODE_FORCED = {
         romance: 'romance', isekai: 'isekai', sports: 'sports', comedy: 'comedy',
-        mecha: 'mecha', incomplete: 'incomplete', announced: 'announced',
+        mecha: 'mecha', incomplete: 'incomplete', announced: 'announced', upcoming: 'upcoming',
         favEpisodes: 'favEpisodes', trueCharacters: 'trueCharacters'
       };
       // Ordem aleatória da prévia: um valor sorteado por entrada, por modo.
@@ -8904,6 +9272,13 @@ function getMetaFor(animeId) {
               return r == null ? Infinity : r;
             };
             entries.sort((a, b) => rankOf(a) - rankOf(b));
+          } else if (cmd === '/upcoming') {
+            const upcomingRanks = searchCategoryRankMaps.get('upcoming');
+            const rankOf = e => {
+              const r = upcomingRanks && upcomingRanks.get(e.anime);
+              return r == null ? Infinity : r;
+            };
+            entries.sort((a, b) => rankOf(a) - rankOf(b));
           }
           renderEntries(entries, query);
           return;
@@ -9020,6 +9395,9 @@ function getMetaFor(animeId) {
       // vez que o usuário volta pro "/" sozinho (apaga tudo e digita "/"
       // de novo), pra não mostrar sempre "/all" como sugestão-fantasma.
       let ghostRandomPick = null;
+      // Comando atualmente destacado no dropdown por teclado ou mouse.
+      // O ghost e o Tab devem seguir este item em vez da sugestão aleatória.
+      let keyboardSlashCommand = '';
       // Guarda se a última chamada já estava com o campo em "/" sozinho —
       // assim só sorteamos de novo na TRANSIÇÃO pra esse estado (usuário
       // apagou tudo e digitou "/" de novo), não em toda chamada subsequente
@@ -9047,6 +9425,15 @@ function getMetaFor(animeId) {
         if (!val) { ghostRandomPick = null; wasSlashOnly = false; return ''; }
         const lower = val.toLowerCase();
         if (lower[0] !== '/') { ghostRandomPick = null; wasSlashOnly = false; return ''; }
+
+        // Quando há um comando destacado, prioriza-o para a sugestão fantasma
+        // e para o Tab, desde que continue compatível com o texto digitado.
+        if (keyboardSlashCommand && keyboardSlashCommand.startsWith(lower)) {
+          wasSlashOnly = lower === '/';
+          return keyboardSlashCommand.length > val.length
+            ? keyboardSlashCommand.slice(val.length)
+            : '';
+        }
 
         if (lower === '/') {
           // só re-sorteia se AINDA não tínhamos um pick pra essa "sessão"
@@ -9089,7 +9476,10 @@ function getMetaFor(animeId) {
           const slashSpan = document.createElement('span');
           slashSpan.className = 'ghost-typed-slash';
           slashSpan.textContent = '/';
-          const style = ghostRandomPick ? SLASH_COMMAND_STYLE[ghostRandomPick] : null;
+          const ghostColorCommand = keyboardSlashCommand && keyboardSlashCommand.startsWith(val.toLowerCase())
+            ? keyboardSlashCommand
+            : ghostRandomPick;
+          const style = ghostColorCommand ? SLASH_COMMAND_STYLE[ghostColorCommand] : null;
           if (style && style.color) slashSpan.style.color = style.color;
           typedSpan.appendChild(slashSpan);
           typedSpan.appendChild(document.createTextNode(val.slice(1)));
@@ -9136,6 +9526,7 @@ function getMetaFor(animeId) {
         '/mecha':       'mecha/cyberpunk anime',
         '/incomplete':  'dropped/on hold animes',
         '/announced':   'anime with annouced sequels',
+        '/upcoming':    'new anime coming in the future',
         '/episodes':    'best episodes watched',
         '/characters':  'characters that are peak'
       };
@@ -9155,6 +9546,7 @@ function getMetaFor(animeId) {
         '/mecha':       { color: CATEGORY_HOVER_COLOR.mecha, icon: '<path d="M12 8V4H8"></path><rect x="4" y="8" width="16" height="12" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path>' },
         '/incomplete':  { color: CATEGORY_HOVER_COLOR.incomplete, icon: '<circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path>' },
         '/announced':   { color: CATEGORY_HOVER_COLOR.announced, icon: '<rect x="3" y="4" width="18" height="17" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>' },
+        '/upcoming':    { color: CATEGORY_HOVER_COLOR.upcoming, icon: '<path d="m12 3 2.6 5.7L21 12l-6.4 3.3L12 21l-2.6-5.7L3 12l6.4-3.3L12 3Z"></path>' },
         '/episodes':    { color: CATEGORY_HOVER_COLOR.favEpisodes, icon: '<rect x="2.5" y="5" width="19" height="13" rx="2"></rect><path d="M8 21h8"></path><path d="M12 18v3"></path>' },
         '/characters':  { color: CATEGORY_HOVER_COLOR.trueCharacters, icon: '<path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="8" r="5"></circle>' }
       };
@@ -9186,6 +9578,7 @@ function getMetaFor(animeId) {
         slashCommandListEl.style.height = '';
         slashCommandListEl.style.maxHeight = '';
         slashActiveIndex = -1;
+        keyboardSlashCommand = '';
         if (searchDrawerInputWrapEl) searchDrawerInputWrapEl.classList.remove('dropdown-open');
       }
 
@@ -9224,6 +9617,7 @@ function getMetaFor(animeId) {
       function updateSlashCommandList(val) {
         if (!slashCommandListEl) return;
         const lower = (val || '').toLowerCase();
+        keyboardSlashCommand = '';
         // Só mostra enquanto o comando ainda não foi completamente digitado
         // (uma vez completo, o próprio resultado da busca já aparece).
         if (!lower.startsWith('/') || SLASH_COMMANDS[lower]) {
@@ -9280,13 +9674,23 @@ function getMetaFor(animeId) {
 
       function setSlashActive(index) {
         const items = getVisibleSlashItems();
-        if (!items.length) { slashActiveIndex = -1; return; }
+        if (!items.length) {
+          slashActiveIndex = -1;
+          keyboardSlashCommand = '';
+          updateGhostHint();
+          return;
+        }
         slashActiveIndex = Math.max(0, Math.min(index, items.length - 1));
         items.forEach((el, i) => el.classList.toggle('active', i === slashActiveIndex));
+        keyboardSlashCommand = items[slashActiveIndex].getAttribute('data-cmd') || '';
+        updateGhostHint();
         items[slashActiveIndex].scrollIntoView({ block: 'nearest' });
       }
 
       searchInput.addEventListener('input', () => {
+        // A edição manual do campo inicia uma nova seleção; as setas vão
+        // associar o ghost ao item destacado novamente.
+        keyboardSlashCommand = '';
         const val = searchInput.value;
         searchBoxDrawer.classList.toggle('has-value', val.length > 0);
         updateGhostHint();

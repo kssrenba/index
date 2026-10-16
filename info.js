@@ -1425,6 +1425,41 @@ const rawAnimeData = [
 // Watching Now — animes em exibição/andamento, agrupados por temporada (season).
 const rawWatchingData = [
   // Non-Seasonal Anime
+  {
+    id: "no-game-no-life",
+    img: "watchingnow-images/watchingnow/no-game-no-life.webp",
+    title: "No Game No Life",
+    info: "12 episódios",
+    studio: "MADHOUSE",
+    airedSeason: "2014",
+
+    season: null,
+    seasons: [12],
+
+    url: "https://www.anime-planet.com/anime/no-game-no-life",
+    crunchyroll: "",
+    malUrl: "https://myanimelist.net/anime/19815/No_Game_No_Life",
+  },
+
+  {
+    id: "to-be-hero-x",
+    img: "watchingnow-images/watchingnow/to-be-hero-x.webp",
+    title: "To be Hero X",
+    info: "24 episódios",
+    studio: "PB Animation, LAN Studio, Paper Plane Animation Studio, B.COOL STUDIO",
+    airedSeason: "2025",
+  
+    season: null,
+    seasons: [24],
+
+    url: "https://www.anime-planet.com/anime/to-be-hero-x",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GQWH0M1J3/to-be-hero-x",
+    malUrl: "https://myanimelist.net/anime/53447/Tu_Bian_Yingxiong_X",
+
+    mal: [
+      { label: "1 temporada", episodes: 24, malName: "Tu Bian Yingxiong X", unwatched: true },
+    ],
+  },
 
   // Fall 2026
   {
@@ -1473,7 +1508,7 @@ const rawWatchingData = [
     airedSeason: "2026",
     seasons: [12],
     url: "https://www.anime-planet.com/anime/even-the-student-council-has-its-holes",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00364783/chitose-is-in-the-ramune-bottle",
+    crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/61578/Seitokai_ni_mo_Ana_wa_Aru",
 
     mal: [{ label: "1 temporada", episodes: 12, malName: "Seitokai ni mo Ana wa Aru!", unwatched: true }],
@@ -2277,21 +2312,6 @@ const rawPlanToWatchData = [
     ],
   },
   {
-    id: "to-be-hero-x",
-    img: "plantowatch-images/plantowatch/to-be-hero-x.webp",
-    title: "To be Hero X",
-    info: "24 episódios",
-    studio: "PB Animation, LAN Studio, Paper Plane Animation Studio, B.COOL STUDIO",
-    airedSeason: "2025",
-    url: "https://www.anime-planet.com/anime/to-be-hero-x",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GQWH0M1J3/to-be-hero-x",
-    malUrl: "https://myanimelist.net/anime/53447/Tu_Bian_Yingxiong_X",
-
-    mal: [
-      { label: "1 temporada", episodes: 24, malName: "Tu Bian Yingxiong X", unwatched: true },
-    ],
-  },
-  {
     id: "erased",
     img: "plantowatch-images/plantowatch/erased.webp",
     title: "Erased",
@@ -2541,17 +2561,6 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/spice-and-wolf-merchant-meets-the-wise-wolf",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/G1XHJV08M/spice-and-wolf-merchant-meets-the-wise-wolf",
     malUrl: "https://myanimelist.net/anime/51122/Ookami_to_Koushinryou__Merchant_Meets_the_Wise_Wolf",
-  },
-  {
-    id: "no-game-no-life",
-    img: "plantowatch-images/plantowatch/no-game-no-life.webp",
-    title: "No Game No Life",
-    info: "12 episódios",
-    studio: "MADHOUSE",
-    airedSeason: "2014",
-    url: "https://www.anime-planet.com/anime/no-game-no-life",
-    crunchyroll: "",
-    malUrl: "https://myanimelist.net/anime/19815/No_Game_No_Life",
   },
   {
     id: "noragami",
@@ -3686,10 +3695,11 @@ const nextSeasonMap = {
   "frieren": { info: "Season 3 in Oct 2027" },
 
   // 27
-  "haikyuu": { info: "New Movie in 2027" },
+  "haikyuu": { info: "New Movie: vs. Little Giants in 2027" },
+  "haikyuu#2": { info: "New TV Special: Where Monsters Go in 2027" },
   "dan-da-dan": { info: "Season 3 in 2027" },
   "roshidere": { info: "Season 2 in 2027" },
-  "shadow": { info: "New Movie in 2027" },
+  "shadow": { info: "New Movie: Lost Echoes in 2027" },
   "midnight-heart": { info: "Season 2 in 2027" },
 
   // 29
@@ -3701,7 +3711,7 @@ const nextSeasonMap = {
 
   "healing-magic": { info: "Season 2 in Production" },//ago 24
 
-  "solo-leveling": { info: "New Movie in Production" },//mar 25
+  "solo-leveling": { info: "New Movie: Beyond the System in Production" },//mar 25
 
   "makeine": { info: "Season 2 in Production" },//apr 25
 
@@ -3722,5 +3732,5 @@ const nextSeasonMap = {
   "grand-blue": { info: "Season 4 in Production" },//sep 26
 
   // now
-  "dr-stone": { info: "Terraforming in Production" },//oct 26
+  "dr-stone": { info: "~TV Special: Terraforming in Production" },//oct 26
 };
