@@ -15648,3 +15648,17 @@ li.fav-ep-card[style*="--item-hover-color"]:hover {
     animation: none !important;
   }
 }
+
+/* Menos camadas de composição nos cards (cada will-change/translateZ vira uma
+   textura na GPU; com ~270 cards isso pesa em memória e no raster). */
+@media (max-width: 760px) {
+  li.anime-item,
+  li.fav-ep-card,
+  li.anime-item .poster-wrap,
+  li.anime-item .thumb,
+  .release-calendar-card,
+  .search-result-item {
+    will-change: auto !important;
+    backface-visibility: visible !important;
+  }
+}

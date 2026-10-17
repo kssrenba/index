@@ -4651,7 +4651,7 @@ function getMetaFor(animeId) {
       }
       __posterOptimizeScheduled = true;
       const run = async () => {
-        if (document.hidden || document.body.classList.contains('is-scrolling-ambient')) {
+        if (document.hidden || window.__scrollingNow || document.body.classList.contains('is-scrolling-ambient')) {
           __posterOptimizeScheduled = false;
           return;
         }
@@ -10699,6 +10699,7 @@ function getCalendarItems() {
       let ambientScrollFrame = 0;
 
       function finishAmbientScrolling() {
+        window.__scrollingNow = false;
         if (ambientScrollFrame) {
           cancelAnimationFrame(ambientScrollFrame);
           ambientScrollFrame = 0;
@@ -10712,6 +10713,15 @@ function getCalendarItems() {
       }
 
       function markAmbientScrolling() {
+        // Mobile leve: o fundo borrado já não existe, então não vale a pena
+        // trocar uma classe no <body> (invalida o estilo de todos os cards) no
+        // começo/fim de cada rolagem. Só marca uma flag em memória.
+        if (__MOBILE_LITE) {
+          window.__scrollingNow = true;
+          if (ambientScrollTimeout) clearTimeout(ambientScrollTimeout);
+          ambientScrollTimeout = setTimeout(finishAmbientScrolling, 120);
+          return;
+        }
         // No máximo uma alteração de classe por frame, mesmo em trackpads
         // que emitem muitos eventos de scroll no mesmo instante.
         if (!ambientScrollFrame) {
@@ -10815,9 +10825,24 @@ function getCalendarItems() {
         return geo.trackTop + p * (geo.trackH - geo.thumbH);
       }
 
-      function position() {
-        if (!measure()) { thumb.classList.remove('active', 'dragging'); return false; }
-        thumb.style.height = geo.thumbH + 'px';
+      // measure() lê scrollHeight/getBoundingClientRect (força layout). Durante o
+      // scroll ele rodava a cada frame; agora a geometria fica em cache e só é
+      // remedida a cada ~500ms (ou quando forçado: resize/arraste).
+      let lastMeasureAt = 0, lastMeasureOk = false, lastThumbH = -1;
+      function position(force) {
+        const now = performance.now();
+        if (force || now - lastMeasureAt > 500) {
+          lastMeasureOk = measure();
+          lastMeasureAt = now;
+        }
+        if (!lastMeasureOk || !mq.matches || modalOpen()) {
+          thumb.classList.remove('active', 'dragging');
+          return false;
+        }
+        if (geo.thumbH !== lastThumbH) {
+          lastThumbH = geo.thumbH;
+          thumb.style.height = geo.thumbH + 'px';
+        }
         thumb.style.transform = 'translateY(' + thumbY() + 'px)';
         return true;
       }
@@ -10830,7 +10855,7 @@ function getCalendarItems() {
 
       function reveal() {
         if (!position()) return;
-        thumb.classList.add('active');
+        if (!thumb.classList.contains('active')) thumb.classList.add('active');
         scheduleHide();
       }
 
@@ -10845,7 +10870,7 @@ function getCalendarItems() {
       thumb.addEventListener('touchend', e => e.stopPropagation(), { passive: true });
 
       thumb.addEventListener('pointerdown', function(e) {
-        if (!position()) return;
+        if (!position(true)) return;
         e.preventDefault();
         e.stopPropagation();
         dragging = true;
@@ -10876,7 +10901,7 @@ function getCalendarItems() {
       thumb.addEventListener('pointercancel', endDrag);
       thumb.addEventListener('lostpointercapture', endDrag);
 
-      window.addEventListener('resize', function() { if (thumb.classList.contains('active')) position(); }, { passive: true });
+      window.addEventListener('resize', function() { if (thumb.classList.contains('active')) position(true); }, { passive: true });
     })();
 
     // Usado pela camada do botão "voltar": depois de um history.go() interno,
