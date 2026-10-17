@@ -2305,7 +2305,7 @@ h1.title {
     de verdade começa — ninguém está reparando no wallpaper borrado
     enquanto a lista voa na tela — e liga de volta pouco depois que a
     rolagem para (ver markAmbientScrolling no JS). */
-  body.is-scrolling-ambient .anime-item-ambient {
+  body.is-scrolling-ambient:not(.keep-ambient-scroll) .anime-item-ambient {
     filter: none;
     opacity: 0 !important;
     transition: none;
@@ -9598,7 +9598,7 @@ h1.title {
   /* ── Proteção final de desempenho durante a rolagem ─────────────
      Fica no fim do CSS para vencer as variações desktop/mobile que
      aparecem acima. O visual completo volta assim que o scroll para. */
-  body.is-scrolling-ambient .anime-item-ambient {
+  body.is-scrolling-ambient:not(.keep-ambient-scroll) .anime-item-ambient {
     filter: none !important;
     opacity: 0 !important;
     animation: none !important;
@@ -11959,13 +11959,15 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
 
   /* ── Studio / Rewatch: 2 linhas + expansão por clique (desktop e mobile) ── */
   .poster-lightbox:not(.simple-mode) .rank-meta-item--studio,
-  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch {
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch,
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--season.rank-meta-item--studios {
     min-width: 0;
     cursor: pointer;
   }
 
   .poster-lightbox:not(.simple-mode) .rank-meta-item--studio .rank-meta-value,
-  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch .rank-meta-value {
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch .rank-meta-value,
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--season.rank-meta-item--studios .rank-meta-value {
     width: 100%;
     max-width: 100%;
     min-width: 0;
@@ -12594,6 +12596,17 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
     .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta-item--season {
       grid-column: 2;
       grid-row: 2;
+    }
+
+    /* Com MAL Score (e sem Rewatch): Year à esquerda, MAL Score à direita */
+    .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta:has(.rank-meta-item--score):not(:has(.rank-meta-item--rewatch)) .rank-meta-item--season {
+      grid-column: 1;
+      border-right: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta:has(.rank-meta-item--score):not(:has(.rank-meta-item--rewatch)) .rank-meta-item--score {
+      grid-column: 2;
+      border-right: 0;
     }
 
     .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta.is-meta-expanded {
@@ -13368,8 +13381,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
   .poster-lightbox:not(.simple-mode) .rank-meta-item--studios.has-hidden-studio-rows:not(.is-meta-expanded):hover .rank-meta-studio-list::after {
     /* Mesmo fundo das tags de ranking da lista atual (ex.: "PLAN TO WATCH"). */
     background: color-mix(in srgb, var(--lb-category, var(--lb-accent, #e2e8f0)) 10%, rgba(255,255,255,0.025));
-    border-color: var(--lb-category, var(--lb-accent, #e2e8f0));
-    color: color-mix(in srgb, var(--lb-category, var(--lb-accent, #e2e8f0)) 82%, white 18%);
   }
 
   /* Teste: S1, S2... com o mesmo tamanho do nome do estúdio. */
@@ -13794,16 +13805,29 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
    altura do rewatch simples (1 linha de texto), senão o rótulo REWATCH
    sobe alguns pixels. */
 @media (min-width: 761px) {
-  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch.rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch.rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list,
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--season.rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-list {
     height: 1.21em !important;
     max-height: 1.21em !important;
     font-size: 14.5px;
   }
 
-  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch.rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row {
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch.rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row,
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--season.rank-meta-item--studios:not(.is-meta-expanded) .rank-meta-studio-row {
     height: 1.21em !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
+  }
+
+  /* A lista fechada tem só 1 linha de altura (overflow hidden); a pílula
+     "+N" padrão (18px) ficava com o topo cortado. Aqui ela é menor pra
+     caber inteira. */
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--rewatch.rank-meta-item--studios.has-hidden-studio-rows:not(.is-meta-expanded) .rank-meta-studio-list::after,
+  .poster-lightbox:not(.simple-mode) .rank-meta-item--season.rank-meta-item--studios.has-hidden-studio-rows:not(.is-meta-expanded) .rank-meta-studio-list::after {
+    height: 15px !important;
+    min-width: 26px !important;
+    padding: 0 7px !important;
+    font-size: 9.5px !important;
   }
 }
 
@@ -15574,5 +15598,53 @@ li.fav-ep-card[style*="--item-hover-color"]:hover {
     background: transparent !important;
     box-shadow: none !important;
     transform: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE LEVE — remove efeitos decorativos pesados (<= 760px).
+   Desktop não é afetado. Para desfazer, apague este bloco.
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 760px) {
+  /* 1. Wallpaper borrado por card: some de vez no mobile */
+  .anime-item-ambient,
+  .anime-item-ambient-shade,
+  .fav-ep-ambient,
+  .fav-ep-ambient-shade,
+  .search-result-ambient,
+  .search-result-ambient-shade {
+    display: none !important;
+  }
+
+  /* 2. Sem backdrop-filter (o navegador re-borra o que está atrás a cada frame) */
+  *, *::before, *::after {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* 3. Sem sombras nos cards e pôsteres das listas */
+  li.anime-item,
+  li.anime-item::after,
+  li.fav-ep-card,
+  .poster-wrap,
+  .poster-wrap img,
+  .thumb,
+  .search-result-item,
+  .search-result-thumb,
+  .release-calendar-card,
+  .release-calendar-poster,
+  .release-calendar-poster img,
+  .announce-strip {
+    box-shadow: none !important;
+  }
+
+  /* 4. Animações infinitas decorativas paradas */
+  .search-marquee-track,
+  .announce-track {
+    animation: none !important;
+    will-change: auto !important;
+  }
+  .poster-wrap:not(.poster-loaded) {
+    animation: none !important;
   }
 }

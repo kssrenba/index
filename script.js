@@ -1,3 +1,6 @@
+// Modo "mobile leve": telas <= 760px dispensam efeitos decorativos pesados (wallpaper borrado dos cards etc.)
+var __MOBILE_LITE = !!(window.matchMedia && window.matchMedia('(max-width: 760px)').matches);
+
 // Entradas do campo "mal" que NÃO são temporadas (não têm nota/episódios):
 //  - { spacer: true, text: "..." } -> divisor com espaço + texto
 //  - { text: "..." }               -> só o texto, sem espaço extra
@@ -258,7 +261,7 @@ if ('scrollRestoration' in history) {
           // Arrastar para selecionar/copiar não deve fechar o campo aberto.
           if (window.getSelection?.().toString()) return;
 
-          const expandableItem = event.target.closest('.rank-meta-item--studio, .rank-meta-item--rewatch');
+          const expandableItem = event.target.closest('.rank-meta-item--studio, .rank-meta-item--rewatch, .rank-meta-item--season.rank-meta-item--studios');
           const expandedItem = lightboxMeta.querySelector('.rank-meta-item.is-meta-expanded');
 
           // Retração animada: toca a animação de saída e só então remove as classes.
@@ -680,41 +683,55 @@ if ('scrollRestoration' in history) {
         });
       }
 
+      // Cria o efeito sem baixar o mp3 até a primeira vez que ele tocar
+      // (preload 'none'), economizando dados e memória no mobile.
+      function createPosterAudio(src) {
+        const audio = new Audio();
+        audio.preload = 'none';
+        audio.src = src;
+        return audio;
+      }
+
       // ── Som especial ao abrir o poster-lightbox do Re:ZERO ──
-      const rezeroSound = new Audio('assets/sounds/rdb-rezero.mp3');
+      const rezeroSound = createPosterAudio('assets/sounds/rdb-rezero.mp3');
       rezeroSound.loop = true;
       const REZERO_IDS = ['re-zero', 're-zero-4'];
 
       // ── Som especial ao abrir o poster-lightbox do JJK (sem loop) ──
-      const jjkSound = new Audio('assets/sounds/yuta-jjk.mp3');
+      const jjkSound = createPosterAudio('assets/sounds/yuta-jjk.mp3');
       jjkSound.loop = false;
       const JJK_IDS = ['jjk'];
 
       // ── Som especial ao abrir o poster-lightbox do AOT (sem loop) ──
-      const aotSound = new Audio('assets/sounds/aot-roar.mp3');
+      const aotSound = createPosterAudio('assets/sounds/aot-roar.mp3');
       aotSound.loop = false;
       const AOT_IDS = ['aot', 'rw-aot'];
 
       // ── Som especial ao abrir o poster-lightbox do One Piece (sem loop) ──
-      const onePieceSound = new Audio('assets/sounds/luffy-haki.mp3');
+      const onePieceSound = createPosterAudio('assets/sounds/luffy-haki.mp3');
       onePieceSound.loop = false;
       const ONE_PIECE_IDS = ['one-piece'];
 
       // ── Som especial ao abrir o poster-lightbox do Chainsaw Man (sem loop) ──
-      const csmSound = new Audio('assets/sounds/csm-reze.mp3');
+      const csmSound = createPosterAudio('assets/sounds/csm-reze.mp3');
       csmSound.loop = false;
       const CSM_IDS = ['chainsaw-man', 'csm'];
 
       // ── Som especial ao abrir o poster-lightbox de Code Geass (sem loop) ──
-      const codeGeassSound = new Audio('assets/sounds/cg-lelouch.mp3');
+      const codeGeassSound = createPosterAudio('assets/sounds/cg-lelouch.mp3');
       codeGeassSound.loop = false;
       const CODE_GEASS_IDS = ['code-geass'];
+
+      // ── Som especial ao abrir o poster-lightbox do Cyberpunk (sem loop) ──
+      const cyberSound = createPosterAudio('assets/sounds/cyber.mp3');
+      cyberSound.loop = false;
+      const CYBER_IDS = ['cyberpunk', 'cyberpunk-edgerunners', 'edgerunners'];
 
       // ── Controle global e persistente dos efeitos do poster lightbox ──
       // O botão agora PAUSA/RETOMA o efeito (antes era mute). Estando pausado,
       // nenhum efeito novo começa sozinho ao abrir/trocar de pôster.
       const POSTER_SOUND_PAUSED_KEY = 'posterLightboxSoundPaused';
-      const posterSoundEffects = [rezeroSound, jjkSound, aotSound, onePieceSound, csmSound, codeGeassSound];
+      const posterSoundEffects = [rezeroSound, jjkSound, aotSound, onePieceSound, csmSound, codeGeassSound, cyberSound];
       let posterSoundPaused = false;
       try {
         posterSoundPaused = localStorage.getItem(POSTER_SOUND_PAUSED_KEY) === 'true';
@@ -737,6 +754,7 @@ if ('scrollRestoration' in history) {
         if (ONE_PIECE_IDS.includes(item.id)) return onePieceSound;
         if (CSM_IDS.includes(item.id)) return csmSound;
         if (CODE_GEASS_IDS.includes(item.id)) return codeGeassSound;
+        if (CYBER_IDS.includes(item.id)) return cyberSound;
         return null;
       }
 
@@ -747,7 +765,8 @@ if ('scrollRestoration' in history) {
           || AOT_IDS.includes(item.id)
           || ONE_PIECE_IDS.includes(item.id)
           || CSM_IDS.includes(item.id)
-          || CODE_GEASS_IDS.includes(item.id);
+          || CODE_GEASS_IDS.includes(item.id)
+          || CYBER_IDS.includes(item.id);
       }
 
       function updatePosterSoundButton() {
@@ -1158,12 +1177,12 @@ function getMetaFor(animeId) {
           ? META_FIELDS.filter(field => field.key !== 'rewatch')
           : META_FIELDS;
 
-        // SCORE (nota ao vivo do MAL): só entra na frente do Studio
+        // SCORE (nota ao vivo do MAL): entra por último (Studio, Year, MAL Score)
         // quando o card permite (Watching Now / Plan to Watch) e o
         // anime tem um "malUrl" cadastrado — ver showItem.
         const malId = allowLiveScore ? extractMalId(malUrl) : null;
         if (malId) {
-          fields = [SCORE_FIELD, ...fields];
+          fields = [...fields, SCORE_FIELD];
         }
 
         lightboxMeta.style.gridTemplateColumns = `repeat(${fields.length}, 1fr)`;
@@ -1176,9 +1195,11 @@ function getMetaFor(animeId) {
         const compactStudioParts = compactStudioRaw.split(/[\/,]/).map(s => s.trim()).filter(Boolean);
         const hasStudioList = normalizeStudioEntries(metaObj.studios).length > 0;
         const hasRewatchList = fields.some(f => f.key === 'rewatch') && normalizeStudioEntries(metaObj.rewatchs).length > 0;
+        const hasSeasonList = normalizeStudioEntries(metaObj.airedSeasons).length > 0;
         const useCompactMeta = fields.length <= 3
           && !hasStudioList
           && !hasRewatchList
+          && !hasSeasonList
           && compactStudioParts.length <= 1
           && compactStudioRaw.length <= COMPACT_STUDIO_MAX_CHARS;
 
@@ -1217,6 +1238,22 @@ function getMetaFor(animeId) {
                 <span class="rank-meta-label">Rewatch</span>
                 <span class="rank-meta-value rank-meta-studio-list" data-field="rewatch">
                   ${rewatchEntries.map(entry => `
+                    <span class="rank-meta-studio-row">
+                      <span class="rank-meta-studio-season">${escapeHtml(entry.season).replace(/\b([IVXLCDM]+)\b/g, '<span class="rank-mal-roman">$1</span>')}</span>
+                      <span class="rank-meta-studio-name">${escapeHtml(entry.name)}</span>
+                    </span>`).join('')}
+                </span>
+              </div>`;
+          }
+          // "airedSeasons" (opcional no info.js) segue o mesmo formato de "studios":
+          // airedSeasons: [ { season: 'S1', name: '2022' }, { season: 'S2', name: '2026' } ]
+          const seasonEntries = field.key === 'season' ? normalizeStudioEntries(metaObj.airedSeasons) : [];
+          if (seasonEntries.length) {
+            return `
+              <div class="rank-meta-item rank-meta-item--season rank-meta-item--studios">
+                <span class="rank-meta-label">${field.label}</span>
+                <span class="rank-meta-value rank-meta-studio-list" data-field="season">
+                  ${seasonEntries.map(entry => `
                     <span class="rank-meta-studio-row">
                       <span class="rank-meta-studio-season">${escapeHtml(entry.season).replace(/\b([IVXLCDM]+)\b/g, '<span class="rank-mal-roman">$1</span>')}</span>
                       <span class="rank-meta-studio-name">${escapeHtml(entry.name)}</span>
@@ -1315,9 +1352,9 @@ function getMetaFor(animeId) {
         // Studio usa as mesmas classes do Studio normal (--studio + --clamp),
         // então o clique para expandir/retrair funciona igual.
         const fieldsHtml = [
-          item('score', 'MAL Score', scoreInner),
+          item('studio rank-meta-item--upcoming-studio', studios.length > 1 ? 'Studios' : 'Studio', `<span class="rank-meta-value rank-meta-value--clamp${studios.length ? '' : ' empty'}" data-field="studio">${studioText || '–'}</span>`),
           item('source', 'Source', `<span class="rank-meta-value${sourceText ? '' : ' empty'}" data-field="source">${sourceText ? escapeHtml(sourceText) : '–'}</span>`),
-          item('studio rank-meta-item--upcoming-studio', studios.length > 1 ? 'Studios' : 'Studio', `<span class="rank-meta-value rank-meta-value--clamp${studios.length ? '' : ' empty'}" data-field="studio">${studioText || '–'}</span>`)
+          item('score', 'MAL Score', scoreInner)
         ].join('');
 
         studioSeparatorResizeObserver?.disconnect();
@@ -2919,6 +2956,18 @@ function getMetaFor(animeId) {
           } catch (e) {}
         }
 
+        const wasCyber = currentItem && CYBER_IDS.includes(currentItem.id);
+        const isCyber = CYBER_IDS.includes(item.id);
+        if (wasCyber && currentItem !== item) {
+          isCyber ? stopAudioInstantly(cyberSound) : fadeOutAudio(cyberSound);
+        }
+        if (isCyber && currentItem !== item && !posterSoundPaused) {
+          try {
+            cyberSound.currentTime = 0;
+            cyberSound.play().catch(() => {});
+          } catch (e) {}
+        }
+
         currentItem = item;
 
         // Mostra o atalho do calendário somente para animes que fazem
@@ -3479,6 +3528,9 @@ function getMetaFor(animeId) {
         if (currentItem && CODE_GEASS_IDS.includes(currentItem.id)) {
           fadeOutAudio(codeGeassSound);
         }
+        if (currentItem && CYBER_IDS.includes(currentItem.id)) {
+          fadeOutAudio(cyberSound);
+        }
         stopTitleMarquee();
         document.title = DEFAULT_PAGE_TITLE;
         closeImageZoom();
@@ -3652,6 +3704,30 @@ function getMetaFor(animeId) {
         });
       }
 
+      // Fecha o posterlightbox e abre o drawer na busca. Com "query", a busca já
+      // abre pesquisando esse nome; vazio, abre a busca limpa. Em ambos os casos
+      // guarda o anime de origem pra voltar pra ele quando o drawer fechar.
+      function openSearchFromLightbox(query) {
+        // Guarda de onde o usuário veio ANTES de fechar o lightbox
+        // (closeLightbox zera currentItem e as flags do randomizer).
+        window.__posterReturnAfterSearch = {
+          item: currentItem,
+          scrollY: __scrollLockY,
+          randomPlan: randomPlanNavigationLocked
+        };
+
+        closeLightbox(true);
+        openDrawer('search', { focus: false });
+
+        const searchInput = document.getElementById('searchDrawerInput');
+        const searchBox = document.getElementById('searchBoxDrawer');
+        if (!searchInput) return;
+        searchInput.value = query || '';
+        if (searchBox) searchBox.classList.toggle('has-value', !!query);
+        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+        requestAnimationFrame(() => searchInput.focus());
+      }
+
       if (searchBtn) {
         searchBtn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -3666,25 +3742,7 @@ function getMetaFor(animeId) {
             query = jpState.jpName.trim();
           }
           if (!query) return;
-
-          // Guarda de onde o usuário veio ANTES de fechar o lightbox
-          // (closeLightbox zera currentItem e as flags do randomizer).
-          window.__posterReturnAfterSearch = {
-            item: currentItem,
-            scrollY: __scrollLockY,
-            randomPlan: randomPlanNavigationLocked
-          };
-
-          closeLightbox(true);
-          openDrawer('search', { focus: false });
-
-          const searchInput = document.getElementById('searchDrawerInput');
-          const searchBox = document.getElementById('searchBoxDrawer');
-          if (!searchInput) return;
-          searchInput.value = query;
-          if (searchBox) searchBox.classList.add('has-value');
-          searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-          requestAnimationFrame(() => searchInput.focus());
+          openSearchFromLightbox(query);
         });
       }
 
@@ -4063,6 +4121,15 @@ function getMetaFor(animeId) {
       document.addEventListener('keydown', function(e) {
         if (!lightbox.classList.contains('open')) return;
 
+        // Ctrl+F: abre a busca do drawer (sem nome de anime). Ao fechar o drawer,
+        // volta pro posterlightbox do anime em que estava.
+        if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key === 'f' || e.key === 'F' || e.code === 'KeyF')) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (currentItem && !(lightboxZoom && lightboxZoom.classList.contains('open'))) openSearchFromLightbox('');
+          return;
+        }
+
         if ((e.key === 'm' || e.key === 'M') && soundBtn && soundBtn.classList.contains('visible')) {
           e.preventDefault();
           e.stopPropagation();
@@ -4318,6 +4385,7 @@ function getMetaFor(animeId) {
       if (a.studio) meta.studio = a.studio;
       if (a.studios) meta.studios = a.studios;
       if (a.airedSeason) meta.season = a.airedSeason;
+      if (a.airedSeasons) meta.airedSeasons = a.airedSeasons;
       if (a.rewatch) meta.rewatch = a.rewatch;
       if (a.rewatchs) meta.rewatchs = a.rewatchs;
       if (Object.keys(meta).length) {
@@ -4490,7 +4558,7 @@ function getMetaFor(animeId) {
               const glow = new OffscreenCanvas(192, 108);
               const gx = glow.getContext('2d', {alpha:false});
               let ambient = null;
-              if ('filter' in gx) {
+              if (!data.skipAmbient && 'filter' in gx) {
                 gx.fillStyle = '#050505';
                 gx.fillRect(0,0,192,108);
                 gx.filter = 'blur(8px) brightness(0.55)';
@@ -4532,7 +4600,7 @@ function getMetaFor(animeId) {
       return new Promise((resolve, reject) => {
         const timer = setTimeout(() => { __posterWorkerRequests.delete(id); reject(new Error('Worker timeout')); }, 10000);
         __posterWorkerRequests.set(id, {resolve, reject, timer});
-        try { worker.postMessage({id, bitmap}, [bitmap]); }
+        try { worker.postMessage({id, bitmap, skipAmbient: __MOBILE_LITE}, [bitmap]); }
         catch (error) { clearTimeout(timer); __posterWorkerRequests.delete(id); bitmap.close(); reject(error); }
       });
     }
@@ -4647,7 +4715,7 @@ function getMetaFor(animeId) {
       const src = String(img.getAttribute('data-src') || img.getAttribute('src') || '').trim();
       if (!img.__paintPoster) {
         const item = wrap.closest('.anime-item, .fav-ep-card');
-        const ambient = item && item.querySelector('.anime-item-ambient, .fav-ep-ambient');
+        const ambient = (!__MOBILE_LITE && item) ? item.querySelector('.anime-item-ambient, .fav-ep-ambient') : null;
         img.__paintPoster = () => {
           if (!wrap.isConnected || !img.complete || !img.naturalWidth) return;
           wrap.classList.remove('has-fallback');
@@ -5694,76 +5762,6 @@ function getMetaFor(animeId) {
       });
     }
 
-    // ── Botões extras do drawer expandido (desktop): Calendário + Randomizer ──
-    (function initDrawerExtraActions() {
-      if (!drawerExpandBtn || !drawerExpandBtn.parentNode) return;
-      const actions = drawerExpandBtn.parentNode;
-      const makeBtn = (id, label, svg) => {
-        const b = document.createElement('button');
-        b.type = 'button'; b.id = id;
-        b.className = 'drawer-expand drawer-action-extra';
-        b.setAttribute('aria-label', label);
-        b.setAttribute('data-tooltip', label);
-        b.innerHTML = svg;
-        return b;
-      };
-      const calendarSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"></path></svg>';
-      const randomSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"></path><path d="m18 2 4 4-4 4"></path><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"></path><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"></path><path d="m18 14 4 4-4 4"></path></svg>';
-      // Monograma "MAL" desenhado em traços (não depende de fonte).
-      const malListSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width:2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 18.5v-13l3.3 5.2 3.3-5.2v13"></path><path d="m10.2 18.5 3.2-13 3.2 13"></path><path d="M11.2 14.6h4.4"></path><path d="M18.4 5.5v13h4"></path></svg>';
-      // Link para a lista pessoal no MyAnimeList (abre em nova aba).
-      const malListBtn = document.createElement('a');
-      malListBtn.id = 'drawerMalListBtn';
-      malListBtn.className = 'drawer-expand drawer-action-extra';
-      malListBtn.href = 'https://myanimelist.net/animelist/ptbr';
-      malListBtn.target = '_blank';
-      malListBtn.rel = 'noopener noreferrer';
-      malListBtn.setAttribute('aria-label', 'MyAnimeList');
-      malListBtn.setAttribute('data-tooltip', 'MyAnimeList');
-      malListBtn.innerHTML = malListSvg;
-      malListBtn.addEventListener('click', (e) => e.stopPropagation());
-      const calBtn = makeBtn('drawerCalendarBtn', 'Seasonal Anime Calendar', calendarSvg);
-      const rndBtn = makeBtn('drawerRandomBtn', 'Random Plan to Watch', randomSvg);
-      actions.insertBefore(malListBtn, drawerExpandBtn);
-      actions.insertBefore(rndBtn, malListBtn);
-      actions.insertBefore(calBtn, rndBtn);
-      // Espelha EXATAMENTE o estado do botão de calendário do Watching Now
-      // (#calendarBtn): se ele estiver desabilitado, este também fica.
-      const syncCalBtnDisabled = () => {
-        const src = document.getElementById('calendarBtn');
-        const off = !src || src.disabled;
-        calBtn.disabled = off;
-        calBtn.setAttribute('aria-disabled', off ? 'true' : 'false');
-        if (src && off) {
-          ['title', 'data-tooltip', 'aria-label'].forEach(a => {
-            const v = src.getAttribute(a);
-            if (v) calBtn.setAttribute(a, v);
-          });
-        }
-      };
-      syncCalBtnDisabled();
-      const srcCalBtn = document.getElementById('calendarBtn');
-      if (srcCalBtn && typeof MutationObserver === 'function') {
-        new MutationObserver(syncCalBtnDisabled).observe(srcCalBtn, { attributes: true, attributeFilter: ['disabled'] });
-      }
-      calBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (calBtn.disabled) return;
-        const calendarOn = !!(window.__isReleaseCalendarMode && window.__isReleaseCalendarMode());
-        closeDrawer(true);
-        if (currentCategory !== 'watching') {
-          currentCategory = 'watching'; render();
-          window.scrollTo({ top: 0, behavior: 'instant' });
-        }
-        if (typeof window.__setReleaseCalendarMode === 'function') window.__setReleaseCalendarMode(!calendarOn);
-      });
-      rndBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeDrawer(true);
-        const planRandomBtn = document.getElementById('randomPlanBtn');
-        if (planRandomBtn) planRandomBtn.click();
-      });
-    })();
 
     try {
       // Padrão: expandido no desktop. Se o usuário já escolheu recolher
@@ -6735,7 +6733,7 @@ function getMetaFor(animeId) {
         // Mantém o estado "ready" mesmo se o carrossel emitir um evento
         // de scroll ao centralizar a miniatura selecionada.
         function setAmbient(src) {
-          if (!ambient || !src) return;
+          if (!ambient || !src || __MOBILE_LITE) return;
           ambient.dataset.paintedSource = src;
           ambient.classList.remove('ambient-baked');
           ambient.style.backgroundImage = `url("${src}")`;
@@ -8865,7 +8863,7 @@ function getMetaFor(animeId) {
           const item = img.closest('.search-result-item');
           const ambient = item ? item.querySelector('.search-result-ambient') : null;
           img.addEventListener('load', () => {
-            if (ambient) {
+            if (ambient && !__MOBILE_LITE) {
               // Mesma URL do thumb, já em cache — usa como wallpaper borrado do card.
               ambient.style.backgroundImage = `url("${src}")`;
               ambient.classList.add('ready');
@@ -9175,7 +9173,7 @@ function getMetaFor(animeId) {
           const item = img.closest('.search-result-item');
           const ambient = item ? item.querySelector('.search-result-ambient') : null;
           img.addEventListener('load', () => {
-            if (ambient) {
+            if (ambient && !__MOBILE_LITE) {
               ambient.style.backgroundImage = `url("${src}")`;
               ambient.classList.add('ready');
             }
@@ -10689,6 +10687,14 @@ function getCalendarItems() {
     // (~120 itens). O blur volta a aparecer pouco depois que a rolagem
     // para de verdade (debounce), sem precisar de nenhum RAF contínuo.
     (function initAmbientScrollSuppression() {
+      // Desktop (>= 761px): o wallpaper borrado dos cards continua visível
+      // durante a rolagem. No mobile, segue sendo suspenso por desempenho.
+      const desktopAmbientMq = window.matchMedia('(min-width: 761px)');
+      const syncKeepAmbient = () => document.body.classList.toggle('keep-ambient-scroll', desktopAmbientMq.matches);
+      syncKeepAmbient();
+      if (desktopAmbientMq.addEventListener) desktopAmbientMq.addEventListener('change', syncKeepAmbient);
+      else if (desktopAmbientMq.addListener) desktopAmbientMq.addListener(syncKeepAmbient);
+
       let ambientScrollTimeout = null;
       let ambientScrollFrame = 0;
 

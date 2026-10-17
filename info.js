@@ -70,7 +70,7 @@ const rawAnimeData = [
     title: "One Piece",
     info: "1 temporada: 1180 episódios",
     studio: "Toei Animation",
-    airedSeason: "1999-?",
+    airedSeason: "1999-2027",
     rewatch: "The One Piece",
     mal: [
       { label: "1 temporada", episodes: 1180, note: 10, malName: "One Piece" },
@@ -97,7 +97,7 @@ const rawAnimeData = [
     title: "Jujutsu Kaisen",
     info: "3 temporadas: 59 episódios <br>Movie: 1h45m",
     studio: "MAPPA",
-    airedSeason: "2020-?",
+    airedSeason: "2020-2026",
     rewatchs: [
       { season: 'S1-S2', name: '1 TIME' },
     ],
@@ -119,7 +119,7 @@ const rawAnimeData = [
     title: "Frieren: Beyond Journey's End",
     info: "2 temporadas: 38 episódios",
     studio: "MADHOUSE",
-    airedSeason: "2023-?",
+    airedSeason: "2023-2027",
     rewatch: "Not Yet",
     mal: [
       { label: "1ª temporada", episodes: 28, note: 10, malName: "Sousou no Frieren" },
@@ -137,7 +137,7 @@ const rawAnimeData = [
     title: "[Oshi no Ko]",
     info: "3 temporadas: 35 episódios",
     studio: "Doga Kobo",
-    airedSeason: "2023-?",
+    airedSeason: "2023-2026",
     rewatchs: [
       { season: 'S1-S2', name: '1 TIME' },
     ],
@@ -153,7 +153,7 @@ const rawAnimeData = [
     title: "Haikyuu!!",
     info: "4 temporadas: 85 episódios <br>Movie: 1h24m",
     studio: "Production I.G",
-    airedSeason: "2014-?",
+    airedSeason: "2014-2027",
     rewatchs: [
       { season: 'S1-S2', name: '1 TIME' },
       { season: 'S3-S4 I', name: '2 TIMES' },
@@ -180,7 +180,7 @@ const rawAnimeData = [
     title: "Mushoku Tensei: Jobless Reincarnation",
     info: "3 temporadas: 61 episódios",
     studio: "Studio Bind",
-    airedSeason: "2021-?",
+    airedSeason: "2021-2027",
     rewatchs: [
       { season: 'S1-S2', name: '1 TIME' },
     ],
@@ -227,7 +227,7 @@ const rawAnimeData = [
     malSearch: "Re:Zero",
     info: "4 temporadas: 85 episódios",
     studio: "White Fox",
-    airedSeason: "2016-?",
+    airedSeason: "2016-2026",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -245,7 +245,10 @@ const rawAnimeData = [
     title: "Cyberpunk: Edgerunners",
     info: "10 episódios",
     studio: "Trigger",
-    airedSeason: "2022",
+    airedSeasons: [
+      { season: 'S1', name: '2022' },
+      { season: 'S2', name: '2026' },
+    ],
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -285,7 +288,7 @@ const rawAnimeData = [
       { season: "S1-S2", name: "Studio Pierrot" },
       { season: "S3-S6", name: "Studio Pierrot and Signpost" },
     ],
-    airedSeason: "2012",
+    airedSeason: "2012-2025",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 38, note: 8, malName: "Kingdom" },
@@ -293,7 +296,7 @@ const rawAnimeData = [
       { label: "3ª temporada", episodes: 26, note: 9, malName: "Kingdom 3rd Season" },
       { label: "4ª temporada", episodes: 26, note: 8, malName: "Kingdom 4th Season" },
       { label: "5ª temporada", episodes: 13, note: 8, malName: "Kingdom 5th Season" },
-      { label: "6ª temporada", episodes: 13, note: 8, malName: "Kingdom 6th Season" },
+      { label: "6ª temporada I", episodes: 13, note: 8, malName: "Kingdom 6th Season" },
     ],
   },
   {
@@ -302,7 +305,7 @@ const rawAnimeData = [
     title: "Solo Leveling",
     info: "2 temporadas: 25 episódios",
     studio: "A-1 Pictures",
-    airedSeason: "2024-?",
+    airedSeason: "2024-2025",
     rewatchs: [
       { season: 'S1-S2', name: '1 TIME' },
     ],
@@ -344,7 +347,7 @@ const rawAnimeData = [
       { season: "S2", name: "Zero-G and Liber" },
       { season: "S3", name: "Zero-G and Saber Works" },
     ],
-    airedSeason: "2018-?",
+    airedSeason: "2018-2026",
     rewatchs: [
       { season: 'S1-S2', name: '1 TIME' },
     ],
@@ -360,7 +363,7 @@ const rawAnimeData = [
     title: "Classroom of the Elite",
     info: "4 temporadas: 54 episódios",
     studio: "Lerche",
-    airedSeason: "2017-?",
+    airedSeason: "2017-2026",
     rewatchs: [
       { season: 'S1-S3', name: '1 TIME' },
     ],
@@ -405,7 +408,7 @@ const rawAnimeData = [
     title: "Dan da Dan",
     info: "2 temporadas: 24 episódios",
     studio: "Science SARU",
-    airedSeason: "2024-?",
+    airedSeason: "2024-2027",
     rewatch: "Not Yet",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Dandadan" },
@@ -418,7 +421,7 @@ const rawAnimeData = [
     title: "That Time I Got Reincarnated as a Slime",
     info: "4 temporadas: 96 episódios",
     studio: "8-Bit",
-    airedSeason: "2018-?",
+    airedSeason: "2018-2027",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 24, note: 7, malName: "Tensei Shitara Slime Datta Ken" },
@@ -438,7 +441,7 @@ const rawAnimeData = [
     title: "Hell's Paradise: Jigokuraku",
     info: "2 temporadas: 25 episódios",
     studio: "MAPPA",
-    airedSeason: "2023-?",
+    airedSeason: "2023-2026",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -453,7 +456,7 @@ const rawAnimeData = [
     title: "Chainsaw Man",
     info: "1 temporada: 12 episódios <br>Movie: 1h40m",
     studio: "MAPPA",
-    airedSeason: "2022",
+    airedSeason: "2022-2025",
     rewatch: "No",
     mal: [
       { label: "1 temporada", episodes: 12, note: 8, malName: "Chainsaw Man"},
@@ -466,7 +469,7 @@ const rawAnimeData = [
     title: "The Eminence in Shadow",
     info: "2 temporadas: 32 episódios",
     studio: "Nexus",
-    airedSeason: "2022-?",
+    airedSeason: "2022-2027",
     rewatchs: [
       { season: 'S1-S2', name: '1 TIME' },
     ],
@@ -481,7 +484,7 @@ const rawAnimeData = [
     title: "Gachiakuta",
     info: "1 temporada: 24 episódios",
     studio: "Bones",
-    airedSeason: "2025-?",
+    airedSeason: "2025",
     rewatch: "Not Yet",
     mal: [{ label: "1ª temporada", episodes: 24, note: 8, malName: "Gachiakuta" }],
   },
@@ -494,7 +497,7 @@ const rawAnimeData = [
       { season: "S1", name: "MADHOUSE" },
       { season: "S2-S3", name: "J.C. Staff" },
     ],
-    airedSeason: "2015-?",
+    airedSeason: "2015-2027",
     rewatchs: [
       { season: 'S1-S2', name: '2 TIMES' },
     ],
@@ -510,7 +513,7 @@ const rawAnimeData = [
     title: "Hajime no Ippo: The Fighting",
     info: "(~) 2 temporadas: 101 episódios",
     studio: "MADHOUSE",
-    airedSeason: "2000-2014",
+    airedSeason: "2000-2009",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 75, note: 9, malName: "Hajime no Ippo" },
@@ -557,7 +560,7 @@ const rawAnimeData = [
     title: "The Fragrant Flowers Bloom with Dignity",
     info: "13 episódios",
     studio: "CloverWorks",
-    airedSeason: "2025-?",
+    airedSeason: "2025",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -569,7 +572,7 @@ const rawAnimeData = [
     title: "You and I are Polar Opposites",
     info: "2 temporadas: 25 episódios",
     studio: "Lapin Track",
-    airedSeason: "2026-?",
+    airedSeason: "2026",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Seihantai na Kimi to Boku" },
@@ -582,7 +585,7 @@ const rawAnimeData = [
     title: "Demon Slayer: Kimetsu no Yaiba",
     info: "5 temporadas: 63 episódios <br>Movie: 2h35m",
     studio: "ufotable",
-    airedSeason: "2019-?",
+    airedSeason: "2019-2025",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -601,7 +604,7 @@ const rawAnimeData = [
     title: "Shangri-La Frontier",
     info: "2 temporadas: 50 episódios",
     studio: "C2C",
-    airedSeason: "2023-?",
+    airedSeason: "2023-2027",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 25, note: 7, malName: "Shangri-La Frontier: Kusoge Hunter, Kamige ni Idoman to su" },
@@ -614,7 +617,7 @@ const rawAnimeData = [
     title: "Rascal Does Not Dream of Bunny Girl Senpai",
     info: "(~~~) 1ª temporada: 13 episódios",
     studio: "CloverWorks",
-    airedSeason: "2018-?",
+    airedSeason: "2018-2026",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -673,7 +676,7 @@ const rawAnimeData = [
     title: "Akame ga Kill",
     info: "24 episódios",
     studio: "White Fox",
-    airedSeason: "2014-2014",
+    airedSeason: "2014",
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 24, note: 8, malName: "Akame ga Kill!" }],
   },
@@ -683,7 +686,7 @@ const rawAnimeData = [
     title: "Wistoria: Wand and Sword",
     info: "2 temporadas: 24 episódios",
     studio: "Bandai Filmworks / Actas",
-    airedSeason: "2024-?",
+    airedSeason: "2024-2026",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -701,7 +704,7 @@ const rawAnimeData = [
       { season: "S1", name: "Telecom Animation Film" },
       { season: "S2", name: "Electric Circus" },
     ],
-    airedSeason: "2024-?",
+    airedSeason: "2024-2026",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -716,7 +719,7 @@ const rawAnimeData = [
     title: "Alya Sometimes Hides Her Feelings in Russian",
     info: "1 temporada: 12 episódios",
     studio: "Doga Kobo",
-    airedSeason: "2024-?",
+    airedSeason: "2024-2027",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -728,7 +731,7 @@ const rawAnimeData = [
     title: "Mashle: Magic and Muscles",
     info: "2 temporadas: 24 episódios",
     studio: "A-1 Pictures",
-    airedSeason: "2023-?",
+    airedSeason: "2023-2027",
     rewatchs: [
       { season: 'S1-S2', name: '1 TIME' },
     ],
@@ -768,7 +771,7 @@ const rawAnimeData = [
     title: "86 Eighty-Six",
     info: "2 temporadas: 23 episódios",
     studio: "A-1 Pictures",
-    airedSeason: "2021",
+    airedSeason: "2021-2022",
     rewatch: "No",
     mal: [
       { label: "1ª temporada I", episodes: 11, note: 7, malName: "86" },
@@ -794,19 +797,6 @@ const rawAnimeData = [
     airedSeason: "2026",
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Nippon Sangoku"}],
-  },
-  {
-    id: "prison-school",
-    img: "myranks-images/myranks/prison-school.webp",
-    title: "Prison School",
-    info: "12 episódios",
-    studio: "J.C. Staff",
-    airedSeason: "2015-2016",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
-      { label: "OVA: Mad Wax", episodes: "25m", note: 7, malName: "Prison School: Mad Wax" },
-    ],
   },
   {
     id: "food-wars",
@@ -835,7 +825,7 @@ const rawAnimeData = [
     malSearch: "Is It Wrong to Try to Pick Up Girls in a Dungeon",
     info: "(~) 4 temporadas: 59 episódios",
     studio: "J.C. Staff",
-    airedSeason: "2015-?",
+    airedSeason: "2015-2025",
     rewatchs: [
       { season: 'S1-S4', name: '1 TIME' },
     ],
@@ -855,7 +845,7 @@ const rawAnimeData = [
     malSearch: "Chitose",
     info: "1 temporada: 13 episódios",
     studio: "feel",
-    airedSeason: "2025-?",
+    airedSeason: "2025-2026",
     rewatch: "No",
     mal: [
       { label: "1ª temporada I", episodes: 13, note: 7, malName: "Chitose-kun wa Ramune Bin no Naka" },
@@ -868,7 +858,7 @@ const rawAnimeData = [
     title: "Makeine: Too Many Losing Heroines!",
     info: "1 temporada: 12 episódios",
     studio: "A-1 Pictures",
-    airedSeason: "2024-?",
+    airedSeason: "2024",
     rewatch: "Not Yet",
     mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Make Heroine ga Oosugiru!" }],
   },
@@ -882,7 +872,7 @@ const rawAnimeData = [
       { season: "S1", name: "C2C" },
       { season: "S2", name: "J.C. Staff" },
     ],
-    airedSeason: "2021-?",
+    airedSeason: "2021-2024",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Tsuki ga Michibiku Isekai Douchuu" },
@@ -895,7 +885,7 @@ const rawAnimeData = [
     title: "My Dress-Up Darling",
     info: "(~) 1ª temporada: 12 episódios",
     studio: "CloverWorks",
-    airedSeason: "2022-?",
+    airedSeason: "2022-2025",
     rewatch: "Not Yet",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Sono Bisque Doll wa Koi wo Suru" },
@@ -918,7 +908,7 @@ const rawAnimeData = [
     title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
     info: "2 temporadas: 24 episódios",
     studio: "SynergySP",
-    airedSeason: "2024-?",
+    airedSeason: "2024-2026",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo" },
@@ -941,27 +931,32 @@ const rawAnimeData = [
     img: "myranks-images/myranks/apothecary-diaries.webp",
     title: "The Apothecary Diaries",
     info: "(~) 1ª temporada: 24 episódios",
-    studio: "OLM / TOHO Animation Studio",
-    airedSeason: "2023-?",
+    studio: "",
+    studios: [
+      { season: "S1-S2", name: "OLM / TOHO Animation Studio" },
+      { season: "S3", name: "OLM" },
+    ],
+    airedSeason: "2023-2027",
     rewatch: "Not Yet",
     mal: [
       { label: "1ª temporada", episodes: 24, note: 7, malName: "Kusuriya no Hitorigoto" },
       { label: "2ª temporada", episodes: 24, unwatched: true, malName: "Kusuriya no Hitorigoto 2nd Season" },
+      { label: "3ª temporada I", episodes: 12, unwatched: true, malName: "Kusuriya no Hitorigoto 3rd Season" },
+      { label: "3ª temporada II", episodes: 12, unwatched: true, malName: "Kusuriya no Hitorigoto 3rd Season Part 2" },
     ],
   },
   {
-    id: "shield-hero",
-    img: "myranks-images/myranks/shield-hero.webp",
-    title: "The Rising of the Shield Hero",
-    info: "(~) 1ª temporada: 25 episódios",
-    studio: "Kinema Citrus",
-    airedSeason: "2019-?",
+    id: "gurren-lagann",
+    img: "myranks-images/myranks/gurren-lagann.webp",
+    title: "Gurren Lagann",
+    info: "(~~) 1 temporada: 27 episódios",
+    studio: "Gainax",
+    airedSeason: "2007-2009",
     rewatch: "No",
     mal: [
-      { label: "1ª temporada", episodes: 25, note: 7, malName: "Tate no Yuusha no Nariagari" },
-      { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 2" },
-      { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 3" },
-      { label: "4ª temporada", episodes: 12, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 4" },
+      { label: "1 temporada", episodes: 27, note: 7, malName: "Tengen Toppa Gurren Lagann" },
+      { label: "Movie 1: Childhood's End", episodes: "1h52m", unwatched: true, malName: "Tengen Toppa Gurren Lagann Movie 1: Gurren-hen" },
+      {label: "Movie 2: The Lights in the Sky are Stars", episodes: "2h05m", unwatched: true, malName: "Tengen Toppa Gurren Lagann Movie 2: Lagann-hen",},
     ],
   },
   {
@@ -970,7 +965,7 @@ const rawAnimeData = [
     title: "Sword Art Online",
     info: "(~~~) 1ª temporada: 25 episódios",
     studio: "A-1 Pictures",
-    airedSeason: "2012-?",
+    airedSeason: "2012-2020",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -986,40 +981,31 @@ const rawAnimeData = [
     ],
   },
   {
-    id: "gurren-lagann",
-    img: "myranks-images/myranks/gurren-lagann.webp",
-    title: "Gurren Lagann",
-    info: "(~~) 1 temporada: 27 episódios",
-    studio: "Gainax",
-    airedSeason: "2007",
+    id: "prison-school",
+    img: "myranks-images/myranks/prison-school.webp",
+    title: "Prison School",
+    info: "12 episódios",
+    studio: "J.C. Staff",
+    airedSeason: "2015-2016",
     rewatch: "No",
     mal: [
-      { label: "1 temporada", episodes: 27, note: 7, malName: "Tengen Toppa Gurren Lagann" },
-      { label: "Movie 1: Childhood's End", episodes: "1h52m", unwatched: true, malName: "Tengen Toppa Gurren Lagann Movie 1: Gurren-hen" },
-      {label: "Movie 2: The Lights in the Sky are Stars", episodes: "2h05m", unwatched: true, malName: "Tengen Toppa Gurren Lagann Movie 2: Lagann-hen",},
+      { label: "1ª temporada", episodes: 12, note: 7, malName: "Prison Scholl" },
+      { label: "OVA: Mad Wax", episodes: "25m", note: 7, malName: "Prison School: Mad Wax" },
     ],
   },
   {
-    id: "gals-cant-be-kind-to-otaku",
-    img: "myranks-images/myranks/gals-cant-be-kind-to-otaku.webp",
-    title: "Gals Can't Be Kind to Otaku",
-    info: "12 episódios",
-    studio: "TMS Entertainment",
-    airedSeason: "2026",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Otaku ni Yasashii Gal wa Inai!?" }],
-  },
-  {
-    id: "nisekoi",
-    img: "myranks-images/myranks/nisekoi.webp",
-    title: "Nisekoi: False Love",
-    info: "2 temporadas: 32 episódios",
-    studio: "Shaft",
-    airedSeason: "2014-2015",
+    id: "shield-hero",
+    img: "myranks-images/myranks/shield-hero.webp",
+    title: "The Rising of the Shield Hero",
+    info: "(~) 1ª temporada: 25 episódios",
+    studio: "Kinema Citrus",
+    airedSeason: "2019-2027",
     rewatch: "No",
     mal: [
-      { label: "1ª temporada", episodes: 20, note: 7, malName: "Nisekoi" },
-      { label: "2ª temporada", episodes: 12, note: 6, malName: "Nisekoi:" },
+      { label: "1ª temporada", episodes: 25, note: 7, malName: "Tate no Yuusha no Nariagari" },
+      { label: "2ª temporada", episodes: 13, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 2" },
+      { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 3" },
+      { label: "4ª temporada", episodes: 12, unwatched: true, malName: "Tate no Yuusha no Nariagari Season 4" },
     ],
   },
   {
@@ -1049,12 +1035,35 @@ const rawAnimeData = [
     ],
   },
   {
+    id: "gals-cant-be-kind-to-otaku",
+    img: "myranks-images/myranks/gals-cant-be-kind-to-otaku.webp",
+    title: "Gals Can't Be Kind to Otaku",
+    info: "12 episódios",
+    studio: "TMS Entertainment",
+    airedSeason: "2026",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Otaku ni Yasashii Gal wa Inai!?" }],
+  },
+  {
+    id: "nisekoi",
+    img: "myranks-images/myranks/nisekoi.webp",
+    title: "Nisekoi: False Love",
+    info: "2 temporadas: 32 episódios",
+    studio: "Shaft",
+    airedSeason: "2014-2015",
+    rewatch: "No",
+    mal: [
+      { label: "1ª temporada", episodes: 20, note: 7, malName: "Nisekoi" },
+      { label: "2ª temporada", episodes: 12, note: 6, malName: "Nisekoi:" },
+    ],
+  },
+  {
     id: "angel-next-door",
     img: "myranks-images/myranks/angel-next-door.webp",
     title: "The Angel Next Door Spoils Me Rotten",
     info: "(~) 1 temporada: 12 episódios",
     studio: "Project No.9",
-    airedSeason: "2023-?",
+    airedSeason: "2023-2026",
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
@@ -1078,8 +1087,8 @@ const rawAnimeData = [
     img: "myranks-images/myranks/farming-life.webp",
     title: "Farming Life in Another World",
     info: "(~) 1 temporada: 12 episódios",
-    studio: "Okuruto Noboru",
-    airedSeason: "2022-?",
+    studio: "Zero-G",
+    airedSeason: "2022-2026",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 6, malName: "Isekai Nonbiri Nouka" },
@@ -1116,7 +1125,7 @@ const rawAnimeData = [
     info: "12 episódios",
     season: "winter-2026",
     studio: "Gekkou",
-    airedSeason: "2026",
+    airedSeason: "2026-2027",
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 6, malName: "Mayonaka Heart Tune" }],
   },
@@ -1167,8 +1176,11 @@ const rawAnimeData = [
     img: "myranks-images/myranks/tower-of-god.webp",
     title: "Tower of God",
     info: "(~) 1ª temporada: 13 episódios",
-    studio: "Telecom Animation Film",
-    airedSeason: "2020-?",
+    studios: [
+      { season: "S1", name: "Telecom Animation Film" },
+      { season: "S2", name: "The Answer Studio" },
+    ],
+    airedSeason: "2020-2024",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 13, note: 7, malName: "Kami no Tou" },
@@ -1185,22 +1197,6 @@ const rawAnimeData = [
     airedSeason: "2020",
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 13, note: 7, malName: "The God of High School" }],
-  },
-  {
-    id: "immortal-king",
-    img: "myranks-images/myranks/immortal-king.webp",
-    title: "The Daily Life of the Immortal King",
-    info: "(~) 1ª temporada: 15 episódios",
-    studio: "Foch Films",
-    airedSeason: "2020-?",
-    rewatch: "No",
-    mal: [
-      { label: "1ª temporada", episodes: 15, note: 6, malName: "Xian Wang de Richang Shenghuo" },
-      { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 2" },
-      { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 3" },
-      { label: "4ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 4" },
-      { label: "5ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 5" },
-    ],
   },
   {
     id: "healing-magic",
@@ -1223,14 +1219,34 @@ const rawAnimeData = [
     mal: [{ label: "1 temporada", episodes: 12, note: 6, malName: "Mizu Zokusei no Mahoutsukai" }],
   },
   {
-    id: "my-little-monster",
-    img: "myranks-images/myranks/my-little-monster.webp",
-    title: "My Little Monster",
-    info: "13 episódios",
-    studio: "Brain's Base",
-    airedSeason: "2012-2012",
+    id: "immortal-king",
+    img: "myranks-images/myranks/immortal-king.webp",
+    title: "The Daily Life of the Immortal King",
+    info: "(~) 1ª temporada: 15 episódios",
+    studios: [
+      { season: "S1", name: "Haoliners Animation" },
+      { season: "S2-S3", name: "PB Animation" },
+      { season: "S4-S5", name: "Liyu Culture" },
+    ],
+    airedSeason: "2020-2026",
     rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Tonari no Kaibutsu-kun" }],
+    mal: [
+      { label: "1ª temporada", episodes: 15, note: 6, malName: "Xian Wang de Richang Shenghuo" },
+      { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 2" },
+      { label: "3ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 3" },
+      { label: "4ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 4" },
+      { label: "5ª temporada", episodes: 12, unwatched: true, malName: "Xian Wang de Richang Shenghuo 5" },
+    ],
+  },
+  {
+    id: "golden-boy",
+    img: "myranks-images/myranks/golden-boy.webp",
+    title: "Golden Boy",
+    info: "6 episódios",
+    studio: "APPP",
+    airedSeason: "1995-1996",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 6, malName: "Golden Boy", unwatched: true }],
   },
   {
     id: "blue-period",
@@ -1243,12 +1259,22 @@ const rawAnimeData = [
     mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Blue Period" }],
   },
   {
+    id: "my-little-monster",
+    img: "myranks-images/myranks/my-little-monster.webp",
+    title: "My Little Monster",
+    info: "13 episódios",
+    studio: "Brain's Base",
+    airedSeason: "2012",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Tonari no Kaibutsu-kun" }],
+  },
+  {
     id: "masamune-kuns-revenge",
     img: "myranks-images/myranks/masamune-kuns-revenge.webp",
     title: "Masamune-kun's Revenge",
     info: "(~) 1ª temporada: 12 episódios",
     studio: "SILVER LINK",
-    airedSeason: "2017-?",
+    airedSeason: "2017-2023",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 5, malName: "Masamune-kun no Revenge" },
@@ -1261,7 +1287,7 @@ const rawAnimeData = [
     title: "I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too",
     info: "(~) 13 episódios",
     studio: "Marvy Jack",
-    airedSeason: "2022-?",
+    airedSeason: "2022-2027",
     rewatch: "No",
     mal: [
       { label: "1 temporada", episodes: 13, note: 5, malName: "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta" },
@@ -1289,7 +1315,7 @@ const rawAnimeData = [
     title: "Bottom-Tier Character Tomozaki",
     info: "(~) 1ª temporada: 12 episódios",
     studio: "Project No.9",
-    airedSeason: "2021-?",
+    airedSeason: "2021-2024",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 5, malName: "Jaku-Chara Tomozaki-kun" },
@@ -1333,7 +1359,7 @@ const rawAnimeData = [
     title: "Campfire Cooking in Another World with My Absurd Skill",
     info: "(~) 1ª temporada: 12 episódios",
     studio: "MAPPA",
-    airedSeason: "2023-?",
+    airedSeason: "2023-2025",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 5, malName: "Tondemo Skill de Isekai Hourou Meshi" },
@@ -1345,8 +1371,8 @@ const rawAnimeData = [
     img: "myranks-images/myranks/trapped-in-a-dating-sim.webp",
     title: "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs",
     info: "(~) 1ª temporada: 12 episódios",
-    studio: "Project No.9",
-    airedSeason: "2021-?",
+    studio: "ENGI",
+    airedSeason: "2021-2026",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 12, note: 4, malName: "Otome Game Sekai wa Mob ni Kibishii Sekai desu" },
@@ -1358,8 +1384,8 @@ const rawAnimeData = [
     img: "myranks-images/myranks/4-cut.webp",
     title: "4 Cut Hero",
     info: "10 episódios",
-    studio: "Marvy Jack",
-    airedSeason: "2024",
+    studio: "PHANTOM",
+    airedSeason: "2023",
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 10, note: 4, malName: "Si Ge Yongzhe" }],
   },
@@ -1368,8 +1394,11 @@ const rawAnimeData = [
     img: "myranks-images/myranks/the-worlds-finest-assassin.webp",
     title: "The World's Finest Assassin Gets Reincarnated in Another World as an Aristocrat",
     info: "1 temporada: 12 episódios",
-    studio: "Satelight",
-    airedSeason: "2021-?",
+    studios: [
+      { season: "S1", name: "SILVER LINK and Studio Palette" },
+      { season: "S2", name: "SILVER LINK" },
+    ],
+    airedSeason: "2021-2027",
     rewatch: "No",
     mal: [{ label: "1ª temporada", episodes: 12, note: 5, malName: "Sekai Saikou no Ansatsusha, Isekai Kizoku ni Tensei suru" }],
   },
@@ -1398,7 +1427,7 @@ const rawAnimeData = [
     img: "myranks-images/myranks/black-summoner.webp",
     title: "Black Summoner",
     info: "12 episódios",
-    studio: "C2C",
+    studio: "Satelight",
     airedSeason: "2022",
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 12, note: 5, malName: "Kuro no Shoukanshi" }],
@@ -1419,7 +1448,7 @@ const rawAnimeData = [
     title: "Wind Breaker",
     info: "(~) 1ª temporada: 13 episódios",
     studio: "CloverWorks",
-    airedSeason: "2024-?",
+    airedSeason: "2024-2025",
     rewatch: "No",
     mal: [
       { label: "1ª temporada", episodes: 13, note: 3, malName: "Wind Breaker" },
@@ -1431,23 +1460,6 @@ const rawAnimeData = [
 // Watching Now — animes em exibição/andamento, agrupados por temporada (season).
 const rawWatchingData = [
   // Non-Seasonal Anime
-  {
-    id: "golden-boy",
-    img: "watchingnow-images/watchingnow/golden-boy.webp",
-    title: "Golden Boy",
-    info: "6 episódios",
-    studio: "APPP",
-    airedSeason: "1995-1996",
-
-    season: null,
-    seasons: [6],
-
-    url: "https://www.anime-planet.com/anime/golden-boy",
-    crunchyroll: "https://www.youtube.com/playlist?list=PLud1Y7nEL_d7BojMHk9Y6s6wsFeB6BmGz",
-    malUrl: "https://myanimelist.net/anime/268/Golden_Boy",
-
-    mal: [{ label: "1 temporada", episodes: 6, malName: "Golden Boy", unwatched: true }],
-  },
   {
     id: "gto",
     img: "watchingnow-images/watchingnow/gto.webp",
@@ -1509,7 +1521,6 @@ const rawWatchingData = [
     title: "Cyberpunk: Edgerunners",
     info: "2ª temporada: 10 episódios",
     season: "fall-2026",
-    airedSeason: "2026",
     seasons: [10, 10],
     url: "https://www.anime-planet.com/anime/cyberpunk-edgerunners-2",
     netflix: "https://www.netflix.com/search?q=cyber&jbv=81054853",
@@ -1521,7 +1532,6 @@ const rawWatchingData = [
     title: "Blue Box",
     info: "2ª temporada: 12 episódios", 
     season: "fall-2026",
-    airedSeason: "2026",
     seasons: [25, 12],
     url: "https://www.anime-planet.com/anime/blue-box-season-2",
     netflix: "https://www.netflix.com/search?q=cyber&jbv=81663323",
@@ -1533,7 +1543,6 @@ const rawWatchingData = [
     title: "Chitose is in Ramune Bottle",
     info: "1ª temporada II",
     season: "fall-2026",
-    airedSeason: "2026",
     seasons: [13, 11],
     url: "https://www.anime-planet.com/anime/chitose-is-in-the-ramune-bottle-part-ii",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GT00364783/chitose-is-in-the-ramune-bottle",
@@ -1588,8 +1597,6 @@ const rawWatchingData = [
     title: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
     info: "3ª temporada: 12 episódios",
     season: "summer-2026",
-    studio: "Bibury Animation Studios",
-    airedSeason: "2026",
     seasons: [12, 12, 12],
     url: "https://www.anime-planet.com/anime/the-100-girlfriends-who-really-really-really-really-really-love-you-season-3",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GNVHKN933/the-100-girlfriends-who-really-really-really-really-really-love-you",
@@ -1616,8 +1623,6 @@ const rawWatchingData = [
     title: "Farming Life in Another World",
     info: "2ª temporada: 12 episódios",
     season: "spring-2026",
-    studio: "Zero-G",
-    airedSeason: "2026",
     seasons: [12, 12],
     url: "https://www.anime-planet.com/anime/farming-life-in-another-world-2",
     crunchyroll: "",
@@ -1678,9 +1683,6 @@ const rawWatchingData = [
     malSearch: "Is It Wrong to Try to Pick Up Girls in a Dungeon",
     info: "5ª temporada: 15 episódios",
     season: "on-hold",
-    studio: "J.C. Staff",
-    airedSeason: "2024-2025",
-    rewatch: "3 First Seasons",
     seasons: [13, 12, 12, 22, 15],
     cours: [null, null, null, [11, 11], null],
     url: "https://www.anime-planet.com/anime/is-it-wrong-to-try-to-pick-up-girls-in-a-dungeon-v",
@@ -1979,7 +1981,7 @@ const rawPlanToWatchData = [
     id: "reincarnated-as-a-sword",
     img: "plantowatch-images/plantowatch/reincarnated-as-a-sword.webp",
     title: "Reincarnated as a Sword",
-    info: "1 temporadas: 12 episódios",
+    info: "2 temporadas: 24 episódios",
     studio: "C2C",
     airedSeason: "2022",
     url: "https://www.anime-planet.com/anime/reincarnated-as-a-sword",
@@ -3593,9 +3595,9 @@ const trueCharactersData = [
   },
   {
     id: "hana",
+    info: "Prison School",
     img: "other-images/truecharacters/hana.webp",
     title: "Hana Midorikawa",
-    info: "Prison School",
   },
   {
     id: "okarun",
@@ -3726,7 +3728,7 @@ const isekaiIds = [
   "trapped-in-a-dating-sim",
 ];
 
-const comedyIds = ["grand-blue", "mashle", "prison-school", "opm"];
+const comedyIds = ["grand-blue", "mashle", "prison-school", "opm", "golden-boy"];
 
 const sportsIds = ["haikyuu", "hajime-no-ippo", "welcome-to-the-ballroom", "cinderella-gray", "blue-box"];
 
@@ -3774,7 +3776,7 @@ const nextSeasonMap = {
   "makeine": { info: "Season 2 in Production" },//apr 25
 
   "chainsaw-man": { info: "Season 2 in Production" },//dec 25
-  "kingdom": { info: "Season 7 in Production" },//dec 25
+  "kingdom": { info: "Season 6 II in Production" },//dec 25
   "gachiakuta": { info: "Season 2 in Production" },//dec 25
 
   "danmachi": { info: "Season 6 in Production" },// fev 26
