@@ -717,7 +717,7 @@ const rawAnimeData = [
     id: "roshidere",
     img: "myranks-images/myranks/roshidere.webp",
     title: "Alya Sometimes Hides Her Feelings in Russian",
-    info: "1 temporada: 12 episódios",
+    info: "(rw) 1 temporada: 12 episódios",
     studio: "Doga Kobo",
     airedSeason: "2024-2027",
     rewatchs: [
@@ -1460,6 +1460,13 @@ const rawAnimeData = [
 // Watching Now — animes em exibição/andamento, agrupados por temporada (season).
 const rawWatchingData = [
   // Non-Seasonal Anime
+  {
+    id: "roshidere",
+    img: "watchingnow-images/watchingnow/roshidere.webp",
+    title: "Alya Sometimes Hides Her Feelings in Russian",
+    info: "(rw) 1 temporada: 12 episódios",
+    seasons: [12],
+  },
   {
     id: "gto",
     img: "watchingnow-images/watchingnow/gto.webp",

@@ -14,9 +14,10 @@ cls
 echo.
 echo ANIME MANAGER
 echo.
-echo 1 - Mover Imagens
-echo 2 - Deletar Imagens
-echo 3 - Sair
+echo 1 - MOVE IMAGES
+echo 2 - DEL IMAGES
+echo 3 - EXIT
+echo 4 - COPY IMAGES
 echo.
 call :ASK "Escolha uma opção:" op
 if "%esc%"=="1" goto MENU
@@ -24,6 +25,7 @@ if "%esc%"=="1" goto MENU
 if "%op%"=="1" goto MOVER
 if "%op%"=="2" goto DELETAR
 if "%op%"=="3" goto SAIR
+if "%op%"=="4" goto COPIAR
 
 call :PAUSA "Opção inválida."
 goto MENU
@@ -102,6 +104,85 @@ if !moved! EQU 0 (
         echo Total Movido: 1 arquivo.
     ) else (
         echo Total Movido: !moved! arquivos.
+    )
+)
+call :PAUSA_MENU_L
+goto MENU
+
+:COPIAR
+cls
+echo.
+echo 1 - Plan to Watch
+echo 2 - Watching Now
+echo 3 - MyRanks
+echo.
+set "origem="
+set "destino="
+set "anime="
+
+call :ASK "Origem:" origem
+if "%esc%"=="1" goto MENU
+if "%origem%"=="1" goto COPIAR_ORIGEM_OK
+if "%origem%"=="2" goto COPIAR_ORIGEM_OK
+if "%origem%"=="3" goto COPIAR_ORIGEM_OK
+call :PAUSA "Origem inválida."
+goto MENU
+
+:COPIAR_ORIGEM_OK
+call :ASK "Destino:" destino
+if "%esc%"=="1" goto MENU
+if "%destino%"=="1" goto COPIAR_DESTINO_OK
+if "%destino%"=="2" goto COPIAR_DESTINO_OK
+if "%destino%"=="3" goto COPIAR_DESTINO_OK
+call :PAUSA "Destino inválido."
+goto MENU
+
+:COPIAR_DESTINO_OK
+if "%origem%"=="%destino%" (
+    call :PAUSA "A origem e o destino não podem ser iguais."
+    goto MENU
+)
+
+call :SET_GROUP "%origem%" origem
+call :SET_GROUP "%destino%" destino
+
+set "cand=%temp%\anime_cand.txt"
+break > "%cand%"
+for %%N in (1 2 3 4) do call :LIST_NAMES "!origem%%N!"
+
+call :ASK "ID ou nome do anime:" anime "%cand%"
+if "%esc%"=="1" goto MENU
+if not defined anime (
+    call :PAUSA "O nome do anime não pode ficar vazio."
+    goto MENU
+)
+
+cls
+echo.
+echo Anime : !origemName!  -^>  !destinoName!
+echo ID    : !anime!
+echo.
+
+set /a copied=0
+
+for %%N in (1 2 3) do (
+    set "src=!origem%%N!"
+    set "dst=!destino%%N!"
+    call :COPY_MATCHING "!src!" "!dst!" "IMAGEM"
+)
+
+set "src=!origem4!"
+set "dst=!destino4!"
+call :COPY_MATCHING "!src!" "!dst!" "BANNER"
+
+if !copied! EQU 0 (
+    echo Nenhum arquivo foi copiado.
+) else (
+    echo.
+    if !copied! EQU 1 (
+        echo Total copiado: 1 arquivo.
+    ) else (
+        echo Total copiado: !copied! arquivos.
     )
 )
 call :PAUSA_MENU_L
@@ -276,6 +357,30 @@ for /f "delims=" %%F in ('dir /b /a-d "%src%\*" 2^>nul') do (
             set /a moved+=1
         ) else (
             echo [X] Erro ao mover: %%F
+        )
+    )
+)
+exit /b
+
+:COPY_MATCHING
+set "src=%~1"
+set "dst=%~2"
+set "label=%~3"
+if not exist "%src%\" exit /b
+if not exist "%dst%\" mkdir "%dst%" >nul 2>&1
+
+for /f "delims=" %%F in ('dir /b /a-d "%src%\*" 2^>nul') do (
+    if /i "%%~nF"=="%anime%" (
+        copy /Y "%src%\%%F" "%dst%\%%F" >nul 2>&1
+        if not errorlevel 1 (
+            if /i "%label%"=="BANNER" (
+                echo [OK] Banner copiado: %%F
+            ) else (
+                echo [OK] Imagem copiada: %%F
+            )
+            set /a copied+=1
+        ) else (
+            echo [X] Erro ao copiar: %%F
         )
     )
 )

@@ -5596,20 +5596,22 @@ h1.title {
   .pause-icon {
     color: #facc15;
     display: inline-block;
-    font-size: 0.85em;
-    vertical-align: 1px;
-    line-height: 1;
+    font-size: inherit; /* mesmo tamanho do texto ao lado, igual o RW */
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: inherit;
     margin-right: 1px;
   }
 
   .rewatch-icon {
     color: #38bdf8;
     display: inline-block;
-    font-size: 0.76em;
+    font-size: inherit; /* mesmo tamanho do texto ao lado ("1 temporada") */
     font-weight: 900;
+    text-transform: uppercase;
     letter-spacing: 0.02em;
-    vertical-align: 1px;
-    line-height: 1;
+    line-height: inherit;
     margin-right: 1px;
   }
 
@@ -15660,5 +15662,48 @@ li.fav-ep-card[style*="--item-hover-color"]:hover {
   .search-result-item {
     will-change: auto !important;
     backface-visibility: visible !important;
+  }
+}
+
+/* ── Watching Now (desktop): o 01, 02, 03... passa a ficar na frente do nome ── */
+@media (min-width: 601px) {
+  /* Remove o número grande do canto direito */
+  ol.ranking.mode-true-characters.category-watching .meta::before {
+    content: none !important;
+  }
+
+  /* Sem a reserva de espaço que existia pro número grande */
+  ol.ranking.mode-true-characters.category-watching .title-row,
+  ol.ranking.mode-true-characters.category-watching .info-row {
+    width: 100% !important;
+    padding-right: 0 !important;
+  }
+
+  /* O clamp de linhas vai pro title-row pra o número e o nome fluírem na mesma linha */
+  ol.ranking.mode-true-characters.category-watching .title-row {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  ol.ranking.mode-true-characters.category-watching .title-anime {
+    display: inline;
+    max-width: 100% !important;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  /* Número herda o tamanho do título (por isso fica proporcional) */
+  ol.ranking.mode-true-characters.category-watching .title-anime::before {
+    content: counter(item, decimal-leading-zero);
+    display: inline-block;
+    margin-right: 0.4em;
+    color: color-mix(in srgb, var(--item-hover-color, #2dd4bf) 78%, #fff);
+    font-weight: 900;
+    font-size: 0.8em;
+    font-variant-numeric: tabular-nums;
+    vertical-align: 0.04em;
   }
 }

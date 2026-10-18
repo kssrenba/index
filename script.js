@@ -4308,7 +4308,10 @@ function getMetaFor(animeId) {
 
     function normalizeTilde(infoStr) {
       if (!infoStr) return infoStr;
-      return infoStr.replace(/\(\s*~{1,3}\s*\)/g, '<span class="pause-icon">⏸</span>');
+      return infoStr
+        .replace(/\(\s*~{1,3}\s*\)/g, '<span class="pause-icon">mw</span>')
+        // "(rw)" vira o "RW" azul (.rewatch-icon), igual o (~) vira o "MW" amarelo (.pause-icon).
+        .replace(/\(\s*rw\s*\)/gi, '<span class="rewatch-icon">rw</span>');
     }
 
 
@@ -5364,8 +5367,8 @@ function getMetaFor(animeId) {
             ${remainingInfo ? `<div class="info-row">
               <p class="info">${remainingInfo}</p>
             </div>` : ''}
-            ${progressHtml}
             ${stripHtml}
+            ${progressHtml}
           </div>
         </li>
       `;
@@ -6339,7 +6342,7 @@ function getMetaFor(animeId) {
         const isekaiSet = new Set(isekaiIds);
         return animeData.filter(a => isekaiSet.has(a.id) && !planIds.has(a.id));
       } else if (mode === 'incomplete') {
-        return animeData.filter(anime => anime.info && anime.info.includes('⏸') && !planIds.has(anime.id));
+        return animeData.filter(anime => anime.info && (anime.info.includes('pause-icon') || anime.info.includes('⏸')) && !planIds.has(anime.id));
       } else if (mode === 'plan') {
         return planToWatchData;
       } else if (mode === 'watching') {
@@ -9051,7 +9054,7 @@ function getMetaFor(animeId) {
         '/sport':       { filter: entry => isSubCategoryEntry(entry, 'sports'),  rotateWatching: false },
         '/comedy':      { filter: entry => isSubCategoryEntry(entry, 'comedy'),  rotateWatching: false },
         '/mecha':       { filter: entry => isSubCategoryEntry(entry, 'mecha'),   rotateWatching: false },
-        '/incomplete':  { filter: entry => entry.tag === null && !!entry.anime.info && entry.anime.info.includes('⏸') && !planIds.has(entry.anime.id), rotateWatching: false },
+        '/incomplete':  { filter: entry => entry.tag === null && !!entry.anime.info && (entry.anime.info.includes('pause-icon') || entry.anime.info.includes('⏸')) && !planIds.has(entry.anime.id), rotateWatching: false },
         // Mesma regra da lista Announced Sequels: se o anime já está no All
         // Ranking, essa é a entrada canônica — a cópia do Watching Now não
         // aparece de novo (casos como Kingdom e DanMachi).
