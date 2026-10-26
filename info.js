@@ -36,12 +36,14 @@ const rawAnimeData = [
         malName: "Code Geass: Hangyaku no Lelouch R2",
       },
 
-      { spacer: true, text: "Filler Cannon Sequel" },
-      { label: "Akito the Exiled 1 - The Wyvern Arrives", episodes: "51m", malName: "Code Geass: Boukoku no Akito 1 - Yokuryuu wa Maiorita", unwatched: true },
-      { label: "Akito the Exiled 2 - The Wyvern Divided", episodes: "59m", malName: "Code Geass: Boukoku no Akito 2 - Hikisakareshi Yokuryuu", unwatched: true },
-      { label: "Akito the Exiled 3 - The Brightness Falls", episodes: "59m", malName: "Code Geass: Boukoku no Akito 3 - Kagayaku Mono Ten yori Otsu", unwatched: true },
-      { label: "Akito the Exiled 4 - Memories of Hatred", episodes: "59m", malName: "Code Geass: Boukoku no Akito 4 - Nikushimi no Kioku kara", unwatched: true },
-      { label: "Akito the Exiled 5 - To Beloved Ones", episodes: "59m", malName: "Code Geass: Boukoku no Akito 5 - Itoshiki Mono-tachi e", unwatched: true },
+      { spacer: true, text: "Akito the Filled", watched: true},
+      { label: "Movie 1: Akito the Exiled - The Wyvern Arrives", episodes: "51m", malName: "Code Geass: Boukoku no Akito 1 - Yokuryuu wa Maiorita", note: 6 },
+      { label: "Movie 2: Akito the Exiled - The Wyvern Divided", episodes: "59m", malName: "Code Geass: Boukoku no Akito 2 - Hikisakareshi Yokuryuu", unwatched: true },
+      { label: "Movie 3: Akito the Exiled - The Brightness Falls", episodes: "59m", malName: "Code Geass: Boukoku no Akito 3 - Kagayaku Mono Ten yori Otsu", unwatched: true },
+      { label: "Movie 4: Akito the Exiled - Memories of Hatred", episodes: "59m", malName: "Code Geass: Boukoku no Akito 4 - Nikushimi no Kioku kara", unwatched: true },
+      { label: "Movie 5: Akito the Exiled - To Beloved Ones", episodes: "59m", malName: "Code Geass: Boukoku no Akito 5 - Itoshiki Mono-tachi e", unwatched: true },
+
+      { spacer: true, text: "Alternate Time Filler"},
       { label: "Movie I - Initiation", episodes: "2h14m", malName: "Code Geass: Hangyaku no Lelouch I - Koudou", unwatched: true },
       { label: "Movie II - Transgression", episodes: "2h12m", malName: "Code Geass: Hangyaku no Lelouch I - Handou", unwatched: true },
       { label: "Movie III - Glorification", episodes: "2h20m", malName: "Code Geass: Hangyaku no Lelouch I - Oudou", unwatched: true },
@@ -723,7 +725,7 @@ const rawAnimeData = [
     rewatchs: [
       { season: 'S1', name: '1 TIME' },
     ],
-    mal: [{ label: "1ª temporada", episodes: 12, note: 7, malName: "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san" }],
+    mal: [{ label: "1 temporada", episodes: 12, note: 7, malName: "Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san" }],
   },
   {
     id: "mashle",
@@ -1246,7 +1248,7 @@ const rawAnimeData = [
     studio: "APPP",
     airedSeason: "1995-1996",
     rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 6, malName: "Golden Boy", unwatched: true }],
+    mal: [{ label: "1 temporada", episodes: 6, note: 6, malName: "Golden Boy"}],
   },
   {
     id: "blue-period",
@@ -1466,25 +1468,11 @@ const rawWatchingData = [
     title: "Alya Sometimes Hides Her Feelings in Russian",
     info: "(rw) 1 temporada: 12 episódios",
     seasons: [12],
+
+    url: "https://www.anime-planet.com/anime/alya-sometimes-hides-her-feelings-in-russian",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/G1XHJV0XM/alya-sometimes-hides-her-feelings-in-russian",
+    malUrl: "https://myanimelist.net/anime/54744/Tokidoki_Bosotto_Russia-go_de_Dereru_Tonari_no_Alya-san",
   },
-  {
-    id: "gto",
-    img: "watchingnow-images/watchingnow/gto.webp",
-    title: "Great Teacher Onizuka",
-    info: "43 episódios",
-    studio: "Studio Pierrot",
-    airedSeason: "1999-2000",
-
-    season: null,
-    seasons: [43],
-
-    url: "https://www.anime-planet.com/anime/great-teacher-onizuka",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GRQ4QG4GY/gto---the-animation",
-    malUrl: "https://myanimelist.net/anime/245/Great_Teacher_Onizuka",
-
-    mal: [{ label: "1 temporada", episodes: 43, malName: "Great Teacher Onizuka", unwatched: true }],
-  },
-  
   {
     id: "no-game-no-life",
     img: "watchingnow-images/watchingnow/no-game-no-life.webp",
@@ -1519,6 +1507,44 @@ const rawWatchingData = [
     mal: [
       { label: "1 temporada", episodes: 24, malName: "Tu Bian Yingxiong X", unwatched: true },
     ],
+  },
+
+  {
+    id: "gintama", //start 26/10/2026
+    img: "watchingnow-images/watchingnow/gintama.webp",
+    title: "Gintama",
+    info: "8 temporadas: 367 episódios <br>Movie: 1h44m",
+    studios: [
+      { season: "S1-S3", name: "Sunrise" },
+      { season: "S4-S8", name: "Bandai Namco Pictures" },
+    ],
+    airedSeason: "2006-2021",
+
+    season: null,
+    seasons: [201, 51, 13, 51, 12, 13, 12, 14],
+
+    url: "https://www.anime-planet.com/anime/gintama",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYQ4MKDZ6/gintama",
+    malUrl: "https://myanimelist.net/anime/918/Gintama",
+  
+    mal: [
+      { label: "1ª temporada", episodes: 201, malName: "Gintama", unwatched: true },
+      { label: "2ª temporada I", episodes: 51, malName: "Gintama'", unwatched: true },
+      { label: "2ª temporada II", episodes: 13, malName: "Gintama': Enchousen", unwatched: true },
+      { label: "3ª temporada", episodes: 51, malName: "Gintama°", unwatched: true },
+      { label: "4ª temporada I", episodes: 12, malName: "Gintama.", unwatched: true },
+      { label: "4ª temporada II", episodes: 13, malName: "Gintama. Porori-hen", unwatched: true },
+      { label: "4ª temporada III", episodes: 12, malName: "Gintama. Shirogane no Tamashii-hen", unwatched: true },
+      { label: "4ª temporada IV", episodes: 14, malName: "Gintama. Shirogane no Tamashii-hen - Kouhan-sen", unwatched: true },
+      { label: "Special: 2 episódios", episodes: '48m', malName: "Gintama: The Semi-Final", unwatched: true },
+      { label: "The Very Final Movie", episodes: '1h44m', malName: "Gintama: The Final", unwatched: true },
+    ],
+
+    // Poucos fillers; as listas divergem em alguns (ex.: ep. 189). Numeração corrida (1-367).
+    fillers: {
+      of: 367,
+      eps: ["1-2", "50", "57", "75", "106", "114", "124-125", "135", "137", "150", "155", "164", "166", "171", "173-174", "176", "185", "189", "209", "252"],
+    },
   },
 
   // Fall 2026
@@ -1946,6 +1972,31 @@ const rawReleaseCalendarData = [
 // Plan to Watch — fila de animes a assistir, em ordem de prioridade.
 const rawPlanToWatchData = [
   {
+    id: "dragon-ball",
+    img: "plantowatch-images/plantowatch/dragon-ball.webp",
+    title: "Dragon Ball",
+    info: "3 temporadas: ≈312 episódios",
+    studio: "Toei Animation",
+    airedSeason: "1986-2026",
+    url: "https://www.anime-planet.com/anime/dragon-ball",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/G8DHV7W21/dragon-ball",
+    malUrl: "https://myanimelist.net/anime/223/Dragon_Ball",
+    // Fillers só da 1ª temporada (Dragon Ball original). O Kai praticamente não tem.
+    fillers: {
+      note: "1ª temporada",
+      of: 153,
+      eps: ["30-33", "45", "79-83", "127-132", "149-153"],
+    },
+
+    mal: [
+      { label: "1ª temporada", episodes: 153, malName: "Dragon Ball", unwatched: true },
+      { label: "2ª temporada I: DBZ Kai", episodes: 97, malName: "Dragon Ball Kai", unwatched: true },
+      { label: "TV Special: Ep. 98: DBZ Kai", episodes: "23m", malName: "Dragon Ball Kai: Mirai ni Heiwa wo! Goku no Tamashii yo Eien ni", unwatched: true },
+      { label: "2ª temporada II: DBZ Kai", episodes: 61, malName: "Dragon Ball Kai (2014): The Final Chapters", unwatched: true },
+      { label: "3ª temporada: DBS Beerus", episodes: "", malName: "Dragon Ball Super: Beerus", unwatched: true },
+    ],
+  },
+  {
     id: "sbr",
     img: "plantowatch-images/plantowatch/sbr.webp",
     title: "Steel Ball Run: JoJo's Bizarre Adventure",
@@ -2030,11 +2081,18 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/bleach",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/269/Bleach",
+    // Aba "FILLER EPISODES" do posterlightbox (só Plan to Watch). Lista de episódios
+    // ou intervalos ("64-108"). O total é somado automaticamente; "of" é opcional
+    // (total de episódios da obra, mostrado como "163 / 366 EPS").
+    fillers: {
+      of: 366,
+      eps: ["33", "50", "64-108", "128-137", "147-149", "168-189", "204-205", "213-214", "228-266", "287", "298-299", "303-305", "311-341", "355"],
+    },
 
     mal: [
       { label: "1ª temporada", episodes: 366, malName: "Bleach", unwatched: true },
 
-      { spacer: true, text: "Bleach: Thousand-Year Blood War" },
+      { text: "Bleach: Thousand-Year Blood War" },
       { label: "2ª temporada", episodes: 13, malName: "Bleach: Sennen Kessen-hen", unwatched: true },
       { label: "3ª temporada: The Separation", episodes: 13, malName: "Bleach: Sennen Kessen-hen - Ketsubetsu-tan", unwatched: true },
       { label: "4ª temporada: The Conflict", episodes: 14, malName: "Bleach: Sennen Kessen-hen - Soukoku-tan", unwatched: true },
@@ -2474,20 +2532,6 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/the-tunnel-to-summer-the-exit-of-goodbyes",
     crunchyroll: "",
     malUrl: "https://myanimelist.net/anime/50593/Natsu_e_no_Tunnel_Sayonara_no_Deguchi",
-  },
-  {
-    id: "gintama",
-    img: "plantowatch-images/plantowatch/gintama.webp",
-    title: "Gintama",
-    info: "8 temporadas: 367 episódios <br>Movie: 1h44m",
-    studios: [
-      { season: "S1-S3", name: "Sunrise" },
-      { season: "S4-S8", name: "Bandai Namco Pictures" },
-    ],
-    airedSeason: "2006-2021",
-    url: "https://www.anime-planet.com/anime/gintama",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/GYQ4MKDZ6/gintama",
-    malUrl: "https://myanimelist.net/anime/918/Gintama",
   },
   {
     id: "dororo",
@@ -3457,6 +3501,12 @@ const trueCharactersData = [
     info: "Attack on Titan",
   },
   {
+    id: "denji",
+    img: "other-images/truecharacters/denji.webp",
+    title: "Denji",
+    info: "Chainsaw Man",
+  },
+  {
     id: "killua",
     img: "other-images/truecharacters/killua.webp",
     title: "Killua Zoldyck",
@@ -3571,6 +3621,12 @@ const trueCharactersData = [
     info: "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
   },
   {
+    id: "reiko",
+    img: "other-images/truecharacters/reiko.webp",
+    title: "Reiko Terayama",
+    info: "Golden Boy",
+  },
+  {
     id: "rebecca",
     img: "other-images/truecharacters/rebecca.webp",
     title: "Rebecca",
@@ -3601,6 +3657,12 @@ const trueCharactersData = [
     info: "Dr. Stone",
   },
   {
+    id: "mai",
+    img: "other-images/truecharacters/mai.webp",
+    title: "Mai Sakurajima",
+    info: "Rascal Does Not Dream of Bunny Girl Senpai",
+  },
+  {
     id: "hana",
     info: "Prison School",
     img: "other-images/truecharacters/hana.webp",
@@ -3619,30 +3681,6 @@ const trueCharactersData = [
     info: "Haikyuu!!",
   },
   {
-    id: "wang-jian",
-    img: "other-images/truecharacters/wang-jian.webp",
-    title: "Wang Jian (Ou Sen)",
-    info: "Kingdom",
-  },
-  {
-    id: "tsukasa",
-    img: "other-images/truecharacters/tsukasa.webp",
-    title: "Tsukasa Shishio",
-    info: "Dr. Stone",
-  },
-  {
-    id: "mai",
-    img: "other-images/truecharacters/mai.webp",
-    title: "Mai Sakurajima",
-    info: "Rascal Does Not Dream of Bunny Girl Senpai",
-  },
-  {
-    id: "ai",
-    img: "other-images/truecharacters/ai.webp",
-    title: "Ai Hoshino",
-    info: "[Oshi no Ko]",
-  },
-  {
     id: "futaba",
     img: "other-images/truecharacters/futaba.webp",
     title: "Rio Futuba",
@@ -3655,28 +3693,16 @@ const trueCharactersData = [
     info: "The Eminence in Shadow",
   },
   {
-    id: "yuki",
-    img: "other-images/truecharacters/yuki.webp",
-    title: "Yuki Suou",
-    info: "Alya Sometimes Hides Her Feelings in Russian",
+    id: "tsukasa",
+    img: "other-images/truecharacters/tsukasa.webp",
+    title: "Tsukasa Shishio",
+    info: "Dr. Stone",
   },
   {
-    id: "sakuta",
-    img: "other-images/truecharacters/sakuta.webp",
-    title: "Sakuta Azusagawa",
-    info: "Rascal Does Not Dream of Bunny Girl Senpai",
-  },
-  {
-    id: "mahito",
-    img: "other-images/truecharacters/mahito.webp",
-    title: "Mahito",
-    info: "Jujutsu Kaisen",
-  },
-  {
-    id: "ichinose",
-    img: "other-images/truecharacters/ichinose.webp",
-    title: "Honami Ichinose",
-    info: "Classroom of the Elite",
+    id: "ai",
+    img: "other-images/truecharacters/ai.webp",
+    title: "Ai Hoshino",
+    info: "[Oshi no Ko]",
   },
   {
     id: "shizuku",
@@ -3684,6 +3710,25 @@ const trueCharactersData = [
     title: "Shizuku Murasaki",
     info: "Hunter x Hunter",
   },
+  {
+    id: "reze",
+    img: "other-images/truecharacters/reze.webp",
+    title: "Reze",
+    info: "Chainsaw Man",
+  },
+  {
+    id: "wajima",
+    img: "other-images/truecharacters/wajima.webp",
+    title: "Ouga Wajima",
+    info: "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+  },
+  {
+    id: "sakuta",
+    img: "other-images/truecharacters/sakuta.webp",
+    title: "Sakuta Azusagawa",
+    info: "Rascal Does Not Dream of Bunny Girl Senpai",
+  },
+
 ];
 
 // Sub-categorias — ids de animeData usados para os ranks temáticos

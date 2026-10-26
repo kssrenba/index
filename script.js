@@ -1658,6 +1658,20 @@ function getMetaFor(animeId) {
         // só os botões acima.
         let entries = item && Array.isArray(item.mal) ? item.mal : null;
 
+        // Watching Now: se a própria entrada do rawWatchingData tiver um
+        // "mal" preenchido, ele manda — tanto sobre o "mal" do All Animes
+        // quanto sobre o padrão montado a partir de "seasons" (fallback
+        // mais abaixo). O "seasons" continua sendo usado só pra barra de
+        // progresso.
+        let usingWatchingMal = false;
+        if (isWatchingNow && !isPlanToWatch && typeof watchingData !== 'undefined') {
+          const ownWatchItem = watchingData.find(a => a.id === animeId);
+          if (ownWatchItem && Array.isArray(ownWatchItem.mal) && ownWatchItem.mal.length) {
+            entries = ownWatchItem.mal;
+            usingWatchingMal = true;
+          }
+        }
+
         // No rawPlanToWatchData, o campo "mal" usa exatamente o mesmo
         // formato do rawAnimeData, mas o site força TODAS as entradas
         // para "unwatched". Assim não é necessário repetir
@@ -1706,18 +1720,37 @@ function getMetaFor(animeId) {
         // nota).
         if (isWatchingNow && !isPlanToWatch && typeof watchingData !== 'undefined') {
           const watchItem = watchingData.find(a => a.id === animeId);
-          if (watchItem) {
+          // Rewatch ("(rw)" no info — já convertido em .rewatch-icon por normalizeTilde — ou "rewatch: true"): o anime já foi visto
+          // e avaliado, então as notas ficam sempre visíveis, sem depender
+          // do progresso da barra +/-.
+          const isRewatchItem = !!watchItem && (watchItem.rewatch === true || /^\s*(?:\(\s*rw\s*\)|<span[^>]*rewatch-icon)/i.test(String(watchItem.info || '')));
+          if (watchItem && !isRewatchItem) {
             const baseProgress = parseWatchProgress(watchItem);
             const baseCur = baseProgress ? baseProgress.cur : 0;
             const override = getWatchProgressOverride(animeId);
             const cur = override !== null ? override : baseCur;
-            const boundaries = computeWatchingEntryBoundaries(watchItem);
+            // Quando o "mal" vem do próprio Watching Now, os limites saem
+            // dele: soma acumulada só das linhas com nº de episódios
+            // (Specials/Movies com duração tipo "48m" ficam sem limite e
+            // não mudam com o progresso).
+            let boundaries;
+            if (usingWatchingMal) {
+              let acc = 0;
+              boundaries = entries.filter(entry => !isMalDividerEntry(entry)).map(entry => {
+                if (typeof entry.episodes !== 'number') return null;
+                acc += entry.episodes;
+                return acc;
+              });
+            } else {
+              boundaries = computeWatchingEntryBoundaries(watchItem);
+            }
             const nonSpacerCount = entries.filter(entry => !isMalDividerEntry(entry)).length;
             if (boundaries && boundaries.length === nonSpacerCount && Number.isFinite(cur)) {
               let bIdx = 0;
               entries = entries.map(entry => {
                 if (isMalDividerEntry(entry)) return entry;
                 const boundary = boundaries[bIdx++];
+                if (boundary === null) return entry;
                 const reached = cur >= boundary;
                 if (!reached) {
                   // Progresso ainda não chegou até aqui: força
@@ -1781,6 +1814,8 @@ function getMetaFor(animeId) {
           }
           const seasonLabelInner = escapeHtml(entry.label || '')
             .replace(/\b([IVXLCDM]+)\b/g, '<span class="rank-mal-roman">$1</span>')
+            .replace(/(\d+)ª/g, '<span class="rank-mal-ord">$1<span class="rank-mal-ord-mark">ª</span></span>')
+            .replace(/\btemporada\b/g, '<span class="rank-mal-word">temporada</span>')
             // Labels podem ter um "\n" manual (ver dados do anime) pra
             // forçar a quebra de linha num ponto específico do nome, em
             // vez de deixar o navegador decidir onde quebrar.
@@ -2699,6 +2734,44 @@ function getMetaFor(animeId) {
         resolveBannerUrl(candidates, 'high').then(show);
       }
 
+      // ── Aba "FILLER EPISODES" (Plan to Watch) ──
+      // Lê o campo opcional "fillers" ({ of, eps: ["33", "64-108", ...] }) da
+      // entrada do anime em info.js. O elemento é criado sob demanda logo
+      // abaixo do bloco do MyAnimeList e fica vazio (escondido) nos demais.
+      let lightboxFillers = document.getElementById('posterLightboxFillers');
+      function ensureFillersEl() {
+        if (lightboxFillers && lightboxFillers.isConnected) return lightboxFillers;
+        if (!lightboxMal || !lightboxMal.parentNode) return null;
+        lightboxFillers = document.createElement('div');
+        lightboxFillers.id = 'posterLightboxFillers';
+        lightboxFillers.className = 'poster-lightbox-fillers';
+        lightboxMal.parentNode.insertBefore(lightboxFillers, lightboxMal.nextSibling);
+        return lightboxFillers;
+      }
+      function renderFillers(animeId, enabled) {
+        const el = ensureFillersEl();
+        if (!el) return;
+        const entry = enabled ? planToWatchData.find(a => a.id === animeId) : null;
+        const fillers = entry && entry.fillers;
+        const list = fillers && Array.isArray(fillers.eps) ? fillers.eps : [];
+        if (!list.length) { el.innerHTML = ''; return; }
+        let total = 0;
+        const chips = list.map(raw => {
+          const parts = String(raw).split(/\s*[-–]\s*/).map(n => parseInt(n, 10));
+          const from = parts[0];
+          const to = parts.length > 1 && Number.isFinite(parts[1]) ? parts[1] : from;
+          if (Number.isFinite(from) && Number.isFinite(to)) total += Math.abs(to - from) + 1;
+          const text = from === to || !Number.isFinite(to) ? String(from) : `${from}–${to}`;
+          return `<span class="poster-lightbox-fillers-chip">${escapeHtml(text)}</span>`;
+        }).join('');
+        const baseCount = fillers.of ? `${total} / ${fillers.of} EPS` : `${total} EPS`;
+        const countText = fillers.note ? `${String(fillers.note).toUpperCase()} · ${baseCount}` : baseCount;
+        el.innerHTML = `<div class="poster-lightbox-fillers-head">`
+          + `<span class="poster-lightbox-fillers-label">FILLER EPISODES</span>`
+          + `<span class="poster-lightbox-fillers-count">${escapeHtml(countText)}</span>`
+          + `</div><div class="poster-lightbox-fillers-list">${chips}</div>`;
+      }
+
       function showItem(item) {
         if (!item) return;
         const posterWrap = item.querySelector('.poster-wrap');
@@ -3318,6 +3391,7 @@ function getMetaFor(animeId) {
         if (isUpcoming) renderUpcomingMeta(item.id, watchNowMalUrl);
         else renderMeta(item.id, isRichPanel, watchNowMalUrl, isWatchingNow || isPlanToWatch);
         renderMalScores(item.id, isRichPanel, animePlanetUrl, crunchyrollUrl, watchNowMalUrl, netflixUrl, isPlanToWatch);
+        renderFillers(item.id, isPlanToWatch);
       }
 
       // ── Troca de item dentro do lightbox: 100% instantâneo ──
@@ -3764,6 +3838,9 @@ function getMetaFor(animeId) {
       });
 
       if (lightboxList) {
+        const HOVER_RANKING_MODES = new Set(['all', 'romance', 'isekai', 'sports', 'mecha', 'comedy']);
+        const HOVER_PREVIEW_TAG_SELECTOR = '.list-tag[data-mode="watching"], .list-tag[data-mode="announced"], '
+          + ['all', 'romance', 'isekai', 'sports', 'mecha', 'comedy'].map(m => `.list-tag[data-mode="${m}"]`).join(', ');
         function getCategoryTagPosterSrc(mode, tag = null) {
           if (!currentItem) return '';
           const cardImg = currentItem.querySelector('.poster-wrap img.thumb');
@@ -3793,15 +3870,31 @@ function getMetaFor(animeId) {
             return originalSrc && nsKey ? sequelsThumbSrc(originalSrc, nsKey) : '';
           }
 
+          // Tags de ranking (All Animes, Romance, Isekai...): mostram o pôster
+          // da lista All Animes, útil quando o lightbox foi aberto por
+          // Watching Now / Announced Sequels e o pôster atual é outro.
+          if (HOVER_RANKING_MODES.has(mode)) {
+            const allEntry = animeData.find(a => a.id === currentItem.id)
+              || animeData.find(a => normalizeAnimeLookupTitle(a.title) === normalizeAnimeLookupTitle(itemTitle));
+            return allEntry?.img || '';
+          }
+
           return '';
         }
 
         function previewCategoryTagPoster(tag) {
           const mode = tag?.getAttribute('data-mode');
-          if (mode !== 'watching' && mode !== 'announced') return;
+          if (mode !== 'watching' && mode !== 'announced' && !HOVER_RANKING_MODES.has(mode)) return;
           const item = currentItem;
           const src = getCategoryTagPosterSrc(mode, tag);
-          if (!item || !src || !lightbox.classList.contains('open')) return;
+          if (!item || !lightbox.classList.contains('open')) return;
+          // Sem pôster próprio ou igual ao que já está na tela: garante que
+          // uma prévia anterior (ex.: Announced Sequels) seja desfeita.
+          const shownSrc = (sequelPosterActive && sequelPosterAltSrc) ? sequelPosterAltSrc : sequelPosterDefaultSrc;
+          if (!src || src === shownSrc) {
+            restorePosterAfterCategoryTagPreview();
+            return;
+          }
 
           categoryTagPreviewActive = true;
           categoryTagPreviewMode = mode;
@@ -3838,19 +3931,25 @@ function getMetaFor(animeId) {
         // continua intacta; eventos de toque não simulam hover no mobile.
         lightboxList.addEventListener('pointerover', function(e) {
           if (e.pointerType === 'touch') return;
-          const tag = e.target.closest('.list-tag[data-mode="watching"], .list-tag[data-mode="announced"]');
+          const tag = e.target.closest(HOVER_PREVIEW_TAG_SELECTOR);
           if (!tag || !lightboxList.contains(tag) || (e.relatedTarget && tag.contains(e.relatedTarget))) return;
           previewCategoryTagPoster(tag);
         });
         lightboxList.addEventListener('pointerout', function(e) {
           if (e.pointerType === 'touch') return;
-          const tag = e.target.closest('.list-tag[data-mode="watching"], .list-tag[data-mode="announced"]');
+          const tag = e.target.closest(HOVER_PREVIEW_TAG_SELECTOR);
           if (!tag || !lightboxList.contains(tag) || (e.relatedTarget && tag.contains(e.relatedTarget))) return;
-          const nextCategoryTag = e.relatedTarget && e.relatedTarget.closest
-            ? e.relatedTarget.closest('.list-tag[data-mode="watching"], .list-tag[data-mode="announced"]')
+          // Indo direto para outra tag com prévia, o pointerover dela decide
+          // (mostra o novo pôster ou restaura), sem piscar.
+          const nextTag = e.relatedTarget && e.relatedTarget.closest
+            ? e.relatedTarget.closest(HOVER_PREVIEW_TAG_SELECTOR)
             : null;
-          if (nextCategoryTag && lightboxList.contains(nextCategoryTag)
-            && nextCategoryTag.dataset.mode === tag.dataset.mode) return;
+          if (nextTag && lightboxList.contains(nextTag)) return;
+          restorePosterAfterCategoryTagPreview();
+        });
+        // Saiu da área das tags (ou foi para outra tag sem prévia): volta ao pôster.
+        lightboxList.addEventListener('pointerleave', function(e) {
+          if (e.pointerType === 'touch') return;
           restorePosterAfterCategoryTagPreview();
         });
 
