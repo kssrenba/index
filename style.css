@@ -15823,3 +15823,915 @@ li.fav-ep-card[style*="--item-hover-color"]:hover {
     color: var(--lb-accent, #f59e0b);
   }
 }
+
+
+/* Filler Episodes com a mesma pegada das temporadas "unwatched":
+   texto discreto (25%), itálico e sem negrito; o laranja só aparece no hover. */
+.poster-lightbox-fillers-label,
+.poster-lightbox-fillers-count {
+  color: rgba(255,255,255,0.25);
+}
+.poster-lightbox-fillers-label {
+  font-weight: 700;
+}
+.poster-lightbox-fillers-chip {
+  color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.04);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ── Mini player de sound effects do posterlightbox ──
+   O antigo botão quadrado vira um player horizontal compacto, com capa,
+   título, tipo de faixa, progresso e play/pause. */
+.poster-lightbox .poster-lightbox-sound {
+  position: fixed !important;
+  top: auto !important;
+  right: clamp(24px, 6vw, 110px) !important;
+  bottom: 24px !important;
+  left: auto !important;
+  z-index: 20 !important;
+  display: none;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 11px !important;
+  width: 274px !important;
+  height: 72px !important;
+  min-width: 0 !important;
+  padding: 9px 12px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255,255,255,0.16) !important;
+  border-radius: 12px !important;
+  background: rgba(7,8,10,0.88) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.035) !important;
+  backdrop-filter: blur(16px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(125%) !important;
+  text-align: left !important;
+  cursor: pointer;
+  transform: none !important;
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+.poster-lightbox .poster-lightbox-sound.visible { display: flex !important; }
+.poster-lightbox .poster-lightbox-sound:hover,
+.poster-lightbox .poster-lightbox-sound:focus-visible {
+  border-color: rgba(255,255,255,0.24) !important;
+  background: rgba(12,13,16,0.94) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  transform: none !important;
+}
+
+.poster-lightbox-sound-art-wrap {
+  display: block;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #30343b, #121418);
+  box-shadow: 0 1px 5px rgba(0,0,0,0.32);
+}
+.poster-lightbox-sound-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.poster-lightbox-sound-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding-bottom: 3px;
+}
+.poster-lightbox-sound-title {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(255,255,255,0.96);
+  font-family: var(--font-title, Inter, sans-serif);
+  font-size: 12.5px;
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.poster-lightbox-sound-subtitle {
+  display: block;
+  overflow: hidden;
+  color: rgba(255,255,255,0.53);
+  font-family: Inter, sans-serif;
+  font-size: 9px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: 0.095em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.poster-lightbox-sound-control {
+  display: flex;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-left: 1px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  color: #111318;
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+.poster-lightbox-sound:hover .poster-lightbox-sound-control { transform: scale(1.045); }
+.poster-lightbox-sound-control svg {
+  display: block;
+  width: 17px !important;
+  height: 17px !important;
+  fill: currentColor !important;
+  stroke: none !important;
+  color: #111318 !important;
+}
+.poster-lightbox-sound-progress {
+  position: absolute;
+  left: 67px;
+  right: 58px;
+  bottom: 8px;
+  display: block;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.13);
+  pointer-events: none;
+}
+.poster-lightbox-sound-progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: rgba(255,255,255,0.86);
+  transition: width 0.12s linear;
+}
+
+/* O calendário não precisa mais abrir espaço para um ícone de som na barra superior. */
+@media (min-width: 761px) {
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 194px !important; }
+  .poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 246px !important; }
+}
+@media (max-width: 760px) {
+  .poster-lightbox .poster-lightbox-sound {
+    top: 60px !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 12px !important;
+    width: min(274px, calc(100vw - 24px)) !important;
+    height: 66px !important;
+    padding: 8px 11px !important;
+    gap: 10px !important;
+  }
+  .poster-lightbox-sound-art-wrap { flex-basis: 40px; width: 40px; height: 40px; }
+  .poster-lightbox-sound-control { flex-basis: 32px; width: 32px; height: 32px; }
+  .poster-lightbox-sound-progress { left: 61px; right: 54px; bottom: 7px; }
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 110px !important; }
+  .poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 158px !important; }
+}
+
+/* Ajuste equivalente para o layout simples, que usa posições de toolbar diferentes. */
+@media (min-width: 761px) {
+  .poster-lightbox.simple-mode .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 168px !important; }
+  .poster-lightbox.simple-mode:has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 216px !important; }
+}
+@media (max-width: 760px) {
+  .poster-lightbox.simple-mode .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 110px !important; }
+  .poster-lightbox.simple-mode:has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) { right: 158px !important; }
+}
+
+
+/* O mini player fica fora da barra superior. Ele não participa dos cálculos
+   dos botões japones/hide-poster nem desloca os controles de calendário. */
+@media (min-width: 761px) {
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound,
+  .poster-lightbox.poster-lightbox:has(.poster-lightbox-randomizer.visible) .poster-lightbox-sound,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-sound,
+  .poster-lightbox.poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-sound {
+    top: auto !important;
+    right: clamp(24px, 6vw, 110px) !important;
+    bottom: 24px !important;
+    left: auto !important;
+  }
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) {
+    right: 194px !important;
+  }
+  .poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-calendar:has(+ .poster-lightbox-sound.visible) {
+    right: 246px !important;
+  }
+}
+@media (max-width: 760px) {
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound,
+  .poster-lightbox.poster-lightbox:has(.poster-lightbox-randomizer.visible) .poster-lightbox-sound,
+  .poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-sound,
+  .poster-lightbox.poster-lightbox:not(.simple-mode):has(.poster-lightbox-randomizer.visible) .poster-lightbox-sound,
+  .poster-lightbox.poster-lightbox.simple-mode .poster-lightbox-sound,
+  .poster-lightbox.poster-lightbox.simple-mode:has(.poster-lightbox-randomizer.visible) .poster-lightbox-sound {
+    top: 60px !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 12px !important;
+    width: min(274px, calc(100vw - 24px)) !important;
+    height: 66px !important;
+    padding: 8px 11px !important;
+    gap: 10px !important;
+  }
+  .poster-lightbox-sound-art-wrap { flex-basis: 40px; width: 40px; height: 40px; }
+  .poster-lightbox-sound-control { flex-basis: 32px; width: 32px; height: 32px; }
+  .poster-lightbox-sound-progress { left: 61px; right: 54px; bottom: 7px; }
+}
+
+
+/* Refinamentos do mini player: alinhamento com o painel, capa vertical
+   esticada no quadrado e botão de reprodução com acabamento mais definido. */
+@media (min-width: 761px) {
+  .poster-lightbox .poster-lightbox-sound {
+    right: var(--poster-sound-player-right, clamp(24px, 6vw, 110px)) !important;
+  }
+}
+
+.poster-lightbox-sound-art {
+  object-fit: fill !important;
+  object-position: center !important;
+}
+
+.poster-lightbox-sound-control {
+  flex: 0 0 38px !important;
+  width: 38px !important;
+  height: 38px !important;
+  margin-left: 2px !important;
+  border: 1px solid rgba(255,255,255,0.92) !important;
+  border-radius: 50% !important;
+  background: linear-gradient(145deg, #ffffff 0%, #e7ebf1 100%) !important;
+  color: #111318 !important;
+  box-shadow:
+    0 3px 11px rgba(0,0,0,0.32),
+    inset 0 1px 1px rgba(255,255,255,0.95) !important;
+  transition:
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.18s ease,
+    filter 0.18s ease !important;
+}
+
+.poster-lightbox-sound:hover .poster-lightbox-sound-control {
+  transform: scale(1.08) !important;
+  filter: brightness(1.035);
+  box-shadow:
+    0 5px 15px rgba(0,0,0,0.38),
+    0 0 0 3px rgba(255,255,255,0.075),
+    inset 0 1px 1px rgba(255,255,255,0.95) !important;
+}
+
+.poster-lightbox-sound:active .poster-lightbox-sound-control {
+  transform: scale(0.94) !important;
+  filter: brightness(0.97);
+}
+
+.poster-lightbox-sound-control svg {
+  width: 17px !important;
+  height: 17px !important;
+  color: #111318 !important;
+}
+
+@media (max-width: 760px) {
+  .poster-lightbox-sound-control {
+    flex-basis: 34px !important;
+    width: 34px !important;
+    height: 34px !important;
+  }
+}
+
+
+/* Correção efetiva final do mini player: o right é calculado em JS com base
+   na borda final dos blocos visíveis; o JS aplica esse valor inline. */
+.poster-lightbox-sound-art {
+  object-fit: fill !important;
+  object-position: center !important;
+  image-rendering: auto;
+}
+
+.poster-lightbox-sound-control {
+  flex: 0 0 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  margin-left: 2px !important;
+  border: 1px solid rgba(255,255,255,0.96) !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle at 32% 24%, #ffffff 0%, #f3f5f8 48%, #dce1e9 100%) !important;
+  color: #111318 !important;
+  box-shadow: 0 4px 13px rgba(0,0,0,0.38),
+              0 0 0 1px rgba(255,255,255,0.08),
+              inset 0 1px 1px rgba(255,255,255,0.98) !important;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.18s ease, filter 0.18s ease !important;
+}
+
+.poster-lightbox-sound:hover .poster-lightbox-sound-control {
+  transform: scale(1.08) !important;
+  filter: brightness(1.035);
+  box-shadow: 0 6px 17px rgba(0,0,0,0.42),
+              0 0 0 3px rgba(255,255,255,0.08),
+              inset 0 1px 1px rgba(255,255,255,0.98) !important;
+}
+
+.poster-lightbox-sound:active .poster-lightbox-sound-control {
+  transform: scale(0.93) !important;
+  filter: brightness(0.97);
+}
+
+.poster-lightbox-sound-control svg {
+  width: 18px !important;
+  height: 18px !important;
+  color: #111318 !important;
+}
+
+@media (max-width: 760px) {
+  .poster-lightbox-sound-control {
+    flex-basis: 36px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+/* ── Mini player SFX: acabamento final ──
+   1) A regra genérica ".poster-lightbox img" (500x680px, object-fit: cover)
+      vencia a capa do player e mostrava só um recorte central ampliado.
+      Aqui o pôster inteiro é esticado (object-fit: fill) dentro do quadrado.
+   2) Botão play/pause no estilo do site: vidro escuro, borda fina clara,
+      e preenchimento claro (slate) no hover. */
+.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-art-wrap {
+  position: relative;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px !important;
+  background: linear-gradient(135deg, #30343b, #121418);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.38);
+}
+.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-art-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-art-wrap > img.poster-lightbox-sound-art {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  object-fit: fill !important;
+  object-position: center !important;
+}
+
+.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-control {
+  position: relative;
+  flex: 0 0 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  margin-left: 2px !important;
+  border: 1px solid rgba(255,255,255,0.26) !important;
+  border-radius: 50% !important;
+  background: linear-gradient(145deg, rgba(255,255,255,0.17) 0%, rgba(255,255,255,0.05) 100%) !important;
+  color: #f1f5f9 !important;
+  box-shadow:
+    0 4px 14px rgba(0,0,0,0.42),
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    inset 0 -1px 0 rgba(0,0,0,0.25) !important;
+  filter: none !important;
+  transition:
+    transform 0.2s var(--hv-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.25s ease !important;
+}
+.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-control svg {
+  width: 17px !important;
+  height: 17px !important;
+  color: inherit !important;
+  fill: currentColor !important;
+  stroke: none !important;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35));
+}
+/* Compensação óptica: o triângulo do play parece deslocado para a esquerda. */
+.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-control .poster-lightbox-sound-play {
+  transform: translateX(1px);
+}
+@media (hover: hover) and (pointer: fine) {
+.poster-lightbox .poster-lightbox-sound:hover .poster-lightbox-sound-control,
+.poster-lightbox .poster-lightbox-sound:focus-visible .poster-lightbox-sound-control {
+  transform: scale(1.07) !important;
+  border-color: rgba(226,232,240,0.95) !important;
+  background: linear-gradient(145deg, #f8fafc 0%, #dbe2ec 100%) !important;
+  color: #0b0d11 !important;
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.45),
+    0 0 0 4px rgba(226,232,240,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.9) !important;
+}
+}
+.poster-lightbox .poster-lightbox-sound:active .poster-lightbox-sound-control {
+  transform: scale(0.94) !important;
+}
+/* Tocando: anel suave ao redor do botão. */
+.poster-lightbox .poster-lightbox-sound.is-playing .poster-lightbox-sound-control {
+  border-color: rgba(226,232,240,0.55) !important;
+  box-shadow:
+    0 4px 14px rgba(0,0,0,0.42),
+    0 0 0 3px rgba(226,232,240,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.24) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+.poster-lightbox .poster-lightbox-sound.is-playing:hover .poster-lightbox-sound-control {
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.45),
+    0 0 0 4px rgba(226,232,240,0.16),
+    inset 0 1px 0 rgba(255,255,255,0.9) !important;
+}
+}
+
+/* Barra de progresso alinhada ao texto (entre a capa e o botão). */
+.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress {
+  left: 67px;
+  right: 63px;
+}
+.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress-fill {
+  background: linear-gradient(90deg, rgba(226,232,240,0.65), #fff);
+}
+
+@media (max-width: 760px) {
+  .poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-art-wrap {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+  .poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-control {
+    flex-basis: 36px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress {
+    left: 61px;
+    right: 57px;
+  }
+}
+
+/* ── Mini player SFX: sem border-radius + hover igual ao bloco do MAL ──
+   O hover do .rank-mal usa rgba(255,255,255,0.09), realce interno e sombra,
+   com transição de 0.2s. Aqui o mesmo tom entra como uma camada (::before)
+   por baixo do conteúdo, para o fundo escuro do player continuar legível
+   e a transição ficar suave. */
+.poster-lightbox.poster-lightbox .poster-lightbox-sound,
+.poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-sound {
+  border-radius: 0 !important;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 0;
+  background: rgba(255,255,255,0.09);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-art-wrap,
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-art-wrap::after,
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress,
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress-fill {
+  border-radius: 0 !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound:focus-visible {
+    background: rgba(7,8,10,0.88) !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.07),
+      0 10px 24px rgba(0,0,0,0.2) !important;
+  }
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound:hover::before,
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound:focus-visible::before {
+    opacity: 1;
+  }
+}
+
+/* ── Mini player SFX: levantadinha no hover (igual ao bloco do MAL) + arrastar ──
+   Usa a propriedade `translate` (independente de `transform`, que o CSS antigo
+   trava com !important). --sfx-dx/--sfx-dy vêm do JS ao arrastar; --sfx-lift é
+   o -2px do hover do .rank-mal. */
+.poster-lightbox.poster-lightbox .poster-lightbox-sound {
+  --sfx-lift: 0px;
+  translate: var(--sfx-dx, 0px) calc(var(--sfx-dy, 0px) + var(--sfx-lift));
+  cursor: grab !important;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    translate 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-art {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound:focus-visible {
+    --sfx-lift: 0px;
+  }
+}
+/* Durante o arrasto: sem animação de translate (segue o dedo/mouse na hora),
+   sem levantadinha e com cursor de mão fechada. */
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.is-dragging {
+  --sfx-lift: 0px;
+  cursor: grabbing !important;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+
+/* ── Mini player SFX: fundo translúcido + hover idêntico ao das tags/Studio/Year ──
+   Hover copiado de .rank-meta:hover / .list-tag:hover:
+   translateY(-2px), fundo rgba(255,255,255,0.075), sombra 0 10px 24px,
+   brightness(1.08), tudo em 0.2s ease.
+   O arrasto continua usando a propriedade `translate` (separada de `transform`). */
+.poster-lightbox.poster-lightbox .poster-lightbox-sound,
+.poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-sound {
+  background: rgba(8,9,12,0.46) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(130%) !important;
+  backdrop-filter: blur(14px) saturate(130%) !important;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease !important;
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.is-dragging {
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease !important;
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound::before {
+  background: rgba(255,255,255,0.075);
+}
+@media (hover: hover) and (pointer: fine) {
+  .poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:hover,
+  .poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:focus-visible {
+    transform: translateY(-2px) !important;
+    background: rgba(8,9,12,0.46) !important;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.2) !important;
+    filter: brightness(1.08);
+  }
+  .poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound.is-dragging:hover {
+    transform: none !important;
+  }
+}
+
+/* ── Mini player SFX: alças de redimensionamento + botão play/pause novo ──
+   O botão agora é quadrado, com a mesma altura da capa, borda fina e o mesmo
+   tom de fundo dos blocos do painel (rgba(255,255,255,0.055) -> 0.13 no hover),
+   para combinar com o resto do player (cantos retos, translúcido). */
+.poster-lightbox-sound-resize {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 9px;
+  cursor: ew-resize;
+  touch-action: none;
+}
+.poster-lightbox-sound-resize--left  { left: 0; }
+.poster-lightbox-sound-resize--right { right: 0; }
+.poster-lightbox-sound-resize::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 2px;
+  height: 22px;
+  background: rgba(255,255,255,0.38);
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease;
+}
+.poster-lightbox-sound-resize--left::after  { left: 3px; }
+.poster-lightbox-sound-resize--right::after { right: 3px; }
+.poster-lightbox-sound:hover .poster-lightbox-sound-resize::after,
+.poster-lightbox-sound.is-resizing .poster-lightbox-sound-resize::after { opacity: 1; }
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.is-resizing {
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
+  cursor: ew-resize !important;
+}
+
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-control {
+  flex: 0 0 44px !important;
+  width: 44px !important;
+  height: 44px !important;
+  margin-left: 2px !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 0 !important;
+  background: rgba(255,255,255,0.055) !important;
+  color: #f1f5f9 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06) !important;
+  filter: none !important;
+  transform: none !important;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease !important;
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-control svg {
+  width: 18px !important;
+  height: 18px !important;
+  color: inherit !important;
+  fill: currentColor !important;
+  filter: none;
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-control .poster-lightbox-sound-play {
+  transform: translateX(1px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound .poster-lightbox-sound-control:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound:focus-visible .poster-lightbox-sound-control {
+    border-color: rgba(255,255,255,0.3) !important;
+    background: rgba(255,255,255,0.13) !important;
+    color: #fff !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.18) !important;
+  }
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-control:active {
+  background: rgba(255,255,255,0.18) !important;
+}
+/* Tocando: borda e fundo um pouco mais claros, sem anéis chamativos. */
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.is-playing .poster-lightbox-sound-control {
+  border-color: rgba(255,255,255,0.32) !important;
+  background: rgba(255,255,255,0.1) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1) !important;
+}
+
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress {
+  left: 67px;
+  right: 67px;
+}
+@media (max-width: 760px) {
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-control {
+    flex-basis: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress {
+    left: 61px;
+    right: 61px;
+  }
+}
+
+/* ── Mini player SFX: ajustes finais ──
+   • Tooltip: o balão ([data-tooltip]::after) fica fora da caixa do player;
+     o overflow:hidden antigo o cortava. A capa e o título já se recortam sozinhos.
+   • Sem barras visuais nas bordas de redimensionar (a área continua ativa,
+     só com o cursor de redimensionar).
+   • Botão play/pause sem fundo/borda em repouso (não parece "ativo").
+   • Cursor normal; mãozinha de arrastar só durante o arrasto. */
+.poster-lightbox.poster-lightbox .poster-lightbox-sound,
+.poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-sound {
+  overflow: visible !important;
+  cursor: pointer !important;
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.is-dragging,
+.poster-lightbox.poster-lightbox:not(.simple-mode) .poster-lightbox-sound.is-dragging {
+  cursor: grabbing !important;
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.is-resizing {
+  cursor: ew-resize !important;
+}
+
+.poster-lightbox-sound-resize::after,
+.poster-lightbox-sound:hover .poster-lightbox-sound-resize::after,
+.poster-lightbox-sound.is-resizing .poster-lightbox-sound-resize::after {
+  display: none !important;
+  content: none !important;
+}
+
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound .poster-lightbox-sound-control,
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound.is-playing .poster-lightbox-sound-control {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #f1f5f9 !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound .poster-lightbox-sound-control:hover {
+    border-color: transparent !important;
+    background: rgba(255,255,255,0.13) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+  }
+}
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound .poster-lightbox-sound-control:active {
+  background: rgba(255,255,255,0.18) !important;
+}
+
+/* Tooltip do mini player SFX: elemento próprio (irmão do player), com o mesmo
+   visual do player em hover. Como pseudo-elemento do player ele não conseguia
+   desfocar o que fica atrás (o filter/backdrop-filter do player isola o
+   backdrop), por isso o ::after nativo fica desligado só aqui. */
+.poster-lightbox.poster-lightbox .poster-lightbox-sound[data-tooltip]::after {
+  display: none !important;
+  content: none !important;
+}
+.poster-lightbox-sound-tip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 25;
+  padding: 6px 9px;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  background:
+    linear-gradient(rgba(255,255,255,0.075), rgba(255,255,255,0.075)),
+    rgba(8,9,12,0.46);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  backdrop-filter: blur(14px) saturate(130%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 24px rgba(0,0,0,0.2);
+  filter: brightness(1.08);
+  color: rgba(255,255,255,0.72);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.07em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -3px) scale(0.98);
+  transition: opacity 0.14s ease, transform 0.14s ease, visibility 0.14s ease;
+}
+.poster-lightbox-sound-tip.is-on:not(.is-suppressed) {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0) scale(1);
+}
+@media (max-width: 760px), (hover: none), (pointer: coarse) {
+  .poster-lightbox-sound-tip { display: none !important; }
+}
+
+/* ── Mini player SFX: botão nunca "ativo" por foco + barra de progresso fluida ──
+   • O botão só ganha fundo no hover do próprio botão. O :focus-visible do
+     player (que fica depois do clique/tecla M, inclusive quando o áudio acaba)
+     não pinta mais fundo nem borda.
+   • A barra usa transform: scaleX (o JS define o valor a cada frame), sem
+     transição de largura, para andar de forma contínua. */
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound.poster-lightbox-sound:focus-visible .poster-lightbox-sound-control,
+.poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound.poster-lightbox-sound:focus .poster-lightbox-sound-control {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #f1f5f9 !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound.poster-lightbox-sound:focus-visible .poster-lightbox-sound-control:hover,
+  .poster-lightbox.poster-lightbox .poster-lightbox-sound.poster-lightbox-sound.poster-lightbox-sound:focus .poster-lightbox-sound-control:hover {
+    background: rgba(255,255,255,0.13) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+  }
+}
+
+.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress-fill {
+  width: 100% !important;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: none !important;
+  will-change: transform;
+}
+
+/* Desktop: player SFX no painel, abaixo da ficha técnica, 100% de largura,
+   com o visual (fundo, borda, hover) dos outros cards do painel. */
+@media (min-width: 761px) {
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound {
+    position: relative !important;
+    top: auto !important; right: auto !important; bottom: auto !important; left: auto !important;
+    translate: none !important;
+    grid-column: 1 / -1;
+    align-self: stretch;
+    width: 100% !important; max-width: none !important;
+    height: 64px !important;
+    margin: 0 !important;
+    padding: 8px 14px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: rgba(255,255,255,0.055) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    transform: none !important;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+    isolation: isolate; z-index: auto !important;
+    flex: 0 0 auto;
+    cursor: pointer;
+  }
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound.is-playing,
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:focus,
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:focus-visible,
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:active {
+    background: rgba(255,255,255,0.055) !important;
+    box-shadow: none !important;
+    outline: none !important;
+    transform: none !important;
+  }
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:hover {
+    background: rgba(255,255,255,0.09) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 24px rgba(0,0,0,0.2) !important;
+    transform: translateY(-2px) !important;
+  }
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound::before,
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound::after {
+    display: none !important;
+  }
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-resize {
+    display: none !important;
+  }
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress {
+    left: 70px !important; right: 66px !important; bottom: 8px !important;
+  }
+}
+
+/* Mobile: player SFX no fluxo, 100% de largura, visual igual aos outros blocos */
+@media (max-width: 760px) {
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound {
+    position: relative !important;
+    top: auto !important; right: auto !important; bottom: auto !important; left: auto !important;
+    translate: none !important;
+    grid-column: 1 / -1;
+    width: 100% !important; max-width: none !important;
+    height: 64px !important;
+    /* 10px embaixo compensam o margin-top:-10px do bloco MyAnimeList,
+       deixando o mesmo espaço (row-gap) em cima e embaixo. */
+    margin: 0 0 10px !important;
+    padding: 8px 12px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: rgba(255,255,255,0.055) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    transition: background 0.2s ease, box-shadow 0.2s ease !important;
+    isolation: isolate; z-index: auto !important;
+    flex: 0 0 auto;
+    touch-action: auto !important;
+    cursor: pointer;
+  }
+  /* Estados (tocando, parado, foco, toque) mantêm o mesmo fundo do bloco. */
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound.is-playing,
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:focus,
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:focus-visible,
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:active {
+    background: rgba(255,255,255,0.055) !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  @media (hover: hover) {
+    html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound:hover {
+      background: rgba(255,255,255,0.13) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.18) !important;
+    }
+  }
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound::before,
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound::after {
+    display: none !important;
+  }
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-resize {
+    display: none !important;
+  }
+  html body .poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox.poster-lightbox .poster-lightbox-sound .poster-lightbox-sound-progress {
+    left: 64px !important; right: 60px !important; bottom: 7px !important;
+  }
+}

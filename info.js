@@ -1477,7 +1477,8 @@ const rawWatchingData = [
 
     mal: [
       { label: "1st Stage", episodes: "47m", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 1st Stage", note: 8 },
-      { label: "2nd Stage", episodes: "TBA", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 2nd Stage", unwatched: true },
+      { label: "2nd Stage", episodes: "5~6 episódios", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 2nd Stage", unwatched: true },
+      { label: "3rd Stage", episodes: "5~6 episódios", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 2nd Stage", unwatched: true },
     ],
   },
   {
@@ -3828,7 +3829,7 @@ const nextSeasonMap = {
 
   "healing-magic": { info: "Season 2 in Production" },//ago 24
 
-  "solo-leveling": { info: "New Movie: Beyond the System in Production" },//mar 25
+  "solo-leveling": { info: "New Movie in Production" },//mar 25
 
   "makeine": { info: "Season 2 in Production" },//apr 25
 
