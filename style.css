@@ -4894,6 +4894,32 @@ h1.title {
 
   .poster-lightbox-info:empty { display: none; }
 
+  /* ── Prequel / Sequel no subtítulo do poster lightbox ── */
+  .poster-lightbox-info .info-related {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .poster-lightbox-info .info-related-row { display: block; }
+  .poster-lightbox-info .info-related-label {
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+    opacity: .75;
+  }
+  .poster-lightbox-info .info-related-link {
+    all: unset;
+    cursor: pointer;
+    color: var(--glow-accent, #7dd3fc);
+    font-weight: 600;
+    pointer-events: auto;
+  }
+  .poster-lightbox-info .info-related-link:hover,
+  .poster-lightbox-info .info-related-link:focus-visible { opacity: .8; }
+
+
   /* Separador entre linhas de "poster-lightbox-info" (ex: temporadas/episódios
     e Filme(s)): mantém cada informação em uma linha, sem hífen. */
   .poster-lightbox-info-break {
@@ -10177,15 +10203,6 @@ h1.title {
       filter: brightness(1.08);
       transform: translateY(-2px);
       cursor: default;
-    }
-
-    .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal:not(:has(.rank-mal-myranks-header)):not(.all-unwatched) {
-      border: 0 !important;
-      outline: 0 !important;
-      background: transparent !important;
-      background-image: none !important;
-      box-shadow: none !important;
-      text-shadow: none !important;
     }
 
     /* Desktop: a cópia de LINKS ABOUT do painel fica escondida;

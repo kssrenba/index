@@ -2901,11 +2901,15 @@ function getMetaFor(animeId) {
         lightbox.classList.remove('plan-to-watch-carousel');
 
         const lightboxDivision = getDivisionInfo(item);
-        const lightboxAccent = (lightboxDivision && lightboxDivision.color)
+        // Item aberto por link prequel/sequel: usa a cor da lista de origem dele
+        // (ex: Plan to Watch), não a da aba onde o usuário estava.
+        const relatedCategory = item.dataset && item.dataset.lightboxCategory;
+        const lightboxAccent = (relatedCategory && CATEGORY_HOVER_COLOR[relatedCategory])
+          || (lightboxDivision && lightboxDivision.color)
           || CATEGORY_HOVER_COLOR[currentCategory]
           || '#cbd5e1';
         lightbox.style.setProperty('--lb-accent', lightboxAccent);
-        lightbox.style.setProperty('--lb-category', CATEGORY_HOVER_COLOR[currentCategory] || lightboxAccent);
+        lightbox.style.setProperty('--lb-category', (relatedCategory && CATEGORY_HOVER_COLOR[relatedCategory]) || CATEGORY_HOVER_COLOR[currentCategory] || lightboxAccent);
         lightbox.style.setProperty('--lb-poster', `url("${String(src).replace(/"/g, '\\"')}")`);
         if (lightboxHeroRank) {
           // Watching Now / Plan to Watch / Incomplete / Announced usam apenas
@@ -3386,6 +3390,26 @@ function getMetaFor(animeId) {
           } else {
             lightboxInfo.innerHTML = '';
           }
+          // Prequel / Sequel: campos opcionais "prequel" e "sequel" no info.js
+          // (string ou array de títulos). Clicar abre a busca com esse nome.
+          if (source) {
+            const relToList = v => (Array.isArray(v) ? v : (v ? [v] : [])).filter(Boolean);
+            const relRows = [
+              ['Prequel', relToList(source.prequel)],
+              ['Sequel', relToList(source.sequel)]
+            ].filter(([, titles]) => titles.length);
+            if (relRows.length) {
+              lightboxInfo.innerHTML += '<span class="info-related">' + relRows.map(([label, titles]) =>
+                '<span class="info-related-row"><span class="info-related-label">' + label + (titles.length > 1 ? 's' : '') + ':</span> '
+                + titles.map(t => {
+                  const entry = findRelatedEntry(t);
+                  const color = entry && CATEGORY_HOVER_COLOR[entry.mode];
+                  return '<button type="button" class="info-related-link" data-related-title="' + escapeHtml(t) + '"' + (color ? ' style="color:' + color + '"' : '') + '>' + escapeHtml(t) + '</button>';
+                }).join('<span class="info-related-sep">, </span>')
+                + '</span>'
+              ).join('') + '</span>';
+            }
+          }
         }
 
         if (isUpcoming) renderUpcomingMeta(item.id, watchNowMalUrl);
@@ -3800,6 +3824,57 @@ function getMetaFor(animeId) {
         if (searchBox) searchBox.classList.toggle('has-value', !!query);
         searchInput.dispatchEvent(new Event('input', { bubbles: true }));
         requestAnimationFrame(() => searchInput.focus());
+      }
+
+      // Abre no próprio lightbox o anime citado em prequel/sequel. O card é
+      // montado a partir dos dados (igual ao randomizer do Plan to Watch), então
+      // funciona mesmo que o anime esteja em outra lista/categoria.
+      const relatedCardCache = new Map();
+      function findRelatedEntry(title) {
+        const norm = s => String(s || '').trim().toLowerCase();
+        const wanted = norm(title);
+        if (!wanted) return null;
+        const sources = [
+          [animeData, 'all'],
+          [watchingData, 'watching'],
+          [planToWatchData, 'plan'],
+          [upcomingAnimeData, 'upcoming']
+        ];
+        for (const [list, mode] of sources) {
+          if (!Array.isArray(list)) continue;
+          const index = list.findIndex(a => a && norm(a.title) === wanted);
+          if (index !== -1) return { anime: list[index], mode, index };
+        }
+        return null;
+      }
+      function openRelatedInLightbox(title) {
+        {
+          const entry = findRelatedEntry(title);
+          if (!entry) return;
+          const { anime, mode, index } = entry;
+          const cacheKey = mode + ':' + anime.id;
+          let card = relatedCardCache.get(cacheKey);
+          if (!card) {
+            const template = document.createElement('template');
+            template.innerHTML = createAnimeCard(anime, mode, null, mode === 'all' ? index : null).trim();
+            card = template.content.firstElementChild;
+            if (!card) return;
+            card.dataset.lightboxRank = String(index + 1);
+            card.dataset.lightboxCategory = mode;
+            relatedCardCache.set(cacheKey, card);
+          }
+          swapItem(card);
+        }
+      }
+
+      if (lightboxInfo) {
+        lightboxInfo.addEventListener('click', function(e) {
+          const link = e.target.closest('.info-related-link');
+          if (!link) return;
+          e.preventDefault();
+          e.stopPropagation();
+          openRelatedInLightbox(link.getAttribute('data-related-title') || '');
+        });
       }
 
       if (searchBtn) {

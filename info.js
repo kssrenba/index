@@ -36,14 +36,14 @@ const rawAnimeData = [
         malName: "Code Geass: Hangyaku no Lelouch R2",
       },
 
-      { spacer: true, text: "Akito the Filled", watched: true},
+      { spacer: true, text: "Akito the Filled ( XP )", watched: true},
       { label: "Movie 1: Akito the Exiled - The Wyvern Arrives", episodes: "51m", malName: "Code Geass: Boukoku no Akito 1 - Yokuryuu wa Maiorita", note: 6 },
       { label: "Movie 2: Akito the Exiled - The Wyvern Divided", episodes: "59m", malName: "Code Geass: Boukoku no Akito 2 - Hikisakareshi Yokuryuu", unwatched: true },
       { label: "Movie 3: Akito the Exiled - The Brightness Falls", episodes: "59m", malName: "Code Geass: Boukoku no Akito 3 - Kagayaku Mono Ten yori Otsu", unwatched: true },
       { label: "Movie 4: Akito the Exiled - Memories of Hatred", episodes: "59m", malName: "Code Geass: Boukoku no Akito 4 - Nikushimi no Kioku kara", unwatched: true },
       { label: "Movie 5: Akito the Exiled - To Beloved Ones", episodes: "59m", malName: "Code Geass: Boukoku no Akito 5 - Itoshiki Mono-tachi e", unwatched: true },
 
-      { spacer: true, text: "Alternate Time Filler"},
+      { spacer: true, text: "Alternate Time Filler ( XP )"},
       { label: "Movie I - Initiation", episodes: "2h14m", malName: "Code Geass: Hangyaku no Lelouch I - Koudou", unwatched: true },
       { label: "Movie II - Transgression", episodes: "2h12m", malName: "Code Geass: Hangyaku no Lelouch I - Handou", unwatched: true },
       { label: "Movie III - Glorification", episodes: "2h20m", malName: "Code Geass: Hangyaku no Lelouch I - Oudou", unwatched: true },
@@ -1463,6 +1463,24 @@ const rawAnimeData = [
 const rawWatchingData = [
   // Non-Seasonal Anime
   {
+    id: "sbr",
+    img: "plantowatch-images/plantowatch/sbr.webp",
+    title: "Steel Ball Run: JoJo's Bizarre Adventure",
+    info: "Parte 7 de JoJo's Bizarre Adventure (2012)",
+    prequel: "JoJo's Bizarre Adventure (2012)",
+    studio: "David Production",
+    airedSeason: "2026",
+
+    url: "https://www.anime-planet.com/anime/jojos-bizarre-adventure-steel-ball-run-1st-stage",
+    netflix: "https://www.netflix.com/title/82116553",
+    malUrl: "https://myanimelist.net/anime/61469/Steel_Ball_Run__JoJo_no_Kimyou_na_Bouken",
+
+    mal: [
+      { label: "1st Stage", episodes: "47m", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 1st Stage", note: 8 },
+      { label: "2nd Stage", episodes: "TBA", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 2nd Stage", unwatched: true },
+    ],
+  },
+  {
     id: "roshidere",
     img: "watchingnow-images/watchingnow/roshidere.webp",
     title: "Alya Sometimes Hides Her Feelings in Russian",
@@ -1508,9 +1526,8 @@ const rawWatchingData = [
       { label: "1 temporada", episodes: 24, malName: "Tu Bian Yingxiong X", unwatched: true },
     ],
   },
-
   {
-    id: "gintama", //start 26/10/2026
+    id: "gintama",
     img: "watchingnow-images/watchingnow/gintama.webp",
     title: "Gintama",
     info: "8 temporadas: 367 episódios <br>Movie: 1h44m",
@@ -1997,26 +2014,11 @@ const rawPlanToWatchData = [
     ],
   },
   {
-    id: "sbr",
-    img: "plantowatch-images/plantowatch/sbr.webp",
-    title: "Steel Ball Run: JoJo's Bizarre Adventure",
-    info: "Parte 7 de JoJo's Bizarre Adventure (2012)",
-    studio: "David Production",
-    airedSeason: "2026",
-    url: "https://www.anime-planet.com/anime/jojos-bizarre-adventure-steel-ball-run-1st-stage",
-    netflix: "https://www.netflix.com/title/82116553",
-    malUrl: "https://myanimelist.net/anime/61469/Steel_Ball_Run__JoJo_no_Kimyou_na_Bouken",
-
-    mal: [
-      { label: "1st Stage", episodes: "47m", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 1st Stage", unwatched: true },
-      { label: "2nd Stage", episodes: "TBA", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 2nd Stage", unwatched: true },
-    ],
-  },
-  {
     id: "jojo",
     img: "plantowatch-images/plantowatch/jojo.webp",
     title: "JoJo's Bizarre Adventure (2012)",
     info: "6 Partes: 190 episódios",
+    sequel: "Steel Ball Run: JoJo's Bizarre Adventure",
     studio: "David Production",
     airedSeason: "2013",
     url: "https://www.anime-planet.com/anime/jojos-bizarre-adventure",
@@ -2374,6 +2376,7 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/fate-zero.webp",
     title: "Fate Zero",
     info: "2 temporadas: 25 episódios",
+    sequel: ["Fate Stay Night: Unlimited Blade Works", "Fate Stay Night: Heaven's Feel"],
     studio: "ufotable",
     airedSeason: "2011-2012",
     url: "https://www.anime-planet.com/anime/fate-zero",
@@ -2390,6 +2393,7 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/fate-heavens-feel.webp",
     title: "Fate Stay Night: Heaven's Feel",
     info: "3 Movies: 5h57m",
+    prequel: "Fate Zero",
     studio: "ufotable",
     airedSeason: "2017-2020",
     url: "https://www.anime-planet.com/anime/fate-stay-night-heavens-feel-i-presage-flower",
@@ -2516,6 +2520,7 @@ const rawPlanToWatchData = [
     img: "plantowatch-images/plantowatch/fate-stay-night.webp",
     title: "Fate Stay Night: Unlimited Blade Works",
     info: "2 temporadas: 25 episódios",
+    prequel: "Fate Zero",
     studio: "ufotable",
     airedSeason: "2014-2015",
     url: "https://www.anime-planet.com/anime/fate-stay-night-unlimited-blade-works",
