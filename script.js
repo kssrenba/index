@@ -346,6 +346,20 @@ if ('scrollRestoration' in history) {
       const lightboxZoomImg = document.getElementById('posterLightboxZoomImg');
       const MOBILE_QUERY = '(max-width: 760px)';
 
+      // O destaque ganha uma moldura em volta da imagem, pra faixa do Next Season
+      // Map ficar presa no rodapé dela (como no pôster pequeno do lightbox).
+      let lightboxZoomAnnounce = null;
+      if (lightboxZoom && lightboxZoomImg && lightboxZoomImg.parentNode === lightboxZoom) {
+        const zoomFrame = document.createElement('div');
+        zoomFrame.className = 'poster-lightbox-zoom-frame';
+        lightboxZoom.insertBefore(zoomFrame, lightboxZoomImg);
+        zoomFrame.appendChild(lightboxZoomImg);
+        lightboxZoomAnnounce = document.createElement('div');
+        lightboxZoomAnnounce.className = 'poster-lightbox-zoom-announce';
+        lightboxZoomAnnounce.setAttribute('aria-hidden', 'true');
+        zoomFrame.appendChild(lightboxZoomAnnounce);
+      }
+
       function closeImageZoom() {
         if (!lightboxZoom) return;
         lightboxZoom.classList.remove('open');
@@ -355,10 +369,12 @@ if ('scrollRestoration' in history) {
       // Reutilizado pelos cards de True Characters: no mobile, tocar
       // somente na imagem mostra a mesma ampliação fullscreen do
       // pôster dentro do posterlightbox.
-      window.__openPosterImageZoom = function(src, alt = '', isTrueCharacter = false) {
+      window.__openPosterImageZoom = function(src, alt = '', isTrueCharacter = false, announceHtml = '') {
         if (!window.matchMedia(MOBILE_QUERY).matches || !lightboxZoom || !lightboxZoomImg || !src) return;
         lightboxZoomImg.src = src;
         lightboxZoomImg.alt = alt;
+        // Next Season Map (só no zoom do pôster; True Characters não tem).
+        if (lightboxZoomAnnounce) lightboxZoomAnnounce.innerHTML = isTrueCharacter ? '' : (announceHtml || '');
         lightboxZoom.classList.toggle('true-character-zoom', isTrueCharacter);
         lightboxZoom.classList.add('open');
         lightboxZoom.setAttribute('aria-hidden', 'false');
@@ -370,7 +386,7 @@ if ('scrollRestoration' in history) {
           if (!lightboxImg.src) return;
           e.preventDefault();
           e.stopPropagation();
-          window.__openPosterImageZoom(lightboxImg.src, lightboxImg.alt);
+          window.__openPosterImageZoom(lightboxImg.src, lightboxImg.alt, false, lightboxAnnounce ? lightboxAnnounce.innerHTML : '');
         });
 
         lightboxZoom.addEventListener('click', function(e) {
@@ -456,6 +472,16 @@ if ('scrollRestoration' in history) {
         const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const canAnimate = () => typeof Element.prototype.animate === 'function' && !reduceMotion();
 
+        // O player do SFX tem transform/translate travados com !important no CSS
+        // (animar "transform" nele não tem efeito). Ele usa o "translate" das
+        // variáveis --sfx-flip-x/y, então o deslize é feito nelas.
+        function flipSoundPlayer(el, dx, dy, duration, opacityFrom) {
+          const from = { '--sfx-flip-x': dx + 'px', '--sfx-flip-y': dy + 'px' };
+          const to = { '--sfx-flip-x': '0px', '--sfx-flip-y': '0px' };
+          if (opacityFrom != null) { from.opacity = opacityFrom; to.opacity = 1; }
+          try { el.animate([from, to], { duration, easing: EASE }); } catch (_) {}
+        }
+
         function flowItems() {
           if (!lightboxFigure) return [];
           return Array.from(lightboxFigure.querySelectorAll(
@@ -490,6 +516,7 @@ if ('scrollRestoration' in history) {
             const dx = first.left - last.left;
             const dy = first.top - last.top;
             if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+            if (el.id === 'posterLightboxSound') { flipSoundPlayer(el, dx, dy, 420, 0.84); return; }
             el.animate(
               [
                 { transform: `translate(${dx}px, ${dy}px)`, opacity: 0.84 },
@@ -553,6 +580,7 @@ if ('scrollRestoration' in history) {
             const dx = f.left - l.left;
             const dy = f.top - l.top;
             if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+            if (el.id === 'posterLightboxSound') { flipSoundPlayer(el, dx, dy, 320); return; }
             // INVERT + PLAY
             el.animate(
               [{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'translate(0,0)' }],
@@ -713,7 +741,7 @@ if ('scrollRestoration' in history) {
       const AOT_IDS = ['aot', 'rw-aot'];
 
       // ── Som especial ao abrir o poster-lightbox do One Piece (sem loop) ──
-      const onePieceSound = createPosterAudio('assets/sfx/sounds/luffy-haki.mp3');
+      const onePieceSound = createPosterAudio('assets/sfx/sounds/haki-sfx.mp3');
       onePieceSound.loop = false;
       const ONE_PIECE_IDS = ['one-piece'];
 
@@ -738,11 +766,21 @@ if ('scrollRestoration' in history) {
       hxhSound.loop = false;
       const HXH_IDS = ['hunter-x-hunter','hxh'];
 
+      // ── Som especial ao abrir o poster-lightbox de Oshi no Ko (sem loop) ──
+      const oshiNoKoSound = createPosterAudio('assets/sfx/sounds/pop-in-2.mp3');
+      oshiNoKoSound.loop = false;
+      const OSHI_NO_KO_IDS = ['oshi-no-ko'];
+
+      // ── Som especial ao abrir o poster-lightbox de Mushoku Tensei (sem loop) ──
+      const mushokuTenseiSound = createPosterAudio('assets/sfx/sounds/mt-ending.mp3');
+      mushokuTenseiSound.loop = false;
+      const MUSHOKU_TENSEI_IDS = ['mushoku'];
+
       // ── Controle global e persistente dos efeitos do poster lightbox ──
       // O botão agora PAUSA/RETOMA o efeito (antes era mute). Estando pausado,
       // nenhum efeito novo começa sozinho ao abrir/trocar de pôster.
       const POSTER_SOUND_PAUSED_KEY = 'posterLightboxSoundPaused';
-      const posterSoundEffects = [rezeroSound, jjkSound, aotSound, onePieceSound, csmSound, codeGeassSound, cyberSound, hxhSound];
+      const posterSoundEffects = [rezeroSound, jjkSound, aotSound, onePieceSound, csmSound, codeGeassSound, cyberSound, hxhSound, oshiNoKoSound, mushokuTenseiSound];
       let posterSoundPaused = false;
       try {
         posterSoundPaused = localStorage.getItem(POSTER_SOUND_PAUSED_KEY) === 'true';
@@ -754,6 +792,16 @@ if ('scrollRestoration' in history) {
       // progresso e controle principal de play/pause.
       const SOUND_PAUSE_ICON_SVG = '<svg class="poster-lightbox-sound-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"></rect><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"></rect></svg>';
       const SOUND_PLAY_ICON_SVG = '<svg class="poster-lightbox-sound-play" viewBox="0 0 24 24" aria-hidden="true"><polygon points="7 4 20 12 7 20" fill="currentColor"></polygon></svg>';
+      const SOUND_LOOP_ICON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"></path><path d="M3 11V9a3 3 0 0 1 3-3h15"></path><path d="M7 22l-4-4 4-4"></path><path d="M21 13v2a3 3 0 0 1-3 3H3"></path></svg>';
+      // Repetir (loop): preferência global e persistente. Sem preferência salva,
+      // cada efeito mantém o próprio padrão (ex.: Re:ZERO já repetia).
+      const POSTER_SOUND_LOOP_KEY = 'posterLightboxSoundLoop';
+      try {
+        const savedLoop = localStorage.getItem(POSTER_SOUND_LOOP_KEY);
+        if (savedLoop === 'true' || savedLoop === 'false') {
+          posterSoundEffects.forEach(audio => { audio.loop = savedLoop === 'true'; });
+        }
+      } catch (e) {}
       if (soundBtn) {
         soundBtn.innerHTML =
           '<span class="poster-lightbox-sound-art-wrap"><img class="poster-lightbox-sound-art" alt="" aria-hidden="true" style="display:none"></span>' +
@@ -762,6 +810,7 @@ if ('scrollRestoration' in history) {
             '<span class="poster-lightbox-sound-subtitle">SOUND EFFECT</span>' +
           '</span>' +
           '<span class="poster-lightbox-sound-progress"><span class="poster-lightbox-sound-progress-fill"></span><span class="poster-lightbox-sound-progress-thumb"></span></span>' +
+          '<span class="poster-lightbox-sound-loop" role="button" tabindex="0" aria-label="Repetir sound effect" aria-pressed="false">' + SOUND_LOOP_ICON_SVG + '</span>' +
           '<span class="poster-lightbox-sound-control">' + SOUND_PAUSE_ICON_SVG + SOUND_PLAY_ICON_SVG + '</span>' +
           '<span class="poster-lightbox-sound-resize poster-lightbox-sound-resize--left" data-edge="left" aria-hidden="true"></span>' +
           '<span class="poster-lightbox-sound-resize poster-lightbox-sound-resize--right" data-edge="right" aria-hidden="true"></span>';
@@ -777,7 +826,9 @@ if ('scrollRestoration' in history) {
         if (CSM_IDS.includes(item.id)) return 'chainsaw-man';
         if (CODE_GEASS_IDS.includes(item.id)) return 'code-geass';
         if (CYBER_IDS.includes(item.id)) return 'cyberpunk';
-        if (HXH_IDS.includes(item.id)) return 'hunter-x-hunter';
+        if (HXH_IDS.includes(item.id)) return 'hxh';
+        if (OSHI_NO_KO_IDS.includes(item.id)) return 'oshi-no-ko';
+        if (MUSHOKU_TENSEI_IDS.includes(item.id)) return 'mushoku';
         return '';
       }
 
@@ -867,15 +918,79 @@ if ('scrollRestoration' in history) {
         document.head.appendChild(st);
       }
 
+      // Botão de repetir ao lado do play/pause + espaço extra na barra de progresso.
+      if (!document.getElementById('posterSoundLoopStyle')) {
+        const Q = 'html body ' + '.poster-lightbox'.repeat(8) + ' .poster-lightbox-sound';
+        const st2 = document.createElement('style');
+        st2.id = 'posterSoundLoopStyle';
+        st2.textContent = `
+          ${Q} .poster-lightbox-sound-loop {
+            position: relative;
+            display: flex; flex: 0 0 44px; align-items: center; justify-content: center;
+            width: 44px; height: 44px; margin-left: auto;
+            border-radius: 0; border: 1px solid transparent; background: transparent;
+            box-sizing: border-box;
+            color: rgba(255,255,255,0.5); cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+          }
+          ${Q} .poster-lightbox-sound-loop + .poster-lightbox-sound-control { margin-left: 0 !important; }
+          ${Q} .poster-lightbox-sound-loop svg { width: 17px; height: 17px; display: block; pointer-events: none; }
+          @media (hover: hover) and (pointer: fine) {
+            ${Q} .poster-lightbox-sound-loop:hover {
+              border-color: transparent;
+              background: rgba(255,255,255,0.13);
+              box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+              color: #fff;
+            }
+            ${Q} .poster-lightbox-sound-loop.is-active:hover { color: #34d399; }
+          }
+          ${Q} .poster-lightbox-sound-loop:active { background: rgba(255,255,255,0.18); }
+          ${Q} .poster-lightbox-sound-loop.is-active { color: #34d399; }
+          ${Q} .poster-lightbox-sound-progress { right: 121px !important; }
+          @media (max-width: 760px) {
+            ${Q} .poster-lightbox-sound-loop { flex-basis: 40px; width: 40px; height: 40px; }
+            ${Q} .poster-lightbox-sound-progress { right: 111px !important; }
+          }
+        `;
+        document.head.appendChild(st2);
+      }
+
       if (soundBtn) {
         const progressEl = soundBtn.querySelector('.poster-lightbox-sound-progress');
         let scrubId = null;
+
+        // Os efeitos são criados com preload 'none': até o 1º play a duração é
+        // NaN e não dá pra calcular o ponto do clique. Então, se a duração ainda
+        // não é conhecida, pedimos só os metadados (leve) e guardamos o ponto
+        // escolhido; assim que chegam, o seek é aplicado — sem precisar tocar.
+        const applyPendingSeek = () => {
+          const a = pendingSeekAudio;
+          if (!a || !(a.duration > 0)) return;
+          pendingSeekAudio = null;
+          if (soundForItem(currentItem) !== a) return; // trocou de anime enquanto carregava
+          try { a.currentTime = pendingSeekRatio * a.duration; } catch (err) {}
+          soundProgShownSec = a.currentTime;
+          setPosterSoundProgress(pendingSeekRatio);
+        };
+        posterSoundEffects.forEach(a => a.addEventListener('loadedmetadata', applyPendingSeek));
+
         const seekFromEvent = (e) => {
           const audio = soundForItem(currentItem);
-          if (!audio || !(audio.duration > 0)) return;
+          if (!audio) return;
           const r = progressEl.getBoundingClientRect();
           if (!r.width) return;
           const ratio = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+          if (!(audio.duration > 0)) {
+            pendingSeekAudio = audio;
+            pendingSeekRatio = ratio;
+            setPosterSoundProgress(ratio); // a barra já acompanha o ponteiro
+            if (audio.readyState === 0 && audio.preload !== 'metadata') {
+              audio.preload = 'metadata';
+              try { audio.load(); } catch (err) {}
+            }
+            return;
+          }
           try { audio.currentTime = ratio * audio.duration; } catch (err) {}
           soundProgShownSec = audio.currentTime;
           setPosterSoundProgress(ratio);
@@ -913,11 +1028,15 @@ if ('scrollRestoration' in history) {
       // Tenta cada extensão em ordem; se nenhuma existir, fica sem imagem.
       // Enquanto o SFX está pausado, o GIF congela (um frame é copiado pra um
       // canvas por cima); ao dar play, o canvas some e o GIF volta a animar.
+      // Ao pausar depois de ter tocado, congela no frame em que parou; o 1º
+      // frame só aparece enquanto o efeito ainda não tocou.
       const POSTER_SOUND_COVER_EXTS = ['webp', 'gif'];
       let soundCoverFrozen = false;
       let soundCoverPlaying = false;
       let soundCoverCanvas = null;
       let soundCoverFirstFrame = null; // { src, canvas } — 1º frame da capa atual
+      let soundCoverStopFrame = null;  // { src, canvas } — frame mais recente capturado durante o play
+      let soundCoverCaptureRaf = 0;    // loop que atualiza soundCoverStopFrame enquanto toca
 
       function getSoundCoverCanvas(art) {
         if (!soundCoverCanvas) {
@@ -930,6 +1049,28 @@ if ('scrollRestoration' in history) {
         return soundCoverCanvas;
       }
 
+      // Roda em todo frame enquanto o SFX toca: guarda sempre o frame mais
+      // recente do gif em soundCoverStopFrame, pra nunca depender de capturar
+      // o frame certo exatamente no instante do pause.
+      function captureSoundCoverFrame() {
+        soundCoverCaptureRaf = 0;
+        if (!soundCoverPlaying || !soundBtn) return;
+        const art = soundBtn.querySelector('.poster-lightbox-sound-art:not(canvas)');
+        if (art && art.parentNode) {
+          const ready = art.getAttribute('src') && art.complete && art.naturalWidth > 0;
+          if (ready) {
+            try {
+              const stop = document.createElement('canvas');
+              stop.width = art.naturalWidth;
+              stop.height = art.naturalHeight;
+              stop.getContext('2d').drawImage(art, 0, 0);
+              soundCoverStopFrame = { src: art.src, canvas: stop };
+            } catch (e) {}
+          }
+        }
+        if (soundCoverPlaying) soundCoverCaptureRaf = requestAnimationFrame(captureSoundCoverFrame);
+      }
+
       function syncSoundCoverFreeze() {
         if (!soundBtn) return;
         const art = soundBtn.querySelector('.poster-lightbox-sound-art:not(canvas)');
@@ -937,12 +1078,22 @@ if ('scrollRestoration' in history) {
         const ready = art.getAttribute('src') && art.complete && art.naturalWidth > 0;
         if (!ready) return;
         const canvas = getSoundCoverCanvas(art);
+
+        if (soundCoverPlaying && !soundCoverCaptureRaf) {
+          soundCoverCaptureRaf = requestAnimationFrame(captureSoundCoverFrame);
+        } else if (!soundCoverPlaying && soundCoverCaptureRaf) {
+          cancelAnimationFrame(soundCoverCaptureRaf);
+          soundCoverCaptureRaf = 0;
+        }
+
         if (!soundCoverPlaying && !soundCoverFrozen) {
           try {
-            // Usa o 1º frame do GIF (guardado ao carregar). Pegar o frame "do
-            // momento" podia congelar num frame de transição/glitch estourado.
-            const frame = (soundCoverFirstFrame && soundCoverFirstFrame.src === art.src)
-              ? soundCoverFirstFrame.canvas : null;
+            // Usa o frame mais recente capturado durante o play; só cai pro
+            // 1º frame se o efeito ainda nunca tiver tocado nessa capa.
+            const frame = (soundCoverStopFrame && soundCoverStopFrame.src === art.src)
+              ? soundCoverStopFrame.canvas
+              : ((soundCoverFirstFrame && soundCoverFirstFrame.src === art.src)
+                ? soundCoverFirstFrame.canvas : null);
             canvas.width = frame ? frame.width : art.naturalWidth;
             canvas.height = frame ? frame.height : art.naturalHeight;
             canvas.getContext('2d').drawImage(frame || art, 0, 0);
@@ -965,6 +1116,8 @@ if ('scrollRestoration' in history) {
         }
         art.dataset.coverBase = base;
         soundCoverFrozen = false;
+        soundCoverStopFrame = null;
+        if (soundCoverCaptureRaf) { cancelAnimationFrame(soundCoverCaptureRaf); soundCoverCaptureRaf = 0; }
         if (soundCoverCanvas) soundCoverCanvas.style.display = 'none';
         art.style.display = 'none';
         art.removeAttribute('src');
@@ -1016,6 +1169,8 @@ if ('scrollRestoration' in history) {
         if (CODE_GEASS_IDS.includes(item.id)) return codeGeassSound;
         if (CYBER_IDS.includes(item.id)) return cyberSound;
         if (HXH_IDS.includes(item.id)) return hxhSound;
+        if (OSHI_NO_KO_IDS.includes(item.id)) return oshiNoKoSound;
+        if (MUSHOKU_TENSEI_IDS.includes(item.id)) return mushokuTenseiSound;
         return null;
       }
 
@@ -1028,7 +1183,9 @@ if ('scrollRestoration' in history) {
           || CSM_IDS.includes(item.id)
           || CODE_GEASS_IDS.includes(item.id)
           || CYBER_IDS.includes(item.id)
-          || HXH_IDS.includes(item.id);
+          || HXH_IDS.includes(item.id)
+          || OSHI_NO_KO_IDS.includes(item.id)
+          || MUSHOKU_TENSEI_IDS.includes(item.id);
       }
 
       // ── Barra de progresso 100% fluida ──
@@ -1041,6 +1198,9 @@ if ('scrollRestoration' in history) {
       let soundProgLastCT = -1;
       let soundProgStamp = 0;
       let soundProgShownSec = 0;
+      // Seek pedido antes da duração do áudio ser conhecida (ver seekFromEvent).
+      let pendingSeekAudio = null;
+      let pendingSeekRatio = 0;
 
       function setPosterSoundProgress(p) {
         if (!soundProgFill && soundBtn) soundProgFill = soundBtn.querySelector('.poster-lightbox-sound-progress-fill');
@@ -1051,7 +1211,11 @@ if ('scrollRestoration' in history) {
 
       function computePosterSoundProgress(audio, smooth) {
         const duration = audio && Number.isFinite(audio.duration) ? audio.duration : 0;
-        if (!(duration > 0)) { soundProgShownSec = 0; return 0; }
+        if (!(duration > 0)) {
+          soundProgShownSec = 0;
+          // Seek pedido antes dos metadados chegarem: a barra segura essa posição.
+          return (audio && audio === pendingSeekAudio) ? pendingSeekRatio : 0;
+        }
         let t = audio.currentTime;
         if (smooth) {
           const now = performance.now();
@@ -1099,6 +1263,13 @@ if ('scrollRestoration' in history) {
         soundBtn.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
         soundBtn.setAttribute('aria-label', (isPlaying ? 'Pause' : 'Play') + ' sound effect');
         soundBtn.dataset.tooltip = (isPlaying ? 'Pause' : 'Play') + ' Sound Effect  (M)';
+        const loopEl = soundBtn.querySelector('.poster-lightbox-sound-loop');
+        if (loopEl) {
+          const loopOn = !!activeAudio && activeAudio.loop === true;
+          loopEl.classList.toggle('is-active', loopOn);
+          loopEl.setAttribute('aria-pressed', loopOn ? 'true' : 'false');
+          loopEl.setAttribute('aria-label', loopOn ? 'Loop sound effect: on' : 'Loop sound effect: off');
+        }
       }
 
       // Alinha o lado direito do mini player com a borda real dos blocos
@@ -1401,6 +1572,36 @@ if ('scrollRestoration' in history) {
           }, SOUND_TIP_DELAY_MS);
         });
         soundBtn.addEventListener('pointerleave', hidePosterSoundTip);
+      }
+
+      function togglePosterSoundLoop() {
+        const activeAudio = soundForItem(currentItem);
+        const next = !(activeAudio && activeAudio.loop === true);
+        posterSoundEffects.forEach(audio => { audio.loop = next; });
+        try { localStorage.setItem(POSTER_SOUND_LOOP_KEY, String(next)); } catch (e) {}
+        // Se o efeito já tinha terminado e o loop foi ligado, volta a tocar.
+        if (next && activeAudio && activeAudio.ended && !posterSoundPaused && lightbox.classList.contains('open')) {
+          try { activeAudio.currentTime = 0; activeAudio.play().catch(() => {}); } catch (e) {}
+        }
+        updatePosterSoundButton();
+      }
+
+      if (soundBtn) {
+        const loopBtnEl = soundBtn.querySelector('.poster-lightbox-sound-loop');
+        if (loopBtnEl) {
+          loopBtnEl.addEventListener('pointerdown', e => e.stopPropagation());
+          loopBtnEl.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            togglePosterSoundLoop();
+          });
+          loopBtnEl.addEventListener('keydown', e => {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            e.preventDefault();
+            e.stopPropagation();
+            togglePosterSoundLoop();
+          });
+        }
       }
 
       function togglePosterSound() {
@@ -3691,6 +3892,30 @@ function getMetaFor(animeId) {
           } catch (e) {}
         }
 
+        const wasOshiNoKo = currentItem && OSHI_NO_KO_IDS.includes(currentItem.id);
+        const isOshiNoKo = OSHI_NO_KO_IDS.includes(item.id);
+        if (wasOshiNoKo && currentItem !== item) {
+          isOshiNoKo ? stopAudioInstantly(oshiNoKoSound) : fadeOutAudio(oshiNoKoSound);
+        }
+        if (isOshiNoKo && currentItem !== item && !posterSoundPaused) {
+          try {
+            oshiNoKoSound.currentTime = 0;
+            oshiNoKoSound.play().catch(() => {});
+          } catch (e) {}
+        }
+
+        const wasMushokuTensei = currentItem && MUSHOKU_TENSEI_IDS.includes(currentItem.id);
+        const isMushokuTensei = MUSHOKU_TENSEI_IDS.includes(item.id);
+        if (wasMushokuTensei && currentItem !== item) {
+          isMushokuTensei ? stopAudioInstantly(mushokuTenseiSound) : fadeOutAudio(mushokuTenseiSound);
+        }
+        if (isMushokuTensei && currentItem !== item && !posterSoundPaused) {
+          try {
+            mushokuTenseiSound.currentTime = 0;
+            mushokuTenseiSound.play().catch(() => {});
+          } catch (e) {}
+        }
+
         if (currentItem !== item) resetPosterSoundRate();
         currentItem = item;
 
@@ -3795,8 +4020,7 @@ function getMetaFor(animeId) {
           const announcedKeysForItem = getAnnouncedKeys(item.id);
           const explicitAnnouncedKey = item.getAttribute('data-ns-key') || '';
           const showAllAnnouncedEntries = Boolean(
-            announcedMergeTag && !explicitAnnouncedKey && currentCategory !== 'announced'
-              && announcedKeysForItem.length > 1
+            announcedMergeTag && announcedKeysForItem.length > 1
           );
 
           if (showAllAnnouncedEntries) {
@@ -3914,7 +4138,7 @@ function getMetaFor(animeId) {
           ].filter(Boolean);
           const tagsHtml = orderedTagParts.join('<span class="list-sep"></span>');
 
-          const divisionHtml = (division && !hideDivision && !isUnwatchedDivision && !watchingEntry && !mergedWatchingTagHtml && !(mergedAnnouncedTagHtml && currentCategory === 'announced'))
+          const divisionHtml = (division && !hideDivision && !isUnwatchedDivision && !watchingEntry && !mergedWatchingTagHtml && !((mergedAnnouncedTagHtml || combinedAnnouncedTagsHtml) && currentCategory === 'announced'))
             ? `<span class="list-sep"></span><span class="list-division"><span class="list-tag-name">${escapeHtml(division.text)}</span></span>`
             : '';
 
@@ -4279,6 +4503,12 @@ function getMetaFor(animeId) {
         }
         if (currentItem && HXH_IDS.includes(currentItem.id)) {
           fadeOutAudio(hxhSound);
+        }
+        if (currentItem && OSHI_NO_KO_IDS.includes(currentItem.id)) {
+          fadeOutAudio(oshiNoKoSound);
+        }
+        if (currentItem && MUSHOKU_TENSEI_IDS.includes(currentItem.id)) {
+          fadeOutAudio(mushokuTenseiSound);
         }
         resetPosterSoundRate();
         stopTitleMarquee();
@@ -4946,6 +5176,15 @@ function getMetaFor(animeId) {
         lightboxMediaWatchNow.addEventListener('mouseout', handleWatchNowAreaMouseOut);
       }
 
+      // M ou Espaço: toque = play/pause do SFX, segurar = 2x.
+      function isSfxHoldKey(e) {
+        return e.key === 'm' || e.key === 'M' || e.key === ' ' || e.code === 'Space';
+      }
+      function isTypingTarget(e) {
+        const t = e.target;
+        return !!(t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)));
+      }
+
       document.addEventListener('keydown', function(e) {
         if (!lightbox.classList.contains('open')) return;
 
@@ -4958,7 +5197,7 @@ function getMetaFor(animeId) {
           return;
         }
 
-        if ((e.key === 'm' || e.key === 'M') && soundBtn && soundBtn.classList.contains('visible')) {
+        if (isSfxHoldKey(e) && !e.ctrlKey && !e.metaKey && !e.altKey && !isTypingTarget(e) && soundBtn && soundBtn.classList.contains('visible')) {
           e.preventDefault();
           e.stopPropagation();
           // Auto-repeat do teclado: ignora, quem manda é o timer do 1º toque.
@@ -4988,12 +5227,14 @@ function getMetaFor(animeId) {
       }, true);
 
       document.addEventListener('keyup', function(e) {
-        if (e.key !== 'm' && e.key !== 'M') return;
+        if (!isSfxHoldKey(e)) return;
+        const sfxVisible = soundBtn && soundBtn.classList.contains('visible');
+        if (sfxMDown && sfxVisible && lightbox.classList.contains('open')) e.preventDefault();
         if (!sfxMDown) return;
         const wasHold = sfxFast;
         resetPosterSoundRate();
         // Toque curto (não chegou a virar 2x) = play/pause.
-        if (!wasHold && lightbox.classList.contains('open') && soundBtn && soundBtn.classList.contains('visible')) {
+        if (!wasHold && lightbox.classList.contains('open') && sfxVisible) {
           togglePosterSound();
         }
       }, true);
