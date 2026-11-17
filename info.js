@@ -245,7 +245,7 @@ const rawAnimeData = [
     id: "cyberpunk",
     img: "myranks-images/myranks/cyberpunk.webp",
     title: "Cyberpunk: Edgerunners",
-    info: "10 episódios",
+    info: "2 temporadas: 20 episódios",
     studio: "Trigger",
     airedSeasons: [
       { season: 'S1', name: '2022' },
@@ -256,7 +256,7 @@ const rawAnimeData = [
     ],
     mal: [
       { label: "1ª temporada", episodes: 10, note: 9, malName: "Cyberpunk: Edgerunners" },
-      {label: "2ª temporada", episodes: 10, unwatched: true, malName: "Cyberpunk: Edgerunners 2" }
+      {label: "2ª temporada", episodes: 10, note: 8, malName: "Cyberpunk: Edgerunners 2" }
     ],
   },
   {
@@ -829,7 +829,8 @@ const rawAnimeData = [
     studio: "J.C. Staff",
     airedSeason: "2015-2025",
     rewatchs: [
-      { season: 'S1-S4', name: '1 TIME' },
+      { season: 'S1-S3', name: '2 TIMES' },
+      { season: 'S4', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 13, note: 7, malName: "Dungeon ni Deai wo Motomeru no wa Machigatteiru Darou ka" },
@@ -962,6 +963,18 @@ const rawAnimeData = [
     ],
   },
   {
+    id: "yamada-kun-lv999",
+    img: "myranks-images/myranks/yamada-kun-lv999.webp",
+    title: "My Love Story with Yamada-kun at LV999",
+    info: "13 episódios",
+    studio: "Project No.9",
+    airedSeason: "2023",
+    rewatchs: [
+      { season: 'S1', name: '1 TIME' },
+    ],
+    mal: [{ label: "1 temporada", episodes: 13, note: 7, malName: "Yamada-kun to Lv999 no Koi wo Suru" }],
+  },
+  {
     id: "sword-art-online",
     img: "myranks-images/myranks/sword-art-online.webp",
     title: "Sword Art Online",
@@ -1060,6 +1073,16 @@ const rawAnimeData = [
     ],
   },
   {
+    id: "prism-rondo",
+    img: "myranks-images/myranks/prism-rondo.webp",
+    title: "Love Through a Prism",
+    info: "20 episódios",
+    studio: "Wit Studio",
+    airedSeason: "2026",
+    rewatch: "No",
+    mal: [{ label: "1 temporada", episodes: 20, note: 7, malName: "Prism Rondo" }],
+  },
+  {
     id: "angel-next-door",
     img: "myranks-images/myranks/angel-next-door.webp",
     title: "The Angel Next Door Spoils Me Rotten",
@@ -1073,16 +1096,6 @@ const rawAnimeData = [
       { label: "1ª temporada", episodes: 12, note: 7, malName: "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken" },
       { label: "2ª temporada", episodes: 12, unwatched: true, malName: "Otonari no Tenshi-sama ni Itsunomanika Dame Ningen ni Sareteita Ken 2nd Season" },
     ],
-  },
-  {
-    id: "prism-rondo",
-    img: "myranks-images/myranks/prism-rondo.webp",
-    title: "Love Through a Prism",
-    info: "20 episódios",
-    studio: "Wit Studio",
-    airedSeason: "2026",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 20, note: 7, malName: "Prism Rondo" }],
   },
   {
     id: "farming-life",
@@ -1152,16 +1165,6 @@ const rawAnimeData = [
     airedSeason: "2008-2009",
     rewatch: "No",
     mal: [{ label: "1 temporada", episodes: 25, note: 7, malName: "Toradora!" }],
-  },
-  {
-    id: "yamada-kun-lv999",
-    img: "myranks-images/myranks/yamada-kun-lv999.webp",
-    title: "My Love Story with Yamada-kun at LV999",
-    info: "13 episódios",
-    studio: "Project No.9",
-    airedSeason: "2023",
-    rewatch: "No",
-    mal: [{ label: "1 temporada", episodes: 13, note: 6, malName: "Yamada-kun to Lv999 no Koi wo Suru" }],
   },
   {
     id: "lookism",
@@ -1466,7 +1469,7 @@ const rawWatchingData = [
     id: "sbr",
     img: "plantowatch-images/plantowatch/sbr.webp",
     title: "Steel Ball Run: JoJo's Bizarre Adventure",
-    info: "Parte 7 de JoJo's Bizarre Adventure (2012)",
+    info: "Parte 7: NaN episódios",
     prequel: "JoJo's Bizarre Adventure (2012)",
     studio: "David Production",
     airedSeason: "2026",
@@ -1476,9 +1479,7 @@ const rawWatchingData = [
     malUrl: "https://myanimelist.net/anime/61469/Steel_Ball_Run__JoJo_no_Kimyou_na_Bouken",
 
     mal: [
-      { label: "1st Stage", episodes: "47m", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 1st Stage", note: 8 },
-      { label: "2nd Stage", episodes: "5~6 episódios", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 2nd Stage", unwatched: true },
-      { label: "3rd Stage", episodes: "5~6 episódios", malName: "Jojo no Kimyou na Bouken: Steel Ball Run - 2nd Stage", unwatched: true },
+      { label: "~1 temporada", episodes: "~48 episódios", malName: "Steel Ball Run: JoJo no Kimyou na Bouken", unwatched: true},
     ],
   },
   {
@@ -1566,17 +1567,6 @@ const rawWatchingData = [
   },
 
   // Fall 2026
-  {
-    id: "cyberpunk",
-    img: "watchingnow-images/watchingnow/cyberpunk.webp",
-    title: "Cyberpunk: Edgerunners",
-    info: "2ª temporada: 10 episódios",
-    season: "fall-2026",
-    seasons: [10, 10],
-    url: "https://www.anime-planet.com/anime/cyberpunk-edgerunners-2",
-    netflix: "https://www.netflix.com/search?q=cyber&jbv=81054853",
-    malUrl: "https://myanimelist.net/anime/61990/Cyberpunk_Edgerunners_2",
-  },
   {
     id: "blue-box",
     img: "watchingnow-images/watchingnow/blue-box.webp",
@@ -3850,5 +3840,6 @@ const nextSeasonMap = {
   "grand-blue": { info: "Season 4 in Production" },//sep 26
 
   // now
+  "re-zero": { info: "5th Season in Production" },//oct 26
   "dr-stone": { info: "~TV Special: Terraforming in Production" },//oct 26
 };

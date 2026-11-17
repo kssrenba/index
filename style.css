@@ -15511,12 +15511,14 @@ li.fav-ep-card[style*="--item-hover-color"]:hover {
     max-width: 100% !important;
   }
 
+  /* On Hold e Incomplete passam a ocupar a largura inteira no mobile,
+     evitando que uma tag isolada fique limitada a meia linha. */
   .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag-split[data-mode="watching"][data-mobile-label="On Hold"],
   .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag[data-mode="incomplete"] {
-    flex: 1 1 calc(50% - 4px) !important;
-    flex-basis: calc(50% - 4px) !important;
-    width: auto !important;
-    max-width: calc(50% - 4px) !important;
+    flex: 0 0 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list:has(.list-tag-split[data-mode="watching"][data-mobile-label="On Hold"]) .list-tag-split[data-mode="watching"][data-mobile-label="On Hold"] {
@@ -15681,46 +15683,47 @@ li.fav-ep-card[style*="--item-hover-color"]:hover {
   }
 }
 
-/* ── Watching Now (desktop): o 01, 02, 03... passa a ficar na frente do nome ── */
+/* ── Watching Now (desktop): posição grande à direita, igual ao All Ranking ── */
 @media (min-width: 601px) {
-  /* Remove o número grande do canto direito */
+  /* O número usa a mesma marca-d'água vertical do All Ranking, mas sem #. */
+  ol.ranking.mode-true-characters.category-watching li.anime-item {
+    overflow: hidden !important;
+  }
+
   ol.ranking.mode-true-characters.category-watching .meta::before {
-    content: none !important;
-  }
-
-  /* Sem a reserva de espaço que existia pro número grande */
-  ol.ranking.mode-true-characters.category-watching .title-row,
-  ol.ranking.mode-true-characters.category-watching .info-row {
-    width: 100% !important;
-    padding-right: 0 !important;
-  }
-
-  /* O clamp de linhas vai pro title-row pra o número e o nome fluírem na mesma linha */
-  ol.ranking.mode-true-characters.category-watching .title-row {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    overflow: hidden;
-  }
-
-  ol.ranking.mode-true-characters.category-watching .title-anime {
-    display: inline;
-    max-width: 100% !important;
-    overflow: visible;
-    white-space: normal;
-  }
-
-  /* Número herda o tamanho do título (por isso fica proporcional) */
-  ol.ranking.mode-true-characters.category-watching .title-anime::before {
-    content: counter(item, decimal-leading-zero);
-    display: inline-block;
-    margin-right: 0.4em;
-    color: color-mix(in srgb, var(--item-hover-color, #2dd4bf) 78%, #fff);
-    font-weight: 900;
-    font-size: 0.8em;
+    content: counter(item, decimal-leading-zero) !important;
+    top: 50% !important;
+    right: 10px !important;
+    left: auto !important;
+    width: 150px !important;
+    min-width: 150px;
+    height: auto;
+    padding: 0;
+    display: block;
+    text-align: right;
+    color: rgba(255,255,255,0.32);
+    font: 900 96px/0.72 var(--font-title);
     font-variant-numeric: tabular-nums;
-    vertical-align: 0.04em;
+    font-feature-settings: "tnum" 1;
+    letter-spacing: -0.06em;
+    transform: translateY(-50%) scaleY(3.55) !important;
+    transform-origin: center center;
+  }
+
+  ol.ranking.mode-true-characters.category-watching li.anime-item:hover .meta::before {
+    transform: translate(-3px, -50%) scaleY(3.55) !important;
+  }
+
+  /* Mantém o título e a barra de episódios afastados do número esticado,
+     como no All Ranking. A barra preserva os botões e o contador; só o trilho
+     flexível perde largura para não passar por baixo do 01/02/03. */
+  ol.ranking.mode-true-characters.category-watching .title-row {
+    padding-right: 102px !important;
+  }
+
+  ol.ranking.mode-true-characters.category-watching .watch-progress {
+    width: calc(100% - 102px) !important;
+    max-width: calc(100% - 102px) !important;
   }
 }
 
@@ -16942,4 +16945,59 @@ html body .calendar-toggle-btn,
 html body .drawer-close,
 html body .drawer-expand {
   border-radius: 0 !important;
+}
+
+/* ── Watching Now mobile/tablet: contador abaixo da barra ──
+   O layout mobile do site vai até 760px (não apenas 600px).
+   A barra e os botões ficam na primeira linha; o contador vai para
+   a segunda, alinhado ao início da própria barra. */
+@media (max-width: 760px) {
+  ol.ranking.mode-true-characters.category-watching li.anime-item .watch-progress {
+    display: grid !important;
+    grid-template-columns: 20px minmax(0, 1fr) 20px !important;
+    grid-template-rows: 20px auto !important;
+    align-items: center !important;
+    column-gap: 8px !important;
+    row-gap: 5px !important;
+    width: calc(100% - 67px) !important;
+    max-width: calc(100% - 67px) !important;
+    min-width: 0 !important;
+    margin-top: 5px !important;
+  }
+
+  ol.ranking.mode-true-characters.category-watching li.anime-item .watch-progress > .watch-progress-dec {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    justify-self: start !important;
+    margin: 0 !important;
+  }
+
+  ol.ranking.mode-true-characters.category-watching li.anime-item .watch-progress > .watch-progress-track {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  ol.ranking.mode-true-characters.category-watching li.anime-item .watch-progress > .watch-progress-inc {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+    margin: 0 !important;
+  }
+
+  ol.ranking.mode-true-characters.category-watching li.anime-item .watch-progress > .watch-progress-label {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+    align-self: start !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
 }
