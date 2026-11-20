@@ -147,6 +147,35 @@ if ('scrollRestoration' in history) {
       const lightboxHeroRank = document.getElementById('posterLightboxHeroRank');
       const lightboxTitle = document.getElementById('posterLightboxTitle');
       const lightboxList = document.getElementById('posterLightboxList');
+
+      // Mobile: quando a tag "Watching Now" combinada com a temporada ocupa a
+      // linha inteira (100%), mostra "Watching Now: Fall Season 2026" em vez
+      // de só a temporada. Mede a largura real depois do layout, então
+      // funciona em qualquer combinação de tags e ao redimensionar a tela.
+      function updateWatchingFullLabel() {
+        if (!lightboxList) return;
+        const tags = Array.from(lightboxList.querySelectorAll('.list-tag-split[data-mode="watching"]'));
+        tags.forEach(t => t.classList.remove('list-tag-full-label'));
+        if (!tags.length || !window.matchMedia('(max-width: 760px)').matches) return;
+        const fullLabel = Array.from(tags[0].querySelectorAll('.list-tag-part'))
+          .map(p => p.textContent.trim()).filter(Boolean).join(' ');
+        if (!fullLabel) return;
+        const cs = getComputedStyle(lightboxList);
+        const rowWidth = lightboxList.getBoundingClientRect().width
+          - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+        const tagWidth = tags[0].getBoundingClientRect().width;
+        if (rowWidth > 0 && tagWidth >= rowWidth - 4) {
+          tags.forEach(t => {
+            t.dataset.fullLabel = Array.from(t.querySelectorAll('.list-tag-part'))
+              .map(p => p.textContent.trim()).filter(Boolean).join(' ');
+            t.classList.add('list-tag-full-label');
+          });
+        }
+      }
+      if (lightboxList && typeof ResizeObserver === 'function') {
+        new ResizeObserver(() => requestAnimationFrame(updateWatchingFullLabel)).observe(lightboxList);
+      }
+      window.addEventListener('resize', () => requestAnimationFrame(updateWatchingFullLabel), { passive: true });
       const lightboxCharacters = document.getElementById('posterLightboxCharacters');
       const lightboxAnnounce = document.getElementById('posterLightboxAnnounce');
       const lightboxMeta = document.getElementById('posterLightboxMeta');
@@ -4009,6 +4038,25 @@ function getMetaFor(animeId) {
             mergedWatchingTagHtml = `<button type="button" class="list-tag list-tag-split" data-mode="watching" data-target-id="${escapeHtml(item.id)}" data-mobile-label="${escapeHtml(mobileWatchingLabel)}" style="--tag-color:${watchingColor};--tag-color-2:${seasonColor}"><span class="list-tag-bg" aria-hidden="true"></span><span class="list-tag-part">Watching Now:</span><span class="list-tag-part">${escapeHtml(division.text)}</span></button>`;
           }
 
+          // Rewatch no lightbox do Watching Now (mobile): a tag principal vira
+          // "Rewatching Now" e ocupa a primeira linha (100%), no lugar do All Animes.
+          const isRewatchingNow = !!mergedWatchingTagHtml && (() => {
+            const isRw = a => !!a && (a.rewatch === true || /rewatch-icon|\(\s*rw\s*\)/i.test(String(a.info || '')));
+            return isRw(watchingEntry)
+              || isRw(watchingData.find(a => a.id === item.id))
+              || isRw(animeData.find(a => a.id === item.id))
+              || !!item.querySelector('.rewatch-icon');
+          })();
+          // O texto "Rewatching Now" vale em todas as listas; a tag na primeira linha
+          // (mobile) só no lightbox aberto pelo Watching Now.
+          const isRewatchingNowView = isRewatchingNow && currentCategory === 'watching';
+          if (isRewatchingNow) {
+            mergedWatchingTagHtml = mergedWatchingTagHtml
+              .replace('class="list-tag list-tag-split"', 'class="list-tag list-tag-split list-tag-rewatching' + (isRewatchingNowView ? ' list-tag-rewatching-first' : '') + '"')
+              .replace('<span class="list-tag-part">Watching Now:</span>', '<span class="list-tag-part">Rewatching Now:</span>')
+              .replace(/data-mobile-label="([^"]*)"/, (m, label) => 'data-mobile-label="' + (label === 'Watching Now' ? 'Rewatching Now' : label) + '"');
+          }
+
           // Announced Sequels: uma entrada gera a tag combinada padrão.
           // Quando um anime tem várias entradas no Next Season Map (ex.:
           // One Piece e One Piece #2), o All Ranking mostra uma tag por data,
@@ -4157,6 +4205,7 @@ function getMetaFor(animeId) {
           lightboxList.innerHTML = listContent
             ? `<div class="poster-lightbox-list-track"><div class="poster-lightbox-list-group">${listContent}</div><div class="poster-lightbox-list-group" aria-hidden="true">${listContent}</div></div>`
             : '';
+          requestAnimationFrame(() => requestAnimationFrame(updateWatchingFullLabel));
 
           // Mobile: quando existem exatamente 3 tags de ranking,
           // "All Animes" fica sempre sozinha em cima e as outras duas
@@ -4173,7 +4222,7 @@ function getMetaFor(animeId) {
             : [];
 
           if (primaryRankingTags.length === 3) {
-            const allAnimesTagIndex = primaryRankingTags.findIndex(tag => tag.dataset.mode === 'all');
+            const allAnimesTagIndex = primaryRankingTags.findIndex(tag => tag.dataset.mode === (isRewatchingNowView ? 'watching' : 'all'));
 
             if (allAnimesTagIndex !== -1) {
               lightboxList.classList.add('has-three-ranking-tags');
@@ -4818,8 +4867,19 @@ function getMetaFor(animeId) {
           if (mode === 'announced') {
             // Announced Sequels usa a arte da pasta -sequels, a mesma mostrada
             // pelo card dessa categoria; respeita também entradas extras (#2...).
-            const originalSrc = cardImg && (cardImg.getAttribute('data-poster-src')
-              || cardImg.getAttribute('data-src') || cardImg.currentSrc || cardImg.src);
+            // Importante: usa a mesma fonte canônica de showItem() (animeData
+            // primeiro) em vez do <img> do card atual, porque quando o
+            // lightbox é aberto a partir de Watching Now/Plan to Watch o card
+            // usa um caminho de pasta diferente (watchingnow-images/...),
+            // que sequelsThumbSrc mapearia para uma pasta -sequels sem a
+            // imagem, fazendo o preload falhar e o pôster nunca trocar.
+            const sequelAnimeSource = animeData.find(a => a.id === currentItem.id)
+              || watchingData.find(a => a.id === currentItem.id)
+              || planToWatchData.find(a => a.id === currentItem.id)
+              || upcomingAnimeData.find(a => a.id === currentItem.id);
+            const originalSrc = (sequelAnimeSource && sequelAnimeSource.img)
+              || (cardImg && (cardImg.getAttribute('data-poster-src')
+                || cardImg.getAttribute('data-src') || cardImg.currentSrc || cardImg.src));
             const keys = getAnnouncedKeys(currentItem.id);
             const nsKey = getPreferredAnnouncedKey(
               currentItem.id,
@@ -7384,6 +7444,14 @@ function getMetaFor(animeId) {
         .forEach(button => {
           button.addEventListener('click', () => {
             const mode = button.getAttribute('data-mobile-mode');
+            // Já está nessa lista (e o drawer está fechado): o ícone só leva ao topo.
+            const drawerOpenNow = drawer.classList.contains('show')
+              && drawer.getAttribute('aria-hidden') === 'false';
+            if (mode === currentCategory && !drawerOpenNow && !(mode === 'watching' && window.__isReleaseCalendarMode && window.__isReleaseCalendarMode())) {
+              const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+              window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+              return;
+            }
             const targetItem = drawerItems.find(item => item.getAttribute('data-mode') === mode);
             if (targetItem) targetItem.click();
           });
@@ -7394,6 +7462,25 @@ function getMetaFor(animeId) {
       // decisão de alternar usa o estado VISUAL real do drawer, evitando
       // qualquer dessincronia da variável isDrawerOpen.
       if (mobileBottomNavEl) {
+        // Toque no ícone da lista em que já estamos: sobe ao topo (em captura,
+        // antes de qualquer outro clique do menu, e sem recarregar a lista).
+        mobileBottomNavEl.addEventListener('click', (event) => {
+          const listBtn = event.target.closest('.mobile-nav-btn[data-mobile-mode]');
+          if (!listBtn || !mobileBottomNavEl.contains(listBtn)) return;
+          const mode = listBtn.getAttribute('data-mobile-mode');
+          const drawerOpenNow = drawer.classList.contains('show')
+            && drawer.getAttribute('aria-hidden') === 'false';
+          const sameList = mode === currentCategory || listBtn.classList.contains('active');
+          const inCalendar = mode === 'watching' && window.__isReleaseCalendarMode && window.__isReleaseCalendarMode();
+          if (!sameList || drawerOpenNow || inCalendar) return;
+          event.preventDefault();
+          event.stopPropagation();
+          const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const behavior = reduce ? 'auto' : 'smooth';
+          window.scrollTo({ top: 0, behavior });
+          const root = document.scrollingElement || document.documentElement;
+          if (root && root.scrollTop > 0) root.scrollTo({ top: 0, behavior });
+        }, true);
         mobileBottomNavEl.addEventListener('click', (event) => {
           const button = event.target.closest('.mobile-nav-btn[data-mobile-action]');
           if (!button || !mobileBottomNavEl.contains(button)) return;
@@ -11756,6 +11843,98 @@ function getCalendarItems() {
     createDrawerController();
     initSearch();
     render();
+
+    // Trocar entre desktop e mobile (F12 / girar o celular / redimensionar)
+    // sem precisar dar F5: ao cruzar o limite, refaz a lista para usar as
+    // imagens do tamanho certo, mantendo a posição de rolagem.
+    (function watchViewportMode() {
+      const mqCards = window.matchMedia('(max-width: 600px)');
+      const mqLite = window.matchMedia('(max-width: 760px)');
+      const onLiteChange = () => { __MOBILE_LITE = mqLite.matches; };
+      let pending = 0;
+      const onCardsChange = () => {
+        cancelAnimationFrame(pending);
+        pending = requestAnimationFrame(() => {
+          const y = window.scrollY;
+          render();
+          window.scrollTo(0, y);
+        });
+      };
+      const bind = (mq, fn) => (mq.addEventListener ? mq.addEventListener('change', fn) : mq.addListener(fn));
+      bind(mqLite, onLiteChange);
+      bind(mqCards, onCardsChange);
+    })();
+
+    // Menu fixo (mobile): tocar no ícone da lista em que já estamos rola até o
+    // topo. Fica no document, em captura, para rodar antes de qualquer outro
+    // clique; a rolagem é animada aqui (comportamento "instant" a cada frame)
+    // porque o CSS tem scroll-behavior: smooth, que brigaria com uma animação.
+    (function initNavScrollTop() {
+      let rafId = 0;
+      const cancel = () => { if (rafId) { cancelAnimationFrame(rafId); rafId = 0; } };
+      ['wheel', 'touchstart', 'keydown'].forEach(type =>
+        window.addEventListener(type, cancel, { passive: true, capture: true }));
+
+      // Quem rola a página pode ser a janela, o <html> ou o <body> (com
+      // html/body em height:100% + overflow-x:hidden, o body vira o contêiner
+      // de rolagem e window.scrollTo não faz nada). Então junta todos os
+      // candidatos que estão rolados e leva todos ao topo.
+      function getScrollers() {
+        const found = new Set();
+        const root = document.scrollingElement || document.documentElement;
+        [root, document.documentElement, document.body].forEach(el => { if (el) found.add(el); });
+        // Qualquer outro elemento que esteja rolado de verdade (contêiner interno).
+        const all = document.body.querySelectorAll('*');
+        for (let i = 0; i < all.length; i++) {
+          const el = all[i];
+          if (el.scrollTop > 0 && !el.closest('#categoryDrawer, #posterLightbox, #mobileBottomNav')) found.add(el);
+        }
+        return Array.from(found);
+      }
+
+      function scrollToTop() {
+        cancel();
+        const scrollers = getScrollers();
+        const startPositions = scrollers.map(el => el.scrollTop || 0);
+        const winStart = window.scrollY || 0;
+        const startY = Math.max(winStart, ...startPositions);
+        if (startY <= 0) return;
+        const setTop = (factor) => {
+          if (winStart > 0) window.scrollTo({ top: Math.round(winStart * factor), behavior: 'instant' });
+          scrollers.forEach((el, i) => {
+            if (startPositions[i] > 0) el.scrollTo({ top: Math.round(startPositions[i] * factor), behavior: 'instant' });
+          });
+        };
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setTop(0); return; }
+        const duration = Math.min(900, 380 + startY / 12);
+        const t0 = performance.now();
+        const step = (now) => {
+          const p = Math.min(1, (now - t0) / duration);
+          setTop(Math.pow(1 - p, 3));
+          rafId = p < 1 ? requestAnimationFrame(step) : 0;
+        };
+        rafId = requestAnimationFrame(step);
+      }
+
+      window.addEventListener('click', (event) => {
+        const btn = event.target && event.target.closest
+          ? event.target.closest('#mobileBottomNav .mobile-nav-btn')
+          : null;
+        if (!btn || btn.hasAttribute('data-mobile-action')) return;
+        const mode = btn.getAttribute('data-mobile-mode');
+        const isCurrent = (mode && mode === currentCategory)
+          || (btn.classList.contains('active') && !btn.classList.contains('mobile-nav-btn--menu'));
+        if (!isCurrent) return;
+        const drawerEl = document.getElementById('categoryDrawer');
+        const drawerOpen = !!drawerEl && drawerEl.classList.contains('show')
+          && drawerEl.getAttribute('aria-hidden') === 'false';
+        const inCalendar = mode === 'watching' && window.__isReleaseCalendarMode && window.__isReleaseCalendarMode();
+        if (drawerOpen || inCalendar) return;
+        event.preventDefault();
+        event.stopPropagation();
+        scrollToTop();
+      }, true);
+    })();
     initReleaseCalendar();
     updatePageTexts();
     restoreCalendarState();
@@ -12253,5 +12432,50 @@ function getCalendarItems() {
       try { localStorage.setItem(STORE_KEY, enabled ? '1' : '0'); } catch (e) {}
     },
     isEnabled() { return enabled; },
+  });
+})();
+
+// ── Aviso de nova versão disponível ──
+// O service worker agora serve o app shell (HTML/JS/CSS) direto do cache
+// pra abrir instantâneo, e revalida em segundo plano. Quando ele detecta
+// que o conteúdo baixado é diferente do cache, manda essa mensagem; aqui
+// só mostramos um aviso simples pra recarregar quando o usuário quiser
+// (nunca recarrega sozinho, pra não interromper o que a pessoa tá fazendo).
+(function setupUpdateToast() {
+  if (!('serviceWorker' in navigator)) return;
+  let shown = false;
+  function showToast() {
+    if (shown) return;
+    shown = true;
+    const el = document.createElement('div');
+    el.setAttribute('role', 'status');
+    Object.assign(el.style, {
+      position: 'fixed', left: '50%', bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
+      transform: 'translateX(-50%)', zIndex: '99999',
+      display: 'flex', alignItems: 'center', gap: '10px',
+      padding: '10px 14px', borderRadius: '999px',
+      background: 'rgba(20,20,22,0.92)', color: '#f5f5f5',
+      font: '13px/1.3 system-ui, -apple-system, sans-serif',
+      boxShadow: '0 6px 24px rgba(0,0,0,0.4)',
+      border: '1px solid rgba(255,255,255,0.1)',
+      backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+      maxWidth: 'calc(100vw - 32px)',
+    });
+    const label = document.createElement('span');
+    label.textContent = 'Nova versão disponível';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Recarregar';
+    Object.assign(btn.style, {
+      background: '#fff', color: '#111', border: 'none', borderRadius: '999px',
+      padding: '6px 12px', font: 'inherit', fontWeight: '600', cursor: 'pointer', flexShrink: '0',
+    });
+    btn.addEventListener('click', () => location.reload());
+    el.appendChild(label);
+    el.appendChild(btn);
+    document.body.appendChild(el);
+  }
+  navigator.serviceWorker.addEventListener('message', event => {
+    if (event?.data?.type === 'myhtml-update-available') showToast();
   });
 })();

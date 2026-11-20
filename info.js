@@ -719,7 +719,7 @@ const rawAnimeData = [
     id: "roshidere",
     img: "myranks-images/myranks/roshidere.webp",
     title: "Alya Sometimes Hides Her Feelings in Russian",
-    info: "(rw) 1 temporada: 12 episódios",
+    info: "1 temporada: 12 episódios",
     studio: "Doga Kobo",
     airedSeason: "2024-2027",
     rewatchs: [
@@ -1308,6 +1308,7 @@ const rawAnimeData = [
     id: "no-game-no-life-zero",
     img: "myranks-images/myranks/no-game-no-life-zero.webp",
     title: "No Game No Life: Zero",
+    sequel: "No Game No Life",
     info: "Movie: 1h47m",
     studio: "MADHOUSE",
     airedSeason: "2017",
@@ -1482,21 +1483,28 @@ const rawWatchingData = [
       { label: "~1 temporada", episodes: "~48 episódios", malName: "Steel Ball Run: JoJo no Kimyou na Bouken", unwatched: true},
     ],
   },
+
+  {
+    id: "cote",
+    img: "watchingnow-images/watchingnow/cote.webp",
+    title: "Classroom of the Elite",
+    info: "(rw) 4 temporadas: 54 episódios",
+    seasons: [12,13,13,16],
+  },
+
   {
     id: "roshidere",
     img: "watchingnow-images/watchingnow/roshidere.webp",
     title: "Alya Sometimes Hides Her Feelings in Russian",
     info: "(rw) 1 temporada: 12 episódios",
     seasons: [12],
-
-    url: "https://www.anime-planet.com/anime/alya-sometimes-hides-her-feelings-in-russian",
-    crunchyroll: "https://www.crunchyroll.com/pt-br/series/G1XHJV0XM/alya-sometimes-hides-her-feelings-in-russian",
-    malUrl: "https://myanimelist.net/anime/54744/Tokidoki_Bosotto_Russia-go_de_Dereru_Tonari_no_Alya-san",
   },
+
   {
     id: "no-game-no-life",
     img: "watchingnow-images/watchingnow/no-game-no-life.webp",
     title: "No Game No Life",
+    prequel: "No Game No Life: Zero",
     info: "12 episódios",
     studio: "MADHOUSE",
     airedSeason: "2014",
@@ -2050,7 +2058,7 @@ const rawPlanToWatchData = [
     title: "Saga of Tanya the Evil",
     info: "2 temporadas: 24 episódios <br>Movie: 1h38m",
     studio: "NUT",
-    airedSeason: "2017-2019",
+    airedSeason: "2017-2026",
     url: "https://www.anime-planet.com/anime/saga-of-tanya-the-evil",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/GR9VJK494/saga-of-tanya-the-evil",
     malUrl: "https://myanimelist.net/anime/32615/Youjo_Senki",

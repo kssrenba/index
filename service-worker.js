@@ -2,7 +2,7 @@
 // Versões e caches pertencem apenas ao diretório deste site no GitHub Pages.
 const SCOPE_URL = new URL(self.registration.scope);
 const CACHE_PREFIX = 'myhtml-' + encodeURIComponent(SCOPE_URL.pathname) + '-';
-const APP_CACHE = CACHE_PREFIX + 'app-v5';
+const APP_CACHE = CACHE_PREFIX + 'app-v6';
 const IMAGE_CACHE = CACHE_PREFIX + 'images-v5';
 const MAX_IMAGES = 400;
 // Capas podem ser trocadas mantendo o mesmo nome de arquivo. Revalida em até
@@ -88,6 +88,43 @@ function cachedResponse(event, cacheName, image = false) {
   })().catch(() => { finishMaintenance(); return Response.error(); });
 }
 
+// App shell (HTML/JS/CSS/fontes): responde do cache IMEDIATAMENTE quando
+// disponível (sem esperar a rede) e revalida em segundo plano. Se o conteúdo
+// baixado for diferente do que já estava em cache, avisa as páginas abertas
+// via postMessage ('myhtml-update-available') para mostrarem um aviso de
+// atualização — a troca real só entra em uso quando a página recarregar.
+async function notifyClientsOfUpdate(url) {
+  try {
+    const clients = await self.clients.matchAll({ type: 'window' });
+    clients.forEach(client => client.postMessage({ type: 'myhtml-update-available', url }));
+  } catch (error) {}
+}
+
+function appShellResponse(event) {
+  const request = event.request;
+  return (async () => {
+    const cached = await findCached(request, APP_CACHE);
+    const forced = request.cache === 'reload' || request.cache === 'no-cache';
+    const isTextAsset = request.mode === 'navigate' || /\.(?:html|js|css)$/i.test(new URL(request.url).pathname);
+
+    const revalidation = refresh(request, APP_CACHE).then(async fresh => {
+      if (!cached || !fresh || !fresh.ok || !isTextAsset) return;
+      try {
+        const [oldText, newText] = await Promise.all([cached.clone().text(), fresh.clone().text()]);
+        if (oldText !== newText) await notifyClientsOfUpdate(request.url);
+      } catch (error) {}
+    }).catch(() => {});
+    event.waitUntil(revalidation);
+
+    if (cached && !forced) return cached;
+    try {
+      return await refresh(request, APP_CACHE);
+    } catch (error) {
+      return cached || Response.error();
+    }
+  })();
+}
+
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     await Promise.allSettled(['./', './index.html', './info.js', './manifest.json'].map(async path => {
@@ -143,6 +180,6 @@ self.addEventListener('fetch', event => {
     return;
   }
   if (request.mode === 'navigate' || /\.(?:html|js|css|woff2?)$/i.test(url.pathname)) {
-    event.respondWith(cachedResponse(event, APP_CACHE));
+    event.respondWith(appShellResponse(event));
   }
 });

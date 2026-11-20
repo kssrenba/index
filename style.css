@@ -5000,13 +5000,12 @@ h1.title {
     margin: 0;
     cursor: pointer;
     border-bottom: 1px solid transparent;
-    transition: border-color 0.2s ease, filter 0.2s ease;
+    transition: border-color 0.2s ease;
   }
 
   .poster-lightbox-list .list-tag:hover,
   .poster-lightbox-list .list-tag:focus-visible {
     border-bottom-color: currentColor;
-    filter: brightness(1.25);
   }
 
   .poster-lightbox-list .list-tag:active {
@@ -9944,7 +9943,8 @@ h1.title {
       padding: 5px 13px 5px 5px;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.055), 0 8px 20px rgba(0,0,0,0.14);
       overflow: hidden;
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      will-change: transform;
     }
 
     .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag:hover,
@@ -9953,7 +9953,6 @@ h1.title {
       background: color-mix(in srgb, var(--tag-color, var(--lb-accent)) 16%, rgba(255,255,255,0.035));
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 24px rgba(0,0,0,0.2);
       transform: translateY(-2px);
-      filter: brightness(1.08);
     }
 
     .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-rank {
@@ -10087,7 +10086,8 @@ h1.title {
     }
 
     .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag {
-      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      will-change: transform;
     }
 
     .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-combined--fav-episodes > .list-tag:hover,
@@ -10095,7 +10095,6 @@ h1.title {
       background: rgba(255,255,255,0.13) !important;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 20px rgba(0,0,0,0.18);
       transform: translateY(-2px) !important;
-      filter: brightness(1.12) !important;
       z-index: 2;
     }
 
@@ -10194,13 +10193,13 @@ h1.title {
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.055), 0 8px 20px rgba(0,0,0,0.16);
       text-shadow: none;
       cursor: default;
-      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      will-change: transform;
     }
 
     .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-mal-note:not(.empty):not(.unwatched):hover {
       background: color-mix(in srgb, currentColor 16%, rgba(255,255,255,0.035));
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.075), 0 10px 24px rgba(0,0,0,0.2);
-      filter: brightness(1.08);
       transform: translateY(-2px);
       cursor: default;
     }
@@ -13138,9 +13137,10 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
   /* Hover final: o movimento deve acontecer no próprio bloco/botão, não só no texto. */
   @media (min-width: 761px) {
     .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .rank-meta {
-      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
       position: relative;
       z-index: 1;
+      will-change: transform;
     }
 
     /* O card inteiro de Studio / Year / Rewatch sobe junto.
@@ -13150,7 +13150,6 @@ ol.ranking.mode-true-characters.category-trueCharacters .info-row:hover .info {
       transform: translateY(-2px) !important;
       background: rgba(255,255,255,0.075) !important;
       box-shadow: 0 10px 24px rgba(0,0,0,0.2);
-      filter: brightness(1.08);
       z-index: 3;
     }
 
@@ -17000,4 +16999,78 @@ html body .drawer-expand {
     line-height: 1.2 !important;
     white-space: nowrap !important;
   }
+}
+
+/* Mobile: tag Watching Now + temporada ocupando 100% da linha mostra o texto completo. */
+@media (max-width: 760px) {
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split.list-tag-full-label::before {
+    content: attr(data-full-label);
+    white-space: nowrap;
+  }
+}
+
+
+/* Mobile: Rewatching Now (anime com RW, no lightbox do Watching Now) é a tag principal, 100% da primeira linha. */
+@media (max-width: 760px) {
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split.list-tag-rewatching-first {
+    order: -1 !important;
+    flex: 0 0 100% !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .poster-lightbox:not(.simple-mode) .poster-lightbox-panel .poster-lightbox-list .list-tag-split.list-tag-rewatching.list-tag-full-label::before {
+    content: attr(data-full-label);
+  }
+}
+
+
+/* Mobile: dock inferior flutuante, no mesmo estilo dos cards/tags do site:
+   superfície quase preta, borda de 1px, cantos de 14px, tom da categoria bem discreto. */
+@media (max-width: 600px) {
+  html body > #mobileBottomNav.mobile-bottom-nav {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto !important;
+    min-height: 62px !important;
+    padding: 7px 8px !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 14px !important;
+    background: color-mix(in srgb, var(--current-cat-color, #cbd5e1) 4%, #0b0b0b) !important;
+    box-shadow: 0 8px 24px -6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04) !important;
+  }
+  html body > #mobileBottomNav.mobile-bottom-nav.has-side-active {
+    border-color: color-mix(in srgb, var(--mobile-nav-accent, #cbd5e1) 22%, rgba(255,255,255,0.08)) !important;
+    background: color-mix(in srgb, var(--mobile-nav-accent, #cbd5e1) 6%, #0b0b0b) !important;
+    box-shadow: 0 8px 24px -6px rgba(0,0,0,0.6), inset 0 1px 0 color-mix(in srgb, var(--mobile-nav-accent, #cbd5e1) 14%, transparent) !important;
+  }
+  html body > #mobileBottomNav .mobile-nav-btn {
+    width: 48px !important;
+    height: 46px !important;
+    border-radius: 10px !important;
+    color: rgba(203,213,225,0.5) !important;
+  }
+  html body > #mobileBottomNav .mobile-nav-btn:active {
+    background: rgba(255,255,255,0.05) !important;
+    transform: scale(0.95) !important;
+  }
+  html body > #mobileBottomNav .mobile-nav-btn.active:not(.mobile-nav-btn--menu),
+  html body > #mobileBottomNav.has-side-active .mobile-nav-btn.active:not(.mobile-nav-btn--menu) {
+    color: var(--nav-color, #fff) !important;
+    background: color-mix(in srgb, var(--nav-color, #fff) 12%, rgba(255,255,255,0.025)) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.055), inset 0 0 0 1px color-mix(in srgb, var(--nav-color, #fff) 18%, transparent) !important;
+  }
+  html body > #mobileBottomNav .mobile-nav-btn.active:not(.mobile-nav-btn--menu) svg {
+    transform: none !important;
+    filter: none !important;
+  }
+  html body > #mobileBottomNav .mobile-nav-btn--menu .mobile-nav-menu-icon {
+    border-radius: 10px !important;
+  }
+  html body { padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px)) !important; }
+  html body .load-more-container { margin-top: 14px !important; padding-bottom: 0 !important; }
+  html body .site-footer { margin: 0 !important; padding: 0 !important; }
+  html body > #scrollFab.scroll-fab { bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important; }
 }
