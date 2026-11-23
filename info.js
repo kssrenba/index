@@ -367,7 +367,8 @@ const rawAnimeData = [
     studio: "Lerche",
     airedSeason: "2017-2026",
     rewatchs: [
-      { season: 'S1-S3', name: '1 TIME' },
+      { season: 'S1-S2', name: '2 TIMES' },
+      { season: 'S3', name: '1 TIME' },
     ],
     mal: [
       { label: "1ª temporada", episodes: 12, note: 8, malName: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e" },
@@ -3810,6 +3811,7 @@ const nextSeasonMap = {
   "frieren": { info: "Season 3 in Oct 2027" },
 
   // 27
+  "cote": { info: "Season 5 in 2027" },
   "haikyuu": { info: "New Movie: vs. Little Giants in 2027" },
   "haikyuu#2": { info: "New TV Special: Where Monsters Go in 2027" },
   "dan-da-dan": { info: "Season 3 in 2027" },
@@ -3842,7 +3844,6 @@ const nextSeasonMap = {
   "sentenced-hero": { info: "Season 2 in Production" },//mar 26
 
   // -2 seasons (april 26 - sep 26)
-  "cote": { info: "Season 5 in Production" },//jun 26
   "wistoria": { info: "Season 3 in Production" },//jun 26
   "nippon-sangoku": { info: "Season 2 in Production" },//jun 26
   "grand-blue": { info: "Season 4 in Production" },//sep 26

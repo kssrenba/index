@@ -2980,7 +2980,7 @@ function getMetaFor(animeId) {
         while (el) {
           if (el.classList && el.classList.contains('season-header')) {
             const textEl = el.querySelector('.season-text');
-            const text = textEl ? textEl.textContent.trim() : '';
+            const text = el.getAttribute('data-short-label') || (textEl ? textEl.textContent.trim() : '');
             const color = el.style.getPropertyValue('--season-color') || null;
             return text ? { text, color } : null;
           }
@@ -4186,7 +4186,12 @@ function getMetaFor(animeId) {
           ].filter(Boolean);
           const tagsHtml = orderedTagParts.join('<span class="list-sep"></span>');
 
-          const divisionHtml = (division && !hideDivision && !isUnwatchedDivision && !watchingEntry && !mergedWatchingTagHtml && !((mergedAnnouncedTagHtml || combinedAnnouncedTagsHtml) && currentCategory === 'announced'))
+          // Upcoming Animes já possui uma tag de categoria própria (a pill
+          // verde com o fundo decorativo). A divisão do cabeçalho repetia
+          // o mesmo texto como uma segunda faixa lisa; mantém apenas a pill.
+          const isUpcomingDuplicateDivision = division
+            && String(division.text).trim() === String(CATEGORY_LABEL.upcoming || 'Upcoming Animes').trim();
+          const divisionHtml = (division && !hideDivision && !isUpcomingDuplicateDivision && !isUnwatchedDivision && !watchingEntry && !mergedWatchingTagHtml && !((mergedAnnouncedTagHtml || combinedAnnouncedTagsHtml) && currentCategory === 'announced'))
             ? `<span class="list-sep"></span><span class="list-division"><span class="list-tag-name">${escapeHtml(division.text)}</span></span>`
             : '';
 
@@ -5638,7 +5643,7 @@ function getMetaFor(animeId) {
       const h = (location.hash || '').replace('#', '').trim();
       if (!h) return 'all';
       for (const [mode, slug] of Object.entries(hashMap)) {
-        if (slug && slug === h) return mode;
+        if (slug && slug === h) return mode === 'upcoming' ? 'announced' : mode;
       }
       return 'all';
     }
@@ -6327,10 +6332,19 @@ function getMetaFor(animeId) {
       const nsLines = ns ? String(ns.info).split(/<\/br>|<br\s*\/?>/i).map(s => formatNextSeasonText(s.trim())).filter(Boolean) : [];
       const isMulti = nsLines.length > 1;
 
-      const stripHtml = ns ? `
+      let stripHtml = ns ? `
             <div class="announce-strip announce-strip--meta"${isMulti ? ` data-lines='${JSON.stringify(nsLines).replace(/'/g, "&apos;")}'` : ''}>
               <div class="announce-track"><span class="announce-line">${nsLines[0]}</span></div>
             </div>` : '';
+      // Upcoming Animes: o texto de "info" (ex: "Airing in January 2027") usa o
+      // mesmo visual da faixa do Next Season Map (SEASON 5 IN PRODUCTION).
+      if (mode === 'upcoming' && !ns && remainingInfo) {
+        stripHtml = `
+            <div class="announce-strip announce-strip--meta">
+              <div class="announce-track"><span class="announce-line">${formatNextSeasonText(remainingInfo)}</span></div>
+            </div>`;
+        remainingInfo = '';
+      }
       let subClass = '';
       if (mode === 'all') {
         const subCat = getSubCategory(anime.id);
@@ -6742,7 +6756,7 @@ function getMetaFor(animeId) {
       else if (currentCategory === 'sports') pageTitle.innerText = "sports anime ranking";
       else if (currentCategory === 'comedy') pageTitle.innerText = "comedy anime ranking";
       else if (currentCategory === 'mecha') pageTitle.innerText = "mecha/cyberpunk anime ranking";
-      else if (currentCategory === 'announced') pageTitle.innerText = "anime with announced sequels or movies";
+      else if (currentCategory === 'announced') pageTitle.innerText = "announced sequels and new anime coming soon";
       else if (currentCategory === 'upcoming') pageTitle.innerText = "new animes coming in the future";
       else if (currentCategory === 'favEpisodes') pageTitle.innerText = "episodes that are absolute cinema for me";
       else if (currentCategory === 'trueCharacters') pageTitle.innerText = "characters that are absolutely peak";
@@ -7613,7 +7627,7 @@ function getMetaFor(animeId) {
     function updateDrawerCounts() {
       document.querySelectorAll('[data-count-mode]').forEach(el => {
         const mode = el.getAttribute('data-count-mode');
-        const n = getFilteredData(mode).length;
+        const n = getFilteredData(mode).length + (mode === 'announced' ? upcomingAnimeData.length : 0);
         el.textContent = n + (n === 1 ? ' item' : ' items');
       });
     }
@@ -7685,12 +7699,16 @@ function getMetaFor(animeId) {
         const mi = months.indexOf(m[1].toLowerCase());
         const year = parseInt(m[2], 10);
         const colors = ['#FFFAFA', '#FFFAFA', '#f472b6', '#f472b6', '#f472b6', '#fbbf24', '#fbbf24', '#fbbf24', '#ef6a3a', '#ef6a3a', '#ef6a3a', '#FFFAFA'];
-        return { key: `${names[mi]} ${year}`, label: `${names[mi]} ${year}`, color: colors[mi], sortKey: year * 100 + mi };
+        // Título do cabeçalho: estação + ano + mês (ex: "Spring 2027 (April)").
+        // O "label" curto (Jan 2027) continua sendo usado nas tags dos cards.
+        const fullNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        const seasonNames = ['Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer','Fall','Fall','Fall'];
+        return { key: `${names[mi]} ${year}`, label: `${names[mi]} ${year}`, headerLabel: `${seasonNames[mi]} ${year} (${fullNames[mi]})`, color: colors[mi], sortKey: year * 100 + mi };
       }
       const y = info.match(/\b(20\d{2})\b/);
       if (y) {
         const year = parseInt(y[1], 10);
-        return { key: String(year), label: String(year), color: '#34d399', sortKey: year * 100 + 13 };
+        return { key: String(year), label: String(year), headerLabel: `sometime in ${year}`, color: '#34d399', sortKey: year * 100 + 13 };
       }
       return { key: 'TBA', label: 'TBA', color: '#94a3b8', sortKey: Infinity };
     }
@@ -7732,14 +7750,31 @@ function getMetaFor(animeId) {
       const ordered = [...groups.values()].sort((x, y) =>
         x.g.sortKey === y.g.sortKey ? 0 : x.g.sortKey === Infinity ? 1 : y.g.sortKey === Infinity ? -1 : x.g.sortKey - y.g.sortKey);
 
+      // Upcoming Animes (animes novos, não continuações) entram na mesma lista,
+      // numa seção própria logo acima do TBA (ou no fim, se não houver TBA).
+      if (upcomingAnimeData.length) {
+        const upcomingGroup = {
+          upcoming: true,
+          g: { label: 'Upcoming Animes', headerLabel: 'Upcoming Animes', color: CATEGORY_HOVER_COLOR.upcoming || '#a3e635' },
+          items: upcomingAnimeData.map(anime => ({ card: anime, unwatched: false }))
+        };
+        const tbaIdx = ordered.findIndex(o => o.g.sortKey === Infinity);
+        if (tbaIdx === -1) ordered.push(upcomingGroup);
+        else ordered.splice(tbaIdx, 0, upcomingGroup);
+      }
+
       let html = '';
-      ordered.forEach(({ g, items }) => {
-        html += `<li class="season-header" style="--season-color: ${g.color};">
-                  <a class="season-text season-text-link" href="${ANNOUNCED_LIST_URL}" target="_blank" rel="noopener">${g.label}</a>
+      ordered.forEach(({ g, items, upcoming }) => {
+        const headerText = upcoming
+          ? `<span class="season-text">${g.headerLabel}</span>`
+          : `<a class="season-text season-text-link" href="${ANNOUNCED_LIST_URL}" target="_blank" rel="noopener">${g.headerLabel || g.label}</a>`;
+        html += `<li class="season-header" data-short-label="${g.label}" style="--season-color: ${g.color};">
+                  ${headerText}
                   <div class="season-line"></div>
                 </li>`;
-        html += items.map(({ card, unwatched }) =>
-          createAnimeCard(card, unwatched ? 'announced-unwatched' : 'announced', g.color)).join('');
+        html += items.map(({ card, unwatched }, idx) => upcoming
+          ? createAnimeCard(card, 'upcoming', g.color, idx)
+          : createAnimeCard(card, unwatched ? 'announced-unwatched' : 'announced', g.color)).join('');
       });
       return html;
     }
@@ -8197,6 +8232,8 @@ function getMetaFor(animeId) {
     }
 
     function render() {
+      // "upcoming" não tem mais lista própria: vive dentro de Announced (Coming Soon).
+      if (currentCategory === 'upcoming') currentCategory = 'announced';
       if (__cancelScrollRestore) __cancelScrollRestore();
       __posterRenderGeneration++;
       __posterLoadJobs.length = 0;
@@ -9465,10 +9502,10 @@ function getMetaFor(animeId) {
       function categoryForResult(entry) {
         // Resultado veio de um comando de lista específica (ex: "/romance")
         // -> navega pra aquela página, não pro "all" genérico.
-        if (entry.forcedCategory) return entry.forcedCategory;
+        if (entry.forcedCategory) return entry.forcedCategory === 'upcoming' ? 'announced' : entry.forcedCategory;
         if (entry.tag === 'watching') return 'watching';
         if (entry.tag === 'plan') return 'plan';
-        if (entry.tag === 'upcoming') return 'upcoming';
+        if (entry.tag === 'upcoming') return 'announced';
         if (entry.tag === 'favep') return 'favEpisodes';
         if (entry.tag === 'trueCharacters') return 'trueCharacters';
         return 'all';
@@ -11620,7 +11657,7 @@ function getMetaFor(animeId) {
       if (!st || !st.id) return;
 
       if (st.category && st.category !== currentCategory) {
-        currentCategory = st.category;
+        currentCategory = st.category === 'upcoming' ? 'announced' : st.category;
         render();
       }
 
