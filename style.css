@@ -17074,3 +17074,171 @@ html body .drawer-expand {
   html body .site-footer { margin: 0 !important; padding: 0 !important; }
   html body > #scrollFab.scroll-fab { bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important; }
 }
+/* ── Announced Sequels: card "placeholder" (temporada ainda sem todos os
+   animes confirmados) ──────────────────────────────────────────────────
+   Reaproveita a estrutura e o visual normal de ".anime-item" nessa lista
+   (ambient borrado, imagem, título), mas sem número de posição e sem
+   cursor/clique de poster lightbox — ver guards por ".anime-item--placeholder"
+   em script.js (click delegado + attachCardClicks). */
+/* Hover do placeholder: igual ao dos outros cards do Coming Soon (sem override).
+   Só o cursor continua padrão, já que o card não abre lightbox. */
+ol.ranking.category-announced li.anime-item.anime-item--placeholder {
+  cursor: default !important;
+}
+
+/* Sem número de posição, qualquer que seja o mecanismo (counter(item) via
+   .meta::before/.title-row::before em diferentes breakpoints, ou o
+   .rank dentro de .rank-wrap). */
+li.anime-item.anime-item--placeholder .meta::before,
+li.anime-item.anime-item--placeholder .title-row::before,
+li.anime-item.anime-item--placeholder .rank-wrap .rank,
+li.anime-item.anime-item--placeholder .rank-secondary {
+  content: none !important;
+  display: none !important;
+}
+
+/* Título neutro, levemente apagado pra não competir visualmente com os
+   cards de animes confirmados. */
+li.anime-item.anime-item--placeholder .title-anime {
+  color: rgba(255,255,255,0.55) !important;
+  font-style: italic;
+}
+/* ── Announced Sequels (Coming Soon) ─────────────────────────────────────
+   Desktop: sem número de posição (01, 02, 03...) nos cards.
+   Mobile: o card placeholder ("No Anime") não aparece. */
+@media (min-width: 601px) {
+  ol.ranking.category-announced .meta::before,
+  ol.ranking.mode-true-characters.category-announced .meta::before,
+  ol.ranking.mode-true-characters.category-announced .title-row::before,
+  ol.ranking.category-announced .rank-wrap,
+  ol.ranking.category-announced .rank-secondary {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  ol.ranking.category-announced li.anime-item.anime-item--placeholder {
+    display: none !important;
+  }
+}
+
+/* Coming Soon (desktop): sem número de posição, o título e o info usam o
+   card até o final (remove a reserva de espaço que ficava pro 01/02). */
+@media (min-width: 601px) {
+  ol.ranking.mode-true-characters.category-announced .meta {
+    padding-right: 24px !important;
+  }
+  ol.ranking.mode-true-characters.category-announced .title-row,
+  ol.ranking.mode-true-characters.category-announced .info-row {
+    padding-right: 0 !important;
+    max-width: 100% !important;
+  }
+  ol.ranking.mode-true-characters.category-announced .title-anime,
+  ol.ranking.mode-true-characters.category-announced .info-row .info {
+    max-width: 100% !important;
+  }
+}
+
+/* Coming Soon: contagem de animes abaixo do título da temporada */
+li.season-header:has(.season-count) {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+li.season-header .season-count {
+  order: 5;
+  flex: 0 0 100%;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  color: rgba(255,255,255,0.45);
+}
+@media (max-width: 600px) {
+  li.season-header .season-count { font-size: 11.5px; }
+}
+
+/* Watching Now (desktop): sem número de posição, título/info usam o card
+   inteiro e o contador de animes fica abaixo do cabeçalho (igual ao Coming Soon). */
+@media (min-width: 601px) {
+  ol.ranking.category-watching .meta::before,
+  ol.ranking.mode-true-characters.category-watching .meta::before,
+  ol.ranking.mode-true-characters.category-watching li.anime-item:hover .meta::before,
+  ol.ranking.mode-true-characters.category-watching .title-row::before,
+  ol.ranking.category-watching .rank-wrap,
+  ol.ranking.category-watching .rank-secondary {
+    content: none !important;
+    display: none !important;
+  }
+  ol.ranking.mode-true-characters.category-watching .meta {
+    padding-right: 24px !important;
+  }
+  ol.ranking.mode-true-characters.category-watching .title-row,
+  ol.ranking.mode-true-characters.category-watching .info-row {
+    padding-right: 0 !important;
+    max-width: 100% !important;
+  }
+  ol.ranking.mode-true-characters.category-watching .title-anime,
+  ol.ranking.mode-true-characters.category-watching .info-row .info {
+    max-width: 100% !important;
+  }
+}
+@media (min-width: 761px) {
+  ol.ranking.mode-true-characters.category-watching .watch-progress {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+/* Contador de animes do Watching Now só no desktop */
+@media (max-width: 600px) {
+  ol.ranking.category-watching li.season-header .season-count { display: none !important; }
+}
+
+/* Busca: contador de resultados abaixo do título de cada seção */
+.search-section-header { flex-wrap: wrap; row-gap: 2px; }
+.search-section-header .search-section-count {
+  order: 5;
+  flex: 0 0 100%;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: rgba(255,255,255,0.45);
+}
+@media (max-width: 600px) {
+  .search-section-header .search-section-count { font-size: 11px; }
+}
+
+/* Busca (desktop): cards do Watching Now sem número de posição */
+@media (min-width: 601px) {
+  .search-result-item--watching .search-result-rank {
+    display: none !important;
+  }
+}
+
+/* Watching Now (mobile/tablet): a barra de episódios vai até o final do card */
+@media (max-width: 760px) {
+  ol.ranking.mode-true-characters.category-watching li.anime-item .watch-progress,
+  ol.ranking.category-watching li.anime-item .watch-progress {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Busca (desktop): sem o número de posição, o texto e a barra de episódios
+   dos cards do Watching Now vão até o final do card. */
+@media (min-width: 601px) {
+  .search-result-item--watching .search-result-info {
+    padding-right: 17px !important;
+  }
+  .search-result-item--watching .search-result-progress.watch-progress {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

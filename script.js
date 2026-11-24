@@ -4630,6 +4630,11 @@ function getMetaFor(animeId) {
         const item = e.target.closest('.anime-item');
         if (!item) return;
 
+        // Card "placeholder" do Announced Sequels (temporada futura ainda
+        // sem todos os animes confirmados) — não representa um anime de
+        // verdade, então não abre poster lightbox nem faz nada no clique.
+        if (item.classList.contains('anime-item--placeholder')) return;
+
         // O calendário reaproveita o visual dos cards do Watching Now,
         // mas não usa poster lightbox. O clique serve apenas para abrir
         // aquele anime dentro da lista Watching Now.
@@ -5896,7 +5901,7 @@ function getMetaFor(animeId) {
           wrap.classList.add('poster-loaded');
           img.style.display = 'block';
           img.classList.add('loaded');
-          if (ambient) {
+          if (ambient && !ambient.hasAttribute('data-ambient-fixed')) {
             // No carrossel dos Peak Episodes, a imagem visível pode mudar
             // sem recriar o card. Usa a origem ativa, não a capa inicial
             // capturada quando o card foi carregado.
@@ -7659,6 +7664,7 @@ function getMetaFor(animeId) {
       if (noSeason.length) {
         html += `<li class="season-header season-header-novisual" data-season="__no-season__" style="--season-color: ${WATCHING_NO_SEASON_LABEL.color};">
                   <span class="season-text">${WATCHING_NO_SEASON_LABEL.text}</span>
+                  <span class="season-count">${noSeason.length} ${noSeason.length === 1 ? 'ANIME' : 'ANIMES'}</span>
                   <div class="season-line"></div>
                 </li>`;
         html += noSeason.map(anime => createAnimeCard(anime, 'watching', WATCHING_NO_SEASON_LABEL.color)).join('');
@@ -7679,6 +7685,7 @@ function getMetaFor(animeId) {
           : `<span class="season-text">${escSeason(seasonObj.text)}</span>`;
         html += `<li class="season-header" data-season="${key}" style="--season-color: ${seasonObj.color};">
                   ${seasonTextHtml}
+                  <span class="season-count">${groups[key].length} ${groups[key].length === 1 ? 'ANIME' : 'ANIMES'}</span>
                   <div class="season-line"></div>
                 </li>`;
         html += groups[key].map(anime => createAnimeCard(anime, 'watching', seasonObj.color)).join('');
@@ -7736,6 +7743,44 @@ function getMetaFor(animeId) {
       return keys[0] || null;
     }
 
+    // Card "placeholder" do Announced Sequels: preenche a vaga de uma
+    // temporada futura que ainda não teve todos os animes confirmados.
+    // Não representa um anime de verdade — por isso não tem número de
+    // posição (sem counter, sem .rank) e não abre o poster lightbox (ver
+    // guards por ".anime-item--placeholder" no click delegado e no
+    // attachCardClicks). A imagem usa sempre other-images/unknown.webp,
+    // sem passar pela transformação de pasta do sequelsThumbSrc.
+    const ANNOUNCED_PLACEHOLDER_IMG = 'other-images/unknown.webp';
+    const ANNOUNCED_PLACEHOLDER_TITLE = 'No Anime';
+    // Nº de colunas do grid de 3 colunas (ol.ranking desktop: repeat(3,1fr)),
+    // usado só pra completar a linha de cada temporada com placeholders.
+    const ANNOUNCED_GRID_COLUMNS = 3;
+    function createAnnouncedPlaceholderCard(dateLabel = '', ambientImg = ANNOUNCED_PLACEHOLDER_IMG) {
+      const nsText = dateLabel ? `Season X in ${dateLabel}` : 'Season X';
+      return `
+        <li class="anime-item anime-item--placeholder has-next-season" aria-hidden="true">
+          <div class="anime-item-ambient ready" data-ambient-fixed="1" aria-hidden="true" style="background-image:url('${ambientImg}')"></div>
+          <div class="anime-item-ambient-shade" aria-hidden="true"></div>
+          <div class="rank-wrap" aria-hidden="true"></div>
+          <div class="poster-wrap">
+            <img class="thumb" data-src="${ANNOUNCED_PLACEHOLDER_IMG}" data-poster-src="${ANNOUNCED_PLACEHOLDER_IMG}" alt="" decoding="async">
+            <div class="poster-fallback" aria-hidden="true"></div>
+          </div>
+          <div class="meta">
+            <div class="title-row">
+              <h3 class="title-anime">${ANNOUNCED_PLACEHOLDER_TITLE}</h3>
+            </div>
+            <div class="info-row">
+              <p class="info">X temporada: Y episódios</p>
+            </div>
+            <div class="announce-strip announce-strip--meta">
+              <div class="announce-track"><span class="announce-line">${nsText}</span></div>
+            </div>
+          </div>
+        </li>
+      `;
+    }
+
     function renderAnnouncedList(data) {
       const groups = new Map();
       data.forEach(anime => {
@@ -7763,18 +7808,48 @@ function getMetaFor(animeId) {
         else ordered.splice(tbaIdx, 0, upcomingGroup);
       }
 
-      let html = '';
+      const ambientPool = [];
       ordered.forEach(({ g, items, upcoming }) => {
+        if (upcoming) return;
+        items.forEach(({ card }) => {
+          const src = sequelsThumbSrc(card.img, card.nsKey);
+          if (src) ambientPool.push({ groupKey: g.key, src });
+        });
+      });
+      let placeholderCounter = 0;
+
+      let html = '';
+      ordered.forEach(({ g, items, upcoming }, groupIdx) => {
         const headerText = upcoming
           ? `<span class="season-text">${g.headerLabel}</span>`
           : `<a class="season-text season-text-link" href="${ANNOUNCED_LIST_URL}" target="_blank" rel="noopener">${g.headerLabel || g.label}</a>`;
+        const fillCount = (!upcoming && g.sortKey !== Infinity)
+          ? (items.length % ANNOUNCED_GRID_COLUMNS === 0 ? 0 : ANNOUNCED_GRID_COLUMNS - (items.length % ANNOUNCED_GRID_COLUMNS))
+          : 0;
+        const countText = `${items.length} ${items.length === 1 ? 'ANIME' : 'ANIMES'}`;
         html += `<li class="season-header" data-short-label="${g.label}" style="--season-color: ${g.color};">
                   ${headerText}
+                  <span class="season-count">${countText}</span>
                   <div class="season-line"></div>
                 </li>`;
         html += items.map(({ card, unwatched }, idx) => upcoming
           ? createAnimeCard(card, 'upcoming', g.color, idx)
           : createAnimeCard(card, unwatched ? 'announced-unwatched' : 'announced', g.color)).join('');
+
+        // Preenche a "vaga" das temporadas futuras que ainda não têm todos
+        // os animes confirmados: completa a linha do grid (3 colunas) com
+        // cards placeholder, em vez de deixar espaço vazio. Não se aplica
+        // ao grupo "Upcoming Animes" nem ao TBA (sortKey Infinity), já que
+        // esses dois já representam o "ainda sem data" por natureza.
+        if (!upcoming && g.sortKey !== Infinity) {
+          for (let i = 0; i < fillCount; i++) {
+            const candidates = ambientPool.filter(p => p.groupKey !== g.key);
+            const pick = candidates.length
+              ? candidates[(placeholderCounter++ + groupIdx * 3) % candidates.length].src
+              : ANNOUNCED_PLACEHOLDER_IMG;
+            html += createAnnouncedPlaceholderCard(g.label, pick);
+          }
+        }
       });
       return html;
     }
@@ -8316,6 +8391,13 @@ function getMetaFor(animeId) {
       document.querySelectorAll('.anime-item').forEach(item => {
         if (item.dataset._malAttached === '1') return;
         item.dataset._malAttached = '1';
+
+        // Card "placeholder" do Announced Sequels: sem anime de verdade
+        // associado, então nem cursor de pointer nem clique fazem nada.
+        if (item.classList.contains('anime-item--placeholder')) {
+          item.style.cursor = 'default';
+          return;
+        }
 
         const animePlanetUrl = item.getAttribute('data-anime-planet-url');
         const isWatchingCard = !!animePlanetUrl;
@@ -9911,7 +9993,7 @@ function getMetaFor(animeId) {
                               </div>`;
                     })();
             return `
-              <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${usesAnnouncedCardStyle ? ' search-result-item--ann' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id] && reserveNs !== false) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
+              <div class="search-result-item${entry.tag === 'trueCharacters' ? ' search-result-item--tc' : ''}${usesAnnouncedCardStyle ? ' search-result-item--ann' : ''}${entry.tag === 'watching' ? ' search-result-item--watching' : ''}${(entry.tag !== 'favep' && entry.tag !== 'trueCharacters' && !nextSeasonMap[entry.anime.id] && reserveNs !== false) ? ' search-result-item--no-ns' : ''}" data-idx="${i}" role="option" style="--acc: ${acc}; --acc-glow: ${accGlow};">
                 <div class="search-result-card-inner">
                   <div class="search-result-ambient" aria-hidden="true"></div>
                   <div class="search-result-ambient-shade" aria-hidden="true"></div>
@@ -10063,11 +10145,22 @@ function getMetaFor(animeId) {
         // mais perto que o normal).
         const rowsWithHead = new Set(pieces.filter(p => p.head).map(p => p.row));
         let idxCounter = 0;
+        // Contador de resultados da seção (ex: "3 ANIMES"). Personagens e
+        // episódios usam o próprio substantivo.
+        const searchSectionCountLabel = (section) => {
+          const n = section.items.length;
+          const all = (tag) => section.items.every(e => e.tag === tag);
+          const noun = all('trueCharacters') ? ['CHARACTER', 'CHARACTERS']
+            : all('favep') ? ['EPISODE', 'EPISODES']
+            : ['ANIME', 'ANIMES'];
+          return `${n} ${n === 1 ? noun[0] : noun[1]}`;
+        };
         const piecesHtml = pieces.map(pc => {
           const isCont = expandedLayout && !pc.head && !rowsWithHead.has(pc.row);
           const headerHtml = (pc.head || (expandedLayout && !isCont)) ? `
             <div class="search-section-header${pc.head ? '' : ' is-ghost'}${pc.head && pc.section.mode ? ' is-link' : ''}" style="--section-color: ${pc.section.color};"${pc.head ? (pc.section.mode ? ` data-mode="${pc.section.mode}"${pc.section.seasonKey ? ` data-season="${pc.section.seasonKey}"` : ''} role="link" tabindex="0"`: '') : ' aria-hidden="true"'}>
               <span class="search-section-text">${pc.section.text}</span>
+              <span class="search-section-count">${searchSectionCountLabel(pc.section)}</span>
               <div class="search-section-line"></div>
             </div>` : '';
           const { acc, accGlow } = accFor(pc.section);

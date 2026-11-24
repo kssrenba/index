@@ -72,7 +72,7 @@ const rawAnimeData = [
     title: "One Piece",
     info: "1 temporada: 1180 episódios",
     studio: "Toei Animation",
-    airedSeason: "1999-2027",
+    airedSeason: "1999-2029",
     rewatch: "The One Piece",
     mal: [
       { label: "1 temporada", episodes: 1180, note: 10, malName: "One Piece" },
@@ -1613,6 +1613,21 @@ const rawWatchingData = [
 
     mal: [{ label: "1 temporada", episodes: 12, malName: "Seitokai ni mo Ana wa Aru!", unwatched: true }],
   },
+  {
+    id: "overgeared",
+    img: "watchingnow-images/watchingnow/overgeared.webp",
+    title: "Overgeared",
+    info: "1 temporada",
+    season: "fall-2026",
+    studio: "J.C. Staff",
+    airedSeason: "2026",
+    seasons: [12],
+    url: "https://www.anime-planet.com/anime/overgeared",
+    crunchyroll: "",
+    malUrl: "https://myanimelist.net/anime/64340/Tempal__Item_no_Chikara",
+
+    mal: [{ label: "1 temporada", episodes: 12, malName: "Tempal: Item no Chikara", unwatched: true }],
+  },
 
   // Summer 2026
   {
@@ -1989,6 +2004,23 @@ const rawReleaseCalendarData = [
 // Plan to Watch — fila de animes a assistir, em ordem de prioridade.
 const rawPlanToWatchData = [
   {
+    id: "fruits-basket",
+    img: "plantowatch-images/plantowatch/fruits-basket.webp",
+    title: "Fruits Basket",
+    info: "3 temporadas: 63 episódios",
+    studio: "TMS Entertainment",
+    airedSeason: "2019-2021",
+    url: "https://www.anime-planet.com/anime/fruits-basket",
+    crunchyroll: "https://www.crunchyroll.com/pt-br/series/G6ZJMGEXY/fruits-basket-2019",
+    malUrl: "https://myanimelist.net/anime/38680/Fruits_Basket_1st_Season",
+
+    mal: [
+      { label: "1ª temporada", episodes: 25, malName: "Fruits Basket 1st Season", unwatched: true },
+      { label: "2ª temporada", episodes: 25, malName: "Fruits Basket 2nd Season", unwatched: true },
+      { label: "3ª temporada", episodes: 13, malName: "Fruits Basket: The Final", unwatched: true },
+    ],
+  },
+  {
     id: "dragon-ball",
     img: "plantowatch-images/plantowatch/dragon-ball.webp",
     title: "Dragon Ball",
@@ -1998,7 +2030,6 @@ const rawPlanToWatchData = [
     url: "https://www.anime-planet.com/anime/dragon-ball",
     crunchyroll: "https://www.crunchyroll.com/pt-br/series/G8DHV7W21/dragon-ball",
     malUrl: "https://myanimelist.net/anime/223/Dragon_Ball",
-    // Fillers só da 1ª temporada (Dragon Ball original). O Kai praticamente não tem.
     fillers: {
       note: "1ª temporada",
       of: 153,
